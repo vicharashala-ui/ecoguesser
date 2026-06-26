@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.75339732,12.89329426],[92.74869641,12.89584463],[92.74912315,12.89158254],[92.75339732,12.89329426]]]},"properties":{"id":"ws_surat_island_wls"}}
+]}

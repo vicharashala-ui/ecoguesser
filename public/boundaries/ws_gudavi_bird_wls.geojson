@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[75.0101064,14.44092969],[75.01428957,14.43188842],[75.0167298,14.4369868],[75.0229096,14.4369245],[75.0223839,14.4411324],[75.0101064,14.44092969]]]},"properties":{"id":"ws_gudavi_bird_wls"}}
+]}

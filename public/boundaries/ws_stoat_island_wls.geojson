@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.73638889,12.28157879],[92.73796867,12.29242613],[92.73524969,12.28813575],[92.73638889,12.28157879]]]},"properties":{"id":"ws_stoat_island_wls"}}
+]}

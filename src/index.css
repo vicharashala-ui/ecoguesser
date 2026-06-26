@@ -1,0 +1,22 @@
+@import '@fontsource/nunito/400.css';
+@import '@fontsource/nunito/700.css';
+@import '@fontsource/nunito/800.css';
+
+body {
+  margin: 0;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  background: #f8f6f1;
+}
+
+.eg-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #16a34a;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: eg-spin 0.8s linear infinite;
+}
+
+@keyframes eg-spin {
+  to { transform: rotate(360deg); }
+}

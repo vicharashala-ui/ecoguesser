@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.04909909,13.29397233],[93.04977145,13.29341132],[93.05038487,13.29496532],[93.04909909,13.29397233]]]},"properties":{"id":"ws_brush_island_wls"}}
+]}

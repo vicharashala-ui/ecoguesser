@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[79.31045866,10.71005542],[79.31556878,10.69677258],[79.32272888,10.69834903],[79.32198613,10.70357463],[79.31045866,10.71005542]]]},"properties":{"id":"ws_vaduvoor_bird"}}
+]}

@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.87327208,13.43501758],[92.87812047,13.43563641],[92.87538286,13.43881795],[92.87327208,13.43501758]]]},"properties":{"id":"ws_mayo_island_wls"}}
+]}

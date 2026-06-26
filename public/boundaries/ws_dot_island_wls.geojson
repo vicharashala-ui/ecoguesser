@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.94916851,13.02087087],[92.94954006,13.02411776],[92.9471827,13.02585539],[92.94916851,13.02087087]]]},"properties":{"id":"ws_dot_island_wls"}}
+]}

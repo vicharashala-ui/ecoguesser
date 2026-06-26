@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.91025382,13.00699283],[92.90944614,13.00795818],[92.90929354,13.00723003],[92.91025382,13.00699283]]]},"properties":{"id":"ws_goose_island_wls"}}
+]}

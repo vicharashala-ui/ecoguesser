@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.03875257,13.34282597],[93.03640252,13.34253082],[93.03721263,13.34055254],[93.03875257,13.34282597]]]},"properties":{"id":"ws_jungle_island_wls"}}
+]}

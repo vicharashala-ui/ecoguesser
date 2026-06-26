@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.72411188,12.7368688],[92.7229203,12.73577821],[92.72796959,12.72691502],[92.72966988,12.72942965],[92.72411188,12.7368688]]]},"properties":{"id":"ws_mask_island_wls"}}
+]}

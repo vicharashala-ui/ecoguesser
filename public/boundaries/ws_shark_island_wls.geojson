@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.7564593,13.2016665],[92.7557458,13.2028207],[92.7551195,13.2011886],[92.7564593,13.2016665]]]},"properties":{"id":"ws_shark_island_wls"}}
+]}

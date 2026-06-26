@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.78901787,12.88286644],[92.79190986,12.89144053],[92.78750349,12.89365324],[92.78189551,12.89192345],[92.78266906,12.88335673],[92.78901787,12.88286644]]]},"properties":{"id":"ws_entrance_island_wls"}}
+]}

@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.01504654,13.33746239],[93.01584378,13.33866191],[93.01408704,13.33894694],[93.01504654,13.33746239]]]},"properties":{"id":"ws_wharf_island_wls"}}
+]}

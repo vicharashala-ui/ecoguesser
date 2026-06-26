@@ -1,0 +1,27 @@
+{
+  "name": "ecoguesser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.2",
+    "mapshaper": "^0.6.113",
+    "vite": "^8.0.16"
+  },
+  "dependencies": {
+    "@fontsource/nunito": "^5.2.7",
+    "maplibre-gl": "^5.24.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  }
+}

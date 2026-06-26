@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.56808353,11.94963091],[92.56362736,11.94775538],[92.56969294,11.9455325],[92.56808353,11.94963091]]]},"properties":{"id":"ws_montogemery_island_wls"}}
+]}

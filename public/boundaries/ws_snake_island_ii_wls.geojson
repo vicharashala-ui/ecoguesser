@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.75438959,11.63816026],[92.75439116,11.63730452],[92.75512603,11.63791166],[92.75438959,11.63816026]]]},"properties":{"id":"ws_snake_island_ii_wls"}}
+]}

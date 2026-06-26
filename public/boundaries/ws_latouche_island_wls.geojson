@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.72943982,13.09111083],[92.73130706,13.09447184],[92.72946361,13.09480124],[92.72943982,13.09111083]]]},"properties":{"id":"ws_latouche_island_wls"}}
+]}

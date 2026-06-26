@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.73440435,11.14552161],[92.73151893,11.14924112],[92.72775311,11.14597214],[92.73156834,11.14290959],[92.73440435,11.14552161]]]},"properties":{"id":"ws_sister_island_wls"}}
+]}

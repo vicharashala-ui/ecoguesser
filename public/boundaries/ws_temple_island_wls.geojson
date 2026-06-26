@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.063922,13.38539686],[93.06062514,13.38557458],[93.06130147,13.3830038],[93.063922,13.38539686]]]},"properties":{"id":"ws_temple_island_wls"}}
+]}

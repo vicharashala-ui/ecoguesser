@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.7747082,12.01821501],[92.77098462,12.01674952],[92.77454679,12.01327559],[92.7747082,12.01821501]]]},"properties":{"id":"ws_duncan_island_wls"}}
+]}

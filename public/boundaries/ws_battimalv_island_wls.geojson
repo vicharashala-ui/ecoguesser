@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.8531918,8.8211012],[92.8567082,8.819552],[92.8617802,8.8230453],[92.8630798,8.8295561],[92.8594387,8.8370793],[92.85405848,8.83245773],[92.8531918,8.8211012]]]},"properties":{"id":"ws_battimalv_island_wls"}}
+]}

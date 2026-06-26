@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[75.04058477,15.08267446],[75.03417835,15.07906023],[75.04049986,15.07217254],[75.04907589,15.0752764],[75.04122747,15.07656972],[75.04058477,15.08267446]]]},"properties":{"id":"ws_attiveri_bird_wls"}}
+]}

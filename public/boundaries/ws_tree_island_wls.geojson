@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.0790269,13.43320653],[93.07723064,13.43320873],[93.0773564,13.43239486],[93.0790269,13.43320653]]]},"properties":{"id":"ws_tree_island_wls"}}
+]}

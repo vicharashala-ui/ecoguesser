@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.5849325,11.97776595],[92.5843747,11.98211557],[92.58163181,11.97724105],[92.5849325,11.97776595]]]},"properties":{"id":"ws_patric_island_wls"}}
+]}

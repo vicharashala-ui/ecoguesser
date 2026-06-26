@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.84479381,12.15001438],[92.84581785,12.14800673],[92.84666428,12.15093797],[92.84479381,12.15001438]]]},"properties":{"id":"ws_arial_island_wls"}}
+]}

@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.7028049,12.63842759],[92.70307203,12.64098486],[92.70087016,12.63983432],[92.7028049,12.63842759]]]},"properties":{"id":"ws_hump_island_wls"}}
+]}

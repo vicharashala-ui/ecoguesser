@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.84003872,13.24908136],[92.83961775,13.24887575],[92.84002941,13.24849726],[92.84003872,13.24908136]]]},"properties":{"id":"ws_rowe_island_wls"}}
+]}

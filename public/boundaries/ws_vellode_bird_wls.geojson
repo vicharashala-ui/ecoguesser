@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[77.64437023,11.24843186],[77.65012208,11.24794232],[77.65770406,11.25164881],[77.65397249,11.25568161],[77.64736499,11.25446945],[77.64437023,11.24843186]]]},"properties":{"id":"ws_vellode_bird_wls"}}
+]}

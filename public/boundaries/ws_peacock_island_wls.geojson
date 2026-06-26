@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.05426235,13.5603426],[93.05676523,13.56654522],[93.05195622,13.56448943],[93.05426235,13.5603426]]]},"properties":{"id":"ws_peacock_island_wls"}}
+]}

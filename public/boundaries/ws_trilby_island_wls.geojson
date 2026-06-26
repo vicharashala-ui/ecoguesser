@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.07094456,13.41302459],[93.07187734,13.43079115],[93.06745765,13.42414114],[93.06821003,13.41489897],[93.07094456,13.41302459]]]},"properties":{"id":"ws_trilby_island_wls"}}
+]}

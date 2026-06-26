@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.22634196,10.9822067],[92.22037119,10.98270171],[92.21508562,10.97897545],[92.21792403,10.97349929],[92.22722959,10.97626705],[92.22634196,10.9822067]]]},"properties":{"id":"ws_south_sentinel_island_wls"}}
+]}

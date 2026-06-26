@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.98791292,12.99815743],[92.98959908,12.99961021],[92.98692561,13.00045464],[92.98791292,12.99815743]]]},"properties":{"id":"ws_oliver_island_wls"}}
+]}

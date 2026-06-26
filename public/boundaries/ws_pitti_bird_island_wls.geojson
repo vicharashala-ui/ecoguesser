@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[72.5337277,10.7745829],[72.5347611,10.7756213],[72.5331983,10.7756088],[72.5337277,10.7745829]]]},"properties":{"id":"ws_pitti_bird_island_wls"}}
+]}

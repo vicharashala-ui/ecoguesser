@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[72.41592808779367,27.14284634330944],[72.41938227539971,27.13721749320792],[72.42064118693125,27.143449112985394],[72.41592808779367,27.14284634330944]]]},"properties":{"id":"rs_khichan_wetland"}}
+]}

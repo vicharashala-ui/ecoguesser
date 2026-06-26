@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.7319538,12.70296245],[92.73116385,12.70523694],[92.73062613,12.70219632],[92.7319538,12.70296245]]]},"properties":{"id":"ws_tuft_island_wls"}}
+]}

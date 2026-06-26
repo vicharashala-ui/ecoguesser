@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.09400296,13.41817537],[93.09038896,13.41928225],[93.08730824,13.41236244],[93.09063751,13.4099149],[93.09400296,13.41817537]]]},"properties":{"id":"ws_table_delgarno_island_wls"}}
+]}

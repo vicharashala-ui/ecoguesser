@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.75730918,12.90249347],[92.75766439,12.90855919],[92.75370468,12.91320214],[92.75345047,12.9007093],[92.75730918,12.90249347]]]},"properties":{"id":"ws_bondoville_island_wls"}}
+]}

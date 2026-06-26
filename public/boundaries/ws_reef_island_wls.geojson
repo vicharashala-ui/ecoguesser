@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.87267014,13.50264881],[92.87423194,13.50631725],[92.87198462,13.51268623],[92.86676692,13.50843811],[92.87267014,13.50264881]]]},"properties":{"id":"ws_reef_island_wls"}}
+]}

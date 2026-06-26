@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.75516912,12.90119128],[92.75266164,12.89154655],[92.7566926,12.89381183],[92.75730918,12.90249347],[92.75516912,12.90119128]]]},"properties":{"id":"ws_spike_island_i_wls"}}
+]}

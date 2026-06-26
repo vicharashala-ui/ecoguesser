@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.74346085,11.96513925],[92.74464777,11.96698311],[92.74175816,11.96630817],[92.74346085,11.96513925]]]},"properties":{"id":"ws_potanma_islands_wls"}}
+]}

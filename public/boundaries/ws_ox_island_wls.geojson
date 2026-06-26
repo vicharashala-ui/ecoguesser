@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.96811363,13.33270397],[92.97018309,13.33856649],[92.96542293,13.33598987],[92.96811363,13.33270397]]]},"properties":{"id":"ws_ox_island_wls"}}
+]}

@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.90416697,12.42102448],[92.89976551,12.42608461],[92.8989795,12.42152439],[92.90416697,12.42102448]]]},"properties":{"id":"ws_parkinson_island_wls"}}
+]}

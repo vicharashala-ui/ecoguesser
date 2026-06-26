@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.08289907,11.78013401],[93.08590504,11.78577721],[93.08466622,11.79002361],[93.08048813,11.78792256],[93.07775787,11.7816535],[93.08289907,11.78013401]]]},"properties":{"id":"ws_sir_hugh_rose_island_wls"}}
+]}

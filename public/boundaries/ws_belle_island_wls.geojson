@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.74026728,12.10868605],[92.74261531,12.11504527],[92.73835849,12.10832362],[92.74026728,12.10868605]]]},"properties":{"id":"ws_belle_island_wls"}}
+]}

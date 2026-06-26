@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[69.6159732,21.6373318],[69.6184895,21.6339678],[69.6212733,21.6355267],[69.6159732,21.6373318]]]},"properties":{"id":"ws_porbandar_lake_wls"}}
+]}

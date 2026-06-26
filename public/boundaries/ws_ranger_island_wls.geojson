@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.76630295,12.86980544],[92.76115674,12.86885642],[92.76311001,12.85552043],[92.76612494,12.85486416],[92.76630295,12.86980544]]]},"properties":{"id":"ws_ranger_island_wls"}}
+]}

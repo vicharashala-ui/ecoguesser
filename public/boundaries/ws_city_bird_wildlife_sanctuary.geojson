@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[76.77831897,30.72862723],[76.78072547,30.72837696],[76.7798423,30.7295725],[76.77831897,30.72862723]]]},"properties":{"id":"ws_city_bird_wildlife_sanctuary"}}
+]}

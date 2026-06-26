@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.91230647,13.00242703],[92.91139283,13.00499178],[92.91030169,13.00420941],[92.91230647,13.00242703]]]},"properties":{"id":"ws_gander_island_wls"}}
+]}

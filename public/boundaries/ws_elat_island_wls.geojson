@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.67421684,12.54230366],[92.66863388,12.53532856],[92.67059463,12.52848772],[92.67705932,12.52281104],[92.68459621,12.5392741],[92.67421684,12.54230366]]]},"properties":{"id":"ws_elat_island_wls"}}
+]}

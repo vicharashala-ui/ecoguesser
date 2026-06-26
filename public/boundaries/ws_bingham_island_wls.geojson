@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.72234892,12.25621216],[92.72459499,12.25380823],[92.72488021,12.25558505],[92.72234892,12.25621216]]]},"properties":{"id":"ws_bingham_island_wls"}}
+]}

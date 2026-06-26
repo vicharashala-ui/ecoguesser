@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.67625485,11.18466735],[92.67724501,11.17791286],[92.68092779,11.18183172],[92.67625485,11.18466735]]]},"properties":{"id":"ws_passage_island_wls"}}
+]}

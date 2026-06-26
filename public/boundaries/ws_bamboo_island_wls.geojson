@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.93368009,13.05022675],[92.93361164,13.05325031],[92.93197048,13.05298789],[92.93368009,13.05022675]]]},"properties":{"id":"ws_bamboo_island_wls"}}
+]}

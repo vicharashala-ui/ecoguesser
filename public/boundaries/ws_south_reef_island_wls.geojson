@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.6554741,12.7690498],[92.6561634,12.7752297],[92.6546788,12.7699248],[92.6554741,12.7690498]]]},"properties":{"id":"ws_south_reef_island_wls"}}
+]}

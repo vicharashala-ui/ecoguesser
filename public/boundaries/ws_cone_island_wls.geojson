@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.86562111,12.41246501],[92.86983986,12.41484239],[92.86894916,12.41998631],[92.86477594,12.42084165],[92.85882926,12.41660531],[92.86562111,12.41246501]]]},"properties":{"id":"ws_cone_island_wls"}}
+]}

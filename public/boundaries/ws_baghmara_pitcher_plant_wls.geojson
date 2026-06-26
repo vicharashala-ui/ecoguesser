@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[90.6381404,25.1994127],[90.6370246,25.1975585],[90.6394118,25.1973692],[90.6381404,25.1994127]]]},"properties":{"id":"ws_baghmara_pitcher_plant_wls"}}
+]}
