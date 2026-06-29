@@ -31,16 +31,20 @@
 //     handoff) -- added an explicit loading branch below to cover that gap,
 //     which the previous draft would have crashed on.
 //
-// Still flagged, not yet confirmed against real code:
-//   - MapContainer's `onMapClick`/`guess` props are taken from the spec's
-//     v8.14 update note, not from the file itself -- worth a final check.
-//   - useMapState's call signature (`useMapState(mapRef, mode)`) is inferred
-//     the same way.
-//   - Decision #2's v8.16 Borders-auto-toggle is Classic-only per spec;
-//     deliberately not replicated for Daily below.
+// Confirmed against the real source (previous draft only inferred these):
+//   - MapContainer.jsx is a DEFAULT export, not named -- import fixed below.
+//   - MapContainer's `onMapClick`/`guess` props and useMapState's
+//     `useMapState(mapRef, mode)` signature were both correct as guessed.
+//   - Section 3 Tile Efficiency's interaction lock during REVEALING uses
+//     useMapState's existing `lockInteraction`/`unlockInteraction` --
+//     ClassicMap.jsx doesn't consume these yet, so this is the first
+//     caller, not a duplication of an existing Classic-side lock.
+//
+// Design note (unchanged, not a guess): Decision #2's v8.16 Borders-auto-toggle
+// on REVEALING is Classic-only per spec -- deliberately not replicated below.
 
 import { useRef, useEffect, useCallback } from 'react';
-import { MapContainer } from './MapContainer.jsx';
+import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
 import { useDailyRound } from '../hooks/useDailyRound.js';
 import { useMapState } from '../hooks/useMapState.js';
@@ -72,6 +76,8 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
     satelliteUnavailable,
     setSatellite,
     setPolitical,
+    lockInteraction,
+    unlockInteraction,
   } = useMapState(mapRef, 'daily');
 
   const {
@@ -129,19 +135,13 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
   }, [mapReady, hintLevel, site, roundState, mapRef]);
 
   // Section 3 Tile Efficiency: lock interaction during the post-guess
-  // animation. Placement here is a guess at ownership -- move it into
-  // MapContainer.jsx if that's already where Classic's lock lives.
+  // animation. Uses useMapState's lockInteraction/unlockInteraction --
+  // not duplicated here, and not "Classic's" either, since ClassicMap.jsx
+  // doesn't consume these yet -- this is the first caller.
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    if (roundState === 'REVEALING') {
-      map.dragPan.disable();
-      map.scrollZoom.disable();
-    } else {
-      map.dragPan.enable();
-      map.scrollZoom.enable();
-    }
-  }, [roundState, mapRef]);
+    if (roundState === 'REVEALING') lockInteraction();
+    else unlockInteraction();
+  }, [roundState, lockInteraction, unlockInteraction]);
 
   // Round 5's "Next" hands off to the parent instead of looping back to
   // LOADING (Section 4). useDailyRound's own handleNextSite already no-ops
