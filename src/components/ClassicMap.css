@@ -1,0 +1,40 @@
+/* src/components/ClassicMap.css */
+
+.cm-layer-panel {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cm-sat-warning {
+  color: #dc2626;
+}
+
+
+.cm-empty-pool {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 20;
+  text-align: center;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(248, 246, 241, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 16px rgba(17, 24, 39, 0.12);
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #6b7280;
+}

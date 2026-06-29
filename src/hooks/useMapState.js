@@ -31,7 +31,18 @@ export function useMapState(mapRef, mode) {
     political: false,
     politicalNames: false,
     satelliteUnavailable: false,
+    mapReady: false,
   });
+
+  // One-time latch: true once 'load' has fired and never goes back to false.
+  // isStyleLoaded()/loaded() were tried here before, but both also reflect
+  // any in-flight style update (e.g. resultLayer.js's source.setData() calls
+  // during its line-draw animation make isStyleLoaded() return false for the
+  // *whole* style, not just that one source) -- so they flicker false during
+  // completely unrelated activity and silently no-op whichever setter below
+  // happened to be called in that window. The setters only actually need
+  // "has initial load happened", which is what this ref captures once.
+  const mapReadyRef = useRef(false);
 
   // Two refs mirror state for stale-closure safety -- both required.
   const politicalRef      = useRef(false); // mirrors state.political
@@ -47,7 +58,7 @@ export function useMapState(mapRef, mode) {
   // the satellite palette rather than clashing with it).
   const setSatellite = useCallback((on) => {
     const map = mapRef.current;
-    if (!map?.loaded()) return;
+    if (!map || !mapReadyRef.current) return;
     const SV = SATELLITE_VISUAL;
     const BV = BASE_VISUAL;
 
@@ -189,7 +200,7 @@ export function useMapState(mapRef, mode) {
 
   const setPolitical = useCallback((on) => {
     const map = mapRef.current;
-    if (!map?.loaded()) return;
+    if (!map || !mapReadyRef.current) return;
 
     map.setLayoutProperty(LAYER_IDS.STATE_LINES, 'visibility', on ? 'visible' : 'none');
     if (!on) {
@@ -208,7 +219,7 @@ export function useMapState(mapRef, mode) {
 
   const setPoliticalNames = useCallback((on) => {
     const map = mapRef.current;
-    if (!map?.loaded()) return;
+    if (!map || !mapReadyRef.current) return;
 
     politicalNamesRef.current = on; // sync ref BEFORE setState
     setState(prev => ({ ...prev, politicalNames: on }));
@@ -270,6 +281,11 @@ export function useMapState(mapRef, mode) {
       });
       // Always visible, both modes, both difficulties -- draws the compliance-patched
       // Aksai Chin/PoK border on top of OFM's boundary line. Not user-toggleable.
+
+      // Latch BEFORE the calls below -- setPolitical/setDifficulty both read
+      // mapReadyRef.current as their own guard now.
+      mapReadyRef.current = true;
+      setState(prev => ({ ...prev, mapReady: true }));
 
       if (mode === 'daily') {
         setPolitical(false);

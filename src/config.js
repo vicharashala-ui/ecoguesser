@@ -5,10 +5,10 @@ export const MAP_STYLE = '/map-style.json';
 
 export const MAP_CONFIG = {
   INDIA_BOUNDS:       [[68.1,6.4],[97.4,37.1]],
-  MAX_BOUNDS:         [[55,4],[102,40]],
+  MAX_BOUNDS:         [[45,-8],[112,52]],
   INDIA_CENTER:       [82.5,22.5],     // flyTo() Reset button only
   INDIA_ZOOM:         4.5,             // flyTo() Reset button only
-  MIN_ZOOM: 4, MAX_ZOOM: 10,
+  MIN_ZOOM: 3, MAX_ZOOM: 12,
   SATELLITE_MAX_ZOOM: 9,
 };
 // Do NOT pass INDIA_CENTER/INDIA_ZOOM to MapLibre constructor.
@@ -80,7 +80,7 @@ export const LAYER_IDS = {
   INDIA_BOUNDARY_LINE: 'india-boundary-line',
 };
 
-export const SCORING = { MAX_SCORE: 5000, DECAY_KM: 50, HINT_PENALTY: 500 };
+export const SCORING = { MAX_SCORE: 5000, DECAY_KM: 100, HINT_PENALTY: 500 };
 
 export const DAILY = {
   CATEGORIES: ['np','wls','tr','br','ramsar'],

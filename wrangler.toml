@@ -1,6 +1,6 @@
 name = "ecoguesser"
 compatibility_date = "2024-09-23"
-# pages_build_output_dir = "./dist"   # commented out for local proxy-mode testing -- uncomment before deploying
+#pages_build_output_dir = "./dist"
 
 [[d1_databases]]
 binding = "DB"

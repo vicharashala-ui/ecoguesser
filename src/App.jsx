@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import MapContainer from './components/MapContainer.jsx';
-import SatelliteOverlay from './components/SatelliteOverlay.jsx';
-import { useMapState } from './hooks/useMapState.js';
+import ClassicMap from './components/ClassicMap.jsx';
 
 const screenStyle = {
   display: 'flex',
@@ -66,30 +64,9 @@ export default function App() {
     );
   }
 
-  // --- TEMPORARY MAP SMOKE TEST -- delete once confirmed working ---
-  return <MapSmokeTest mapRef={mapRef} siteCount={allSites.length} />;
-}
-
-function MapSmokeTest({ mapRef, siteCount }) {
-  const { political, politicalNames, satellite, satelliteUnavailable,
-          setPolitical, setPoliticalNames, setSatellite } =
-    useMapState(mapRef, 'classic');
-
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      <MapContainer mapRef={mapRef} />
-      <SatelliteOverlay active={satellite} />
-      <div style={{
-        position: 'absolute', top: 10, left: 10, zIndex: 10,
-        background: 'rgba(255,255,255,0.9)', padding: '0.75rem', borderRadius: '8px',
-        fontSize: '14px', display: 'flex', flexDirection: 'column', gap: '0.5rem',
-      }}>
-        <div>Loaded {siteCount} sites</div>
-        <label><input type="checkbox" checked={political} onChange={e => setPolitical(e.target.checked)} /> Borders</label>
-        <label><input type="checkbox" checked={politicalNames} onChange={e => setPoliticalNames(e.target.checked)} /> Names</label>
-        <label><input type="checkbox" checked={satellite} onChange={e => setSatellite(e.target.checked)} /> Satellite</label>
-        {satelliteUnavailable && <div style={{ color: '#dc2626' }}>Satellite unavailable</div>}
-      </div>
+      <ClassicMap mapRef={mapRef} sites={allSites} style={{ position: 'absolute', inset: 0 }} />
     </div>
   );
 }

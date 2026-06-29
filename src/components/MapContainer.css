@@ -1,0 +1,27 @@
+/* src/components/MapContainer.css */
+/*
+  Guess marker only -- the CORRECT_PIN shown on REVEALING is a separate
+  GeoJSON-layer pin owned by resultLayer.js (Section 10), not this element.
+  Amber (#f59e0b) matches the RESULT_LINE color already used spec-wide for
+  guess-related elements.
+*/
+
+.eg-guess-marker {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f59e0b;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(17, 24, 39, 0.4);
+  animation: eg-pin-drop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes eg-pin-drop {
+  0%   { transform: translateY(-22px) scale(0.5); opacity: 0; }
+  60%  { transform: translateY(3px) scale(1.1); opacity: 1; }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eg-guess-marker { animation: none; }
+}
