@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ClassicMap from './components/ClassicMap.jsx';
+import { DailyMap } from './components/DailyMap.jsx';
+import BottomNav from './components/BottomNav.jsx';
 
 const screenStyle = {
   display: 'flex',
@@ -25,7 +27,26 @@ const buttonStyle = {
 export default function App() {
   const [allSites, setAllSites] = useState([]);
   const [sitesError, setSitesError] = useState(false);
-  const mapRef = useRef(null);
+
+  // Section 4's tab-switching machinery. classicEverActivated is a ref (not
+  // state) deliberately -- per spec, so flipping it doesn't cost a second
+  // render; by the time switchTab's setActiveTab triggers the real render,
+  // the ref is already true and ClassicMap mounts in that same pass.
+  const classicEverActivated = useRef(false);
+  const [activeTab, setActiveTab] = useState('daily');
+  const classicMapRef = useRef(null);
+  const dailyMapRef = useRef(null);
+
+  function switchTab(newTab) {
+    if (newTab === 'classic') classicEverActivated.current = true;
+    setActiveTab(newTab);
+    // Neither map redraws its canvas while display:none, so each becomes
+    // mis-sized the moment it's shown again unless resized post-switch.
+    requestAnimationFrame(() => {
+      if (newTab === 'classic' && classicMapRef.current) classicMapRef.current.resize();
+      if (newTab === 'daily' && dailyMapRef.current) dailyMapRef.current.resize();
+    });
+  }
 
   function loadSites() {
     import('./data/protected-areas.json')
@@ -66,7 +87,23 @@ export default function App() {
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      <ClassicMap mapRef={mapRef} sites={allSites} style={{ position: 'absolute', inset: 0 }} />
+      {/* DailyMap mounts immediately (Section 4: "DailyMap mounted
+          immediately"); ClassicMap only after its tab is first activated,
+          and both stay mounted afterward -- display:none, not unmount, so
+          MapLibre never recreates its WebGL context on every tab switch. */}
+      {classicEverActivated.current && (
+        <ClassicMap
+          mapRef={classicMapRef}
+          sites={allSites}
+          style={{ position: 'absolute', inset: 0, display: activeTab === 'classic' ? 'block' : 'none' }}
+        />
+      )}
+      <DailyMap
+        mapRef={dailyMapRef}
+        sites={allSites}
+        style={{ position: 'absolute', inset: 0, display: activeTab === 'daily' ? 'block' : 'none' }}
+      />
+      <BottomNav activeTab={activeTab} onTabChange={switchTab} />
     </div>
   );
 }

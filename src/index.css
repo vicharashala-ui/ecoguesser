@@ -2,6 +2,13 @@
 @import '@fontsource/nunito/700.css';
 @import '@fontsource/nunito/800.css';
 
+:root {
+  /* Real source of truth for BottomNav's height -- BottomCard.css and
+     DailyMap.css both reference this var (with the same 64px fallback) to
+     clear the nav bar, but neither previously had a real value to read. */
+  --eg-nav-height: 64px;
+}
+
 body {
   margin: 0;
   font-family: 'Nunito', 'Segoe UI', sans-serif;

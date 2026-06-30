@@ -1,0 +1,55 @@
+/* src/components/BottomNav.css */
+/*
+  Palette matches BottomCard.css/DailyMap.css: #f59e0b amber for the active
+  tab (Section 8: "active tab: amber #f59e0b, scaled icon"), #6b7280 gray
+  inactive, same Nunito stack and frosted-glass treatment as the rest of the
+  floating UI.
+
+  Height equals --eg-nav-height, now a real var defined in index.css's :root
+  (64px) -- previously that number only existed as the fallback in
+  BottomCard.css's and DailyMap.css's own bottom-offset calc(), with no
+  single source of truth. This bar's actual height must stay in sync with
+  that var or the bottom-card/loading-pill clearance breaks.
+*/
+
+.eg-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  height: var(--eg-nav-height, 64px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: flex;
+  background: rgba(248, 246, 241, 0.94);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+}
+
+.eg-nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: none;
+  background: none;
+  color: #6b7280;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.eg-nav-tab:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.eg-nav-tab-active {
+  color: #f59e0b;
+  transform: translateY(-1px);
+}
