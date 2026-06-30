@@ -111,6 +111,8 @@ function IconPaw({ size = 16 }) {
  * @param {() => void} props.onHint
  * @param {() => void} props.onConfirm
  * @param {() => void} props.onNextSite
+ * @param {string} [props.nextLabel='Next Site'] - round 5's button reads
+ *   'Results' instead (Daily only); Classic never overrides this.
  * @param {'classic'|'daily'} props.mode
  * @param {import('../config').RoundResult|null} props.result - set once roundState === 'REVEALING'
  * @param {number|null} props.dailyTotal - cumulative score AFTER this round (daily mode only)
@@ -127,6 +129,7 @@ const BottomCard = forwardRef(function BottomCard({
   onHint,
   onConfirm,
   onNextSite,
+  nextLabel = 'Next Site',
   mode,
   result,
   dailyTotal,
@@ -250,7 +253,7 @@ const BottomCard = forwardRef(function BottomCard({
               Play Trivia
             </button>
             <button type="button" className="bc-next-btn" onClick={onNextSite}>
-              Next Site
+              {nextLabel}
             </button>
           </div>
         </div>

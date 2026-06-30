@@ -1,0 +1,39 @@
+/* src/components/RecenterButton.css */
+/*
+  Fixed left:16px, stacked above the pill-state BottomCard. The pill's
+  height is a fixed 64px (.bottom-card.is-pill's own max-height, in
+  BottomCard.css), so this anchors off the same --eg-nav-height var the
+  bottom-card itself uses, plus that literal 64px + a 12px gap on each
+  side -- no runtime height measurement needed, unlike resultLayer.js's
+  fitPadding (this button is hidden outright during REVEALING, the only
+  state where the card's height actually changes -- see RecenterButton.jsx).
+*/
+
+.eg-recenter-btn {
+  position: fixed;
+  left: 16px;
+  bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 64px + 12px);
+  z-index: 25;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(248, 246, 241, 0.92);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 4px 14px rgba(17, 24, 39, 0.14);
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.eg-recenter-btn:hover {
+  color: #16a34a;
+}
+
+.eg-recenter-btn:active {
+  transform: scale(0.94);
+}

@@ -46,6 +46,7 @@
 import { useRef, useEffect, useCallback } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
+import RecenterButton from './RecenterButton.jsx';
 import { useDailyRound } from '../hooks/useDailyRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { showResult, clearResult } from '../game/resultLayer.js';
@@ -134,10 +135,10 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
     else hideHint2(map);
   }, [mapReady, hintLevel, site, roundState, mapRef]);
 
-  // Section 3 Tile Efficiency: lock interaction during the post-guess
-  // animation. Uses useMapState's lockInteraction/unlockInteraction --
-  // not duplicated here, and not "Classic's" either, since ClassicMap.jsx
-  // doesn't consume these yet -- this is the first caller.
+  // Section 3 Tile Efficiency: lock map panning during the post-guess
+  // animation (pan-only -- zoom stays usable, see useMapState.js's
+  // lockInteraction). Uses useMapState's lockInteraction/unlockInteraction
+  // rather than duplicating the logic here.
   useEffect(() => {
     if (roundState === 'REVEALING') lockInteraction();
     else unlockInteraction();
@@ -201,6 +202,7 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
       </div>
 
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />
+      {roundState !== 'REVEALING' && <RecenterButton mapRef={mapRef} />}
 
       {site ? (
         <BottomCard
@@ -215,6 +217,7 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
           result={result}
           dailyTotal={dailyTotal}
           onNextSite={handleNext}
+          nextLabel={isLastRound ? 'Results' : 'Next Site'}
         />
       ) : (
         <div className="dm-loading-pill">Loading today's challenge…</div>

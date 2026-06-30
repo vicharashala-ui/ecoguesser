@@ -34,6 +34,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
+import RecenterButton from './RecenterButton.jsx';
 import SatelliteOverlay from './SatelliteOverlay.jsx';
 import { useClassicRound } from '../hooks/useClassicRound.js';
 import { useMapState } from '../hooks/useMapState.js';
@@ -150,6 +151,7 @@ export default function ClassicMap({ mapRef, style, sites }) {
   return (
     <div style={style}>
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />
+      {roundState !== 'REVEALING' && <RecenterButton mapRef={mapRef} />}
       <SatelliteOverlay active={satellite} />
 
       {/* TEMPORARY layer toggle panel, carried over from the old MapSmokeTest --

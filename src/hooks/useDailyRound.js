@@ -115,10 +115,14 @@ export function useDailyRound(allSites) {
   // Start the clock the moment a round goes live; reset it when the next
   // round starts loading. Intentionally NOT reset on PLACING -- placing a
   // marker doesn't pause the timer (Decision #6/#2: 2-min countdown, runs
-  // through READING->PLACING per Section 5).
+  // through READING->PLACING per Section 5). Paused on REVEALING so an early
+  // Confirm/Skip freezes the displayed time instead of letting it keep
+  // counting down toward an already-scored round (timer.pause() is a no-op
+  // if onExpire already cleared the interval itself, e.g. a true timeout).
   useEffect(() => {
     if (roundState === 'READING') timer.start();
     if (roundState === 'LOADING') timer.reset();
+    if (roundState === 'REVEALING') timer.pause();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roundState]);
 
