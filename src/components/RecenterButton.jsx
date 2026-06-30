@@ -5,11 +5,12 @@
 // by ClassicMap.jsx and DailyMap.jsx rather than duplicated, since both
 // already hold the same mapRef contract.
 //
-// Hidden during REVEALING at both call sites: dragPan is locked then
-// (useMapState's lockInteraction), and the map is already auto-fit to the
-// result via resultLayer.js's showResult -- recentering would just fight
-// that, and the expanded BottomCard would overlap this button's fixed
-// position anyway.
+// Stays visible through REVEALING (per direct request) -- the caller passes
+// a `style` override with a `bottom` computed from BottomCard's real
+// measured height during REVEALING (same cardRef.getBoundingClientRect()
+// pattern already used for resultLayer.js's fitPadding), so this never sits
+// underneath the expanded card. Outside REVEALING, no override is passed and
+// RecenterButton.css's fixed 64px-pill-clearance default applies.
 
 import { MAP_CONFIG } from '../config.js';
 import './RecenterButton.css';
@@ -23,7 +24,7 @@ function IconCrosshair({ size = 20 }) {
   );
 }
 
-export default function RecenterButton({ mapRef }) {
+export default function RecenterButton({ mapRef, style }) {
   const handleClick = () => {
     mapRef.current?.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: 20 });
   };
@@ -32,6 +33,7 @@ export default function RecenterButton({ mapRef }) {
     <button
       type="button"
       className="eg-recenter-btn"
+      style={style}
       onClick={handleClick}
       aria-label="Reset map view"
       title="Reset map view"

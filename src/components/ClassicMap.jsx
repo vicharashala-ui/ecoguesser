@@ -31,7 +31,7 @@
 // using it directly here could show a reveal line for a guess that was
 // never the one that got scored.
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
@@ -39,7 +39,7 @@ import SatelliteOverlay from './SatelliteOverlay.jsx';
 import { useClassicRound } from '../hooks/useClassicRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { siteMatchesFilter, REGION_STATES } from '../utils/filters.js';
-import { DAILY } from '../config.js';
+import { DAILY, MAP_CONFIG } from '../config.js';
 import { showResult, clearResult } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
 import './ClassicMap.css';
@@ -91,6 +91,10 @@ export default function ClassicMap({ mapRef, style, sites }) {
   } = useMapState(mapRef, 'classic');
 
   const cardRef = useRef(null); // measures BottomCard's real height for the reveal's fitBounds padding
+  // Tracks that same height during REVEALING so RecenterButton can sit above
+  // the expanded card instead of being hidden by it (per direct request --
+  // it now stays visible through REVEALING too).
+  const [cardHeight, setCardHeight] = useState(null);
 
   // Section 10 -- PLACING -> REVEALING shows the line/pin/boundary reveal;
   // any -> LOADING (including initial mount) clears it. Built off `result`
@@ -116,8 +120,9 @@ export default function ClassicMap({ mapRef, style, sites }) {
       // BottomCard has already re-rendered into its expanded layout by the
       // time this effect runs (same commit), so this reads its real height
       // rather than guessing at a fixed pixel value.
-      const cardHeight = cardRef.current?.getBoundingClientRect().height ?? 0;
-      const fitPadding = { ...REVEAL_FIT_SIDES, bottom: cardHeight + REVEAL_CARD_GAP };
+      const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 0;
+      setCardHeight(measuredHeight);
+      const fitPadding = { ...REVEAL_FIT_SIDES, bottom: measuredHeight + REVEAL_CARD_GAP };
       showResult(map, { lat: result.guessLat, lng: result.guessLng }, result.site, {
         distanceKmOverride: result.distanceKm,
         fitPadding,
@@ -125,6 +130,10 @@ export default function ClassicMap({ mapRef, style, sites }) {
     } else if (roundState === 'LOADING') {
       clearResult(map);
       setPolitical(false);
+      // Next Site lands here -- reset the view to the default India-wide
+      // framing per direct request, same fitBounds call RecenterButton/
+      // MapContainer's initial load both use.
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: 20 });
     }
   }, [mapRef, mapReady, roundState, result, setPolitical]);
 
@@ -151,7 +160,14 @@ export default function ClassicMap({ mapRef, style, sites }) {
   return (
     <div style={style}>
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />
-      {roundState !== 'REVEALING' && <RecenterButton mapRef={mapRef} />}
+      <RecenterButton
+        mapRef={mapRef}
+        style={
+          roundState === 'REVEALING' && cardHeight
+            ? { bottom: `calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + ${cardHeight}px + 12px)` }
+            : undefined
+        }
+      />
       <SatelliteOverlay active={satellite} />
 
       {/* TEMPORARY layer toggle panel, carried over from the old MapSmokeTest --

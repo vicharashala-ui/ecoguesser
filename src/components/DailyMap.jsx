@@ -39,7 +39,7 @@
 // Design note (unchanged, not a guess): Decision #2's v8.16 Borders-auto-toggle
 // on REVEALING is Classic-only per spec -- deliberately not replicated below.
 
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
@@ -47,6 +47,7 @@ import { useDailyRound } from '../hooks/useDailyRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { showResult, clearResult } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
+import { MAP_CONFIG } from '../config.js';
 import './DailyMap.css';
 
 function formatTime(totalSeconds) {
@@ -65,6 +66,10 @@ function timerColor(remaining) {
 
 export function DailyMap({ mapRef, style, sites, onComplete }) {
   const cardRef = useRef(null);
+  // Tracks BottomCard's real height during REVEALING, so RecenterButton can
+  // be positioned above the expanded card instead of being hidden by it
+  // (per direct request -- it now stays visible through REVEALING too).
+  const [cardHeight, setCardHeight] = useState(null);
 
   const {
     mapReady,
@@ -106,15 +111,16 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
     if (!map || !mapReady) return;
 
     if (roundState === 'REVEALING' && result && !result.skipped) {
-      const fitPadding = {
-        top: 60,
-        bottom: (cardRef.current?.getBoundingClientRect().height ?? 200) + 20,
-        left: 40,
-        right: 40,
-      };
+      const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 200;
+      setCardHeight(measuredHeight);
+      const fitPadding = { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 };
       showResult(map, guess, site, { distanceKmOverride: result.distanceKm, fitPadding });
     } else if (roundState === 'LOADING') {
       clearResult(map);
+      // Next Site (and Skip's auto-advance) lands here -- reset the view to
+      // the default India-wide framing per direct request, same fitBounds
+      // call RecenterButton/MapContainer's initial load both use.
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: 20 });
     }
   }, [mapReady, roundState, result, guess, site, mapRef]);
 
@@ -211,7 +217,14 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
       </div>
 
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />
-      {roundState !== 'REVEALING' && <RecenterButton mapRef={mapRef} />}
+      <RecenterButton
+        mapRef={mapRef}
+        style={
+          roundState === 'REVEALING' && cardHeight
+            ? { bottom: `calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + ${cardHeight}px + 12px)` }
+            : undefined
+        }
+      />
 
       {!site ? (
         <div className="dm-loading-pill">Loading today's challenge…</div>
