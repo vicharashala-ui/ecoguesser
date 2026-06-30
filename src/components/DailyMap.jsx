@@ -21,10 +21,6 @@
 //     includes the just-finalized round by the time roundState flips to
 //     REVEALING (finalizeRound pushes to `results` before setting
 //     REVEALING), so summing it here is correct, just renamed.
-//   - There's no `nextLabel` prop -- "Next Site" is hardcoded in
-//     BottomCard.jsx regardless of mode. Round 5 will say "Next Site" too
-//     unless you add a label prop to BottomCard.jsx itself; left alone here
-//     since that's editing a file you didn't ask me to touch.
 //   - BottomCard reads `site.category` with no null-guard, so it cannot be
 //     rendered before `site` resolves. useDailyRound's `site` is null until
 //     `getDailySites` returns (on mount, before the LOADING->READING
@@ -98,6 +94,7 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
     handleConfirm,
     handleSkip,
     handleNextSite,
+    handleStart,
   } = useDailyRound(sites);
 
   // Effect 1 (mirrors ClassicMap.jsx): resultLayer.js off [mapReady, roundState, result].
@@ -108,7 +105,7 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
     const map = mapRef.current;
     if (!map || !mapReady) return;
 
-    if (roundState === 'REVEALING' && result) {
+    if (roundState === 'REVEALING' && result && !result.skipped) {
       const fitPadding = {
         top: 60,
         bottom: (cardRef.current?.getBoundingClientRect().height ?? 200) + 20,
@@ -155,6 +152,18 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
       handleNextSite();
     }
   }, [isLastRound, results, handleNextSite, onComplete]);
+
+  // Skip bypasses the correct-answer reveal entirely -- per direct request,
+  // pressing Skip should just move straight to the next site, not show what
+  // was missed. finalizeRound (shared with Confirm/timeout) still always
+  // transitions to REVEALING first, since that's the one path that records
+  // a RoundResult -- this effect just immediately fires the same "advance"
+  // handleNext already does on a real Next/Results click, so a skipped round
+  // never actually renders the reveal card (gated out below) or the map's
+  // result layer (gated out in Effect 1 above).
+  useEffect(() => {
+    if (roundState === 'REVEALING' && result?.skipped) handleNext();
+  }, [roundState, result, handleNext]);
 
   const skipDisabled = roundState !== 'READING' && roundState !== 'PLACING';
   const dailyTotal = results.reduce((sum, r) => sum + r.finalScore, 0);
@@ -204,7 +213,19 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />
       {roundState !== 'REVEALING' && <RecenterButton mapRef={mapRef} />}
 
-      {site ? (
+      {!site ? (
+        <div className="dm-loading-pill">Loading today's challenge…</div>
+      ) : roundState === 'NOT_STARTED' ? (
+        // Round 1's Start gate -- timer hasn't started yet (useDailyRound
+        // only calls timer.start() on entering READING, which handleStart
+        // triggers) and the guess panel hasn't appeared yet either, per
+        // direct request. Rounds 2-5 never hit this branch.
+        <div className="dm-start-pill">
+          <button type="button" className="dm-start-btn" onClick={handleStart}>
+            Start Daily Challenge
+          </button>
+        </div>
+      ) : (
         <BottomCard
           ref={cardRef}
           mode="daily"
@@ -214,13 +235,11 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
           hintLevel={hintLevel}
           onHint={handleHint}
           onConfirm={handleConfirm}
-          result={result}
+          result={result?.skipped ? null : result}
           dailyTotal={dailyTotal}
           onNextSite={handleNext}
           nextLabel={isLastRound ? 'Results' : 'Next Site'}
         />
-      ) : (
-        <div className="dm-loading-pill">Loading today's challenge…</div>
       )}
     </div>
   );

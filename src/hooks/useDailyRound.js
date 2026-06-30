@@ -8,6 +8,12 @@
 // off this hook's state (same two-useEffect pattern as ClassicMap.jsx), and
 // routing to DAILY_SUMMARY once `isComplete` flips true.
 //
+// One state beyond Section 5's literal list: round 1's first LOADING->READING
+// handoff detours through NOT_STARTED instead, per direct request -- the
+// timer must not start and the guess panel must not appear until the player
+// explicitly presses Start (handleStart). Rounds 2-5 skip this detour
+// entirely (hasStartedRef latches true on the first handleStart call).
+//
 // Daily-only concerns Classic deliberately doesn't have, per Section 5 /
 // Decision #2 (Game Modes):
 //   - 2-min countdown per round, auto-submit at 0 with whatever marker exists
@@ -56,15 +62,32 @@ export function useDailyRound(allSites) {
   const site = sites ? sites[roundIndex] : null;
   siteRef.current = site;
 
-  // LOADING -> READING handoff once this round's site exists. (Classic's
-  // equivalent transition is driven by its own pickRandom call inside
-  // handleNextSite; Daily's sites are precomputed, so the handoff just
-  // waits for `site` to resolve from the `sites` array.)
+  // Round 1 only: the LOADING->READING handoff is gated behind an explicit
+  // Start press (handleStart below) rather than firing automatically the
+  // moment `site` resolves -- per spec, the timer must not start and the
+  // guess panel must not appear until the player presses Start. hasStartedRef
+  // (not state) since it only needs to be read inside the handoff effect,
+  // never rendered; once true it stays true for the rest of this mount
+  // (rounds 2-5 skip the gate, same as Daily progress generally not
+  // persisting across a refresh -- see Section 4's note on that).
+  const hasStartedRef = useRef(false);
+
+  // LOADING -> NOT_STARTED (round 1, first time) or READING (every other
+  // case) once this round's site exists. (Classic's equivalent transition
+  // is driven by its own pickRandom call inside handleNextSite; Daily's
+  // sites are precomputed, so the handoff just waits for `site` to resolve
+  // from the `sites` array.)
   useEffect(() => {
     if (site && roundState === 'LOADING') {
-      setRoundState('READING');
+      setRoundState(hasStartedRef.current ? 'READING' : 'NOT_STARTED');
     }
   }, [site, roundState]);
+
+  const handleStart = useCallback(() => {
+    if (roundStateRef.current !== 'NOT_STARTED') return;
+    hasStartedRef.current = true;
+    setRoundState('READING');
+  }, []);
 
   // Single scoring path shared by Confirm, Skip, and timer-expiry so the three
   // entry points can never disagree about how a round's RoundResult is built.
@@ -188,5 +211,6 @@ export function useDailyRound(allSites) {
     handleConfirm,
     handleSkip,
     handleNextSite,
+    handleStart,
   };
 }
