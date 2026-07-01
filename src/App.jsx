@@ -4,7 +4,10 @@ import { DailyMap } from './components/DailyMap.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import DailySummary from './components/DailySummary.jsx';
 import Leaderboard from './components/Leaderboard.jsx';
+import Header from './components/Header.jsx';
+import SideDrawer from './components/SideDrawer.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
+import { DEFAULT_FILTERS } from './utils/filters.js';
 
 const screenStyle = {
   display: 'flex',
@@ -51,6 +54,11 @@ export default function App() {
   // READING/PLACING = unconfirmed guess in flight; drives the "Leave this
   // round?" guard below. NOT_STARTED/REVEALING are safe to nav away from.
   const [dailyRoundState, setDailyRoundState] = useState('NOT_STARTED');
+
+  // Section 9 -- drawerOpen is global (both tabs), classicFilters only
+  // affects ClassicMap's site pool (Daily's pool is fixed per Section 6).
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [classicFilters, setClassicFilters] = useState(DEFAULT_FILTERS);
 
   function switchTab(newTab) {
     if (newTab === activeTab) return;
@@ -135,6 +143,7 @@ export default function App() {
         <ClassicMap
           mapRef={classicMapRef}
           sites={allSites}
+          filters={classicFilters}
           style={{ position: 'absolute', inset: 0, display: activeTab === 'classic' ? 'block' : 'none' }}
         />
       )}
@@ -161,6 +170,15 @@ export default function App() {
         <Leaderboard data={dailyLeaderboardData} onPlayClassic={() => switchTab('classic')} />
       )}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />
+      <Header onMenuClick={() => setDrawerOpen(true)} />
+      <SideDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        sites={allSites}
+        filters={classicFilters}
+        onApplyFilters={setClassicFilters}
+        showClassicFilters={activeTab === 'classic'}
+      />
     </div>
   );
 }

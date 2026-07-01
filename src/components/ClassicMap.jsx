@@ -10,11 +10,12 @@
 // screens on that succeeding, so this avoids a second independent import of
 // the same data.
 //
-// Filters (Decision #10 -- category + region/state side drawer) aren't
-// built yet. Defaulting to "every category, every state" so Classic is
-// fully playable against the full 839-site pool right now; once the
-// drawer exists, swap DEFAULT_FILTERS for real useState + the drawer's
-// onChange, siteMatchesFilter()/sitePool below don't need to change.
+// Filters (Decision #10 -- category + region/state side drawer) come down
+// as a prop, controlled by App.jsx's lifted state + SideDrawer.jsx's Apply
+// Filters button (v8.19). Defaults to DEFAULT_FILTERS (every category,
+// every state) so Classic is still fully playable if this ever renders
+// without the prop. Difficulty is still not wired to any UI -- see
+// SideDrawer.jsx's header comment for why that's a separate, deferred gap.
 //
 // useMapState + SatelliteOverlay move here from the old MapSmokeTest in
 // App.jsx -- this is now the component that actually owns the full-screen
@@ -38,18 +39,11 @@ import RecenterButton from './RecenterButton.jsx';
 import SatelliteOverlay from './SatelliteOverlay.jsx';
 import { useClassicRound } from '../hooks/useClassicRound.js';
 import { useMapState } from '../hooks/useMapState.js';
-import { siteMatchesFilter, REGION_STATES } from '../utils/filters.js';
-import { DAILY, MAP_CONFIG } from '../config.js';
+import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
+import { MAP_CONFIG } from '../config.js';
 import { showResult, clearResult } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
 import './ClassicMap.css';
-
-const ALL_STATES = Object.values(REGION_STATES).flat();
-
-// DAILY.CATEGORIES is the same 5 short codes Classic's filter needs --
-// reused here rather than re-listing them, so a category ever being added
-// only needs updating in one place (config.js).
-const DEFAULT_FILTERS = { categories: [...DAILY.CATEGORIES], states: ALL_STATES };
 
 // Used to build resultLayer.js's fitBounds padding once Confirm is pressed --
 // top/left/right are fixed screen margins; `bottom` is computed per-round from
@@ -64,10 +58,7 @@ const REVEAL_CARD_GAP = 20; // breathing room above the card's top edge
  * @param {React.CSSProperties} style - controls display:block/none for tab switching
  * @param {import('../config').Site[]} sites - the full loaded site list (from App.jsx)
  */
-export default function ClassicMap({ mapRef, style, sites }) {
-  const filters = DEFAULT_FILTERS; // becomes useState once the side drawer exists
-
-  const sitePool = useMemo(
+export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FILTERS }) {  const sitePool = useMemo(
     () => sites.filter((s) => siteMatchesFilter(s, filters)),
     [sites, filters]
   );

@@ -1,0 +1,39 @@
+/* src/components/Header.css */
+.eg-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: linear-gradient(to bottom, rgba(17, 24, 39, 0.35), transparent);
+  pointer-events: none;
+}
+
+.eg-menu-btn {
+  pointer-events: auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.15);
+}
+
+.eg-header-title {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(17, 24, 39, 0.4);
+}

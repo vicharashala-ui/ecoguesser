@@ -12,6 +12,9 @@
  * against it (see br_great_nicobar_biosphere_reserve typo-state gap in
  * Critical Gotchas for why that matters).
  */
+
+import { DAILY } from '../config.js';
+
 export const REGION_STATES = {
   North: ['Himachal Pradesh', 'Punjab', 'Haryana', 'Uttarakhand', 'Uttar Pradesh'],
   West: ['Maharashtra', 'Goa', 'Gujarat', 'Rajasthan'],
@@ -43,6 +46,13 @@ export const REGION_STATES = {
     'Puducherry',
   ],
 };
+
+export const ALL_STATES = Object.values(REGION_STATES).flat();
+
+// Reused by App.jsx (lifted filter state, so the side drawer can control
+// it) and previously duplicated locally in ClassicMap.jsx as its own
+// module-level constant -- one definition now.
+export const DEFAULT_FILTERS = { categories: [...DAILY.CATEGORIES], states: ALL_STATES };
 
 /**
  * filters: { categories: string[], states: string[] }
