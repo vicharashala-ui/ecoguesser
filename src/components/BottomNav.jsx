@@ -3,10 +3,10 @@
 // Section 8's bottom tab bar: [fire] Daily | [mountain] Classic | [chart] Stats.
 // Active-tab amber (#f59e0b) + scaled icon, per spec.
 //
-// Stats has no screen yet (STATS_VIEW isn't built), so its tab is disabled --
-// same disabled + title="Coming soon" pattern BottomCard.jsx already uses for
-// "Play Trivia". Swap `disabled` for a real onClick once Stats exists; the
-// markup below won't need to change.
+// Update: Stats is now a real tab, not the disabled "Coming soon" placeholder
+// from v8.17 -- StatsView.jsx exists now, so it's folded into the same TABS
+// array/onClick wiring Daily/Classic already use rather than kept as a
+// separate hardcoded disabled button.
 //
 // Icons match BottomCard.jsx's inline-SVG convention (currentColor,
 // viewBox 0 0 24 24, stroke-based, no fill) rather than a second icon style
@@ -49,6 +49,7 @@ function IconChart({ size = 22 }) {
 const TABS = [
   { id: 'daily', label: 'Daily', Icon: IconFire },
   { id: 'classic', label: 'Classic', Icon: IconMountain },
+  { id: 'stats', label: 'Stats', Icon: IconChart },
 ];
 
 export default function BottomNav({ activeTab, onTabChange }) {
@@ -69,16 +70,6 @@ export default function BottomNav({ activeTab, onTabChange }) {
           </button>
         );
       })}
-      <button
-        type="button"
-        className="eg-nav-tab"
-        disabled
-        title="Coming soon"
-        aria-label="Stats - coming soon"
-      >
-        <IconChart size={22} />
-        <span>Stats</span>
-      </button>
     </nav>
   );
 }

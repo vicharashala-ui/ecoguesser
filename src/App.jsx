@@ -6,8 +6,13 @@ import DailySummary from './components/DailySummary.jsx';
 import Leaderboard from './components/Leaderboard.jsx';
 import Header from './components/Header.jsx';
 import SideDrawer from './components/SideDrawer.jsx';
+import StatsView from './components/StatsView.jsx';
+import FeedbackButton from './components/FeedbackButton.jsx';
+import FeedbackModal from './components/FeedbackModal.jsx';
+import InfoModal from './components/InfoModal.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
+import { LS_KEYS } from './config.js';
 
 const screenStyle = {
   display: 'flex',
@@ -38,6 +43,11 @@ export default function App() {
   // state) deliberately -- per spec, so flipping it doesn't cost a second
   // render; by the time switchTab's setActiveTab triggers the real render,
   // the ref is already true and ClassicMap mounts in that same pass.
+  //
+  // activeTab now has a third value, 'stats' (Section 9b), alongside
+  // 'daily'/'classic' -- it needs no entry in classicEverActivated/the
+  // resize RAF below since StatsView isn't a map; it just needs to be a
+  // value switchTab can be called with.
   const classicEverActivated = useRef(false);
   const [activeTab, setActiveTab] = useState('daily');
   const classicMapRef = useRef(null);
@@ -59,6 +69,22 @@ export default function App() {
   // affects ClassicMap's site pool (Daily's pool is fixed per Section 6).
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [classicFilters, setClassicFilters] = useState(DEFAULT_FILTERS);
+  // Decision #3 -- lifted the same way as classicFilters, so SideDrawer's
+  // new DIFFICULTY buttons and ClassicMap's useMapState-backed setter can
+  // both stay controlled by one source of truth. Seeded from localStorage
+  // directly (not via useMapState, which doesn't exist yet at this point in
+  // the tree) so the drawer shows the right button highlighted even before
+  // ClassicMap has ever mounted.
+  const [classicDifficulty, setClassicDifficulty] = useState(
+    () => localStorage.getItem(LS_KEYS.DIFFICULTY) || 'normal'
+  );
+
+  // Section 9c -- feedback button is global (visible on every tab, per
+  // spec), so its open/closed state lives here rather than inside any one
+  // mode component.
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  // Decision #16 -- null when closed, else one of 'howtoplay'/'about'/'privacy'.
+  const [infoModalVariant, setInfoModalVariant] = useState(null);
 
   function switchTab(newTab) {
     if (newTab === activeTab) return;
@@ -76,6 +102,18 @@ export default function App() {
       if (newTab === 'classic' && classicMapRef.current) classicMapRef.current.resize();
       if (newTab === 'daily' && dailyMapRef.current) dailyMapRef.current.resize();
     });
+  }
+
+  // SideDrawer's footer links (Section 9 / Decision #16). "Statistics"
+  // reuses the exact same switchTab('stats') the BottomNav Stats tab calls,
+  // since they're the same screen -- the other three open InfoModal, which
+  // isn't a persistent tab.
+  function handleNavigate(dest) {
+    if (dest === 'stats') {
+      switchTab('stats');
+    } else {
+      setInfoModalVariant(dest);
+    }
   }
 
   // DailyMap's round 5 hands off here (Section 4: round 5's "Next" ->
@@ -144,6 +182,7 @@ export default function App() {
           mapRef={classicMapRef}
           sites={allSites}
           filters={classicFilters}
+          difficulty={classicDifficulty}
           style={{ position: 'absolute', inset: 0, display: activeTab === 'classic' ? 'block' : 'none' }}
         />
       )}
@@ -169,8 +208,14 @@ export default function App() {
       {activeTab === 'daily' && dailyPhase === 'leaderboard' && (
         <Leaderboard data={dailyLeaderboardData} onPlayClassic={() => switchTab('classic')} />
       )}
+      {activeTab === 'stats' && <StatsView />}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />
       <Header onMenuClick={() => setDrawerOpen(true)} />
+      <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+      {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
+      {infoModalVariant && (
+        <InfoModal variant={infoModalVariant} onClose={() => setInfoModalVariant(null)} />
+      )}
       <SideDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
@@ -178,6 +223,9 @@ export default function App() {
         filters={classicFilters}
         onApplyFilters={setClassicFilters}
         showClassicFilters={activeTab === 'classic'}
+        difficulty={classicDifficulty}
+        onSetDifficulty={setClassicDifficulty}
+        onNavigate={handleNavigate}
       />
     </div>
   );

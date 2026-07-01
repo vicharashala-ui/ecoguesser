@@ -14,8 +14,16 @@
 // as a prop, controlled by App.jsx's lifted state + SideDrawer.jsx's Apply
 // Filters button (v8.19). Defaults to DEFAULT_FILTERS (every category,
 // every state) so Classic is still fully playable if this ever renders
-// without the prop. Difficulty is still not wired to any UI -- see
-// SideDrawer.jsx's header comment for why that's a separate, deferred gap.
+// without the prop.
+//
+// Update (this pass): Difficulty is now wired the same way -- `difficulty`
+// comes down as a controlled prop from App.jsx (lifted state, read from
+// LS_KEYS.DIFFICULTY on init), and SideDrawer's new DIFFICULTY buttons call
+// App.jsx's setter directly, mirroring how `onApplyFilters` already works.
+// This closes the gap SideDrawer.jsx's v8.20 header comment flagged:
+// `setDifficulty` lives inside useMapState(mapRef,'classic'), instantiated
+// here -- so it needs a prop coming IN (the desired level) rather than a
+// callback going out, unlike onRoundStateChange's pattern in DailyMap.jsx.
 //
 // useMapState + SatelliteOverlay move here from the old MapSmokeTest in
 // App.jsx -- this is now the component that actually owns the full-screen
@@ -43,6 +51,7 @@ import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
 import { MAP_CONFIG } from '../config.js';
 import { showResult, clearResult } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
+import { recordClassicResult } from '../game/stats.js';
 import './ClassicMap.css';
 
 // Used to build resultLayer.js's fitBounds padding once Confirm is pressed --
@@ -57,8 +66,11 @@ const REVEAL_CARD_GAP = 20; // breathing room above the card's top edge
  * @param {{current: import('maplibre-gl').Map|null}} mapRef
  * @param {React.CSSProperties} style - controls display:block/none for tab switching
  * @param {import('../config').Site[]} sites - the full loaded site list (from App.jsx)
+ * @param {{categories: string[], states: string[]}} [filters] - Decision #10, lifted to App.jsx
+ * @param {'easy'|'normal'|'hard'} [difficulty] - Decision #3, lifted to App.jsx (SideDrawer's buttons)
  */
-export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FILTERS }) {  const sitePool = useMemo(
+export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FILTERS, difficulty }) {
+  const sitePool = useMemo(
     () => sites.filter((s) => siteMatchesFilter(s, filters)),
     [sites, filters]
   );
@@ -78,7 +90,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
 
   const {
     political, politicalNames, satellite, satelliteUnavailable, mapReady,
-    setPolitical, setPoliticalNames, setSatellite,
+    setPolitical, setPoliticalNames, setSatellite, setDifficulty,
   } = useMapState(mapRef, 'classic');
 
   const cardRef = useRef(null); // measures BottomCard's real height for the reveal's fitBounds padding
@@ -86,6 +98,18 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
   // the expanded card instead of being hidden by it (per direct request --
   // it now stays visible through REVEALING too).
   const [cardHeight, setCardHeight] = useState(null);
+
+  // Section 9 -- applies the App.jsx-controlled `difficulty` prop whenever it
+  // changes. Also fires once on mount (as soon as mapReady flips true), which
+  // re-applies whatever useMapState's own init effect just read from
+  // LS_KEYS.DIFFICULTY -- harmless, since setDifficulty's underlying
+  // setPolitical/setPoliticalNames calls are idempotent (they just re-set the
+  // same layout visibility), not a duplicated side effect like a stats write
+  // would be.
+  useEffect(() => {
+    if (!mapReady || !difficulty) return;
+    setDifficulty(difficulty);
+  }, [difficulty, mapReady, setDifficulty]);
 
   // Section 10 -- PLACING -> REVEALING shows the line/pin/boundary reveal;
   // any -> LOADING (including initial mount) clears it. Built off `result`
@@ -170,6 +194,23 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
       hideHint2(map);
     }
   }, [mapRef, mapReady, hintLevel, site, roundState]);
+
+  // Section 9b -- Classic's post-REVEALING stats write: loadNormalStats() ->
+  // push to history -> increment rounds -> bestDist = min(...) -> cap
+  // history at 200 -> write. Guarded by object identity against `result`
+  // (not a boolean flag) so React 18 Strict Mode's dev-only double-invoke of
+  // this effect (mount -> cleanup -> mount again, same commit) can't record
+  // the same round twice -- the ref persists across both invocations, but a
+  // genuinely new round's `result` object always compares unequal and gets
+  // recorded exactly once. Same idempotency shape as recordDailyResult's own
+  // date-based guard in stats.js.
+  const recordedResultRef = useRef(null);
+  useEffect(() => {
+    if (roundState !== 'REVEALING' || !result) return;
+    if (recordedResultRef.current === result) return;
+    recordedResultRef.current = result;
+    recordClassicResult(result);
+  }, [roundState, result]);
 
   return (
     <div style={style}>

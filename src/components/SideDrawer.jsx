@@ -1,24 +1,32 @@
 // src/components/SideDrawer.jsx
 //
-// Section 9's side drawer. Scope for this pass: Player Name (wired to
-// LS_KEYS.NAME) and the Category + Region/State filter tree (wired to
-// App.jsx's lifted `classicFilters` state, which ClassicMap.jsx now takes
-// as a prop instead of its old hardcoded DEFAULT_FILTERS).
+// Section 9's side drawer. Player Name (wired to LS_KEYS.NAME) and the
+// Category + Region/State filter tree (wired to App.jsx's lifted
+// `classicFilters` state) were built in v8.20.
 //
-// Deliberately NOT wired yet: the Difficulty buttons. Difficulty lives
-// behind `setDifficulty` inside useMapState(mapRef, 'classic'), which is
-// instantiated inside ClassicMap.jsx itself (tied to classicMapRef) -- this
-// drawer renders at the App.jsx level, above both map screens, so reaching
-// it needs the same "report a setter up via callback prop" pattern
-// DailyMap.jsx uses for onRoundStateChange. Not done in this pass; the
-// buttons below are static/disabled rather than half-wired to something
-// that silently no-ops.
+// This pass closes the two gaps that v8.20's header comment flagged:
 //
-// Footer links (Statistics/How to Play/About/Privacy) are disabled +
-// title="Coming soon", same pattern as BottomNav's Stats tab and
-// BottomCard's Play Trivia -- none of those destination screens/content
-// exist yet, and Privacy Policy specifically isn't something to fabricate
-// text for without real content to put there.
+//   1. DIFFICULTY buttons (Classic only) -- now real and wired. Difficulty
+//      itself still lives behind `setDifficulty` inside
+//      useMapState(mapRef,'classic'), instantiated inside ClassicMap.jsx --
+//      but rather than reaching into that hook from here (this drawer
+//      renders at the App.jsx level, above both map screens, with no
+//      reference to either mapRef), the value flows the OTHER direction
+//      from onApplyFilters's pattern: App.jsx owns `classicDifficulty` state
+//      (seeded from LS_KEYS.DIFFICULTY) and passes it down to ClassicMap.jsx
+//      as a controlled `difficulty` prop, which applies it via its own
+//      effect. This drawer just calls `onSetDifficulty(level)`, i.e. the
+//      same lifted-state shape `onApplyFilters` already uses for filters --
+//      not the up-callback shape `onRoundStateChange` uses in DailyMap.jsx,
+//      since there's no map-owned setter to report upward here at all.
+//
+//   2. Footer links (Statistics/How to Play/About/Privacy) are wired via a
+//      single `onNavigate(dest)` callback rather than four separate props --
+//      App.jsx owns what each destination actually renders (switchTab for
+//      Statistics, since it's the same screen as BottomNav's Stats tab; an
+//      InfoModal variant for the other three, since none of them are a
+//      persistent bottom-nav tab). Each link closes the drawer itself before
+//      navigating, matching handleApply's existing onClose() pattern below.
 
 import { useState, useEffect } from 'react';
 import { LS_KEYS, CATEGORY_META } from '../config.js';
@@ -27,12 +35,24 @@ import './SideDrawer.css';
 
 const REGIONS = Object.keys(REGION_STATES);
 const CATEGORIES = Object.keys(CATEGORY_META);
+const DIFFICULTIES = ['easy', 'normal', 'hard'];
+const DIFFICULTY_LABELS = { easy: 'Easy', normal: 'Normal', hard: 'Hard' };
 
 function toggle(arr, value) {
   return arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
 }
 
-export default function SideDrawer({ open, onClose, sites, filters, onApplyFilters, showClassicFilters }) {
+export default function SideDrawer({
+  open,
+  onClose,
+  sites,
+  filters,
+  onApplyFilters,
+  showClassicFilters,
+  difficulty,
+  onSetDifficulty,
+  onNavigate,
+}) {
   const [name, setName] = useState(() => localStorage.getItem(LS_KEYS.NAME) ?? '');
   const [draftCategories, setDraftCategories] = useState(filters.categories);
   const [draftStates, setDraftStates] = useState(filters.states);
@@ -63,6 +83,11 @@ export default function SideDrawer({ open, onClose, sites, filters, onApplyFilte
   function handleApply() {
     onApplyFilters({ categories: draftCategories, states: draftStates });
     onClose();
+  }
+
+  function handleNavigate(dest) {
+    onClose();
+    onNavigate(dest);
   }
 
   function regionState(region) {
@@ -100,6 +125,25 @@ export default function SideDrawer({ open, onClose, sites, filters, onApplyFilte
 
         {showClassicFilters && (
           <>
+            <hr className="sd-divider" />
+
+            <div className="sd-section">
+              <p className="sd-heading">Difficulty</p>
+              <div className="sd-chip-row">
+                {DIFFICULTIES.map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    className={`sd-chip${difficulty === level ? ' sd-chip-active' : ''}`}
+                    style={difficulty === level ? { background: '#16a34a' } : undefined}
+                    onClick={() => onSetDifficulty(level)}
+                  >
+                    {DIFFICULTY_LABELS[level]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <hr className="sd-divider" />
 
             <div className="sd-section">
@@ -174,10 +218,10 @@ export default function SideDrawer({ open, onClose, sites, filters, onApplyFilte
         <hr className="sd-divider" />
 
         <div className="sd-section sd-links">
-          <button type="button" className="sd-link" disabled title="Coming soon">Statistics</button>
-          <button type="button" className="sd-link" disabled title="Coming soon">How to Play</button>
-          <button type="button" className="sd-link" disabled title="Coming soon">About</button>
-          <button type="button" className="sd-link" disabled title="Coming soon">Privacy Policy</button>
+          <button type="button" className="sd-link" onClick={() => handleNavigate('stats')}>Statistics</button>
+          <button type="button" className="sd-link" onClick={() => handleNavigate('howtoplay')}>How to Play</button>
+          <button type="button" className="sd-link" onClick={() => handleNavigate('about')}>About</button>
+          <button type="button" className="sd-link" onClick={() => handleNavigate('privacy')}>Privacy Policy</button>
         </div>
       </div>
     </div>

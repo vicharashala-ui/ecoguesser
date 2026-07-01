@@ -78,6 +78,7 @@
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+  font-family: inherit;
 }
 
 .sd-chip-active {
@@ -179,6 +180,10 @@
   gap: 2px;
 }
 
+/* Update: all four links are wired now (Statistics -> BottomNav's Stats
+   tab; How to Play/About/Privacy -> InfoModal) -- switched from the
+   permanently-disabled #9ca3af/not-allowed look to a real clickable state,
+   same color/weight convention as .sd-region-name. */
 .sd-link {
   text-align: left;
   border: none;
@@ -186,7 +191,12 @@
   padding: 10px 0;
   font-size: 14.5px;
   font-weight: 700;
-  color: #9ca3af;
-  cursor: not-allowed;
+  color: #111827;
+  cursor: pointer;
   font-family: inherit;
+  transition: color 0.15s ease;
+}
+
+.sd-link:hover {
+  color: #16a34a;
 }

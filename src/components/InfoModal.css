@@ -1,0 +1,111 @@
+/* src/components/InfoModal.css */
+.im-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  background: rgba(17, 24, 39, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.im-modal {
+  width: min(420px, 100%);
+  max-height: 82vh;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(17, 24, 39, 0.25);
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.im-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  flex: none;
+}
+
+.im-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.im-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.im-body {
+  padding: 16px 20px 22px;
+  overflow-y: auto;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.im-body h3 {
+  margin: 18px 0 6px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #111827;
+}
+
+.im-body h3:first-child {
+  margin-top: 0;
+}
+
+.im-body p {
+  margin: 0 0 10px;
+}
+
+.im-body ul {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+
+.im-body li {
+  margin-bottom: 8px;
+}
+
+.im-body a {
+  color: #16a34a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.im-body a:hover {
+  text-decoration: underline;
+}
+
+.im-muted {
+  color: #9ca3af;
+  font-size: 12.5px;
+}
+
+.im-draft-note {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #92400e;
+  font-size: 12.5px;
+  font-weight: 600;
+}
