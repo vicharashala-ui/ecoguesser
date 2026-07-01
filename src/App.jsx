@@ -48,8 +48,18 @@ export default function App() {
   const [dailyPhase, setDailyPhase] = useState(() => (hasPlayedToday() ? 'leaderboard' : 'round'));
   const [dailySummaryData, setDailySummaryData] = useState(null); // { totalPts, totalDist }
   const [dailyLeaderboardData, setDailyLeaderboardData] = useState(null); // { top10, rank, banner } | null
+  // READING/PLACING = unconfirmed guess in flight; drives the "Leave this
+  // round?" guard below. NOT_STARTED/REVEALING are safe to nav away from.
+  const [dailyRoundState, setDailyRoundState] = useState('NOT_STARTED');
 
   function switchTab(newTab) {
+    if (newTab === activeTab) return;
+    const midRound =
+      activeTab === 'daily' &&
+      dailyPhase === 'round' &&
+      (dailyRoundState === 'READING' || dailyRoundState === 'PLACING');
+    if (midRound && !window.confirm('Leave this round? Your progress will be lost.')) return;
+
     if (newTab === 'classic') classicEverActivated.current = true;
     setActiveTab(newTab);
     // Neither map redraws its canvas while display:none, so each becomes
@@ -132,6 +142,7 @@ export default function App() {
         mapRef={dailyMapRef}
         sites={allSites}
         onComplete={handleDailyComplete}
+        onRoundStateChange={setDailyRoundState}
         style={{
           position: 'absolute',
           inset: 0,

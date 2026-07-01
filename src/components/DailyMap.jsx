@@ -64,7 +64,7 @@ function timerColor(remaining) {
   return '#ffffff';
 }
 
-export function DailyMap({ mapRef, style, sites, onComplete }) {
+export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange }) {
   const cardRef = useRef(null);
   // Tracks BottomCard's real height during REVEALING, so RecenterButton can
   // be positioned above the expanded card instead of being hidden by it
@@ -101,6 +101,13 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
     handleNextSite,
     handleStart,
   } = useDailyRound(sites);
+
+  // Lets App.jsx gate bottom-nav taps: READING/PLACING means an unconfirmed
+  // guess is in flight (Section 4's "Leave this round?" case), NOT_STARTED
+  // and REVEALING are safe to navigate away from.
+  useEffect(() => {
+    onRoundStateChange?.(roundState);
+  }, [roundState, onRoundStateChange]);
 
   // Effect 1 (mirrors ClassicMap.jsx): resultLayer.js off [mapReady, roundState, result].
   // fitPadding is measured from the real card height, same fix as Section 10's

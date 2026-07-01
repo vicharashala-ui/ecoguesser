@@ -12,15 +12,16 @@
 // plain array-position with no tie handling, table rank is tie-aware. Not a
 // bug if they disagree on an exact-tie day.
 //
-// Share button is a documented placeholder (Section 8b's ShareCard isn't
-// built yet) -- same disabled + title="Coming soon" pattern BottomCard.jsx
-// uses for Play Trivia and BottomNav.jsx uses for Stats.
+// Share opens ShareCard.jsx (Section 8b) with today's already-recorded
+// stats_daily entry -- disabled only if that entry is somehow missing
+// (shouldn't happen; Leaderboard is only reachable after playing today).
 
 import { useState, useEffect, useCallback } from 'react';
 import { LS_KEYS } from '../config.js';
 import { getTodayString } from '../game/daily.js';
 import { getLeaderboard } from '../game/api.js';
 import { loadDailyStats, bestDailyScore } from '../game/stats.js';
+import ShareCard from './ShareCard.jsx';
 import './Leaderboard.css';
 
 function computeRanks(top10) {
@@ -51,11 +52,12 @@ function readRankToday() {
   }
 }
 
-export default function Leaderboard({ data, onPlayClassic, onShare }) {
+export default function Leaderboard({ data, onPlayClassic }) {
   const today = getTodayString();
   const [fetched, setFetched] = useState(data ?? null);
   const [fetchError, setFetchError] = useState(false);
   const [loading, setLoading] = useState(data == null);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const fetchLeaderboard = useCallback(() => {
     setLoading(true);
@@ -149,10 +151,8 @@ export default function Leaderboard({ data, onPlayClassic, onShare }) {
         <button
           type="button"
           className="lb-share-btn"
-          disabled
-          aria-label="Share - coming soon"
-          title="Coming soon"
-          onClick={onShare}
+          disabled={!todayEntry}
+          onClick={() => setShareOpen(true)}
         >
           Share
         </button>
@@ -160,6 +160,16 @@ export default function Leaderboard({ data, onPlayClassic, onShare }) {
           Play Classic
         </button>
       </div>
+
+      {shareOpen && todayEntry && (
+        <ShareCard
+          total={todayEntry.total}
+          rounds={todayEntry.rounds}
+          date={today}
+          rank={rank}
+          onClose={() => setShareOpen(false)}
+        />
+      )}
     </div>
   );
 }

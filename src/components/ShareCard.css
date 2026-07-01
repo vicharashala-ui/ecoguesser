@@ -1,0 +1,56 @@
+/* src/components/ShareCard.css */
+.sc-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 24, 39, 0.6);
+  padding: 20px;
+}
+
+.sc-modal {
+  width: 100%;
+  max-width: 420px;
+  background: #f8f6f1;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 12px 40px rgba(17, 24, 39, 0.3);
+}
+
+.sc-canvas {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  display: block;
+}
+
+.sc-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.sc-close-btn,
+.sc-share-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sc-close-btn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.sc-share-btn {
+  background: #16a34a;
+  color: #fff;
+}
