@@ -24,6 +24,10 @@
   background: rgba(248, 246, 241, 0.94);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
+  /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
+     see the comment there for the full writeup. */
+  isolation: isolate;
+  transform: translateZ(0);
   border-top: 1px solid rgba(17, 24, 39, 0.08);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
 }

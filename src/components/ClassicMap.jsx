@@ -137,6 +137,29 @@ export default function ClassicMap({ mapRef, style, sites }) {
     }
   }, [mapRef, mapReady, roundState, result, setPolitical]);
 
+  // (v8.19) BottomCard.css transitions max-height over 0.3s on pill->expanded
+  // (is-pill -> is-expanded). The reveal effect above measures cardRef's
+  // height the instant roundState flips to REVEALING -- synchronously, in
+  // the same commit the class changes in, well before that 0.3s animation
+  // finishes -- so it reads a height still close to the pill's 64px, not the
+  // expanded card's real ~300-400px. cardHeight (and therefore
+  // RecenterButton's computed `bottom` offset below) was getting frozen at
+  // that too-small value, so once the card finished growing open it became
+  // tall enough to sit on top of a RecenterButton that never moved to make
+  // room for it (z-index 30 > 25). Fix: re-measure once the transition
+  // actually completes and correct cardHeight then.
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || roundState !== 'REVEALING') return;
+
+    function onTransitionEnd(e) {
+      if (e.target !== card || e.propertyName !== 'max-height') return;
+      setCardHeight(card.getBoundingClientRect().height);
+    }
+    card.addEventListener('transitionend', onTransitionEnd);
+    return () => card.removeEventListener('transitionend', onTransitionEnd);
+  }, [roundState]);
+
   // Section 11 -- Hint 2 highlights site.state on the map, but only while
   // the player can still act on it (READING/PLACING). hintLevel itself
   // isn't reset to 0 until the *next* round's LOADING effect runs -- it's

@@ -147,6 +147,27 @@ export function DailyMap({ mapRef, style, sites, onComplete }) {
     else unlockInteraction();
   }, [roundState, lockInteraction, unlockInteraction]);
 
+  // (v8.19) Same fix as ClassicMap.jsx: BottomCard.css transitions
+  // max-height over 0.3s on pill->expanded, but Effect 1 above measures
+  // cardRef's height synchronously the instant roundState flips to
+  // REVEALING -- well before that transition finishes -- so cardHeight
+  // (and RecenterButton's `bottom` offset below) was getting frozen at a
+  // too-small, mid-transition reading. Once the card finished growing
+  // open, it became tall enough to sit on top of a RecenterButton that
+  // never moved to make room (z-index 30 > 25). Re-measure once the
+  // transition actually completes and correct cardHeight then.
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || roundState !== 'REVEALING') return;
+
+    function onTransitionEnd(e) {
+      if (e.target !== card || e.propertyName !== 'max-height') return;
+      setCardHeight(card.getBoundingClientRect().height);
+    }
+    card.addEventListener('transitionend', onTransitionEnd);
+    return () => card.removeEventListener('transitionend', onTransitionEnd);
+  }, [roundState]);
+
   // Round 5's "Next" hands off to the parent instead of looping back to
   // LOADING (Section 4). useDailyRound's own handleNextSite already no-ops
   // past the last round, so this branch is what actually triggers the

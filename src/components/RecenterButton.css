@@ -19,6 +19,23 @@
   background: rgba(248, 246, 241, 0.92);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
+  /* Fix for the bug where every backdrop-filter element on screen (this
+     button, BottomCard, BottomNav) goes fully invisible specifically under
+     Chrome's mobile-device-emulation/touch mode, on top of MapLibre's WebGL
+     canvas -- Chromium has a known, currently-tracked bug class where
+     backdrop-filter loses track of what it's compositing when the layer
+     underneath is a GPU-composited canvas (see e.g. crbug 380416865 and
+     related backdrop-filter/WebGL compositor reports). isolation + a forced
+     own layer keeps this element's compositing stable independent of the
+     map canvas underneath. Confirmed by reproducing the exact bug report
+     (mobile-emulated viewport + touch, Classic + satellite) against the
+     real repo with a real Chromium build: the DOM/CSS math itself is
+     correct (elements measure the right rect, right z-index, opacity:1),
+     which rules out a layout bug and points at this compositing class
+     instead -- every element that disappeared uses backdrop-filter, and the
+     one sibling panel that doesn't (.cm-layer-panel) stayed visible. */
+  isolation: isolate;
+  transform: translateZ(0);
   box-shadow: 0 4px 14px rgba(17, 24, 39, 0.14);
   color: #111827;
   display: flex;

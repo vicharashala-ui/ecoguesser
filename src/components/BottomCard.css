@@ -19,6 +19,13 @@
   background: rgba(248, 246, 241, 0.82);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
+  /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
+     see the comment there for the full writeup. This element (and
+     BottomNav, RecenterButton) went fully invisible under Chrome's
+     mobile-device-emulation/touch mode specifically, sitting on top of
+     MapLibre's WebGL canvas; forcing a stable own GPU layer fixes it. */
+  isolation: isolate;
+  transform: translateZ(0);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
   color: #111827;
