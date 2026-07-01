@@ -1,0 +1,59 @@
+/* src/components/DailySummary.css */
+/* Solid background, not backdrop-filter -- DailyMap is display:none whenever
+   this is showing (App.jsx), so there's no WebGL layer underneath to fight
+   with (see RecenterButton.css's writeup on that bug for contrast). */
+
+.ds-screen {
+  position: fixed;
+  inset: 0;
+  bottom: var(--eg-nav-height, 64px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #f8f6f1;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  padding: 2rem;
+  text-align: center;
+}
+
+.ds-total {
+  font-size: 40px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.ds-total span {
+  font-size: 18px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.ds-label {
+  margin: 0 0 20px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.ds-status {
+  margin: 12px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.ds-play-classic {
+  margin-top: 28px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #16a34a;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}

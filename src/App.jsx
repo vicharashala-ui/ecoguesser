@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import ClassicMap from './components/ClassicMap.jsx';
 import { DailyMap } from './components/DailyMap.jsx';
 import BottomNav from './components/BottomNav.jsx';
+import DailySummary from './components/DailySummary.jsx';
+import Leaderboard from './components/Leaderboard.jsx';
+import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 
 const screenStyle = {
   display: 'flex',
@@ -37,6 +40,15 @@ export default function App() {
   const classicMapRef = useRef(null);
   const dailyMapRef = useRef(null);
 
+  // Section 4 Daily sub-flow: 'round' (DailyMap) -> 'summary' (auto-submit)
+  // -> 'leaderboard'. Starts at 'leaderboard' if today's already been played
+  // -- checked against localStorage, not just in-session state, so a
+  // returning player who reloads mid-day lands on the leaderboard instead
+  // of a fresh round.
+  const [dailyPhase, setDailyPhase] = useState(() => (hasPlayedToday() ? 'leaderboard' : 'round'));
+  const [dailySummaryData, setDailySummaryData] = useState(null); // { totalPts, totalDist }
+  const [dailyLeaderboardData, setDailyLeaderboardData] = useState(null); // { top10, rank, banner } | null
+
   function switchTab(newTab) {
     if (newTab === 'classic') classicEverActivated.current = true;
     setActiveTab(newTab);
@@ -46,6 +58,24 @@ export default function App() {
       if (newTab === 'classic' && classicMapRef.current) classicMapRef.current.resize();
       if (newTab === 'daily' && dailyMapRef.current) dailyMapRef.current.resize();
     });
+  }
+
+  // DailyMap's round 5 hands off here (Section 4: round 5's "Next" ->
+  // DAILY_SUMMARY, not back through LOADING). Stats are written here, once,
+  // right at the real completion -- not inside DailySummary itself, which
+  // can remount (see its own header comment on the mid-submit-tab-switch
+  // gap) and must not re-trigger the streak math on a second mount.
+  function handleDailyComplete(results) {
+    const totalPts = results.reduce((sum, r) => sum + r.finalScore, 0);
+    const totalDist = results.reduce((sum, r) => sum + (r.distanceKm ?? 0), 0);
+    recordDailyResult(results, totalPts, totalDist);
+    setDailySummaryData({ totalPts, totalDist });
+    setDailyPhase('summary');
+  }
+
+  function handleSummaryDone(leaderboardPayload) {
+    setDailyLeaderboardData(leaderboardPayload);
+    setDailyPhase('leaderboard');
   }
 
   function loadSites() {
@@ -101,8 +131,24 @@ export default function App() {
       <DailyMap
         mapRef={dailyMapRef}
         sites={allSites}
-        style={{ position: 'absolute', inset: 0, display: activeTab === 'daily' ? 'block' : 'none' }}
+        onComplete={handleDailyComplete}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: activeTab === 'daily' && dailyPhase === 'round' ? 'block' : 'none',
+        }}
       />
+      {activeTab === 'daily' && dailyPhase === 'summary' && dailySummaryData && (
+        <DailySummary
+          totalPts={dailySummaryData.totalPts}
+          totalDist={dailySummaryData.totalDist}
+          onDone={handleSummaryDone}
+          onPlayClassic={() => switchTab('classic')}
+        />
+      )}
+      {activeTab === 'daily' && dailyPhase === 'leaderboard' && (
+        <Leaderboard data={dailyLeaderboardData} onPlayClassic={() => switchTab('classic')} />
+      )}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />
     </div>
   );
