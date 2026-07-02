@@ -49,7 +49,7 @@ import { useClassicRound } from '../hooks/useClassicRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
 import { MAP_CONFIG } from '../config.js';
-import { showResult, clearResult } from '../game/resultLayer.js';
+import { showResult, clearResult, zoomToSiteBoundary } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
 import { recordClassicResult } from '../game/stats.js';
 import './ClassicMap.css';
@@ -212,6 +212,19 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     recordClassicResult(result);
   }, [roundState, result]);
 
+  // BottomCard's "Show Site Boundary" button -- zooms in tight on the
+  // revealed site's polygon on demand (the reveal effect above deliberately
+  // no longer does this automatically; see resultLayer.js's
+  // zoomToSiteBoundary for why). Recomputes fitPadding the same way that
+  // effect does rather than reusing a stored value -- cardRef's height can
+  // only be read live.
+  function handleShowBoundary() {
+    const map = mapRef.current;
+    if (!map) return;
+    const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 0;
+    zoomToSiteBoundary(map, { ...REVEAL_FIT_SIDES, bottom: measuredHeight + REVEAL_CARD_GAP });
+  }
+
   return (
     <div style={style}>
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />
@@ -248,6 +261,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           onHint={handleHint}
           onConfirm={handleConfirm}
           onNextSite={handleNextSite}
+          onShowBoundary={handleShowBoundary}
           mode="classic"
           result={result}
         />

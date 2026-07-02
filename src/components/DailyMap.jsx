@@ -31,13 +31,15 @@
 //   - MapContainer.jsx is a DEFAULT export, not named -- import fixed below.
 //   - MapContainer's `onMapClick`/`guess` props and useMapState's
 //     `useMapState(mapRef, mode)` signature were both correct as guessed.
-//   - Section 3 Tile Efficiency's interaction lock during REVEALING uses
-//     useMapState's existing `lockInteraction`/`unlockInteraction` --
-//     ClassicMap.jsx doesn't consume these yet, so this is the first
-//     caller, not a duplication of an existing Classic-side lock.
 //
 // Design note (unchanged, not a guess): Decision #2's v8.16 Borders-auto-toggle
 // on REVEALING is Classic-only per spec -- deliberately not replicated below.
+//
+// Update: Section 3 Tile Efficiency's REVEALING pan lock (dragPan.disable(),
+// via useMapState's old lockInteraction/unlockInteraction) is removed, per
+// direct request -- panning should stay usable during the reveal the same
+// way zoom already was. useMapState no longer exposes those two at all
+// (DailyMap.jsx was their only caller).
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 import MapContainer from './MapContainer.jsx';
@@ -45,7 +47,7 @@ import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import { useDailyRound } from '../hooks/useDailyRound.js';
 import { useMapState } from '../hooks/useMapState.js';
-import { showResult, clearResult } from '../game/resultLayer.js';
+import { showResult, clearResult, zoomToSiteBoundary } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
 import { MAP_CONFIG } from '../config.js';
 import './DailyMap.css';
@@ -78,8 +80,6 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
     satelliteUnavailable,
     setSatellite,
     setPolitical,
-    lockInteraction,
-    unlockInteraction,
   } = useMapState(mapRef, 'daily');
 
   const {
@@ -145,15 +145,6 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
     else hideHint2(map);
   }, [mapReady, hintLevel, site, roundState, mapRef]);
 
-  // Section 3 Tile Efficiency: lock map panning during the post-guess
-  // animation (pan-only -- zoom stays usable, see useMapState.js's
-  // lockInteraction). Uses useMapState's lockInteraction/unlockInteraction
-  // rather than duplicating the logic here.
-  useEffect(() => {
-    if (roundState === 'REVEALING') lockInteraction();
-    else unlockInteraction();
-  }, [roundState, lockInteraction, unlockInteraction]);
-
   // (v8.19) Same fix as ClassicMap.jsx: BottomCard.css transitions
   // max-height over 0.3s on pill->expanded, but Effect 1 above measures
   // cardRef's height synchronously the instant roundState flips to
@@ -198,6 +189,18 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
   useEffect(() => {
     if (roundState === 'REVEALING' && result?.skipped) handleNext();
   }, [roundState, result, handleNext]);
+
+  // BottomCard's "Show Site Boundary" button -- zooms in tight on the
+  // revealed site's polygon on demand (Effect 1 above deliberately no
+  // longer does this automatically; see resultLayer.js's zoomToSiteBoundary
+  // for why). Recomputes fitPadding the same way Effect 1 does rather than
+  // reusing a stored value -- cardRef's height can only be read live.
+  function handleShowBoundary() {
+    const map = mapRef.current;
+    if (!map) return;
+    const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 200;
+    zoomToSiteBoundary(map, { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 });
+  }
 
   const skipDisabled = roundState !== 'READING' && roundState !== 'PLACING';
   const dailyTotal = results.reduce((sum, r) => sum + r.finalScore, 0);
@@ -279,6 +282,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
           result={result?.skipped ? null : result}
           dailyTotal={dailyTotal}
           onNextSite={handleNext}
+          onShowBoundary={handleShowBoundary}
           nextLabel={isLastRound ? 'Results' : 'Next Site'}
         />
       )}

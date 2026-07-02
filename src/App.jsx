@@ -7,8 +7,6 @@ import Leaderboard from './components/Leaderboard.jsx';
 import Header from './components/Header.jsx';
 import SideDrawer from './components/SideDrawer.jsx';
 import StatsView from './components/StatsView.jsx';
-import FeedbackButton from './components/FeedbackButton.jsx';
-import FeedbackModal from './components/FeedbackModal.jsx';
 import InfoModal from './components/InfoModal.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
@@ -70,8 +68,8 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [classicFilters, setClassicFilters] = useState(DEFAULT_FILTERS);
   // Decision #3 -- lifted the same way as classicFilters, so SideDrawer's
-  // new DIFFICULTY buttons and ClassicMap's useMapState-backed setter can
-  // both stay controlled by one source of truth. Seeded from localStorage
+  // DIFFICULTY buttons and ClassicMap's useMapState-backed setter can both
+  // stay controlled by one source of truth. Seeded from localStorage
   // directly (not via useMapState, which doesn't exist yet at this point in
   // the tree) so the drawer shows the right button highlighted even before
   // ClassicMap has ever mounted.
@@ -79,11 +77,9 @@ export default function App() {
     () => localStorage.getItem(LS_KEYS.DIFFICULTY) || 'normal'
   );
 
-  // Section 9c -- feedback button is global (visible on every tab, per
-  // spec), so its open/closed state lives here rather than inside any one
-  // mode component.
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
   // Decision #16 -- null when closed, else one of 'howtoplay'/'about'/'privacy'.
+  // (Feedback isn't part of this -- it's now a self-contained box inside
+  // SideDrawer.jsx, same as Player Name, with no App.jsx-level state at all.)
   const [infoModalVariant, setInfoModalVariant] = useState(null);
 
   function switchTab(newTab) {
@@ -211,8 +207,6 @@ export default function App() {
       {activeTab === 'stats' && <StatsView />}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />
       <Header onMenuClick={() => setDrawerOpen(true)} />
-      <FeedbackButton onClick={() => setFeedbackOpen(true)} />
-      {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
       {infoModalVariant && (
         <InfoModal variant={infoModalVariant} onClose={() => setInfoModalVariant(null)} />
       )}

@@ -1,59 +1,308 @@
-/* src/components/BottomNav.css */
+/* src/components/BottomCard.css */
 /*
-  Palette matches BottomCard.css/DailyMap.css: #f59e0b amber for the active
-  tab (Section 8: "active tab: amber #f59e0b, scaled icon"), #6b7280 gray
-  inactive, same Nunito stack and frosted-glass treatment as the rest of the
-  floating UI.
+  Palette pulled directly from the spec (Sections 8/8b/14) -- not invented
+  here: #16a34a green, #6b7280 gray, #f8f6f1 cream, #111827 dark text,
+  #e5e7eb divider, #f59e0b amber (reserved for nav/CTA elsewhere, not used
+  in this component to avoid competing with the per-category accent color).
 
-  Height equals --eg-nav-height, now a real var defined in index.css's :root
-  (64px) -- previously that number only existed as the fallback in
-  BottomCard.css's and DailyMap.css's own bottom-offset calc(), with no
-  single source of truth. This bar's actual height must stay in sync with
-  that var or the bottom-card/loading-pill clearance breaks.
+  --eg-accent is set inline per-instance from CATEGORY_META[site.category].color.
 */
 
-.eg-bottom-nav {
+.bottom-card {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 40;
-  height: var(--eg-nav-height, 64px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  display: flex;
-  background: rgba(248, 246, 241, 0.94);
+  left: 16px;
+  right: 16px;
+  /* Clears the bottom nav bar -- adjust --eg-nav-height if yours differs. */
+  bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);
+  z-index: 30;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  background: rgba(248, 246, 241, 0.82);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
-     see the comment there for the full writeup. */
+     see the comment there for the full writeup. This element (and
+     BottomNav, RecenterButton) went fully invisible under Chrome's
+     mobile-device-emulation/touch mode specifically, sitting on top of
+     MapLibre's WebGL canvas; forcing a stable own GPU layer fixes it. */
   isolation: isolate;
   transform: translateZ(0);
-  border-top: 1px solid rgba(17, 24, 39, 0.08);
-  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
+  color: #111827;
+  overflow: hidden;
+  transition: border-radius 0.25s ease, max-height 0.3s ease;
 }
 
-.eg-nav-tab {
+.bottom-card.is-pill {
+  border-radius: 999px;
+  max-height: 64px;
+}
+
+.bottom-card.is-expanded {
+  border-radius: 24px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* ---- Pre-guess pill ---------------------------------------------------- */
+
+.bc-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 14px;
+  min-height: 48px;
+}
+
+.bc-icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--eg-accent, #16a34a);
+}
+
+.bc-pill-text {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  border: none;
-  background: none;
-  color: #6b7280;
-  font-size: 11.5px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: color 0.15s ease, transform 0.15s ease;
+  line-height: 1.15;
 }
 
-.eg-nav-tab:disabled {
+.bc-site-name {
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bc-hint-state {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.bc-hint-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(17, 24, 39, 0.06);
+  color: #6b7280;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease, opacity 0.2s ease;
+}
+
+.bc-hint-btn:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.bc-hint-btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
 
-.eg-nav-tab-active {
-  color: #f59e0b;
-  transform: translateY(-1px);
+.bc-hint-count {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bc-confirm-btn {
+  flex-shrink: 0;
+  padding: 0 18px;
+  height: 38px;
+  border: none;
+  border-radius: 999px;
+  background: #16a34a;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+.bc-confirm-btn:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.bc-confirm-btn:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+/* ---- Post-guess expanded card ------------------------------------------ */
+
+.bc-card {
+  padding: 18px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bc-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bc-icon-lg {
+  color: var(--eg-accent, #16a34a);
+}
+
+.bc-category-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--eg-accent, #16a34a);
+}
+
+.bc-card-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.bc-meta-row,
+.bc-result-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 2px;
+}
+
+.bc-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13.5px;
+  color: #6b7280;
+}
+
+.bc-desc {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #374151;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bc-species {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13.5px;
+  color: #374151;
+  margin-top: 2px;
+}
+
+.bc-divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 8px 0;
+}
+
+.bc-score {
+  font-weight: 700;
+  color: #111827;
+}
+
+.bc-boundary-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--eg-accent, #16a34a);
+  background: transparent;
+  color: var(--eg-accent, #16a34a);
+  font-weight: 700;
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.bc-boundary-btn:hover {
+  background: rgba(22, 163, 74, 0.08);
+}
+
+.bc-boundary-btn:active {
+  transform: scale(0.96);
+}
+
+.bc-daily-line {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.bc-penalty {
+  color: #dc2626;
+}
+
+.bc-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.bc-trivia-btn,
+.bc-next-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.bc-trivia-btn {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.bc-next-btn {
+  background: #16a34a;
+  color: #fff;
+  transition: transform 0.2s ease;
+}
+
+.bc-next-btn:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-card,
+  .bc-hint-btn,
+  .bc-confirm-btn,
+  .bc-next-btn,
+  .bc-boundary-btn {
+    transition: none;
+  }
 }

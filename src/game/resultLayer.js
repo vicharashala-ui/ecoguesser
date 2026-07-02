@@ -167,8 +167,9 @@ export async function showResult(map, guess, site, opts = {}) {
   const data = buildResultData(guess, site, distanceKm);
 
   // Zoom to the guess<->site pair right away, in parallel with the line/pin
-  // animation below. If a boundary loads later (step 3) we refit again to
-  // make sure the whole shape ends up on-screen, not just its centroid.
+  // animation below. This framing is what stays on screen through the whole
+  // reveal now -- see the note above zoomToSiteBoundary() for why a later
+  // boundary load no longer re-fits the camera on its own.
   map.fitBounds(extendBounds([from, from], [to]), {
     padding,
     duration: RESULT_FIT_DURATION_MS,
@@ -253,22 +254,50 @@ export async function showResult(map, guess, site, opts = {}) {
     paint: { 'line-color': color, 'line-opacity': 0.7, 'line-width': 2 },
   });
 
-  // Boundaries can extend well beyond the centroid (a whole park/reserve),
-  // so refit to the shape itself once it's known. Deliberately NOT extended
-  // to include the guess point (`from`) -- for a guess that's far away, that
-  // would force the camera back out to keep both in frame, which defeats
-  // the purpose of zooming in on the boundary at all. The initial fit above
-  // already showed the guess<->site line; this step is specifically about
-  // making the boundary legible.
+  // Deliberately NOT auto-fitting to the boundary's own (usually much
+  // tighter) bounds here -- that used to run unconditionally the moment the
+  // fetch resolved, which yanked the camera in close enough to read the
+  // polygon's exact shape but lost the guess<->site line in the process
+  // (small park, guess several hundred km off: the "you missed by 300km"
+  // framing from the fit above would vanish, replaced by a close-up of just
+  // the site). The boundary fill/outline layers above are still drawn at
+  // the current (wider, distance-showing) zoom -- visible as a small shape,
+  // not necessarily legible in detail. zoomToSiteBoundary() below does the
+  // tight fit this used to do automatically, on demand, for BottomCard's
+  // "Show Site Boundary" button.
+}
+
+/**
+ * Zooms in tight on the just-revealed site's boundary polygon -- the fit
+ * showResult() used to always perform the instant its boundary fetch
+ * resolved, now opt-in via BottomCard's "Show Site Boundary" button so the
+ * initial reveal can stay at the wider guess<->site framing instead.
+ *
+ * Reuses showResult()'s own in-flight/already-settled boundaryPromise
+ * rather than re-fetching -- awaiting an already-resolved promise resolves
+ * on the next microtask, so this is effectively instant once the original
+ * fetch has landed. No-ops if the current site has no boundary
+ * (boundaryPromise is null, per showResult()) or its fetch failed/is still
+ * pending when clearResult() tears it down.
+ *
+ * @param {import('maplibre-gl').Map} map
+ * @param {object|null} [fitPadding] - same shape as showResult()'s opts.fitPadding;
+ *   pass the caller's current measured card height so the card doesn't cover the reveal.
+ */
+export async function zoomToSiteBoundary(map, fitPadding = null) {
+  if (!map || !boundaryPromise) return;
+  const geo = await boundaryPromise;
+  if (!geo || !map.getSource(LAYER_IDS.RESULT_BOUNDARY)) return; // torn down mid-await
+
   const boundaryBounds = boundsOfGeoJSON(geo);
-  if (boundaryBounds) {
-    map.fitBounds(boundaryBounds, {
-      padding,
-      duration: RESULT_FIT_DURATION_MS,
-      easing: RESULT_FIT_EASING,
-      maxZoom: MAP_CONFIG.MAX_ZOOM,
-    });
-  }
+  if (!boundaryBounds) return;
+
+  map.fitBounds(boundaryBounds, {
+    padding: fitPadding ?? DEFAULT_FIT_PADDING,
+    duration: RESULT_FIT_DURATION_MS,
+    easing: RESULT_FIT_EASING,
+    maxZoom: MAP_CONFIG.MAX_ZOOM,
+  });
 }
 
 /** LOADING cleanup (Section 10) -- call before picking the next site. */

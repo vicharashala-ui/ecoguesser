@@ -238,24 +238,6 @@ export function useMapState(mapRef, mode) {
     localStorage.setItem(LS_KEYS.DIFFICULTY, level);
   }, [mode, setPolitical, setPoliticalNames]);
 
-  // Pan-only lock during the post-guess reveal -- zoom (scrollZoom/
-  // doubleClickZoom) stays usable so players can still inspect the reveal
-  // up close. Originally also disabled both zoom gestures (matching
-  // Section 3's literal "dragPan/scrollZoom.disable()"); narrowed to just
-  // dragPan on explicit request once that turned out to block zooming
-  // entirely during REVEALING in Daily mode.
-  const lockInteraction = useCallback(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    map.dragPan.disable();
-  }, [mapRef]);
-
-  const unlockInteraction = useCallback(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    map.dragPan.enable();
-  }, [mapRef]);
-
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return; // MapContainer must mount (and set mapRef.current) before this runs
@@ -319,7 +301,5 @@ export function useMapState(mapRef, mode) {
     setPolitical,
     setPoliticalNames,
     setDifficulty,
-    lockInteraction,
-    unlockInteraction,
   };
 }

@@ -8,11 +8,12 @@
 // wraps it in try/catch and wants a single failure signal, not a second
 // status code to re-check.
 //
-// submitFeedback() (Section 9c) added this pass -- spec-verbatim: POST to a
-// Google Form endpoint with mode:'no-cors', silently swallow the error if
-// the request itself fails (Google Forms never responds to no-cors reads
-// either way; there's no response body to check even on success), and let
-// the caller (FeedbackModal.jsx) show its success state unconditionally.
+// submitFeedback() (Section 9c) -- POST to a Google Form endpoint with
+// mode:'no-cors', silently swallow the error if the request itself fails
+// (Google Forms never responds to no-cors reads either way; there's no
+// response body to check even on success), and let the caller
+// (SideDrawer.jsx's inline feedback box) show its "Thanks!" confirmation
+// unconditionally.
 
 export async function postScore({ uuid, playerName, date, totalPts, totalDist }) {
   const res = await fetch('/api/score', {

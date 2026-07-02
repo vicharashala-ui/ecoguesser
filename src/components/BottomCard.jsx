@@ -98,6 +98,17 @@ function IconPaw({ size = 16 }) {
   );
 }
 
+function IconFrame({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4"
+        stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // BottomCard
 // ---------------------------------------------------------------------------
@@ -111,6 +122,9 @@ function IconPaw({ size = 16 }) {
  * @param {() => void} props.onHint
  * @param {() => void} props.onConfirm
  * @param {() => void} props.onNextSite
+ * @param {() => void} [props.onShowBoundary] - zooms the map in on the
+ *   revealed site's boundary polygon (resultLayer.js's zoomToSiteBoundary).
+ *   Button only renders when both this is provided and site.hasBoundary.
  * @param {string} [props.nextLabel='Next Site'] - round 5's button reads
  *   'Results' instead (Daily only); Classic never overrides this.
  * @param {'classic'|'daily'} props.mode
@@ -129,6 +143,7 @@ const BottomCard = forwardRef(function BottomCard({
   onHint,
   onConfirm,
   onNextSite,
+  onShowBoundary,
   nextLabel = 'Next Site',
   mode,
   result,
@@ -225,6 +240,12 @@ const BottomCard = forwardRef(function BottomCard({
               <IconStar size={15} /> {result.finalScore.toLocaleString()} pts
             </span>
           </div>
+
+          {site.hasBoundary && onShowBoundary && (
+            <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
+              <IconFrame /> Show Site Boundary
+            </button>
+          )}
 
           {isDaily && result.hintPenalty > 0 && (
             <div className="bc-daily-line bc-penalty">
