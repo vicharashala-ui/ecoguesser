@@ -18,8 +18,12 @@
 import { LAYER_IDS, CATEGORY_META } from '../config.js';
 
 const STATE_SOURCE_ID = 'india-states';
-// Matches BlitzMap.jsx's static REVEALING card-height estimate, so the
-// tight zoom below doesn't end up under the card.
+// Fallback only -- BlitzMap.jsx now passes zoomToBoundary() a fitPadding
+// built from BlitzCard's real measured height (same pattern as
+// resultLayer.js's zoomToSiteBoundary), since the expanded card's height
+// varies with content (correctStates can list more than one state for
+// border-spanning sites). This constant only applies if a caller omits
+// fitPadding entirely.
 const BOUNDARY_FIT_PADDING = { top: 60, bottom: 260, left: 40, right: 40 };
 
 let paintedStates = []; // st_nm values currently carrying a non-null status
@@ -109,13 +113,19 @@ function boundsOfGeoJSON(geo) {
  * already-resolved promise resolves on the next microtask, so this is
  * effectively instant once the fetch has landed). No-ops if the site has
  * no boundary, or nothing was drawn.
+ *
+ * @param {import('maplibre-gl').Map} map
+ * @param {object|null} [fitPadding] - same shape as BOUNDARY_FIT_PADDING;
+ *   pass the caller's current measured card height so the guess panel
+ *   doesn't cover the zoomed-in boundary. Falls back to the static
+ *   BOUNDARY_FIT_PADDING if omitted.
  */
-export async function zoomToBoundary(map) {
+export async function zoomToBoundary(map, fitPadding = null) {
   if (!map || !boundaryPromise) return;
   const geo = await boundaryPromise;
   if (!geo || !map.getSource(LAYER_IDS.BLITZ_BOUNDARY)) return; // torn down mid-await
   const bounds = boundsOfGeoJSON(geo);
-  if (bounds) map.fitBounds(bounds, { padding: BOUNDARY_FIT_PADDING, duration: 1200 });
+  if (bounds) map.fitBounds(bounds, { padding: fitPadding ?? BOUNDARY_FIT_PADDING, duration: 1200 });
 }
 
 /** Call on LOADING (next site) so a stale boundary never survives into the next round. */

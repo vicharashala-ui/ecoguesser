@@ -4,19 +4,29 @@
 // screen. Mirrors ClassicMap.jsx's role but stripped of everything
 // pin-drop/distance-specific: no SatelliteOverlay, no layer-toggle panel
 // (borders are forced on inside useMapState for mode==='blitz'), no
-// resultLayer.js fitBounds/boundary machinery, no difficulty/filters props.
+// difficulty/filters props.
 //
-// RecenterButton's REVEALING-time offset is a static estimate rather than
-// ClassicMap's measured cardRef height -- BlitzCard's expanded content has
-// no variable-length fields (no site.desc/species/year), so its height is
-// effectively constant. Adjust the 260px constant below if BlitzCard.css's
-// real rendered height drifts from this.
+// RecenterButton's REVEALING-time offset now reads BlitzCard's real
+// measured height via cardRef, same cardRef/cardHeight/transitionend
+// pattern as ClassicMap.jsx -- it used to assume a static 260px estimate,
+// but BlitzCard's expanded content isn't actually constant-height:
+// correctStates can list more than one state for sites that straddle a
+// border, wrapping the badge/state line onto an extra line, so a fixed
+// estimate could undershoot and let the expanded card cover the crosshair
+// button. handleShowBoundary passes the same measured height through to
+// blitzHighlight.js's zoomToBoundary() so the tight boundary zoom doesn't
+// end up under the card either.
+//
+// State Names: the top-right toggle is fully player-controlled now -- it
+// used to force itself on during REVEALING regardless of what the player
+// had set, so the answer always appeared automatically. It now only resets
+// to hidden at the start of each new round (LOADING), same as before.
 //
 // BlitzMap.css holds the one thing left to style at this level: the
 // top-right "State Names" toggle (mirrors DailyMap.css's .dm-layer-panel).
 // Borders themselves stay forced-on/non-togglable per useMapState.
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BlitzCard from './BlitzCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
@@ -25,6 +35,13 @@ import { useMapState } from '../hooks/useMapState.js';
 import { showSelection, showReveal, clearAll, zoomToBoundary, clearBoundary } from '../game/blitzHighlight.js';
 import { LAYER_IDS } from '../config.js';
 import './BlitzMap.css';
+
+// Used to build zoomToBoundary()'s fitPadding once "Show Boundary" is
+// pressed -- top/left/right are fixed screen margins; `bottom` is computed
+// per-round from cardRef's actual measured height, same constants
+// ClassicMap.jsx uses for its own REVEAL_FIT_SIDES/REVEAL_CARD_GAP.
+const REVEAL_FIT_SIDES = { top: 60, left: 40, right: 40 };
+const REVEAL_CARD_GAP = 20; // breathing room above the card's top edge
 
 /**
  * @param {{current: import('maplibre-gl').Map|null}} mapRef
@@ -43,6 +60,11 @@ export default function BlitzMap({ mapRef, style, sites }) {
   // -- this component never calls setPolitical itself. politicalNames (the
   // "State Names" toggle below) stays player-controlled.
 
+  const cardRef = useRef(null); // measures BlitzCard's real height, same role as ClassicMap.jsx's cardRef
+  // Tracks that height during REVEALING so RecenterButton can sit above the
+  // expanded card instead of being hidden by it.
+  const [cardHeight, setCardHeight] = useState(null);
+
   function handleMapClick(lat, lng) {
     const map = mapRef.current;
     if (!map || !mapReady) return;
@@ -57,7 +79,10 @@ export default function BlitzMap({ mapRef, style, sites }) {
   }
 
   function handleShowBoundary() {
-    zoomToBoundary(mapRef.current);
+    const map = mapRef.current;
+    if (!map) return;
+    const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 0;
+    zoomToBoundary(map, { ...REVEAL_FIT_SIDES, bottom: measuredHeight + REVEAL_CARD_GAP });
   }
 
   // SELECTING preview. Deliberately does nothing while REVEALING -- the
@@ -81,17 +106,43 @@ export default function BlitzMap({ mapRef, style, sites }) {
     }
   }, [mapRef, mapReady, roundState, result]);
 
-  // State names: force-shown on REVEALING regardless of the manual toggle
-  // below (so the answer is always legible), reset to hidden every new
-  // LOADING so each round starts blank. Also clears any "Show Boundary"
-  // polygon from the previous site here, for the same reason.
+  // State names: fully player-controlled via the toggle below -- no longer
+  // force-shown on REVEALING (the player now chooses whether to reveal
+  // them, per direct request). Still resets to hidden every new LOADING so
+  // each round starts blank rather than carrying over from the last one.
+  // Also clears any "Show Boundary" polygon from the previous site here,
+  // for the same reason.
   useEffect(() => {
-    if (roundState === 'REVEALING') setPoliticalNames(true);
-    else if (roundState === 'LOADING') {
+    if (roundState === 'LOADING') {
       setPoliticalNames(false);
       clearBoundary(mapRef.current);
     }
   }, [mapRef, roundState, setPoliticalNames]);
+
+  // Measures BlitzCard's real expanded height the instant roundState flips
+  // to REVEALING -- synchronously, in the same commit the class changes in,
+  // well before BottomCard.css's 0.3s max-height transition finishes -- so
+  // this initially reads a height still close to the pill's 64px, not the
+  // expanded card's real height. Corrected by the transitionend effect below
+  // once the animation actually completes. Same race/fix ClassicMap.jsx
+  // documents for its own cardRef.
+  useEffect(() => {
+    if (roundState !== 'REVEALING') return;
+    const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 0;
+    setCardHeight(measuredHeight);
+  }, [roundState, result]);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || roundState !== 'REVEALING') return;
+
+    function onTransitionEnd(e) {
+      if (e.target !== card || e.propertyName !== 'max-height') return;
+      setCardHeight(card.getBoundingClientRect().height);
+    }
+    card.addEventListener('transitionend', onTransitionEnd);
+    return () => card.removeEventListener('transitionend', onTransitionEnd);
+  }, [roundState]);
 
   return (
     <div style={style}>
@@ -109,13 +160,16 @@ export default function BlitzMap({ mapRef, style, sites }) {
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={null} />
       <RecenterButton
         mapRef={mapRef}
-        style={roundState === 'REVEALING'
-          ? { bottom: 'calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 260px + 12px)' }
-          : undefined}
+        style={
+          roundState === 'REVEALING' && cardHeight
+            ? { bottom: `calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + ${cardHeight}px + 12px)` }
+            : undefined
+        }
       />
 
       {site && (
         <BlitzCard
+          ref={cardRef}
           roundState={roundState}
           site={site}
           selectedState={selectedState}

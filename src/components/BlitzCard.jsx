@@ -2,15 +2,16 @@
 //
 // Blitz's guess panel: same pill -> expanded-card shell as
 // BottomCard.jsx, reusing BottomCard.css directly for the shell (.bottom-card,
-// .bc-pill, .bc-card, .bc-card-header, .bc-meta-row, .bc-actions, etc.) --
-// only the content inside differs, plus badge styles in BlitzCard.css.
+// .bc-pill, .bc-card, .bc-card-header, .bc-meta-row, .bc-actions,
+// .bc-boundary-btn, etc.) -- only the content inside differs, plus badge
+// styles in BlitzCard.css.
 // If BottomCard.css is ever renamed, this file's import below needs to follow.
 //
 // Critical: the pill must NEVER reveal site.state before Confirm -- Blitz
 // has no hint system, so `site.state`/`correctStates` may only appear
 // once roundState === 'REVEALING'.
 
-import { useId } from 'react';
+import { useId, forwardRef } from 'react';
 import { CATEGORY_META } from '../config.js';
 import './BottomCard.css';
 import './BlitzCard.css';
@@ -38,8 +39,14 @@ function IconLeaf({ size = 18 }) {
  * @param {() => void} onNextSite
  * @param {() => void} onShowBoundary - zooms in tight on site.hasBoundary's
  *   polygon, already auto-drawn on reveal. Button only renders when site.hasBoundary is true.
+ * @param {React.Ref<HTMLDivElement>} ref - forwarded to the outer `.bottom-card` div so
+ *   BlitzMap.jsx can measure its real rendered height -- the expanded card's
+ *   height varies with content (correctStates can list more than one state
+ *   for border-spanning sites, wrapping the badge/state line), so
+ *   BlitzMap.jsx's RecenterButton offset and boundary-zoom padding read this
+ *   rather than a guessed constant. Same contract as BottomCard.jsx's ref.
  */
-export default function BlitzCard({
+const BlitzCard = forwardRef(function BlitzCard({
   roundState,
   site,
   selectedState,
@@ -49,13 +56,14 @@ export default function BlitzCard({
   onConfirm,
   onNextSite,
   onShowBoundary,
-}) {
+}, ref) {
   const titleId = useId();
   const isRevealing = roundState === 'REVEALING';
   const meta = CATEGORY_META[site.category];
 
   return (
     <div
+      ref={ref}
       className={`bottom-card ${isRevealing ? 'is-expanded' : 'is-pill'}`}
       style={{ '--eg-accent': meta.color }}
       role="region"
@@ -110,7 +118,7 @@ export default function BlitzCard({
 
           <div className="bc-actions">
             {site.hasBoundary && (
-              <button type="button" className="bc-trivia-btn" onClick={onShowBoundary}>
+              <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
                 Show Boundary
               </button>
             )}
@@ -122,4 +130,6 @@ export default function BlitzCard({
       )}
     </div>
   );
-}
+});
+
+export default BlitzCard;
