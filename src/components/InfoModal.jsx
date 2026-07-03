@@ -53,6 +53,13 @@ function HowToPlayContent() {
         for everyone that day, one attempt each. It's timed, and your
         combined score goes on that day's leaderboard.
       </p>
+      <p>
+        <strong>Blitz</strong> shows you a protected area and asks which
+        state it's in. Tap a state, then confirm -- get it right and the
+        state turns green, get it wrong and you'll see your guess in red
+        next to the correct answer in green. No pins, no distance, just
+        geography. Play as many rounds as you like.
+      </p>
 
       <h3>Scoring</h3>
       <p>

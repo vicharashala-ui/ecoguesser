@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import ClassicMap from './components/ClassicMap.jsx';
+import BlitzMap from './components/BlitzMap.jsx';
 import { DailyMap } from './components/DailyMap.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import DailySummary from './components/DailySummary.jsx';
@@ -47,9 +48,11 @@ export default function App() {
   // resize RAF below since StatsView isn't a map; it just needs to be a
   // value switchTab can be called with.
   const classicEverActivated = useRef(false);
+  const blitzEverActivated = useRef(false);
   const [activeTab, setActiveTab] = useState('daily');
   const classicMapRef = useRef(null);
   const dailyMapRef = useRef(null);
+  const blitzMapRef = useRef(null);
 
   // Section 4 Daily sub-flow: 'round' (DailyMap) -> 'summary' (auto-submit)
   // -> 'leaderboard'. Starts at 'leaderboard' if today's already been played
@@ -91,12 +94,14 @@ export default function App() {
     if (midRound && !window.confirm('Leave this round? Your progress will be lost.')) return;
 
     if (newTab === 'classic') classicEverActivated.current = true;
+    if (newTab === 'blitz') blitzEverActivated.current = true;
     setActiveTab(newTab);
     // Neither map redraws its canvas while display:none, so each becomes
     // mis-sized the moment it's shown again unless resized post-switch.
     requestAnimationFrame(() => {
       if (newTab === 'classic' && classicMapRef.current) classicMapRef.current.resize();
       if (newTab === 'daily' && dailyMapRef.current) dailyMapRef.current.resize();
+      if (newTab === 'blitz' && blitzMapRef.current) blitzMapRef.current.resize();
     });
   }
 
@@ -168,6 +173,13 @@ export default function App() {
           filters={classicFilters}
           difficulty={classicDifficulty}
           style={{ position: 'absolute', inset: 0, display: activeTab === 'classic' ? 'block' : 'none' }}
+        />
+      )}
+      {blitzEverActivated.current && (
+        <BlitzMap
+          mapRef={blitzMapRef}
+          sites={allSites}
+          style={{ position: 'absolute', inset: 0, display: activeTab === 'blitz' ? 'block' : 'none' }}
         />
       )}
       <DailyMap

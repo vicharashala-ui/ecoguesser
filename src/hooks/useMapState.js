@@ -24,7 +24,7 @@ function removeAttribution(mapInstance, text) {
 }
 
 // @param mapRef: React.MutableRefObject<maplibregl.Map|null> -- same ref passed to <MapContainer>
-// @param mode: 'classic'|'daily'
+// @param mode: 'classic'|'daily'|'blitz'
 export function useMapState(mapRef, mode) {
   const [state, setState] = useState({
     satellite: false,
@@ -229,7 +229,7 @@ export function useMapState(mapRef, mode) {
   }, [mapRef]);
 
   const setDifficulty = useCallback((level) => {
-    if (mode === 'daily') return; // Key Decision #3: difficulty is Classic-only
+    if (mode !== 'classic') return; // Key Decision #3: difficulty is Classic-only -- Blitz has no tiers either
     const d = DIFFICULTY_DEFAULTS[level];
     // Scoped to Borders+Names only -- never touches satellite (independently user-toggled,
     // must survive a difficulty switch).
@@ -243,7 +243,11 @@ export function useMapState(mapRef, mode) {
     if (!map) return; // MapContainer must mount (and set mapRef.current) before this runs
 
     function onLoad() {
-      map.addSource('india-states', { type: 'geojson', data: '/india-states.geojson' });
+      map.addSource('india-states', {
+        type: 'geojson',
+        data: '/india-states.geojson',
+        promoteId: 'st_nm', // lets blitzHighlight.js key setFeatureState off each state's own name
+      });
 
       map.addLayer({
         id: LAYER_IDS.STATE_LINES, type: 'line', source: 'india-states',
@@ -256,6 +260,31 @@ export function useMapState(mapRef, mode) {
         layout: { 'text-field': ['get', 'st_nm'], 'text-size': 11, visibility: 'none' },
         paint: { 'text-color': '#374151', 'text-halo-color': '#fff', 'text-halo-width': 1 },
       });
+
+      if (mode === 'blitz') {
+        // Feature-state-driven fill+outline pair, added once, ever, for this
+        // map instance -- blitzHighlight.js only ever calls setFeatureState
+        // against these, never addLayer/removeLayer. Also doubles as the
+        // queryRenderedFeatures hit-test target for tap-to-state resolution
+        // (BlitzMap.jsx), since it's a fill layer covering every state.
+        const BLITZ_COLOR = ['match', ['feature-state', 'blitzStatus'],
+          'selected', '#3b82f6', 'correct', '#22c55e', 'wrong', '#dc2626', 'transparent'];
+        map.addLayer({
+          id: LAYER_IDS.BLITZ_FILL, type: 'fill', source: 'india-states',
+          paint: {
+            'fill-color': BLITZ_COLOR,
+            'fill-opacity': ['match', ['feature-state', 'blitzStatus'], null, 0, 0.35],
+          },
+        });
+        map.addLayer({
+          id: LAYER_IDS.BLITZ_OUTLINE, type: 'line', source: 'india-states',
+          paint: {
+            'line-color': BLITZ_COLOR,
+            'line-width': 2,
+            'line-opacity': ['match', ['feature-state', 'blitzStatus'], null, 0, 1],
+          },
+        });
+      }
 
       map.addSource('india-boundary', { type: 'geojson', data: '/india-boundary.geojson' });
 
@@ -273,6 +302,8 @@ export function useMapState(mapRef, mode) {
 
       if (mode === 'daily') {
         setPolitical(false);
+      } else if (mode === 'blitz') {
+        setPolitical(true); // mandatory, non-togglable -- state shapes must read clearly
       } else {
         const saved = localStorage.getItem(LS_KEYS.DIFFICULTY) || 'normal';
         setDifficulty(saved);

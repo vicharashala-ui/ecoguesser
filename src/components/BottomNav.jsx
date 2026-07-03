@@ -36,6 +36,17 @@ function IconMountain({ size = 22 }) {
   );
 }
 
+function IconBolt({ size = 22 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"
+        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function IconChart({ size = 22 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -49,6 +60,7 @@ function IconChart({ size = 22 }) {
 const TABS = [
   { id: 'daily', label: 'Daily', Icon: IconFire },
   { id: 'classic', label: 'Classic', Icon: IconMountain },
+  { id: 'blitz', label: 'Blitz', Icon: IconBolt },
   { id: 'stats', label: 'Stats', Icon: IconChart },
 ];
 
