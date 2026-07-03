@@ -1,0 +1,16 @@
+/* src/components/BlitzMap.css */
+/* Same placeholder glassmorphism treatment as DailyMap.css's .dm-layer-panel
+   and ClassicMap.css's .cm-layer-panel -- one checkbox, no Satellite/Political
+   rows here since Blitz forces borders on and has no satellite mode. */
+
+.bz-layer-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+}

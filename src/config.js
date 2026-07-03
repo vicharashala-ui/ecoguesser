@@ -80,6 +80,7 @@ export const LAYER_IDS = {
   INDIA_BOUNDARY_LINE: 'india-boundary-line',
   BLITZ_FILL:          'blitz-fill',
   BLITZ_OUTLINE:       'blitz-outline',
+  BLITZ_BOUNDARY:      'blitz-boundary',
 };
 
 export const SCORING = { MAX_SCORE: 5000, DECAY_KM: 100, HINT_PENALTY: 500 };

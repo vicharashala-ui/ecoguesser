@@ -1,13 +1,7 @@
 /* src/components/BlitzCard.css */
 /* Shell rules (.bottom-card, .bc-pill, .bc-card, etc.) live in
    BottomCard.css, imported alongside this file -- only the correct/wrong
-   badge and pill tally readout are new here. */
-
-.bz-tally {
-  font-size: 12px;
-  font-weight: 400;
-  color: #6b7280;
-}
+   badge is new here. */
 
 .bz-badge {
   margin-top: 4px;

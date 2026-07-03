@@ -3,9 +3,8 @@
 // Blitz's guess panel: same pill -> expanded-card shell as
 // BottomCard.jsx, reusing BottomCard.css directly for the shell (.bottom-card,
 // .bc-pill, .bc-card, .bc-card-header, .bc-meta-row, .bc-actions, etc.) --
-// only the content inside differs, plus badge/tally styles in
-// BlitzCard.css. If BottomCard.css is ever renamed, this file's import
-// below needs to follow.
+// only the content inside differs, plus badge styles in BlitzCard.css.
+// If BottomCard.css is ever renamed, this file's import below needs to follow.
 //
 // Critical: the pill must NEVER reveal site.state before Confirm -- Blitz
 // has no hint system, so `site.state`/`correctStates` may only appear
@@ -35,10 +34,10 @@ function IconLeaf({ size = 18 }) {
  * @param {{guessedState:string, correctStates:string[], isCorrect:boolean}|null} result
  * @param {number} streak
  * @param {number} bestStreak
- * @param {number} totalCorrect
- * @param {number} totalAttempted
  * @param {() => void} onConfirm
  * @param {() => void} onNextSite
+ * @param {() => void} onShowBoundary - zooms in tight on site.hasBoundary's
+ *   polygon, already auto-drawn on reveal. Button only renders when site.hasBoundary is true.
  */
 export default function BlitzCard({
   roundState,
@@ -47,10 +46,9 @@ export default function BlitzCard({
   result,
   streak,
   bestStreak,
-  totalCorrect,
-  totalAttempted,
   onConfirm,
   onNextSite,
+  onShowBoundary,
 }) {
   const titleId = useId();
   const isRevealing = roundState === 'REVEALING';
@@ -69,7 +67,6 @@ export default function BlitzCard({
 
           <span className="bc-pill-text">
             <span id={titleId} className="bc-site-name">{site.name}</span>
-            <span className="bz-tally">{totalCorrect}/{totalAttempted} correct</span>
           </span>
 
           <button
@@ -112,6 +109,11 @@ export default function BlitzCard({
           <div className="bc-daily-line">Streak: {streak} (best {bestStreak})</div>
 
           <div className="bc-actions">
+            {site.hasBoundary && (
+              <button type="button" className="bc-trivia-btn" onClick={onShowBoundary}>
+                Show Boundary
+              </button>
+            )}
             <button type="button" className="bc-next-btn" onClick={onNextSite} aria-label="Next site">
               Next Site
             </button>

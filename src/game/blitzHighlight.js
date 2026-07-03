@@ -15,9 +15,18 @@
 // useMapState.js) so each state's own name works directly as its
 // feature-state id.
 
+import { LAYER_IDS, CATEGORY_META } from '../config.js';
+
 const STATE_SOURCE_ID = 'india-states';
+// Matches BlitzMap.jsx's static REVEALING card-height estimate, so the
+// tight zoom below doesn't end up under the card.
+const BOUNDARY_FIT_PADDING = { top: 60, bottom: 260, left: 40, right: 40 };
 
 let paintedStates = []; // st_nm values currently carrying a non-null status
+// Resolves once REVEALING's boundary fetch settles; null if the current
+// site has none, or once clearBoundary() resets it for the next round.
+// Same module-level shape as resultLayer.js's boundaryPromise.
+let boundaryPromise = null;
 
 function paint(map, stateName, status) {
   map.setFeatureState({ source: STATE_SOURCE_ID, id: stateName }, { blitzStatus: status });
@@ -31,14 +40,36 @@ export function showSelection(map, stateName) {
 }
 
 /**
- * REVEALING. Always paints every state in `correctStates` green.
- * Additionally paints `guessedState` red, but ONLY if isCorrect is false --
- * when correct, the guessed state is already one of correctStates.
+ * REVEALING. Colors every state in `correctStates` green, plus `guessedState`
+ * red if wrong. Then -- mirroring resultLayer.js's showResult() step 3 --
+ * fetches and draws the site's actual boundary polygon automatically if it
+ * has one (site.hasBoundary), same as Classic/Daily. Not click-gated: the
+ * "Show Boundary" button (zoomToBoundary below) only zooms to whatever this
+ * already drew.
  */
-export function showReveal(map, correctStates, guessedState, isCorrect) {
+export async function showReveal(map, correctStates, guessedState, isCorrect, site) {
   clearAll(map);
   correctStates.forEach((s) => paint(map, s, 'correct'));
   if (!isCorrect && guessedState) paint(map, guessedState, 'wrong');
+
+  boundaryPromise = site?.hasBoundary
+    ? fetch(`/boundaries/${site.id}.geojson`)
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null)
+    : null;
+  const geo = await boundaryPromise;
+  if (!geo || !map.getSource(STATE_SOURCE_ID)) return; // no boundary, or map torn down mid-fetch
+
+  const color = CATEGORY_META[site.category]?.color ?? '#16a34a';
+  map.addSource(LAYER_IDS.BLITZ_BOUNDARY, { type: 'geojson', data: geo });
+  map.addLayer({
+    id: `${LAYER_IDS.BLITZ_BOUNDARY}-fill`, type: 'fill', source: LAYER_IDS.BLITZ_BOUNDARY,
+    paint: { 'fill-color': color, 'fill-opacity': 0.2 },
+  });
+  map.addLayer({
+    id: `${LAYER_IDS.BLITZ_BOUNDARY}-outline`, type: 'line', source: LAYER_IDS.BLITZ_BOUNDARY,
+    paint: { 'line-color': color, 'line-opacity': 0.7, 'line-width': 2 },
+  });
 }
 
 /** Called at LOADING start (next site) and before every showSelection/showReveal. */
@@ -48,4 +79,51 @@ export function clearAll(map) {
     map.setFeatureState({ source: STATE_SOURCE_ID, id: s }, { blitzStatus: null });
   }
   paintedStates = [];
+}
+
+// Walks any GeoJSON Feature/FeatureCollection/Geometry and returns the
+// [[west,south],[east,north]] bbox of every coordinate -- same flat-walk
+// approach as resultLayer.js's boundsOfGeoJSON, duplicated locally rather
+// than imported so this file stays decoupled from Classic/Daily's module
+// (per BlitzMap.jsx's file-header note).
+function boundsOfGeoJSON(geo) {
+  const b = { west: Infinity, south: Infinity, east: -Infinity, north: -Infinity };
+  const visit = (coords) => {
+    if (typeof coords[0] === 'number') {
+      const [lng, lat] = coords;
+      if (lng < b.west) b.west = lng;
+      if (lng > b.east) b.east = lng;
+      if (lat < b.south) b.south = lat;
+      if (lat > b.north) b.north = lat;
+    } else {
+      coords.forEach(visit);
+    }
+  };
+  (geo.type === 'FeatureCollection' ? geo.features : [geo]).forEach((f) => visit((f.geometry ?? f).coordinates));
+  return Number.isFinite(b.west) ? [[b.west, b.south], [b.east, b.north]] : null;
+}
+
+/**
+ * "Show Boundary" button -- zooms in tight on the polygon showReveal()
+ * already drew. Reuses its boundaryPromise rather than re-fetching (an
+ * already-resolved promise resolves on the next microtask, so this is
+ * effectively instant once the fetch has landed). No-ops if the site has
+ * no boundary, or nothing was drawn.
+ */
+export async function zoomToBoundary(map) {
+  if (!map || !boundaryPromise) return;
+  const geo = await boundaryPromise;
+  if (!geo || !map.getSource(LAYER_IDS.BLITZ_BOUNDARY)) return; // torn down mid-await
+  const bounds = boundsOfGeoJSON(geo);
+  if (bounds) map.fitBounds(bounds, { padding: BOUNDARY_FIT_PADDING, duration: 1200 });
+}
+
+/** Call on LOADING (next site) so a stale boundary never survives into the next round. */
+export function clearBoundary(map) {
+  boundaryPromise = null;
+  if (!map) return;
+  for (const id of [`${LAYER_IDS.BLITZ_BOUNDARY}-fill`, `${LAYER_IDS.BLITZ_BOUNDARY}-outline`]) {
+    if (map.getLayer(id)) map.removeLayer(id);
+  }
+  if (map.getSource(LAYER_IDS.BLITZ_BOUNDARY)) map.removeSource(LAYER_IDS.BLITZ_BOUNDARY);
 }

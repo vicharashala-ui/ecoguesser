@@ -267,13 +267,22 @@ export function useMapState(mapRef, mode) {
         // against these, never addLayer/removeLayer. Also doubles as the
         // queryRenderedFeatures hit-test target for tap-to-state resolution
         // (BlitzMap.jsx), since it's a fill layer covering every state.
-        const BLITZ_COLOR = ['match', ['feature-state', 'blitzStatus'],
-          'selected', '#3b82f6', 'correct', '#22c55e', 'wrong', '#dc2626', 'transparent'];
+        // 'match' can't use null as a label (strings/numbers only) -- using
+        // it here silently failed addLayer, so BLITZ_FILL never rendered
+        // and queryRenderedFeatures always came back empty. 'case' with an
+        // explicit '==' comparison handles the unset (null) state correctly.
+        const BLITZ_COLOR = [
+          'case',
+          ['==', ['feature-state', 'blitzStatus'], 'selected'], '#3b82f6',
+          ['==', ['feature-state', 'blitzStatus'], 'correct'], '#22c55e',
+          ['==', ['feature-state', 'blitzStatus'], 'wrong'], '#dc2626',
+          'transparent',
+        ];
         map.addLayer({
           id: LAYER_IDS.BLITZ_FILL, type: 'fill', source: 'india-states',
           paint: {
             'fill-color': BLITZ_COLOR,
-            'fill-opacity': ['match', ['feature-state', 'blitzStatus'], null, 0, 0.35],
+            'fill-opacity': ['case', ['==', ['feature-state', 'blitzStatus'], null], 0, 0.35],
           },
         });
         map.addLayer({
@@ -281,7 +290,7 @@ export function useMapState(mapRef, mode) {
           paint: {
             'line-color': BLITZ_COLOR,
             'line-width': 2,
-            'line-opacity': ['match', ['feature-state', 'blitzStatus'], null, 0, 1],
+            'line-opacity': ['case', ['==', ['feature-state', 'blitzStatus'], null], 0, 1],
           },
         });
       }

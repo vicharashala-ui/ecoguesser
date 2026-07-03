@@ -30,8 +30,6 @@ import { useState, useEffect, useCallback } from 'react';
  *   }|null,
  *   streak: number,
  *   bestStreak: number,
- *   totalCorrect: number,
- *   totalAttempted: number,
  *   handleStateClick: (stateName: string|null) => void,
  *   handleConfirm: () => void,
  *   handleNextSite: () => void,
@@ -45,8 +43,6 @@ export function useBlitzRound(sitePool) {
 
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
-  const [totalCorrect, setTotalCorrect] = useState(0);
-  const [totalAttempted, setTotalAttempted] = useState(0);
 
   // LOADING -> pick a site -> READING. Stays in LOADING if the pool is
   // empty -- unreachable today (no filter UI), kept for free since it's the
@@ -83,17 +79,12 @@ export function useBlitzRound(sitePool) {
       isCorrect,
     });
 
-    setTotalAttempted((n) => n + 1);
-    if (isCorrect) {
-      setTotalCorrect((n) => n + 1);
-      setStreak((s) => {
-        const next = s + 1;
-        setBestStreak((best) => Math.max(best, next));
-        return next;
-      });
-    } else {
-      setStreak(0);
-    }
+    setStreak((s) => {
+      if (!isCorrect) return 0;
+      const next = s + 1;
+      setBestStreak((best) => Math.max(best, next));
+      return next;
+    });
 
     setRoundState('REVEALING');
   }, [roundState, selectedState, site]);
@@ -109,8 +100,6 @@ export function useBlitzRound(sitePool) {
     result,
     streak,
     bestStreak,
-    totalCorrect,
-    totalAttempted,
     handleStateClick,
     handleConfirm,
     handleNextSite,

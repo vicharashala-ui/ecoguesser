@@ -12,11 +12,9 @@
 // effectively constant. Adjust the 260px constant below if BlitzCard.css's
 // real rendered height drifts from this.
 //
-// No BlitzMap.css -- nothing left to style at this level once the
-// empty-pool case (can't occur; `sites` is always the full unfiltered
-// allSites, no filter UI in v1) and the layer-toggle panel (forced
-// borders-on, no toggle UI) are both out of scope. RecenterButton,
-// MapContainer, and BlitzCard all bring their own CSS.
+// BlitzMap.css holds the one thing left to style at this level: the
+// top-right "State Names" toggle (mirrors DailyMap.css's .dm-layer-panel).
+// Borders themselves stay forced-on/non-togglable per useMapState.
 
 import { useEffect } from 'react';
 import MapContainer from './MapContainer.jsx';
@@ -24,8 +22,9 @@ import BlitzCard from './BlitzCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import { useBlitzRound } from '../hooks/useBlitzRound.js';
 import { useMapState } from '../hooks/useMapState.js';
-import { showSelection, showReveal, clearAll } from '../game/blitzHighlight.js';
+import { showSelection, showReveal, clearAll, zoomToBoundary, clearBoundary } from '../game/blitzHighlight.js';
 import { LAYER_IDS } from '../config.js';
+import './BlitzMap.css';
 
 /**
  * @param {{current: import('maplibre-gl').Map|null}} mapRef
@@ -35,13 +34,14 @@ import { LAYER_IDS } from '../config.js';
 export default function BlitzMap({ mapRef, style, sites }) {
   const {
     roundState, site, selectedState, result,
-    streak, bestStreak, totalCorrect, totalAttempted,
+    streak, bestStreak,
     handleStateClick, handleConfirm, handleNextSite,
   } = useBlitzRound(sites);
 
-  const { mapReady } = useMapState(mapRef, 'blitz');
+  const { mapReady, politicalNames, setPoliticalNames } = useMapState(mapRef, 'blitz');
   // political is forced true inside useMapState's onLoad for mode==='blitz'
-  // -- this component never calls setPolitical itself.
+  // -- this component never calls setPolitical itself. politicalNames (the
+  // "State Names" toggle below) stays player-controlled.
 
   function handleMapClick(lat, lng) {
     const map = mapRef.current;
@@ -54,6 +54,10 @@ export default function BlitzMap({ mapRef, style, sites }) {
     const bbox = [[p.x - 3, p.y - 3], [p.x + 3, p.y + 3]];
     const [feature] = map.queryRenderedFeatures(bbox, { layers: [LAYER_IDS.BLITZ_FILL] });
     handleStateClick(feature?.properties?.st_nm ?? null);
+  }
+
+  function handleShowBoundary() {
+    zoomToBoundary(mapRef.current);
   }
 
   // SELECTING preview. Deliberately does nothing while REVEALING -- the
@@ -71,14 +75,37 @@ export default function BlitzMap({ mapRef, style, sites }) {
     const map = mapRef.current;
     if (!map || !mapReady) return;
     if (roundState === 'REVEALING' && result) {
-      showReveal(map, result.correctStates, result.guessedState, result.isCorrect);
+      showReveal(map, result.correctStates, result.guessedState, result.isCorrect, result.site);
     } else if (roundState === 'LOADING') {
       clearAll(map);
     }
   }, [mapRef, mapReady, roundState, result]);
 
+  // State names: force-shown on REVEALING regardless of the manual toggle
+  // below (so the answer is always legible), reset to hidden every new
+  // LOADING so each round starts blank. Also clears any "Show Boundary"
+  // polygon from the previous site here, for the same reason.
+  useEffect(() => {
+    if (roundState === 'REVEALING') setPoliticalNames(true);
+    else if (roundState === 'LOADING') {
+      setPoliticalNames(false);
+      clearBoundary(mapRef.current);
+    }
+  }, [mapRef, roundState, setPoliticalNames]);
+
   return (
     <div style={style}>
+      <div className="bz-layer-panel">
+        <label>
+          <input
+            type="checkbox"
+            checked={politicalNames}
+            onChange={() => setPoliticalNames(!politicalNames)}
+          />
+          State Names
+        </label>
+      </div>
+
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={null} />
       <RecenterButton
         mapRef={mapRef}
@@ -95,10 +122,9 @@ export default function BlitzMap({ mapRef, style, sites }) {
           result={result}
           streak={streak}
           bestStreak={bestStreak}
-          totalCorrect={totalCorrect}
-          totalAttempted={totalAttempted}
           onConfirm={handleConfirm}
           onNextSite={handleNextSite}
+          onShowBoundary={handleShowBoundary}
         />
       )}
     </div>
