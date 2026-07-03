@@ -24,6 +24,11 @@
 //      backdrop/dialog markup, no Escape-key handler, no focus-on-open,
 //      no Cancel button. Submitting just clears the box and shows a small
 //      inline "Thanks!" line for a few seconds, then reverts.
+//   3. Statistics link removed from the footer (per direct request) --
+//      Stats is still reachable via BottomNav's own tab, so the drawer
+//      link was a pure duplicate route. `onNavigate` now only ever fires
+//      for 'howtoplay'/'about'/'privacy', matching InfoModal's variants
+//      1:1 -- App.jsx wires it straight to setInfoModalVariant.
 
 import { useState, useEffect } from 'react';
 import { LS_KEYS, CATEGORY_META, FEEDBACK_FORM_URL, FEEDBACK_ENTRY_ID } from '../config.js';
@@ -257,7 +262,6 @@ export default function SideDrawer({
         <hr className="sd-divider" />
 
         <div className="sd-section sd-links">
-          <button type="button" className="sd-link" onClick={() => handleNavigate('stats')}>Statistics</button>
           <button type="button" className="sd-link" onClick={() => handleNavigate('howtoplay')}>How to Play</button>
           <button type="button" className="sd-link" onClick={() => handleNavigate('about')}>About</button>
           <button type="button" className="sd-link" onClick={() => handleNavigate('privacy')}>Privacy Policy</button>

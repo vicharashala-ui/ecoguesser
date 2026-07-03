@@ -109,6 +109,15 @@ function IconFrame({ size = 14 }) {
   );
 }
 
+function IconSkip({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M5 5.5v13l10-6.5-10-6.5Z" />
+      <rect x="17" y="5.5" width="2.5" height="13" rx="1" />
+    </svg>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // BottomCard
 // ---------------------------------------------------------------------------
@@ -125,6 +134,9 @@ function IconFrame({ size = 14 }) {
  * @param {() => void} [props.onShowBoundary] - zooms the map in on the
  *   revealed site's boundary polygon (resultLayer.js's zoomToSiteBoundary).
  *   Button only renders when both this is provided and site.hasBoundary.
+ * @param {() => void} [props.onSkip] - Classic-only, icon-only button in the
+ *   guess panel (pre-Confirm pill) that abandons the current site for a new
+ *   one. Renders only when both this is provided and mode !== 'daily'.
  * @param {string} [props.nextLabel='Next Site'] - round 5's button reads
  *   'Results' instead (Daily only); Classic never overrides this.
  * @param {'classic'|'daily'} props.mode
@@ -144,6 +156,7 @@ const BottomCard = forwardRef(function BottomCard({
   onConfirm,
   onNextSite,
   onShowBoundary,
+  onSkip,
   nextLabel = 'Next Site',
   mode,
   result,
@@ -174,6 +187,18 @@ const BottomCard = forwardRef(function BottomCard({
               <span className="bc-hint-state">{site.state.join(', ')}</span>
             )}
           </span>
+
+          {!isDaily && onSkip && (
+            <button
+              type="button"
+              className="bc-skip-btn"
+              onClick={onSkip}
+              aria-label="Skip this site"
+              title="Skip this site"
+            >
+              <IconSkip />
+            </button>
+          )}
 
           <button
             type="button"

@@ -100,18 +100,6 @@ export default function App() {
     });
   }
 
-  // SideDrawer's footer links (Section 9 / Decision #16). "Statistics"
-  // reuses the exact same switchTab('stats') the BottomNav Stats tab calls,
-  // since they're the same screen -- the other three open InfoModal, which
-  // isn't a persistent tab.
-  function handleNavigate(dest) {
-    if (dest === 'stats') {
-      switchTab('stats');
-    } else {
-      setInfoModalVariant(dest);
-    }
-  }
-
   // DailyMap's round 5 hands off here (Section 4: round 5's "Next" ->
   // DAILY_SUMMARY, not back through LOADING). Stats are written here, once,
   // right at the real completion -- not inside DailySummary itself, which
@@ -219,7 +207,7 @@ export default function App() {
         showClassicFilters={activeTab === 'classic'}
         difficulty={classicDifficulty}
         onSetDifficulty={setClassicDifficulty}
-        onNavigate={handleNavigate}
+        onNavigate={setInfoModalVariant}
       />
     </div>
   );

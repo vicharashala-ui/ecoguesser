@@ -86,6 +86,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     handleHint,
     handleConfirm,
     handleNextSite,
+    handleSkip,
   } = useClassicRound(sitePool);
 
   const {
@@ -262,6 +263,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           onConfirm={handleConfirm}
           onNextSite={handleNextSite}
           onShowBoundary={handleShowBoundary}
+          onSkip={handleSkip}
           mode="classic"
           result={result}
         />

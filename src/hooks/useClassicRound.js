@@ -39,6 +39,7 @@ const MAX_HINTS = 2;
  *   handleHint: () => void,
  *   handleConfirm: () => void,
  *   handleNextSite: () => void,
+ *   handleSkip: () => void,
  * }}
  */
 export function useClassicRound(sitePool) {
@@ -107,6 +108,25 @@ export function useClassicRound(sitePool) {
     setRoundState('LOADING');
   }, []);
 
+  // Per direct request: an icon-only Skip in the guess panel, letting the
+  // player abandon a site they don't want to guess and get a new one --
+  // Classic has no round limit, so unlike Daily's Skip (which records a
+  // 0-score round to keep the fixed 5-round progression moving) there's
+  // nothing to "give up on" here, just a site to swap out. Mechanically
+  // identical to handleNextSite (both just re-enter LOADING, which the
+  // effect above turns into a fresh random pick) -- kept as its own named
+  // handler rather than reusing onNextSite under a different button,
+  // since the two are semantically distinct actions to the player (skip
+  // *before* guessing vs. move on *after* seeing the reveal), and a
+  // shared name would read oddly wired to two different buttons.
+  // Guessing before Confirm never produces a `result`, so a skipped site
+  // is never recorded by ClassicMap.jsx's stats-write effect -- it simply
+  // never played this round, not a round played and thrown away.
+  const handleSkip = useCallback(() => {
+    if (roundState !== 'READING' && roundState !== 'PLACING') return; // nothing to skip once revealed
+    setRoundState('LOADING');
+  }, [roundState]);
+
   return {
     roundState,
     site,
@@ -118,5 +138,6 @@ export function useClassicRound(sitePool) {
     handleHint,
     handleConfirm,
     handleNextSite,
+    handleSkip,
   };
 }
