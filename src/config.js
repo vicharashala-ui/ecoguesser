@@ -26,6 +26,13 @@ export const SATELLITE_ATTRIBUTION = 'Imagery: Esri, Maxar, Earthstar Geographic
 export const SATELLITE_TILES_EOX = 'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless_3857/default/g/{z}/{y}/{x}.jpg';
 export const SATELLITE_ATTRIBUTION_EOX = 'Sentinel-2 cloudless - https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017)';
 
+// v9.1 -- shared AWS Terrarium DEM source feeding BOTH satellite's optional
+// hillshade and the base map's always-on hillshade + hypsometric tint
+// (public/map-style.json: 'terrain-dem' source, 'hypsometric-tint' /
+// 'base-hillshade' layers). Hoisted here once instead of duplicated per-mode.
+export const TERRAIN_TILES    = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
+export const TERRAIN_ENCODING = 'terrarium';
+
 // v9.0 -- full satellite visual spec. hillshade "multiply blend" is NOT a literal
 // MapLibre paint property -- closest available parameter is hillshade-exaggeration,
 // which controls shading strength, not a true blend mode.
@@ -56,8 +63,6 @@ export const SATELLITE_VISUAL = {
   // at all. Config kept intact so re-enabling later is a one-line flip of
   // HILLSHADE_ENABLED, not a rebuild.
   HILLSHADE_ENABLED: false,
-  TERRAIN_TILES:    'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
-  TERRAIN_ENCODING: 'terrarium',
   HILLSHADE: {
     illuminationDirection: 335,
     illuminationAnchor:    'viewport',
@@ -87,13 +92,17 @@ export const SATELLITE_VISUAL = {
 export const BASE_VISUAL = {
   RIVER_COLOR:   '#a0c8f0',
   RIVER_OPACITY: 1,
-  WATER_COLOR:   'rgb(158,189,255)',
+  WATER_COLOR:   '#4a80ab',
   BACKGROUND:    '#f8f4f0',
-  BOUNDARY_COLOR:    'hsl(248,1%,41%)',
+  BOUNDARY_COLOR:    '#2d5a3f',
   BOUNDARY_OPACITY_EXPR: ['interpolate', ['linear'], ['zoom'], 0, 0.4, 4, 1],
   BOUNDARY_WIDTH_EXPR:   ['interpolate', ['linear'], ['zoom'], 3, 1, 5, 1.2, 12, 3],
-  STATE_LINE_COLOR: '#6b7280',
-  STATE_LINE_WIDTH: 0.8,
+  // Deliberately NOT tied to BOUNDARY_COLOR (country border) -- state lines are a
+  // gameplay hint overlay and must stay muted so they never compete visually with
+  // protected-area boundaries. See useMapState.js restyleBordersAndRivers.
+  STATE_LINE_COLOR:   '#6b7280',
+  STATE_LINE_WIDTH:   0.8,
+  STATE_LINE_OPACITY: 0.6,
 };
 
 export const LAYER_IDS = {

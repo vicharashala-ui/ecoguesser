@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   MAP_CONFIG, LAYER_IDS, SATELLITE_TILES, SATELLITE_ATTRIBUTION,
-  SATELLITE_VISUAL, BASE_VISUAL, DIFFICULTY_DEFAULTS, LS_KEYS,
+  SATELLITE_VISUAL, BASE_VISUAL, TERRAIN_TILES, TERRAIN_ENCODING,
+  DIFFICULTY_DEFAULTS, LS_KEYS,
 } from '../config.js';
 
 // Scope querySelector to map container -- supports two simultaneous map instances.
@@ -65,9 +66,12 @@ export function useMapState(mapRef, mode) {
 
     function restyleBordersAndRivers(toSatellite) {
       // boundary_2 / boundary_disputed live in map-style.json; INDIA_BOUNDARY_LINE
-      // and STATE_LINES are added by this hook's init effect. All four follow the
-      // same satellite palette so Borders, if also on, doesn't clash visually.
-      const lineIds = ['boundary_2', 'boundary_disputed', LAYER_IDS.INDIA_BOUNDARY_LINE, LAYER_IDS.STATE_LINES];
+      // is added by this hook's init effect. Both follow the satellite palette so
+      // the international border doesn't clash with it. STATE_LINES (Borders
+      // toggle) is intentionally excluded -- it's a muted gameplay hint overlay,
+      // not a real border, and must never inherit the country-boundary color
+      // (forest green in base mode) or it'd compete visually with PA boundaries.
+      const lineIds = ['boundary_2', 'boundary_disputed', LAYER_IDS.INDIA_BOUNDARY_LINE];
       for (const id of lineIds) {
         if (!map.getLayer(id)) continue;
         map.setPaintProperty(id, 'line-color', toSatellite ? SV.BOUNDARY_COLOR : BV.BOUNDARY_COLOR);
@@ -92,7 +96,7 @@ export function useMapState(mapRef, mode) {
       // gone from map-style.json entirely (Section 7) -- only water + labels remain
       // to actually hide here.
       const ids = ['water', 'waterway_line_label', 'water_name_point_label', 'water_name_line_label',
-                   'country_label', 'natural_earth'];
+                   'country_label', 'hypsometric-tint', 'base-hillshade'];
       for (const id of ids) {
         if (!map.getLayer(id)) continue;
         map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
@@ -130,8 +134,8 @@ export function useMapState(mapRef, mode) {
         if (SV.HILLSHADE_ENABLED) {
           if (!map.getSource('terrarium-dem')) {
             map.addSource('terrarium-dem', {
-              type: 'raster-dem', tiles: [SV.TERRAIN_TILES], tileSize: 256,
-              encoding: SV.TERRAIN_ENCODING,
+              type: 'raster-dem', tiles: [TERRAIN_TILES], tileSize: 256,
+              encoding: TERRAIN_ENCODING,
             });
           }
           map.addLayer({
@@ -257,7 +261,12 @@ export function useMapState(mapRef, mode) {
       map.addLayer({
         id: LAYER_IDS.STATE_LINES, type: 'line', source: 'india-states',
         layout: { visibility: 'none' },
-        paint: { 'line-color': '#6b7280', 'line-width': 0.8, 'line-dasharray': [3, 2] },
+        paint: {
+          'line-color':   BASE_VISUAL.STATE_LINE_COLOR,
+          'line-width':   BASE_VISUAL.STATE_LINE_WIDTH,
+          'line-opacity': BASE_VISUAL.STATE_LINE_OPACITY,
+          'line-dasharray': [3, 2],
+        },
       });
 
       // Dedicated one-point-per-state source for name labels, instead of
@@ -322,7 +331,7 @@ export function useMapState(mapRef, mode) {
 
       map.addLayer({
         id: LAYER_IDS.INDIA_BOUNDARY_LINE, type: 'line', source: 'india-boundary',
-        paint: { 'line-color': '#555555', 'line-width': 1.5 },
+        paint: { 'line-color': BASE_VISUAL.BOUNDARY_COLOR, 'line-width': 1.5 },
       });
       // Always visible, both modes, both difficulties -- draws the compliance-patched
       // Aksai Chin/PoK border on top of OFM's boundary line. Not user-toggleable.
