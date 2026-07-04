@@ -167,6 +167,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
           <input
             type="checkbox"
             checked={politicalNames}
+            disabled={!mapReady}
             onChange={() => setPoliticalNames(!politicalNames)}
           />
           State Names

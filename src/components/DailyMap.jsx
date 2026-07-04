@@ -216,7 +216,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
           <input
             type="checkbox"
             checked={satellite}
-            disabled={satelliteUnavailable}
+            disabled={!mapReady || satelliteUnavailable}
             onChange={() => setSatellite(!satellite)}
           />
           Satellite
@@ -227,7 +227,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
           </span>
         )}
         <label>
-          <input type="checkbox" checked={political} onChange={() => setPolitical(!political)} />
+          <input type="checkbox" checked={political} disabled={!mapReady} onChange={() => setPolitical(!political)} />
           Political
         </label>
       </div>

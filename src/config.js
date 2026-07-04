@@ -90,10 +90,10 @@ export const SATELLITE_VISUAL = {
 // satellite OFF would look wrong at every zoom level except where the flat
 // override happened to coincide with the real curve).
 export const BASE_VISUAL = {
-  RIVER_COLOR:   '#3d7fb5',
+  RIVER_COLOR:   '#7996ac',
   RIVER_OPACITY: 1,
-  WATER_COLOR:   '#043A6B',
-  WATER_OPACITY: 0.32,
+  WATER_COLOR:   '#99b3cc',
+  WATER_OPACITY: 0.88,
   BACKGROUND:    '#f8f4f0',
   BOUNDARY_COLOR:    '#1c3b28',
   BOUNDARY_OPACITY_EXPR: ['interpolate', ['linear'], ['zoom'], 0, 0.8, 3, 1],
@@ -101,9 +101,12 @@ export const BASE_VISUAL = {
   // Deliberately NOT tied to BOUNDARY_COLOR (country border) -- state lines are a
   // gameplay hint overlay and must stay muted so they never compete visually with
   // protected-area boundaries. See useMapState.js restyleBordersAndRivers.
-  STATE_LINE_COLOR:   '#6b7280',
-  STATE_LINE_WIDTH:   0.8,
-  STATE_LINE_OPACITY: 0.6,
+  // Darkened + made near-opaque (was #6b7280 @ 0.6) -- the old muted grey at 0.6
+  // opacity sat too close in luminance to the terrain palette's mid-tone greens/
+  // tans and nearly vanished once blended with hillshade underneath.
+  STATE_LINE_COLOR:   '#4a4438',
+  STATE_LINE_WIDTH:   1.1,
+  STATE_LINE_OPACITY: 0.85,
 };
 
 export const LAYER_IDS = {
