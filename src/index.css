@@ -21,6 +21,22 @@ body {
   background: #f8f6f1;
 }
 
+/* Drop the browser's default blue focus ring on tap/click, app-wide, while
+   keeping a visible (non-blue) ring for keyboard navigation via
+   :focus-visible so the app stays accessible. */
+button, a, input, textarea, select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
+}
+
 .eg-spinner {
   width: 40px;
   height: 40px;

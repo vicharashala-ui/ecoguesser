@@ -13,7 +13,7 @@
 // authoritative value already computed by useClassicRound's scoring call.
 
 import { LAYER_IDS, CATEGORY_META, MAP_CONFIG } from '../config.js';
-import { haversine, midpoint } from './scoring.js';
+import { haversine } from './scoring.js';
 
 const LINE_ANIMATION_MS = 600;
 const FALLBACK_COLOR = '#16a34a';
@@ -36,7 +36,6 @@ let animationFrameId = null;
 function buildResultData(guess, site, distanceKm) {
   const from = [guess.lng, guess.lat];
   const to = [site.centroid_lng, site.centroid_lat];
-  const mid = midpoint(guess.lat, guess.lng, site.centroid_lat, site.centroid_lng);
   const distanceLabel = `${Math.round(distanceKm).toLocaleString()} km away`;
 
   return {
@@ -44,15 +43,14 @@ function buildResultData(guess, site, distanceKm) {
     features: [
       {
         type: 'Feature',
-        properties: { kind: 'line' },
+        // `distance` lives here (not a separate midpoint point) so
+        // RESULT_LABEL can use symbol-placement: 'line-center' -- that
+        // centers the text directly on this line and auto-rotates/flips it
+        // to stay upright no matter which way the line points.
+        properties: { kind: 'line', distance: distanceLabel },
         // Starts collapsed to a zero-length line at `from` -- animateLine()
         // grows this out to `to` over LINE_ANIMATION_MS.
         geometry: { type: 'LineString', coordinates: [from, from] },
-      },
-      {
-        type: 'Feature',
-        properties: { kind: 'label', distance: distanceLabel },
-        geometry: { type: 'Point', coordinates: [mid.lng, mid.lat] },
       },
       {
         type: 'Feature',
@@ -212,22 +210,28 @@ export async function showResult(map, guess, site, opts = {}) {
   // layers onto a source that's already been torn down.
   if (!map.getSource(LAYER_IDS.RESULT_DATA)) return;
 
-  // Step 2: label, only after the line has finished drawing.
+  // Step 2: label, only after the line has finished drawing. Reads
+  // `distance` off the same 'line' feature RESULT_LINE uses -- placing it
+  // with symbol-placement: 'line-center' centers the text on the line and
+  // rotates it to match the line's bearing, flipping automatically to stay
+  // upright, so it reads correctly over the line no matter which direction
+  // the guess missed in.
   map.addLayer({
     id: LAYER_IDS.RESULT_LABEL,
     type: 'symbol',
     source: LAYER_IDS.RESULT_DATA,
-    filter: ['==', ['get', 'kind'], 'label'],
+    filter: ['==', ['get', 'kind'], 'line'],
     layout: {
       'text-field': ['get', 'distance'],
-      'text-size': 13,
-      'text-offset': [0, -1],
+      'symbol-placement': 'line-center',
+      'text-font': ['Noto Sans Bold'],
+      'text-size': 15,
       'text-allow-overlap': true,
     },
     paint: {
-      'text-color': '#374151',
+      'text-color': '#111827',
       'text-halo-color': '#ffffff',
-      'text-halo-width': 1.5,
+      'text-halo-width': 2,
     },
   });
 

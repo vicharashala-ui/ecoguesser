@@ -30,7 +30,7 @@
 //      for 'howtoplay'/'about'/'privacy', matching InfoModal's variants
 //      1:1 -- App.jsx wires it straight to setInfoModalVariant.
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LS_KEYS, CATEGORY_META, FEEDBACK_FORM_URL, FEEDBACK_ENTRY_ID } from '../config.js';
 import { REGION_STATES } from '../utils/filters.js';
 import { submitFeedback } from '../game/api.js';
@@ -43,6 +43,11 @@ const DIFFICULTY_LABELS = { easy: 'Easy', normal: 'Normal', hard: 'Hard' };
 
 const FEEDBACK_MAX_CHARS = 500;
 const FEEDBACK_SUCCESS_MS = 2500;
+// Must match the transform/background-color transition duration on
+// .sd-backdrop / .sd-drawer in SideDrawer.css, so the drawer stays mounted
+// for exactly as long as its close animation takes instead of vanishing
+// mid-slide.
+const DRAWER_TRANSITION_MS = 300;
 
 function toggle(arr, value) {
   return arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
@@ -64,6 +69,33 @@ export default function SideDrawer({
   const [draftCategories, setDraftCategories] = useState(filters.categories);
   const [draftStates, setDraftStates] = useState(filters.states);
   const [expandedRegion, setExpandedRegion] = useState(null);
+  // Each region's state list is measured (not guessed) because some state
+  // names wrap to two lines at this drawer width -- a fixed per-row height
+  // would be wrong for those.
+  const stateListRefs = useRef({});
+
+  // Smooth open/close: stay mounted through the close transition (`mounted`)
+  // and flip `entered` a frame after mounting so the CSS transition has a
+  // starting state to animate from, instead of the drawer just appearing.
+  const [mounted, setMounted] = useState(open);
+  const [entered, setEntered] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      let raf2;
+      const raf1 = requestAnimationFrame(() => {
+        raf2 = requestAnimationFrame(() => setEntered(true));
+      });
+      return () => {
+        cancelAnimationFrame(raf1);
+        if (raf2) cancelAnimationFrame(raf2);
+      };
+    }
+    setEntered(false);
+    const t = setTimeout(() => setMounted(false), DRAWER_TRANSITION_MS);
+    return () => clearTimeout(t);
+  }, [open]);
 
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackPhase, setFeedbackPhase] = useState('idle'); // 'idle' | 'sending' | 'sent'
@@ -139,13 +171,13 @@ export default function SideDrawer({
     );
   }
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   const feedbackCounterClass =
     feedbackText.length >= 490 ? 'sd-feedback-counter-danger' : feedbackText.length >= 400 ? 'sd-feedback-counter-warn' : '';
 
   return (
-    <div className="sd-backdrop" role="presentation" onClick={onClose}>
+    <div className={`sd-backdrop${entered ? ' sd-open' : ''}`} role="presentation" onClick={onClose}>
       <div className="sd-drawer" role="dialog" aria-modal="true" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
         <div className="sd-banner">
           <div className="sd-banner-name">
@@ -241,11 +273,17 @@ export default function SideDrawer({
                         className="sd-region-name"
                         onClick={() => setExpandedRegion(isExpanded ? null : region)}
                       >
-                        {region} <span className="sd-region-arrow">{isExpanded ? '▾' : '▸'}</span>
+                        {region}{' '}
+                        <span className={`sd-region-arrow${isExpanded ? ' sd-region-arrow-open' : ''}`}>▸</span>
                       </button>
                     </div>
-                    {isExpanded && (
-                      <div className="sd-state-list">
+                    <div
+                      className="sd-state-collapse"
+                      style={{
+                        maxHeight: isExpanded ? `${stateListRefs.current[region]?.scrollHeight ?? 0}px` : '0px',
+                      }}
+                    >
+                      <div className="sd-state-list" ref={(el) => (stateListRefs.current[region] = el)}>
                         {REGION_STATES[region].map((st) => (
                           <label key={st} className="sd-state-item">
                             <input
@@ -257,7 +295,7 @@ export default function SideDrawer({
                           </label>
                         ))}
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}

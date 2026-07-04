@@ -67,17 +67,14 @@ export function useMapState(mapRef, mode) {
     function restyleBordersAndRivers(toSatellite) {
       // boundary_2 / boundary_disputed live in map-style.json; INDIA_BOUNDARY_LINE
       // is added by this hook's init effect. Both follow the satellite palette so
-      // the international border doesn't clash with it. STATE_LINES (Borders
-      // toggle) is intentionally excluded -- it's a muted gameplay hint overlay,
-      // not a real border, and must never inherit the country-boundary color
-      // (forest green in base mode) or it'd compete visually with PA boundaries.
+      // the international border doesn't clash with it.
       const lineIds = ['boundary_2', 'boundary_disputed', LAYER_IDS.INDIA_BOUNDARY_LINE];
       for (const id of lineIds) {
         if (!map.getLayer(id)) continue;
         map.setPaintProperty(id, 'line-color', toSatellite ? SV.BOUNDARY_COLOR : BV.BOUNDARY_COLOR);
       }
       // Opacity/width only apply to boundary_2/boundary_disputed -- INDIA_BOUNDARY_LINE
-      // and STATE_LINES don't define these in their base paint, leave them alone.
+      // doesn't define these in its base paint, leave it alone.
       for (const id of ['boundary_2', 'boundary_disputed']) {
         if (!map.getLayer(id)) continue;
         map.setPaintProperty(id, 'line-opacity', toSatellite ? SV.BOUNDARY_OPACITY : BV.BOUNDARY_OPACITY_EXPR);
@@ -87,6 +84,16 @@ export function useMapState(mapRef, mode) {
         if (!map.getLayer(id)) continue;
         map.setPaintProperty(id, 'line-color', toSatellite ? SV.RIVER_COLOR : BV.RIVER_COLOR);
         map.setPaintProperty(id, 'line-opacity', toSatellite ? SV.RIVER_OPACITY : BV.RIVER_OPACITY);
+      }
+      // STATE_LINES (Borders toggle) gets its own satellite-specific values
+      // -- not SV.BOUNDARY_COLOR -- so it stays a visually distinct, muted
+      // gameplay hint rather than a second international border, but is
+      // still actually visible: BASE_VISUAL's dark hint color disappears
+      // against the darkened satellite raster.
+      if (map.getLayer(LAYER_IDS.STATE_LINES)) {
+        map.setPaintProperty(LAYER_IDS.STATE_LINES, 'line-color', toSatellite ? SV.STATE_LINE_COLOR : BV.STATE_LINE_COLOR);
+        map.setPaintProperty(LAYER_IDS.STATE_LINES, 'line-opacity', toSatellite ? SV.STATE_LINE_OPACITY : BV.STATE_LINE_OPACITY);
+        map.setPaintProperty(LAYER_IDS.STATE_LINES, 'line-width', toSatellite ? SV.STATE_LINE_WIDTH : BV.STATE_LINE_WIDTH);
       }
     }
 

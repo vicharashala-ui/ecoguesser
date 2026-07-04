@@ -70,6 +70,15 @@ export const SATELLITE_VISUAL = {
   BOUNDARY_COLOR:   '#E8ECEF',
   BOUNDARY_OPACITY: 0.55,
   BOUNDARY_WIDTH:   1,
+  // Deliberately its own tone, not BOUNDARY_COLOR -- state lines (the
+  // "Borders" toggle) must still read as a distinct gameplay hint overlay
+  // from the international border, not a second copy of it, even on
+  // satellite. A warm light tan (vs. the boundary's cool pale grey) keeps
+  // that distinction while actually showing up against the darkened raster
+  // -- BASE_VISUAL's dark hint color is invisible there.
+  STATE_LINE_COLOR:   '#e8d9ad',
+  STATE_LINE_OPACITY: 0.85,
+  STATE_LINE_WIDTH:   1.3,
   // Dropped for v9.0 (not deleted) -- reference look (test7.html) has no 3D terrain
   // at all. Config kept intact so re-enabling later is a one-line flip of
   // HILLSHADE_ENABLED, not a rebuild.

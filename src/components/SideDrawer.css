@@ -3,8 +3,13 @@
   position: fixed;
   inset: 0;
   z-index: 80;
-  background: rgba(17, 24, 39, 0.5);
+  background: rgba(17, 24, 39, 0);
   display: flex;
+  transition: background-color 0.3s ease;
+}
+
+.sd-backdrop.sd-open {
+  background: rgba(17, 24, 39, 0.5);
 }
 
 .sd-drawer {
@@ -15,6 +20,12 @@
   padding: 20px 18px calc(20px + env(safe-area-inset-bottom, 0px));
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   box-shadow: 4px 0 24px rgba(17, 24, 39, 0.15);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sd-backdrop.sd-open .sd-drawer {
+  transform: translateX(0);
 }
 
 .sd-section {
@@ -223,8 +234,22 @@
 }
 
 .sd-region-arrow {
+  display: inline-block;
   color: #9ca3af;
   font-size: 12px;
+  transition: transform 0.25s ease;
+}
+
+.sd-region-arrow-open {
+  transform: rotate(90deg);
+}
+
+/* Height is set inline per-region from the measured content (see
+   SideDrawer.jsx) since state names can wrap to two lines -- a fixed
+   collapsed/expanded height here would be wrong for those. */
+.sd-state-collapse {
+  overflow: hidden;
+  transition: max-height 0.25s ease;
 }
 
 .sd-state-list {
@@ -359,4 +384,13 @@
   font-size: 13.5px;
   font-weight: 700;
   color: #16a34a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sd-backdrop,
+  .sd-drawer,
+  .sd-region-arrow,
+  .sd-state-collapse {
+    transition: none;
+  }
 }
