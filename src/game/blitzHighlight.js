@@ -15,9 +15,18 @@
 // useMapState.js) so each state's own name works directly as its
 // feature-state id.
 
-import { LAYER_IDS, CATEGORY_META } from '../config.js';
+import { LAYER_IDS } from '../config.js';
 
 const STATE_SOURCE_ID = 'india-states';
+// Boundary polygon color -- deliberately NOT CATEGORY_META[site.category].color.
+// That color clashes with the correct/wrong highlight palette for several
+// categories: Tiger Reserve's accent (#dc2626) is the exact same red as a
+// 'wrong' state, and National Park/Wildlife Sanctuary's greens sit close
+// enough to 'correct' green (#22c55e) to be hard to tell apart. This blue
+// matches useMapState.js's BLITZ_COLOR 'selected' entry -- already part of
+// this feature's palette, and unused by the time REVEALING draws the
+// boundary (selection only shows pre-Confirm), so it never collides.
+const BOUNDARY_COLOR = '#3b82f6';
 // Fallback only -- BlitzMap.jsx now passes zoomToBoundary() a fitPadding
 // built from BlitzCard's real measured height (same pattern as
 // resultLayer.js's zoomToSiteBoundary), since the expanded card's height
@@ -64,15 +73,14 @@ export async function showReveal(map, correctStates, guessedState, isCorrect, si
   const geo = await boundaryPromise;
   if (!geo || !map.getSource(STATE_SOURCE_ID)) return; // no boundary, or map torn down mid-fetch
 
-  const color = CATEGORY_META[site.category]?.color ?? '#16a34a';
   map.addSource(LAYER_IDS.BLITZ_BOUNDARY, { type: 'geojson', data: geo });
   map.addLayer({
     id: `${LAYER_IDS.BLITZ_BOUNDARY}-fill`, type: 'fill', source: LAYER_IDS.BLITZ_BOUNDARY,
-    paint: { 'fill-color': color, 'fill-opacity': 0.2 },
+    paint: { 'fill-color': BOUNDARY_COLOR, 'fill-opacity': 0.2 },
   });
   map.addLayer({
     id: `${LAYER_IDS.BLITZ_BOUNDARY}-outline`, type: 'line', source: LAYER_IDS.BLITZ_BOUNDARY,
-    paint: { 'line-color': color, 'line-opacity': 0.7, 'line-width': 2 },
+    paint: { 'line-color': BOUNDARY_COLOR, 'line-opacity': 0.7, 'line-width': 2 },
   });
 }
 

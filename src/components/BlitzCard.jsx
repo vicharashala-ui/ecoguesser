@@ -4,12 +4,18 @@
 // BottomCard.jsx, reusing BottomCard.css directly for the shell (.bottom-card,
 // .bc-pill, .bc-card, .bc-card-header, .bc-meta-row, .bc-actions,
 // .bc-boundary-btn, etc.) -- only the content inside differs, plus badge
-// styles in BlitzCard.css.
+// styles and the .bz-compact spacing override in BlitzCard.css.
 // If BottomCard.css is ever renamed, this file's import below needs to follow.
 //
 // Critical: the pill must NEVER reveal site.state before Confirm -- Blitz
 // has no hint system, so `site.state`/`correctStates` may only appear
 // once roundState === 'REVEALING'.
+//
+// Expanded card is deliberately compact: no Streak line/divider (removed
+// per direct request -- Blitz's in-session streak is still tracked by
+// useBlitzRound.js, just no longer surfaced here), and the state name is
+// only shown once -- skipped in the meta row on a wrong guess since the
+// badge below already names it ("Wrong -- it's in ...").
 
 import { useId, forwardRef } from 'react';
 import { CATEGORY_META } from '../config.js';
@@ -33,8 +39,6 @@ function IconLeaf({ size = 18 }) {
  * @param {import('../config').Site} site
  * @param {string|null} selectedState
  * @param {{guessedState:string, correctStates:string[], isCorrect:boolean}|null} result
- * @param {number} streak
- * @param {number} bestStreak
  * @param {() => void} onConfirm
  * @param {() => void} onNextSite
  * @param {() => void} onShowBoundary - zooms in tight on site.hasBoundary's
@@ -51,8 +55,6 @@ const BlitzCard = forwardRef(function BlitzCard({
   site,
   selectedState,
   result,
-  streak,
-  bestStreak,
   onConfirm,
   onNextSite,
   onShowBoundary,
@@ -90,7 +92,7 @@ const BlitzCard = forwardRef(function BlitzCard({
       )}
 
       {isRevealing && result && (
-        <div className="bc-card">
+        <div className="bc-card bz-compact">
           <div className="bc-card-header">
             <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconLeaf size={22} /></span>
             <span className="bc-category-label">{meta.label.toUpperCase()}</span>
@@ -98,23 +100,22 @@ const BlitzCard = forwardRef(function BlitzCard({
 
           <h2 id={titleId} className="bc-card-name">{site.name}</h2>
 
-          {site.area_km2 != null && (
+          {(site.area_km2 != null || result.isCorrect) && (
             <div className="bc-meta-row">
-              <span className="bc-meta-item">{site.area_km2.toLocaleString()} km²</span>
+              {site.area_km2 != null && (
+                <span className="bc-meta-item">{site.area_km2.toLocaleString()} km²</span>
+              )}
+              {/* Wrong guesses already name the state(s) in the badge below --
+                  only repeat it here when correct, so it isn't shown twice. */}
+              {result.isCorrect && (
+                <span className="bc-meta-item">State: {result.correctStates.join(', ')}</span>
+              )}
             </div>
           )}
 
           <div className={`bz-badge ${result.isCorrect ? 'bz-badge-correct' : 'bz-badge-wrong'}`}>
             {result.isCorrect ? 'Correct!' : `Wrong — it's in ${result.correctStates.join(', ')}`}
           </div>
-
-          <div className="bc-meta-row">
-            <span className="bc-meta-item">State: {result.correctStates.join(', ')}</span>
-          </div>
-
-          <hr className="bc-divider" />
-
-          <div className="bc-daily-line">Streak: {streak} (best {bestStreak})</div>
 
           <div className="bc-actions">
             {site.hasBoundary && (

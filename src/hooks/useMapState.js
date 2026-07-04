@@ -255,8 +255,26 @@ export function useMapState(mapRef, mode) {
         paint: { 'line-color': '#6b7280', 'line-width': 0.8, 'line-dasharray': [3, 2] },
       });
 
+      // Dedicated one-point-per-state source for name labels, instead of
+      // symbol-labeling india-states' polygons directly. GeoJSON sources are
+      // internally split into a tile pyramid (geojson-vt) -- a polygon
+      // symbol layer places a label anchor per tile the polygon touches, so
+      // any state whose landmass straddles an internal tile boundary at the
+      // current zoom gets its name rendered once per tile fragment (Odisha's
+      // long north-south shape crosses one at zoom 4+, showing "Odisha"
+      // twice). A Point can't be split across a tile boundary, so sourcing
+      // labels from points instead guarantees exactly one label per state
+      // regardless of zoom. Each point is the largest sub-polygon's
+      // representative_point() (pre-computed, not centroid -- centroid can
+      // fall outside a concave/crescent state), so it always lands on the
+      // state's main landmass rather than an offshore island or the sea.
+      map.addSource('india-state-labels', {
+        type: 'geojson',
+        data: '/india-state-labels.geojson',
+      });
+
       map.addLayer({
-        id: LAYER_IDS.STATE_LABELS, type: 'symbol', source: 'india-states',
+        id: LAYER_IDS.STATE_LABELS, type: 'symbol', source: 'india-state-labels',
         layout: { 'text-field': ['get', 'st_nm'], 'text-size': 11, visibility: 'none' },
         paint: { 'text-color': '#374151', 'text-halo-color': '#fff', 'text-halo-width': 1 },
       });

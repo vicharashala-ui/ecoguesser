@@ -33,7 +33,7 @@ import RecenterButton from './RecenterButton.jsx';
 import { useBlitzRound } from '../hooks/useBlitzRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { showSelection, showReveal, clearAll, zoomToBoundary, clearBoundary } from '../game/blitzHighlight.js';
-import { LAYER_IDS } from '../config.js';
+import { LAYER_IDS, MAP_CONFIG } from '../config.js';
 import './BlitzMap.css';
 
 // Used to build zoomToBoundary()'s fitPadding once "Show Boundary" is
@@ -51,7 +51,6 @@ const REVEAL_CARD_GAP = 20; // breathing room above the card's top edge
 export default function BlitzMap({ mapRef, style, sites }) {
   const {
     roundState, site, selectedState, result,
-    streak, bestStreak,
     handleStateClick, handleConfirm, handleNextSite,
   } = useBlitzRound(sites);
 
@@ -94,13 +93,19 @@ export default function BlitzMap({ mapRef, style, sites }) {
     else clearAll(map);
   }, [mapRef, mapReady, roundState, selectedState]);
 
-  // REVEALING -> green/red (showReveal opens with its own clearAll).
+  // REVEALING -> green/red (showReveal opens with its own clearAll), plus an
+  // immediate fast reset to the default India-wide framing per direct
+  // request -- Blitz previously never touched the camera on reveal, so
+  // whatever zoom/pan the player was at when they tapped a state just sat
+  // there. 500ms keeps it snappy and distinct from the 1200ms "Show
+  // Boundary" zoom below, which is meant to linger once requested.
   // LOADING -> clear everything before the next site's blue preview starts.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
     if (roundState === 'REVEALING' && result) {
       showReveal(map, result.correctStates, result.guessedState, result.isCorrect, result.site);
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: 20, duration: 500 });
     } else if (roundState === 'LOADING') {
       clearAll(map);
     }
@@ -174,8 +179,6 @@ export default function BlitzMap({ mapRef, style, sites }) {
           site={site}
           selectedState={selectedState}
           result={result}
-          streak={streak}
-          bestStreak={bestStreak}
           onConfirm={handleConfirm}
           onNextSite={handleNextSite}
           onShowBoundary={handleShowBoundary}

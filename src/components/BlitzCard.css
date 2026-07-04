@@ -1,7 +1,22 @@
 /* src/components/BlitzCard.css */
 /* Shell rules (.bottom-card, .bc-pill, .bc-card, etc.) live in
-   BottomCard.css, imported alongside this file -- only the correct/wrong
-   badge is new here. */
+   BottomCard.css, imported alongside this file -- the correct/wrong badge
+   and the .bz-compact spacing override below are new here. */
+
+/* Tighter padding/gap than BottomCard.css's default .bc-card -- Blitz's
+   reveal panel dropped the Streak line and its divider, and never had
+   Classic/Daily's variable-length desc/species lines to begin with, so it
+   doesn't need the same vertical budget. Also shrinks BlitzMap.jsx's
+   measured cardHeight, which the RecenterButton offset and boundary-zoom
+   padding both read, so the crosshair sits closer to the shorter card too. */
+.bz-compact.bc-card {
+  padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+  gap: 4px;
+}
+
+.bz-compact .bc-actions {
+  margin-top: 8px;
+}
 
 .bz-badge {
   margin-top: 4px;
