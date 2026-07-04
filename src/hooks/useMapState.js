@@ -52,10 +52,11 @@ export function useMapState(mapRef, mode) {
   // .once('error', ...) would be consumed by ANY map error, not just an EOX-specific one.
   const onSatelliteErrorRef = useRef(null);
 
-  // v8.9 -- applies/reverts the full satellite visual spec: EOX raster color grading,
-  // AWS Terrarium hillshade, navy water tint, and a recolored border/river set shared
-  // with INDIA_BOUNDARY_LINE + STATE_LINES (so Borders, if also toggled on, matches
-  // the satellite palette rather than clashing with it).
+  // v9.0 -- applies/reverts the full satellite visual spec: ArcGIS raster color
+  // grading, navy water tint, and a recolored border/river set shared with
+  // INDIA_BOUNDARY_LINE + STATE_LINES (so Borders, if also toggled on, matches
+  // the satellite palette rather than clashing with it). Hillshade is dropped for
+  // now (SV.HILLSHADE_ENABLED) but the config/code path is kept for later re-add.
   const setSatellite = useCallback((on) => {
     const map = mapRef.current;
     if (!map || !mapReadyRef.current) return;
@@ -99,17 +100,18 @@ export function useMapState(mapRef, mode) {
     }
 
     if (on) {
-      if (map.getSource('eox-satellite')) return; // already on, no-op
+      if (map.getSource('satellite-raster')) return; // already on, no-op
       try {
         const firstNonBgId = map.getStyle().layers.find(l => l.type !== 'background')?.id;
 
-        // 1. EOX satellite raster, with the v8.9 color-grading paint properties.
-        map.addSource('eox-satellite', {
+        // 1. ArcGIS satellite raster (via our tile-caching proxy), with the v9.0
+        //    color-grading paint properties.
+        map.addSource('satellite-raster', {
           type: 'raster', tiles: [SATELLITE_TILES], tileSize: 256,
           maxzoom: MAP_CONFIG.SATELLITE_MAX_ZOOM,
         });
         map.addLayer({
-          id: LAYER_IDS.SATELLITE, type: 'raster', source: 'eox-satellite',
+          id: LAYER_IDS.SATELLITE, type: 'raster', source: 'satellite-raster',
           paint: {
             'raster-opacity':        1.0,
             'raster-saturation':     SV.RASTER_PAINT.saturation,
@@ -121,26 +123,29 @@ export function useMapState(mapRef, mode) {
         }, firstNonBgId);
 
         // 2. AWS Terrarium hillshade, stacked directly above the satellite raster.
+        //    Dropped for v9.0 -- see SV.HILLSHADE_ENABLED comment in config.js.
         //    NOTE: hillshade-exaggeration controls shading strength, NOT a literal
         //    "multiply blend" -- MapLibre's style spec has no blend-mode paint
         //    property. This is the closest real parameter to the spec's intent.
-        if (!map.getSource('terrarium-dem')) {
-          map.addSource('terrarium-dem', {
-            type: 'raster-dem', tiles: [SV.TERRAIN_TILES], tileSize: 256,
-            encoding: SV.TERRAIN_ENCODING,
-          });
+        if (SV.HILLSHADE_ENABLED) {
+          if (!map.getSource('terrarium-dem')) {
+            map.addSource('terrarium-dem', {
+              type: 'raster-dem', tiles: [SV.TERRAIN_TILES], tileSize: 256,
+              encoding: SV.TERRAIN_ENCODING,
+            });
+          }
+          map.addLayer({
+            id: 'satellite-hillshade', type: 'hillshade', source: 'terrarium-dem',
+            paint: {
+              'hillshade-illumination-direction': SV.HILLSHADE.illuminationDirection,
+              'hillshade-illumination-anchor':    SV.HILLSHADE.illuminationAnchor,
+              'hillshade-exaggeration':           SV.HILLSHADE.exaggeration,
+              'hillshade-shadow-color':           SV.HILLSHADE.shadowColor,
+              'hillshade-highlight-color':        SV.HILLSHADE.highlightColor,
+              'hillshade-accent-color':           SV.HILLSHADE.accentColor,
+            },
+          }, firstNonBgId);
         }
-        map.addLayer({
-          id: 'satellite-hillshade', type: 'hillshade', source: 'terrarium-dem',
-          paint: {
-            'hillshade-illumination-direction': SV.HILLSHADE.illuminationDirection,
-            'hillshade-illumination-anchor':    SV.HILLSHADE.illuminationAnchor,
-            'hillshade-exaggeration':           SV.HILLSHADE.exaggeration,
-            'hillshade-shadow-color':           SV.HILLSHADE.shadowColor,
-            'hillshade-highlight-color':        SV.HILLSHADE.highlightColor,
-            'hillshade-accent-color':           SV.HILLSHADE.accentColor,
-          },
-        }, firstNonBgId);
 
         // 3. Navy water tint, drawn on top of both, so water reads as solid color
         //    rather than raw imagery or hillshade-over-ocean noise.
@@ -160,11 +165,11 @@ export function useMapState(mapRef, mode) {
         appendAttribution(map, SATELLITE_ATTRIBUTION);
 
         onSatelliteErrorRef.current = (e) => {
-          if (e.sourceId !== 'eox-satellite') return;
+          if (e.sourceId !== 'satellite-raster') return;
           map.off('error', onSatelliteErrorRef.current);
           onSatelliteErrorRef.current = null;
           if (map.getLayer(LAYER_IDS.SATELLITE)) map.removeLayer(LAYER_IDS.SATELLITE);
-          if (map.getSource('eox-satellite')) map.removeSource('eox-satellite');
+          if (map.getSource('satellite-raster')) map.removeSource('satellite-raster');
           if (map.getLayer('satellite-hillshade')) map.removeLayer('satellite-hillshade');
           if (map.getSource('terrarium-dem')) map.removeSource('terrarium-dem');
           if (map.getLayer('satellite-water-tint')) map.removeLayer('satellite-water-tint');
@@ -186,7 +191,7 @@ export function useMapState(mapRef, mode) {
         onSatelliteErrorRef.current = null;
       }
       if (map.getLayer(LAYER_IDS.SATELLITE)) map.removeLayer(LAYER_IDS.SATELLITE);
-      if (map.getSource('eox-satellite')) map.removeSource('eox-satellite');
+      if (map.getSource('satellite-raster')) map.removeSource('satellite-raster');
       if (map.getLayer('satellite-hillshade')) map.removeLayer('satellite-hillshade');
       if (map.getSource('terrarium-dem')) map.removeSource('terrarium-dem');
       if (map.getLayer('satellite-water-tint')) map.removeLayer('satellite-water-tint');

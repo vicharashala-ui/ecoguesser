@@ -29,13 +29,20 @@ export default function SatelliteOverlay({ active }) {
       const minWH = Math.min(width, height);
       const maxWH = Math.max(width, height);
 
-      // Vignette: transparent center -> black at edges
+      // Vignette: transparent center -> mid-darkness -> black at edges.
+      // Three stops (v9.0) instead of v8.9's flat 0->1 falloff, matching the
+      // reference's steeper edge darkening. r0/r1 use different dimension bases
+      // (min vs max of width/height) same as before -- the mid stop's position is
+      // derived from where midStopRatio would fall using r1's basis, then expressed
+      // as a fraction of the r0..r1 span since canvas gradients position stops 0-1
+      // along that span, not in raw pixels.
       const v = SATELLITE_VISUAL.VIGNETTE;
-      const vignette = ctx.createRadialGradient(
-        cx, cy, minWH * v.innerStopRatio,
-        cx, cy, maxWH * v.outerStopRatio
-      );
+      const r0 = minWH * v.innerStopRatio;
+      const r1 = maxWH * v.outerStopRatio;
+      const vignette = ctx.createRadialGradient(cx, cy, r0, cx, cy, r1);
       vignette.addColorStop(0, 'rgba(0,0,0,0)');
+      const midPos = Math.min(1, Math.max(0, (maxWH * v.midStopRatio - r0) / (r1 - r0)));
+      vignette.addColorStop(midPos, `rgba(0,0,0,${v.midOpacity})`);
       vignette.addColorStop(1, `rgba(0,0,0,${v.maxOpacity})`);
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, width, height);

@@ -9,23 +9,40 @@ export const MAP_CONFIG = {
   INDIA_CENTER:       [82.5,22.5],     // flyTo() Reset button only
   INDIA_ZOOM:         4.5,             // flyTo() Reset button only
   MIN_ZOOM: 3, MAX_ZOOM: 12,
-  SATELLITE_MAX_ZOOM: 9,
+  SATELLITE_MAX_ZOOM: 8,
 };
 // Do NOT pass INDIA_CENTER/INDIA_ZOOM to MapLibre constructor.
 
-export const SATELLITE_TILES = 'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless_3857/default/g/{z}/{y}/{x}.jpg';
-export const SATELLITE_ATTRIBUTION = 'Sentinel-2 cloudless - https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017)';
+// v9.0 -- satellite source switched from EOX Sentinel-2 cloudless to ArcGIS World
+// Imagery, routed through our own edge-caching proxy (functions/tiles/[[path]].js)
+// to stay within a 2M-tile/month ArcGIS quota as player count grows -- repeat
+// requests for the same tile (very likely, since locations are a fixed set of
+// protected areas) are served from Cloudflare's cache instead of hitting ArcGIS.
+export const SATELLITE_TILES = '/tiles/{z}/{y}/{x}';
+export const SATELLITE_ATTRIBUTION = 'Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community';
 
-// v8.9 -- full satellite visual spec. hillshade "multiply blend" is NOT a literal
+// Rollback path -- if ArcGIS quality/quota doesn't work out, swap SATELLITE_TILES
+// and SATELLITE_ATTRIBUTION back to these two. See spec v9.0 section 6.
+export const SATELLITE_TILES_EOX = 'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless_3857/default/g/{z}/{y}/{x}.jpg';
+export const SATELLITE_ATTRIBUTION_EOX = 'Sentinel-2 cloudless - https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017)';
+
+// v9.0 -- full satellite visual spec. hillshade "multiply blend" is NOT a literal
 // MapLibre paint property -- closest available parameter is hillshade-exaggeration,
 // which controls shading strength, not a true blend mode.
 export const SATELLITE_VISUAL = {
   BACKGROUND: '#021B3A',
+  // Scoped to the satellite raster layer only (raster-* paint properties), not a
+  // canvas-wide CSS filter -- MapLibre draws satellite + boundaries + hints into one
+  // shared canvas, so a container-level filter would also tint boundary/hint colors.
+  // Values below target the same "punchier, slightly darkened" feel as a CSS
+  // contrast(1.15) saturate(1.1) brightness(0.85) filter, mapped onto MapLibre's
+  // raster-paint scale rather than a literal unit conversion -- re-tune against
+  // real ArcGIS tiles if the look needs adjusting (spec v9.0 open item).
   RASTER_PAINT: {
-    saturation:     0.10,
-    contrast:       0.07,
-    brightnessMin:  0.02,
-    brightnessMax:  0.90,
+    saturation:     0.15,
+    contrast:       0.15,
+    brightnessMin:  0.0,
+    brightnessMax:  0.88,
     resampling:     'linear',
   },
   WATER_COLOR:    '#043A6B',
@@ -35,6 +52,10 @@ export const SATELLITE_VISUAL = {
   BOUNDARY_COLOR:   '#E8ECEF',
   BOUNDARY_OPACITY: 0.55,
   BOUNDARY_WIDTH:   1,
+  // Dropped for v9.0 (not deleted) -- reference look (test7.html) has no 3D terrain
+  // at all. Config kept intact so re-enabling later is a one-line flip of
+  // HILLSHADE_ENABLED, not a rebuild.
+  HILLSHADE_ENABLED: false,
   TERRAIN_TILES:    'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
   TERRAIN_ENCODING: 'terrarium',
   HILLSHADE: {
@@ -45,8 +66,17 @@ export const SATELLITE_VISUAL = {
     highlightColor:        '#F5F7F7',
     accentColor:           '#D8E3EA',
   },
-  VIGNETTE: { innerStopRatio: 0.28, outerStopRatio: 0.74, maxOpacity: 0.12 },
-  GLOW:     { color: '123,196,255', innerStopRatio: 0.35, outerStopRatio: 0.72, maxOpacity: 0.10 },
+  // v9.0 -- stronger, two-stop vignette matching the reference's steeper edge
+  // darkening (near-transparent center, ~45% black at the mid stop, ~85% black at
+  // the edge) -- v8.9's single falloff to 12% barely read as intentional.
+  VIGNETTE: {
+    innerStopRatio: 0.28,
+    midStopRatio:   0.68,
+    midOpacity:     0.45,
+    outerStopRatio: 1.0,
+    maxOpacity:     0.85,
+  },
+  GLOW: { color: '123,196,255', innerStopRatio: 0.35, outerStopRatio: 0.72, maxOpacity: 0.10 },
 };
 
 // Base-mode (non-satellite) colors/expressions, needed to restore on satellite OFF --
