@@ -90,13 +90,14 @@ export const SATELLITE_VISUAL = {
 // satellite OFF would look wrong at every zoom level except where the flat
 // override happened to coincide with the real curve).
 export const BASE_VISUAL = {
-  RIVER_COLOR:   '#a0c8f0',
+  RIVER_COLOR:   '#3d7fb5',
   RIVER_OPACITY: 1,
-  WATER_COLOR:   '#4a80ab',
+  WATER_COLOR:   '#043A6B',
+  WATER_OPACITY: 0.32,
   BACKGROUND:    '#f8f4f0',
-  BOUNDARY_COLOR:    '#2d5a3f',
-  BOUNDARY_OPACITY_EXPR: ['interpolate', ['linear'], ['zoom'], 0, 0.4, 4, 1],
-  BOUNDARY_WIDTH_EXPR:   ['interpolate', ['linear'], ['zoom'], 3, 1, 5, 1.2, 12, 3],
+  BOUNDARY_COLOR:    '#1c3b28',
+  BOUNDARY_OPACITY_EXPR: ['interpolate', ['linear'], ['zoom'], 0, 0.8, 3, 1],
+  BOUNDARY_WIDTH_EXPR:   ['interpolate', ['linear'], ['zoom'], 3, 1.5, 5, 2, 12, 3.5],
   // Deliberately NOT tied to BOUNDARY_COLOR (country border) -- state lines are a
   // gameplay hint overlay and must stay muted so they never compete visually with
   // protected-area boundaries. See useMapState.js restyleBordersAndRivers.

@@ -33,6 +33,7 @@ import { useState, useEffect, useCallback } from 'react';
  *   handleStateClick: (stateName: string|null) => void,
  *   handleConfirm: () => void,
  *   handleNextSite: () => void,
+ *   handleSkip: () => void,
  * }}
  */
 export function useBlitzRound(sitePool) {
@@ -93,6 +94,13 @@ export function useBlitzRound(sitePool) {
     setRoundState('LOADING');
   }, []);
 
+  // Mirrors useClassicRound.js's handleSkip -- same guard, same "re-enter
+  // LOADING" mechanism the effect above already resolves into a fresh site.
+  const handleSkip = useCallback(() => {
+    if (roundState !== 'READING' && roundState !== 'SELECTING') return; // nothing to skip once revealed
+    setRoundState('LOADING');
+  }, [roundState]);
+
   return {
     roundState,
     site,
@@ -103,5 +111,6 @@ export function useBlitzRound(sitePool) {
     handleStateClick,
     handleConfirm,
     handleNextSite,
+    handleSkip,
   };
 }

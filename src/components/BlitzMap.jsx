@@ -62,7 +62,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
 
   const {
     roundState, site, selectedState, result,
-    handleStateClick, handleConfirm, handleNextSite,
+    handleStateClick, handleConfirm, handleNextSite, handleSkip,
   } = useBlitzRound(sitePool);
 
   const { mapReady, politicalNames, setPoliticalNames } = useMapState(mapRef, 'blitz');
@@ -196,6 +196,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
           result={result}
           onConfirm={handleConfirm}
           onNextSite={handleNextSite}
+          onSkip={handleSkip}
           onShowBoundary={handleShowBoundary}
         />
       )}

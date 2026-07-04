@@ -2,14 +2,17 @@
 //
 // Blitz's guess panel: same pill -> expanded-card shell as
 // BottomCard.jsx, reusing BottomCard.css directly for the shell (.bottom-card,
-// .bc-pill, .bc-card, .bc-card-header, .bc-meta-row, .bc-actions,
-// .bc-boundary-btn, etc.) -- only the content inside differs, plus badge
-// styles and the .bz-compact spacing override in BlitzCard.css.
-// If BottomCard.css is ever renamed, this file's import below needs to follow.
+// .bc-pill, .bc-pill-top, .bc-pill-actions, .bc-card, .bc-card-header,
+// .bc-meta-row, .bc-actions, .bc-boundary-btn, etc.) -- pre-guess pill now
+// mirrors BottomCard.jsx's two-row layout exactly (name row, then
+// Skip/Hint/Confirm row), plus badge styles and the .bz-compact spacing
+// override in BlitzCard.css. If BottomCard.css is ever renamed, this file's
+// import below needs to follow.
 //
 // Critical: the pill must NEVER reveal site.state before Confirm -- Blitz
-// has no hint system, so `site.state`/`correctStates` may only appear
-// once roundState === 'REVEALING'.
+// has no hint SYSTEM (the Hint button renders per direct request but is
+// inert -- see its own comment below), so `site.state`/`correctStates` may
+// only appear once roundState === 'REVEALING'.
 //
 // Expanded card is deliberately compact: no Streak line/divider (removed
 // per direct request -- Blitz's in-session streak is still tracked by
@@ -48,6 +51,28 @@ function IconFrame({ size = 14 }) {
   );
 }
 
+// Below two duplicated from BottomCard.jsx for the same reason as IconFrame.
+function IconHint({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M9 18h6M10 21h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="M12 3a6 6 0 0 0-3.5 10.9c.5.36.5.6.5 1.1v.5h6v-.5c0-.5 0-.74.5-1.1A6 6 0 0 0 12 3Z"
+        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconSkip({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4.5 6l7 6-7 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13 6l7 6-7 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /**
  * @param {'LOADING'|'READING'|'SELECTING'|'REVEALING'} roundState
  * @param {import('../config').Site} site
@@ -55,6 +80,8 @@ function IconFrame({ size = 14 }) {
  * @param {{guessedState:string, correctStates:string[], isCorrect:boolean}|null} result
  * @param {() => void} onConfirm
  * @param {() => void} onNextSite
+ * @param {() => void} [onSkip] - abandons the current site for a new one,
+ *   same semantics as Classic's Skip (BottomCard.jsx / useClassicRound.js).
  * @param {() => void} onShowBoundary - zooms in tight on site.hasBoundary's
  *   polygon, already auto-drawn on reveal. Button only renders when site.hasBoundary is true.
  * @param {React.Ref<HTMLDivElement>} ref - forwarded to the outer `.bottom-card` div so
@@ -71,6 +98,7 @@ const BlitzCard = forwardRef(function BlitzCard({
   result,
   onConfirm,
   onNextSite,
+  onSkip,
   onShowBoundary,
 }, ref) {
   const titleId = useId();
@@ -87,21 +115,49 @@ const BlitzCard = forwardRef(function BlitzCard({
     >
       {!isRevealing && (
         <div className="bc-pill">
-          <span className="bc-icon" aria-hidden="true"><IconLeaf /></span>
+          <div className="bc-pill-top">
+            <span className="bc-icon" aria-hidden="true"><IconLeaf /></span>
+            <span className="bc-pill-text">
+              <span id={titleId} className="bc-site-name">{site.name}</span>
+            </span>
+          </div>
 
-          <span className="bc-pill-text">
-            <span id={titleId} className="bc-site-name">{site.name}</span>
-          </span>
+          <div className="bc-pill-actions">
+            {onSkip && (
+              <button
+                type="button"
+                className="bc-skip-btn"
+                onClick={onSkip}
+                aria-label="Skip this site"
+                title="Skip this site"
+              >
+                <IconSkip />
+              </button>
+            )}
 
-          <button
-            type="button"
-            className="bc-confirm-btn"
-            onClick={onConfirm}
-            disabled={!selectedState}
-            aria-label="Confirm guess"
-          >
-            Confirm
-          </button>
+            {/* No hint system in Blitz yet -- rendered per direct request but
+                inert (same disabled/"coming soon" pattern as the expanded
+                card's Play Trivia button below), not wired to any handler. */}
+            <button
+              type="button"
+              className="bc-hint-btn"
+              disabled
+              aria-label="Hint - coming soon"
+              title="Coming soon"
+            >
+              <IconHint />
+            </button>
+
+            <button
+              type="button"
+              className="bc-confirm-btn"
+              onClick={onConfirm}
+              disabled={!selectedState}
+              aria-label="Confirm guess"
+            >
+              Confirm
+            </button>
+          </div>
         </div>
       )}
 
