@@ -26,7 +26,7 @@ function IconCrosshair({ size = 20 }) {
 
 export default function RecenterButton({ mapRef, style }) {
   const handleClick = () => {
-    mapRef.current?.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: 20 });
+    mapRef.current?.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING });
   };
 
   return (

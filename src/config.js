@@ -2,14 +2,25 @@ export const FEEDBACK_FORM_URL = import.meta.env.VITE_FEEDBACK_FORM_URL;
 export const FEEDBACK_ENTRY_ID = import.meta.env.VITE_FEEDBACK_ENTRY_ID;
 export const APP_URL   = 'https://ecoguesser.pages.dev';
 export const MAP_STYLE = '/map-style.json';
+// v9.1 reverted Blitz's basemap request -- state-fill/outline highlighting reads
+// worse over the terrain/hillshade look, so Blitz alone keeps the pre-terrain
+// plain OFM style (Classic/Daily keep MAP_STYLE). Static file, not derived from
+// MAP_STYLE at runtime, so it can't drift if map-style.json changes later.
+export const MAP_STYLE_BLITZ = '/map-style-ofm.json';
 
 export const MAP_CONFIG = {
   INDIA_BOUNDS:       [[68.1,6.4],[97.4,37.1]],
-  MAX_BOUNDS:         [[45,-8],[112,52]],
+  MAX_BOUNDS:         [[45,-18],[112,52]],
   INDIA_CENTER:       [82.5,22.5],     // flyTo() Reset button only
   INDIA_ZOOM:         4.5,             // flyTo() Reset button only
   MIN_ZOOM: 3, MAX_ZOOM: 12,
   SATELLITE_MAX_ZOOM: 8,
+  // Portrait viewports are much taller than INDIA_BOUNDS' aspect ratio, so
+  // fitBounds always has vertical slack left over after the width fits.
+  // Uneven top/bottom padding biases where that slack goes -- less above
+  // (Central Asia) and more below (ocean) -- instead of the flat `20` every
+  // fitBounds(MAP_CONFIG.INDIA_BOUNDS, ...) call used to share.
+  FIT_PADDING: { top: 10, bottom: 260, left: 24, right: 24 },
 };
 // Do NOT pass INDIA_CENTER/INDIA_ZOOM to MapLibre constructor.
 

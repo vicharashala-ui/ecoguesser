@@ -149,7 +149,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
       // Next Site lands here -- reset the view to the default India-wide
       // framing per direct request, same fitBounds call RecenterButton/
       // MapContainer's initial load both use.
-      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: 20 });
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING });
     }
   }, [mapRef, mapReady, roundState, result, setPolitical]);
 

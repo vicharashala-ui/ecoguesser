@@ -22,7 +22,9 @@ const GUESS_PIN_SVG = `
 //   wire this straight to useClassicRound's handleMapClick.
 // @param guess: {lat:number, lng:number} | null -- the player's current pin
 //   position from useClassicRound. null removes the marker (e.g. on LOADING).
-export default function MapContainer({ mapRef, onMapClick, guess }) {
+// @param mapStyle: string -- style URL/path, defaults to MAP_STYLE. BlitzMap.jsx
+//   overrides this with MAP_STYLE_BLITZ (see config.js).
+export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP_STYLE }) {
   const containerRef = useRef(null);
   const markerRef = useRef(null);
 
@@ -39,7 +41,7 @@ export default function MapContainer({ mapRef, onMapClick, guess }) {
   useEffect(() => {
     mapRef.current = new maplibregl.Map({
       container: containerRef.current,
-      style: MAP_STYLE,
+      style: mapStyle,
       maxParallelImageRequests: 6,
       maxBounds: MAP_CONFIG.MAX_BOUNDS,
       minZoom: MAP_CONFIG.MIN_ZOOM,
@@ -49,7 +51,7 @@ export default function MapContainer({ mapRef, onMapClick, guess }) {
     });
 
     mapRef.current.once('load', () => {
-      mapRef.current.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: 20, animate: false });
+      mapRef.current.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, animate: false });
     });
 
     mapRef.current.on('click', (e) => {

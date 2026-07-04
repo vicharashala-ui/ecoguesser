@@ -36,7 +36,7 @@ import { useBlitzRound } from '../hooks/useBlitzRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { showSelection, showReveal, clearAll, zoomToBoundary, clearBoundary } from '../game/blitzHighlight.js';
 import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
-import { LAYER_IDS, MAP_CONFIG } from '../config.js';
+import { LAYER_IDS, MAP_CONFIG, MAP_STYLE_BLITZ } from '../config.js';
 import './BlitzMap.css';
 
 // Used to build zoomToBoundary()'s fitPadding once "Show Boundary" is
@@ -116,7 +116,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     if (!map || !mapReady) return;
     if (roundState === 'REVEALING' && result) {
       showReveal(map, result.correctStates, result.guessedState, result.isCorrect, result.site);
-      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: 20, duration: 500 });
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 500 });
     } else if (roundState === 'LOADING') {
       clearAll(map);
     }
@@ -178,7 +178,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
         <div className="bz-empty-pool">No sites match these filters.</div>
       )}
 
-      <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={null} />
+      <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={null} mapStyle={MAP_STYLE_BLITZ} />
       <RecenterButton
         mapRef={mapRef}
         style={
