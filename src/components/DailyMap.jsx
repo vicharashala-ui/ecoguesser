@@ -76,16 +76,12 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
   const {
     mapReady,
     satellite,
-    political,
     satelliteUnavailable,
     setSatellite,
-    setPolitical,
   } = useMapState(mapRef, 'daily');
 
   const {
     roundState,
-    roundIndex,
-    totalRounds,
     isLastRound,
     site,
     guess,
@@ -193,43 +189,32 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
 
   return (
     <div style={style} className="eg-daily-map">
-      {/* Section 8 Daily sub-header: [timer] 1:43   Round 2/5 -- Skip removed
-          per direct request; pushed down below Header.jsx's title bar so it
-          no longer overlaps "EcoGuesser" (see .eg-daily-subheader's `top`). */}
-      <div className="eg-daily-subheader">
-        <span className="eg-timer" style={{ color: timerColor(timeRemaining) }}>
+      {/* Top-right stack: layer panel (Satellite only now -- Political was
+          removed per direct request, Daily forces state borders on at all
+          times via useMapState) with the round timer sitting directly below
+          it. Timer used to live in a separate centered "[timer] Round 2/5"
+          subheader pill -- the round counter text was removed and the timer
+          moved up here per direct request. */}
+      <div className="dm-top-right-stack">
+        <div className="dm-layer-panel">
+          <label>
+            <input
+              type="checkbox"
+              checked={satellite}
+              disabled={!mapReady || satelliteUnavailable}
+              onChange={() => setSatellite(!satellite)}
+            />
+            Satellite
+          </label>
+          {satelliteUnavailable && (
+            <span className="dm-sat-warning" title="Satellite imagery unavailable right now">
+              Satellite unavailable
+            </span>
+          )}
+        </div>
+        <div className="dm-timer-pill" style={{ color: timerColor(timeRemaining) }}>
           {formatTime(timeRemaining)}
-        </span>
-        <span className="eg-round-counter">
-          Round {roundIndex + 1}/{totalRounds}
-        </span>
-      </div>
-
-      {/* Section 8 Daily layer panel: OFM (always on) + Satellite + Political.
-          No Names row -- politicalNames is always false in Daily, never
-          surfaced as a toggle. Mirrors ClassicMap.css's .cm-layer-panel
-          placeholder styling/structure (that panel is itself explicitly a
-          carried-over placeholder, not Section 8's final icon-button UI --
-          same status here). */}
-      <div className="dm-layer-panel">
-        <label>
-          <input
-            type="checkbox"
-            checked={satellite}
-            disabled={!mapReady || satelliteUnavailable}
-            onChange={() => setSatellite(!satellite)}
-          />
-          Satellite
-        </label>
-        {satelliteUnavailable && (
-          <span className="dm-sat-warning" title="Satellite imagery unavailable right now">
-            Satellite unavailable
-          </span>
-        )}
-        <label>
-          <input type="checkbox" checked={political} disabled={!mapReady} onChange={() => setPolitical(!political)} />
-          Political
-        </label>
+        </div>
       </div>
 
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />

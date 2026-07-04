@@ -342,7 +342,7 @@ export function useMapState(mapRef, mode) {
       setState(prev => ({ ...prev, mapReady: true }));
 
       if (mode === 'daily') {
-        setPolitical(false);
+        setPolitical(true); // mandatory, non-togglable per direct request -- Daily always shows state borders now
       } else if (mode === 'blitz') {
         setPolitical(true); // mandatory, non-togglable -- state shapes must read clearly
       } else {

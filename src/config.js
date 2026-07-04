@@ -103,8 +103,11 @@ export const SATELLITE_VISUAL = {
 export const BASE_VISUAL = {
   RIVER_COLOR:   '#7996ac',
   RIVER_OPACITY: 1,
-  WATER_COLOR:   '#99b3cc',
-  WATER_OPACITY: 0.88,
+  // v9.2 -- lowered so hypsometric-tint's ocean-depth gradient (same
+  // terrain-dem source, negative-elevation stops) shows through as a
+  // bathymetry effect instead of being hidden under a flat tint.
+  WATER_COLOR:   '#8fadc7',
+  WATER_OPACITY: 0.4,
   BACKGROUND:    '#f8f4f0',
   BOUNDARY_COLOR:    '#1c3b28',
   BOUNDARY_OPACITY_EXPR: ['interpolate', ['linear'], ['zoom'], 0, 0.8, 3, 1],
@@ -135,6 +138,8 @@ export const LAYER_IDS = {
   BLITZ_FILL:          'blitz-fill',
   BLITZ_OUTLINE:       'blitz-outline',
   BLITZ_BOUNDARY:      'blitz-boundary',
+  BLITZ_HINT_FILL:     'blitz-hint-fill',
+  BLITZ_HINT_OUTLINE:  'blitz-hint-outline',
 };
 
 export const SCORING = { MAX_SCORE: 5000, DECAY_KM: 100, HINT_PENALTY: 500 };

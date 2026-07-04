@@ -7,6 +7,12 @@
      DailyMap.css both reference this var (with the same 64px fallback) to
      clear the nav bar, but neither previously had a real value to read. */
   --eg-nav-height: 64px;
+  /* Real source of truth for Header.jsx's height (title + tagline, two
+     lines) -- StatsView.css, DailyMap.css, ClassicMap.css and BlitzMap.css
+     all reference this var (with the same 72px fallback) to clear the
+     header bar instead of hardcoding 52px, which was the old single-line
+     title's height. */
+  --eg-header-height: 72px;
 }
 
 body {

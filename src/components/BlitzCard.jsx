@@ -9,10 +9,10 @@
 // override in BlitzCard.css. If BottomCard.css is ever renamed, this file's
 // import below needs to follow.
 //
-// Critical: the pill must NEVER reveal site.state before Confirm -- Blitz
-// has no hint SYSTEM (the Hint button renders per direct request but is
-// inert -- see its own comment below), so `site.state`/`correctStates` may
-// only appear once roundState === 'REVEALING'.
+// Critical: the pill must NEVER reveal site.state before Confirm -- Hint
+// only highlights the containing region(s) on the map (blitzHighlight.js's
+// showHintRegion), never the state name itself, so `site.state`/
+// `correctStates` text may only appear once roundState === 'REVEALING'.
 //
 // Expanded card is deliberately compact: no Streak line/divider (removed
 // per direct request -- Blitz's in-session streak is still tracked by
@@ -82,6 +82,9 @@ function IconSkip({ size = 18 }) {
  * @param {() => void} onNextSite
  * @param {() => void} [onSkip] - abandons the current site for a new one,
  *   same semantics as Classic's Skip (BottomCard.jsx / useClassicRound.js).
+ * @param {() => void} onHint - highlights every state in the correct
+ *   region(s) amber for 3s. Can be tapped any number of times per round --
+ *   there's no hint counter or penalty in Blitz.
  * @param {() => void} onShowBoundary - zooms in tight on site.hasBoundary's
  *   polygon, already auto-drawn on reveal. Button only renders when site.hasBoundary is true.
  * @param {React.Ref<HTMLDivElement>} ref - forwarded to the outer `.bottom-card` div so
@@ -99,6 +102,7 @@ const BlitzCard = forwardRef(function BlitzCard({
   onConfirm,
   onNextSite,
   onSkip,
+  onHint,
   onShowBoundary,
 }, ref) {
   const titleId = useId();
@@ -135,15 +139,12 @@ const BlitzCard = forwardRef(function BlitzCard({
               </button>
             )}
 
-            {/* No hint system in Blitz yet -- rendered per direct request but
-                inert (same disabled/"coming soon" pattern as the expanded
-                card's Play Trivia button below), not wired to any handler. */}
             <button
               type="button"
               className="bc-hint-btn"
-              disabled
-              aria-label="Hint - coming soon"
-              title="Coming soon"
+              onClick={onHint}
+              aria-label="Hint - highlight the region"
+              title="Highlight the correct region"
             >
               <IconHint />
             </button>

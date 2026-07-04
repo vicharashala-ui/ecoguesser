@@ -14,53 +14,41 @@
   height: 100%;
 }
 
-/* ---- Sub-header: [timer] 1:43   Round 2/5 ------------------------------- */
+/* ---- Top-right stack: layer panel + timer pill below it ---------------- */
 
-.eg-daily-subheader {
+.dm-top-right-stack {
   position: absolute;
-  /* Pulled down below Header.jsx's 52px title bar (+ safe-area inset) so
-     the pill no longer sits on top of "EcoGuesser". */
-  top: calc(52px + env(safe-area-inset-top, 0px) + 10px);
-  left: 50%;
-  /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
-     see the comment there for the full writeup. Can't add a second
-     `transform` declaration (this one already uses transform for
-     centering), so `translateZ(0)` is folded into the same transform value
-     instead of a separate line. */
-  transform: translateX(-50%) translateZ(0);
-  isolation: isolate;
-  z-index: 15;
+  /* Pulled down below Header.jsx's title bar (+ safe-area inset) via the
+     shared --eg-header-height var. */
+  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
+  right: 10px;
+  z-index: 10;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 8px 16px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.dm-timer-pill {
+  min-width: 54px;
+  text-align: center;
+  padding: 6px 14px;
   border-radius: 999px;
   background: rgba(17, 24, 39, 0.78);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
+     see the comment there for the full writeup. */
+  isolation: isolate;
+  transform: translateZ(0);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
-}
-
-.eg-timer {
   font-size: 16px;
   font-weight: 800;
-  min-width: 38px;
-  text-align: center;
-}
-
-.eg-round-counter {
-  font-size: 13px;
-  font-weight: 700;
-  color: #e5e7eb;
 }
 
 /* ---- Layer panel -- same placeholder treatment as ClassicMap's ---------- */
 
 .dm-layer-panel {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 10;
   background: rgba(255, 255, 255, 0.9);
   padding: 0.75rem;
   border-radius: 8px;

@@ -5,13 +5,12 @@
   left: 0;
   right: 0;
   z-index: 15;
-  height: 52px;
+  height: var(--eg-header-height, 72px);
   display: flex;
   align-items: center;
-  gap: 10px;
   padding: 0 12px;
   padding-top: env(safe-area-inset-top, 0px);
-  background: linear-gradient(to bottom, rgba(17, 24, 39, 0.35), transparent);
+  background: linear-gradient(to bottom, rgba(17, 24, 39, 0.45), rgba(17, 24, 39, 0.1) 70%, transparent);
   pointer-events: none;
 }
 
@@ -28,12 +27,57 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(17, 24, 39, 0.15);
+  /* Sits above/left of the absolutely-centered title block below, which
+     would otherwise overlap it on narrow screens. */
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+/* Centered independent of the hamburger -- left:50%/translateX(-50%) rather
+   than flex `margin: 0 auto`, so the block's true center always lands on the
+   viewport's center regardless of the button's own width. */
+.eg-header-title-block {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  pointer-events: none;
+  /* Keeps long tagline text from ever colliding with the hamburger button
+     on the narrowest supported viewports. */
+  max-width: calc(100% - 100px);
 }
 
 .eg-header-title {
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-weight: 800;
-  font-size: 17px;
+  font-size: 21px;
+  line-height: 1.1;
+  letter-spacing: 0.2px;
   color: #fff;
-  text-shadow: 0 1px 3px rgba(17, 24, 39, 0.4);
+  text-shadow: 0 1px 3px rgba(17, 24, 39, 0.45);
+  white-space: nowrap;
+}
+
+/* Tagline -- small, uppercase, letter-spaced caps read as a deliberate
+   sub-brand line rather than body copy, and stay legible at this size only
+   with the extra tracking + reduced (not full) opacity for hierarchy against
+   the bolder title above it. Real text (not an image), so it stays
+   selectable/crawlable. */
+.eg-header-tagline {
+  margin: 0;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 2px rgba(17, 24, 39, 0.45);
+  white-space: nowrap;
 }

@@ -145,3 +145,44 @@ export function clearBoundary(map) {
   }
   if (map.getSource(LAYER_IDS.BLITZ_BOUNDARY)) map.removeSource(LAYER_IDS.BLITZ_BOUNDARY);
 }
+
+// Hint button -- deliberately a filter-based layer pair (mirrors
+// stateHighlight.js's HINT_FILL/HINT_OUTLINE idiom), NOT another
+// setFeatureState blitzStatus value. It has to render simultaneously with
+// whatever blitzStatus is already painted (a blue 'selected' state can sit
+// inside the hinted region), and setFeatureState only holds one value per
+// feature at a time -- a 'hint' status would stomp 'selected' the instant a
+// tap lands inside the region. An independent filtered layer avoids that
+// collision entirely and needs no per-feature bookkeeping.
+const HINT_COLOR = '#f59e0b'; // amber -- distinct from selected(blue)/correct(green)/wrong(red)/boundary(blue)
+
+/** Region-level hint -- fills+outlines every state in `regionStates` amber. Caller owns the 3s auto-hide timer. */
+export function showHintRegion(map, regionStates) {
+  if (!map || !map.getSource(STATE_SOURCE_ID) || !regionStates?.length) return;
+  const filter = ['in', ['get', 'st_nm'], ['literal', regionStates]];
+
+  if (map.getLayer(LAYER_IDS.BLITZ_HINT_FILL)) {
+    map.setFilter(LAYER_IDS.BLITZ_HINT_FILL, filter);
+  } else {
+    map.addLayer({
+      id: LAYER_IDS.BLITZ_HINT_FILL, type: 'fill', source: STATE_SOURCE_ID, filter,
+      paint: { 'fill-color': HINT_COLOR, 'fill-opacity': 0.25 },
+    });
+  }
+
+  if (map.getLayer(LAYER_IDS.BLITZ_HINT_OUTLINE)) {
+    map.setFilter(LAYER_IDS.BLITZ_HINT_OUTLINE, filter);
+  } else {
+    map.addLayer({
+      id: LAYER_IDS.BLITZ_HINT_OUTLINE, type: 'line', source: STATE_SOURCE_ID, filter,
+      paint: { 'line-color': HINT_COLOR, 'line-width': 1.5, 'line-opacity': 0.9 },
+    });
+  }
+}
+
+/** Called after the 3s auto-hide timer, and defensively on LOADING (next site) so a stale hint never survives a round change. */
+export function hideHintRegion(map) {
+  if (!map) return;
+  if (map.getLayer(LAYER_IDS.BLITZ_HINT_FILL)) map.removeLayer(LAYER_IDS.BLITZ_HINT_FILL);
+  if (map.getLayer(LAYER_IDS.BLITZ_HINT_OUTLINE)) map.removeLayer(LAYER_IDS.BLITZ_HINT_OUTLINE);
+}

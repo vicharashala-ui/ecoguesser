@@ -78,6 +78,22 @@ export function getFilteredPool(allSites, filters) {
  * be picked again). Caller is responsible for guarding pool.length === 0
  * via getFilteredPool before calling this.
  */
+/**
+ * Blitz "Hint" button support -- given the correct site.state array, finds
+ * every REGION_STATES region that contains at least one of those states and
+ * returns the union of ALL member states across those regions (deduped).
+ * This is deliberately region-level, not state-level: it never reveals which
+ * state(s) within the region are actually correct, just narrows the whole
+ * map down to the right region(s). Border-spanning sites (state.length > 1
+ * across two regions) correctly union both regions' states.
+ */
+export function getRegionHintStates(correctStates) {
+  const regions = Object.keys(REGION_STATES).filter((region) =>
+    REGION_STATES[region].some((s) => correctStates.includes(s))
+  );
+  return [...new Set(regions.flatMap((region) => REGION_STATES[region]))];
+}
+
 export function pickRandom(pool, excludeIds = []) {
   if (pool.length === 0) {
     throw new Error('pickRandom: empty pool');

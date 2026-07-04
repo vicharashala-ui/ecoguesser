@@ -34,8 +34,11 @@ import BlitzCard from './BlitzCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import { useBlitzRound } from '../hooks/useBlitzRound.js';
 import { useMapState } from '../hooks/useMapState.js';
-import { showSelection, showReveal, clearAll, zoomToBoundary, clearBoundary } from '../game/blitzHighlight.js';
-import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
+import {
+  showSelection, showReveal, clearAll, zoomToBoundary, clearBoundary,
+  showHintRegion, hideHintRegion,
+} from '../game/blitzHighlight.js';
+import { siteMatchesFilter, DEFAULT_FILTERS, getRegionHintStates } from '../utils/filters.js';
 import { LAYER_IDS, MAP_CONFIG, MAP_STYLE_BLITZ } from '../config.js';
 import './BlitzMap.css';
 
@@ -95,6 +98,22 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     zoomToBoundary(map, { ...REVEAL_FIT_SIDES, bottom: measuredHeight + REVEAL_CARD_GAP });
   }
 
+  // Hint button -- highlights every state in the correct region(s) amber for
+  // 3s, then auto-clears. Can be tapped any number of times per round (no
+  // counter/penalty); each tap just resets the 3s window rather than
+  // stacking timers.
+  const hintTimeoutRef = useRef(null);
+  function handleHint() {
+    const map = mapRef.current;
+    if (!map || !site) return;
+    if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current);
+    showHintRegion(map, getRegionHintStates(site.state));
+    hintTimeoutRef.current = setTimeout(() => {
+      hideHintRegion(mapRef.current);
+      hintTimeoutRef.current = null;
+    }, 3000);
+  }
+
   // SELECTING preview. Deliberately does nothing while REVEALING -- the
   // effect below owns the blue->green/red handoff so the two never race.
   useEffect(() => {
@@ -115,6 +134,11 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     const map = mapRef.current;
     if (!map || !mapReady) return;
     if (roundState === 'REVEALING' && result) {
+      if (hintTimeoutRef.current) {
+        clearTimeout(hintTimeoutRef.current);
+        hintTimeoutRef.current = null;
+      }
+      hideHintRegion(map);
       showReveal(map, result.correctStates, result.guessedState, result.isCorrect, result.site);
       map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 500 });
     } else if (roundState === 'LOADING') {
@@ -132,8 +156,20 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     if (roundState === 'LOADING') {
       setPoliticalNames(false);
       clearBoundary(mapRef.current);
+      if (hintTimeoutRef.current) {
+        clearTimeout(hintTimeoutRef.current);
+        hintTimeoutRef.current = null;
+      }
+      hideHintRegion(mapRef.current);
     }
   }, [mapRef, roundState, setPoliticalNames]);
+
+  // Belt-and-braces cleanup if the player navigates away from Blitz mid-timer.
+  useEffect(() => {
+    return () => {
+      if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current);
+    };
+  }, []);
 
   // Measures BlitzCard's real expanded height the instant roundState flips
   // to REVEALING -- synchronously, in the same commit the class changes in,
@@ -198,6 +234,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
           onConfirm={handleConfirm}
           onNextSite={handleNextSite}
           onSkip={handleSkip}
+          onHint={handleHint}
           onShowBoundary={handleShowBoundary}
         />
       )}
