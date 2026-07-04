@@ -17,6 +17,12 @@
 // No icon library dependency -- everything below is a small inline SVG so
 // this drops in without an `npm install`. Swap for lucide-react later if
 // preferred; the call sites (<IconHint />, <IconPin /> etc.) won't change.
+//
+// Show Site Boundary sits as a small chip (.bc-boundary-btn-sm) at the right
+// edge of the state-name meta row, rather than its own full-width row below
+// -- compresses the expanded panel by a whole row per direct request. The
+// state+year items are wrapped in .bc-meta-group so they stay clustered on
+// the left while the chip anchors right via margin-left:auto.
 
 import { useId, forwardRef } from 'react';
 import { CATEGORY_META, SCORING, DAILY } from '../config';
@@ -133,7 +139,8 @@ function IconSkip({ size = 18 }) {
  * @param {() => void} props.onNextSite
  * @param {() => void} [props.onShowBoundary] - zooms the map in on the
  *   revealed site's boundary polygon (resultLayer.js's zoomToSiteBoundary).
- *   Button only renders when both this is provided and site.hasBoundary.
+ *   Rendered as a small chip at the right edge of the state-name meta row --
+ *   button only renders when both this is provided and site.hasBoundary.
  * @param {() => void} [props.onSkip] - Classic-only, icon-only button in the
  *   guess panel (pre-Confirm pill) that abandons the current site for a new
  *   one. Renders only when both this is provided and mode !== 'daily'.
@@ -238,9 +245,23 @@ const BottomCard = forwardRef(function BottomCard({
           <h2 id={titleId} className="bc-card-name">{site.name}</h2>
 
           <div className="bc-meta-row">
-            <span className="bc-meta-item"><IconPin size={15} /> {site.state.join(', ')}</span>
-            {site.year && (
-              <span className="bc-meta-item"><IconCalendar size={15} /> Est. {site.year}</span>
+            <span className="bc-meta-group">
+              <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {site.state.join(', ')}</span>
+              {site.year && (
+                <span className="bc-meta-item"><IconCalendar size={15} /> Est. {site.year}</span>
+              )}
+            </span>
+
+            {site.hasBoundary && onShowBoundary && (
+              <button
+                type="button"
+                className="bc-boundary-btn-sm"
+                onClick={onShowBoundary}
+                aria-label="Show site boundary"
+                title="Show site boundary"
+              >
+                <IconFrame size={14} /> Site Boundary
+              </button>
             )}
           </div>
 
@@ -265,12 +286,6 @@ const BottomCard = forwardRef(function BottomCard({
               <IconStar size={15} /> {result.finalScore.toLocaleString()} pts
             </span>
           </div>
-
-          {site.hasBoundary && onShowBoundary && (
-            <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
-              <IconFrame /> Show Site Boundary
-            </button>
-          )}
 
           {isDaily && result.hintPenalty > 0 && (
             <div className="bc-daily-line bc-penalty">

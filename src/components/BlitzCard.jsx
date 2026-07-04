@@ -34,6 +34,20 @@ function IconLeaf({ size = 18 }) {
   );
 }
 
+// Same icon BottomCard.jsx uses on its "Site Boundary" chip -- duplicated
+// here rather than imported, per this codebase's no-shared-icon-module
+// pattern (each component file owns its own small inline SVGs).
+function IconFrame({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4"
+        stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 /**
  * @param {'LOADING'|'READING'|'SELECTING'|'REVEALING'} roundState
  * @param {import('../config').Site} site
@@ -120,7 +134,7 @@ const BlitzCard = forwardRef(function BlitzCard({
           <div className="bc-actions">
             {site.hasBoundary && (
               <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
-                Show Boundary
+                <IconFrame /> Site Boundary
               </button>
             )}
             <button type="button" className="bc-next-btn" onClick={onNextSite} aria-label="Next site">

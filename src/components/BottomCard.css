@@ -190,12 +190,33 @@
   margin-top: 2px;
 }
 
+/* Groups the state+year items in BottomCard.jsx's first .bc-meta-row so they
+   stay clustered together on the left -- .bc-boundary-btn-sm sits as the
+   row's other flex child and pushes itself to the right via margin-left:auto,
+   without disturbing .bc-result-row (a plain 2-item row below, sharing the
+   .bc-meta-row rule above but with no such group/chip of its own). */
+.bc-meta-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .bc-meta-item {
   display: flex;
   align-items: center;
   gap: 5px;
   font-size: 13.5px;
   color: #6b7280;
+}
+
+/* State name -- accent-colored and bolder than the plain-gray meta items
+   (year, distance, etc.) so it reads as the headline fact of the reveal,
+   not just another metadata line. Uses the round's per-category --eg-accent
+   color, same variable driving the icon/category label/boundary chip. */
+.bc-state-name {
+  color: var(--eg-accent, #16a34a);
+  font-weight: 800;
+  font-size: 15px;
 }
 
 .bc-desc {
@@ -238,16 +259,49 @@
   color: #dc2626;
 }
 
-/* Show Site Boundary -- standalone full-width row in BottomCard.jsx
-   (Classic/Daily), a flex-paired half of .bc-actions in BlitzCard.jsx.
-   Was previously borrowing .bc-trivia-btn's disabled grey/not-allowed look
-   in Blitz (visually indistinguishable from a disabled button even though
-   it's fully clickable) and had no rule at all in BottomCard.jsx (fell back
-   to the browser's default grey button chrome). Styled here instead as an
-   accent-outlined pill -- tinted with the round's per-category --eg-accent
-   color, same variable .bc-icon/.bc-category-label already use -- so it
-   reads as a real, enabled action distinct from both the disabled Play
-   Trivia button and the solid-green Next button. */
+/* "Site Boundary" chip -- sits at the right edge of BottomCard.jsx's
+   state-name meta row (per direct request: same line as the state name,
+   right-aligned), instead of the standalone full-width row it used to be.
+   Saves a whole row's worth of height, compressing the expanded panel.
+   Distinct from .bc-boundary-btn below (Blitz's larger half-width action-row
+   button) -- Classic/Daily's placement is an in-line chip, sized larger than
+   a typical small tag per direct request but still lighter than a full
+   action button. */
+.bc-boundary-btn-sm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  margin-left: auto; /* pushes the chip to the row's right edge */
+  border-radius: 999px;
+  border: 1.5px solid var(--eg-accent, #16a34a);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--eg-accent, #16a34a);
+  font-weight: 700;
+  font-size: 13.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.bc-boundary-btn-sm:hover {
+  background: rgba(17, 24, 39, 0.05);
+}
+
+.bc-boundary-btn-sm:active {
+  transform: scale(0.95);
+}
+
+/* Show Boundary -- Blitz's flex-paired half of .bc-actions in
+   BlitzCard.jsx (Classic/Daily uses the smaller .bc-boundary-btn-sm chip
+   above instead). Was previously borrowing .bc-trivia-btn's disabled grey/
+   not-allowed look (visually indistinguishable from a disabled button even
+   though it's fully clickable). Styled here as an accent-outlined pill --
+   tinted with the round's per-category --eg-accent color, same variable
+   .bc-icon/.bc-category-label already use -- so it reads as a real, enabled
+   action distinct from both the disabled Play Trivia button and the
+   solid-green Next button. */
 .bc-boundary-btn {
   flex: 1;
   height: 44px;
@@ -312,6 +366,7 @@
   .bc-hint-btn,
   .bc-confirm-btn,
   .bc-boundary-btn,
+  .bc-boundary-btn-sm,
   .bc-next-btn {
     transition: none;
   }
