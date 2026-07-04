@@ -4,7 +4,9 @@
 // screen. Mirrors ClassicMap.jsx's role but stripped of everything
 // pin-drop/distance-specific: no SatelliteOverlay, no layer-toggle panel
 // (borders are forced on inside useMapState for mode==='blitz'), no
-// difficulty/filters props.
+// difficulty. Category + Region/State filters ARE shared with Classic now
+// (per direct request) -- same `filters` prop/SideDrawer instance, applied
+// here the same way ClassicMap.jsx applies it to its own sitePool.
 //
 // RecenterButton's REVEALING-time offset now reads BlitzCard's real
 // measured height via cardRef, same cardRef/cardHeight/transitionend
@@ -26,13 +28,14 @@
 // top-right "State Names" toggle (mirrors DailyMap.css's .dm-layer-panel).
 // Borders themselves stay forced-on/non-togglable per useMapState.
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BlitzCard from './BlitzCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import { useBlitzRound } from '../hooks/useBlitzRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { showSelection, showReveal, clearAll, zoomToBoundary, clearBoundary } from '../game/blitzHighlight.js';
+import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
 import { LAYER_IDS, MAP_CONFIG } from '../config.js';
 import './BlitzMap.css';
 
@@ -47,12 +50,20 @@ const REVEAL_CARD_GAP = 20; // breathing room above the card's top edge
  * @param {{current: import('maplibre-gl').Map|null}} mapRef
  * @param {React.CSSProperties} style
  * @param {import('../config').Site[]} sites - full unfiltered list from App.jsx
+ * @param {{categories: string[], states: string[]}} [filters] - same lifted
+ *   filter state as ClassicMap.jsx (Category + Region/State), now shared
+ *   with Blitz per direct request.
  */
-export default function BlitzMap({ mapRef, style, sites }) {
+export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTERS }) {
+  const sitePool = useMemo(
+    () => sites.filter((s) => siteMatchesFilter(s, filters)),
+    [sites, filters]
+  );
+
   const {
     roundState, site, selectedState, result,
     handleStateClick, handleConfirm, handleNextSite,
-  } = useBlitzRound(sites);
+  } = useBlitzRound(sitePool);
 
   const { mapReady, politicalNames, setPoliticalNames } = useMapState(mapRef, 'blitz');
   // political is forced true inside useMapState's onLoad for mode==='blitz'
@@ -161,6 +172,10 @@ export default function BlitzMap({ mapRef, style, sites }) {
           State Names
         </label>
       </div>
+
+      {sitePool.length === 0 && (
+        <div className="bz-empty-pool">No sites match these filters.</div>
+      )}
 
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={null} />
       <RecenterButton

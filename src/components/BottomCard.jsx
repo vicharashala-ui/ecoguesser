@@ -117,9 +117,9 @@ function IconFrame({ size = 14 }) {
 
 function IconSkip({ size = 18 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M5 5.5v13l10-6.5-10-6.5Z" />
-      <rect x="17" y="5.5" width="2.5" height="13" rx="1" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4.5 6l7 6-7 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13 6l7 6-7 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -186,52 +186,55 @@ const BottomCard = forwardRef(function BottomCard({
     >
       {!isRevealing && (
         <div className="bc-pill">
-          <span className="bc-icon" aria-hidden="true"><IconLeaf /></span>
+          <div className="bc-pill-top">
+            <span className="bc-icon" aria-hidden="true"><IconLeaf /></span>
+            <span className="bc-pill-text">
+              <span id={titleId} className="bc-site-name">{site.name}</span>
+              {hintLevel >= 1 && (
+                <span className="bc-hint-state">{site.state.join(', ')}</span>
+              )}
+            </span>
+          </div>
 
-          <span className="bc-pill-text">
-            <span id={titleId} className="bc-site-name">{site.name}</span>
-            {hintLevel >= 1 && (
-              <span className="bc-hint-state">{site.state.join(', ')}</span>
+          <div className="bc-pill-actions">
+            {!isDaily && onSkip && (
+              <button
+                type="button"
+                className="bc-skip-btn"
+                onClick={onSkip}
+                aria-label="Skip this site"
+                title="Skip this site"
+              >
+                <IconSkip />
+              </button>
             )}
-          </span>
 
-          {!isDaily && onSkip && (
             <button
               type="button"
-              className="bc-skip-btn"
-              onClick={onSkip}
-              aria-label="Skip this site"
-              title="Skip this site"
+              className="bc-hint-btn"
+              onClick={onHint}
+              disabled={hintsExhausted}
+              aria-label={
+                hintsExhausted
+                  ? 'No hints remaining'
+                  : `Use hint (${hintsRemaining} remaining)`
+              }
+              title={hintsExhausted ? 'No hints remaining' : 'Use a hint'}
             >
-              <IconSkip />
+              <IconHint />
+              {!hintsExhausted && <span className="bc-hint-count">{hintsRemaining}</span>}
             </button>
-          )}
 
-          <button
-            type="button"
-            className="bc-hint-btn"
-            onClick={onHint}
-            disabled={hintsExhausted}
-            aria-label={
-              hintsExhausted
-                ? 'No hints remaining'
-                : `Use hint (${hintsRemaining} remaining)`
-            }
-            title={hintsExhausted ? 'No hints remaining' : 'Use a hint'}
-          >
-            <IconHint />
-            {!hintsExhausted && <span className="bc-hint-count">{hintsRemaining}</span>}
-          </button>
-
-          <button
-            type="button"
-            className="bc-confirm-btn"
-            onClick={onConfirm}
-            disabled={!markerPlaced}
-            aria-label="Confirm guess"
-          >
-            Confirm
-          </button>
+            <button
+              type="button"
+              className="bc-confirm-btn"
+              onClick={onConfirm}
+              disabled={!markerPlaced}
+              aria-label="Confirm guess"
+            >
+              Confirm
+            </button>
+          </div>
         </div>
       )}
 
@@ -260,7 +263,7 @@ const BottomCard = forwardRef(function BottomCard({
                 aria-label="Show site boundary"
                 title="Show site boundary"
               >
-                <IconFrame size={14} /> Site Boundary
+                <IconFrame size={14} /> Boundary
               </button>
             )}
           </div>

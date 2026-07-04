@@ -1,8 +1,8 @@
 // src/components/SideDrawer.jsx
 //
 // Section 9's side drawer: Player Name, Difficulty (Classic only), Category
-// + Region/State filters (Classic only), footer links, and an inline
-// Feedback box.
+// + Region/State filters (Classic and Blitz, per direct request), footer
+// links, and an inline Feedback box.
 //
 // This pass:
 //   1. Category switched from a wrapped chip row to a vertical list (one
@@ -54,7 +54,8 @@ export default function SideDrawer({
   sites,
   filters,
   onApplyFilters,
-  showClassicFilters,
+  showFilters,
+  showDifficulty,
   difficulty,
   onSetDifficulty,
   onNavigate,
@@ -146,39 +147,53 @@ export default function SideDrawer({
   return (
     <div className="sd-backdrop" role="presentation" onClick={onClose}>
       <div className="sd-drawer" role="dialog" aria-modal="true" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
-        <div className="sd-section">
-          <label className="sd-name-label" htmlFor="sd-name-input">Player Name</label>
-          <input
-            id="sd-name-input"
-            type="text"
-            className="sd-name-input"
-            value={name}
-            onChange={handleNameChange}
-            maxLength={30}
-            placeholder="Player"
-          />
+        <div className="sd-banner">
+          <div className="sd-banner-name">
+            <input
+              id="sd-name-input"
+              type="text"
+              className="sd-banner-name-input"
+              value={name}
+              onChange={handleNameChange}
+              maxLength={30}
+              placeholder="Name of Player"
+              aria-label="Player Name"
+            />
+            <svg className="sd-banner-edit-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 20l1-4L16 5l3 3L8 19l-4 1Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <button type="button" className="sd-banner-menu" onClick={onClose} aria-label="Close menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
 
-        {showClassicFilters && (
+        {showFilters && (
           <>
-            <hr className="sd-divider" />
+            {showDifficulty && (
+              <>
+                <hr className="sd-divider" />
 
-            <div className="sd-section">
-              <p className="sd-heading">Difficulty</p>
-              <div className="sd-chip-row">
-                {DIFFICULTIES.map((level) => (
-                  <button
-                    key={level}
-                    type="button"
-                    className={`sd-chip${difficulty === level ? ' sd-chip-active' : ''}`}
-                    style={difficulty === level ? { background: '#16a34a' } : undefined}
-                    onClick={() => onSetDifficulty(level)}
-                  >
-                    {DIFFICULTY_LABELS[level]}
-                  </button>
-                ))}
-              </div>
-            </div>
+                <div className="sd-section">
+                  <p className="sd-heading">Difficulty</p>
+                  <div className="sd-chip-row">
+                    {DIFFICULTIES.map((level) => (
+                      <button
+                        key={level}
+                        type="button"
+                        className={`sd-chip${difficulty === level ? ' sd-chip-active' : ''}`}
+                        style={difficulty === level ? { background: '#16a34a' } : undefined}
+                        onClick={() => onSetDifficulty(level)}
+                      >
+                        {DIFFICULTY_LABELS[level]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             <hr className="sd-divider" />
 

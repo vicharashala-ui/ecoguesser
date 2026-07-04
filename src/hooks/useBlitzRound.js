@@ -16,8 +16,8 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * @param {import('../config').Site[]} sitePool - unfiltered `allSites` (no
- *   filter UI in v1)
+ * @param {import('../config').Site[]} sitePool - caller (BlitzMap.jsx) already
+ *   applies the shared Category/Region+State filters before passing this in
  * @returns {{
  *   roundState: 'LOADING'|'READING'|'SELECTING'|'REVEALING',
  *   site: import('../config').Site|null,
@@ -45,8 +45,8 @@ export function useBlitzRound(sitePool) {
   const [bestStreak, setBestStreak] = useState(0);
 
   // LOADING -> pick a site -> READING. Stays in LOADING if the pool is
-  // empty -- unreachable today (no filter UI), kept for free since it's the
-  // same guard shape useClassicRound.js already needs.
+  // empty (filters left nothing to play) -- BlitzMap.jsx's own empty-pool
+  // message covers the UI side, same guard shape useClassicRound.js needs.
   useEffect(() => {
     if (roundState !== 'LOADING') return;
     if (!sitePool || sitePool.length === 0) return;

@@ -66,8 +66,9 @@ export default function App() {
   // round?" guard below. NOT_STARTED/REVEALING are safe to nav away from.
   const [dailyRoundState, setDailyRoundState] = useState('NOT_STARTED');
 
-  // Section 9 -- drawerOpen is global (both tabs), classicFilters only
-  // affects ClassicMap's site pool (Daily's pool is fixed per Section 6).
+  // Section 9 -- drawerOpen is global (both tabs), classicFilters affects
+  // ClassicMap's AND BlitzMap's site pools (per direct request); Daily's
+  // pool is fixed per Section 6 and untouched by this.
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [classicFilters, setClassicFilters] = useState(DEFAULT_FILTERS);
   // Decision #3 -- lifted the same way as classicFilters, so SideDrawer's
@@ -179,6 +180,7 @@ export default function App() {
         <BlitzMap
           mapRef={blitzMapRef}
           sites={allSites}
+          filters={classicFilters}
           style={{ position: 'absolute', inset: 0, display: activeTab === 'blitz' ? 'block' : 'none' }}
         />
       )}
@@ -216,7 +218,8 @@ export default function App() {
         sites={allSites}
         filters={classicFilters}
         onApplyFilters={setClassicFilters}
-        showClassicFilters={activeTab === 'classic'}
+        showFilters={activeTab === 'classic' || activeTab === 'blitz'}
+        showDifficulty={activeTab === 'classic'}
         difficulty={classicDifficulty}
         onSetDifficulty={setClassicDifficulty}
         onNavigate={setInfoModalVariant}

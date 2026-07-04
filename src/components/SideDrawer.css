@@ -8,7 +8,7 @@
 }
 
 .sd-drawer {
-  width: min(320px, 84vw);
+  width: min(269px, 71vw);
   height: 100%;
   background: #f8f6f1;
   overflow-y: auto;
@@ -30,31 +30,64 @@
   text-transform: uppercase;
 }
 
-.sd-name-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: #6b7280;
-  text-transform: uppercase;
-  margin-bottom: 8px;
+.sd-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
-.sd-name-input {
-  width: 100%;
+.sd-banner-menu {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(17, 24, 39, 0.06);
+  color: #111827;
+  cursor: pointer;
+}
+
+.sd-banner-name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
   height: 42px;
   padding: 0 12px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   background: #fff;
-  font-size: 15px;
-  font-family: inherit;
-  box-sizing: border-box;
 }
 
-.sd-name-input:focus {
+.sd-banner-name-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  color: #111827;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sd-banner-name-input::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.sd-banner-name-input:focus {
   outline: none;
-  border-color: #16a34a;
+}
+
+.sd-banner-edit-icon {
+  flex: none;
+  color: #9ca3af;
 }
 
 .sd-divider {

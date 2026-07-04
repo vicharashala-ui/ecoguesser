@@ -7,7 +7,7 @@
 // deliberately owns no map state and no API calls.
 //
 // Scope boundary: this component owns the round itself (rounds 1-5, timer,
-// hints, skip) but NOT navigation away from it. Section 4's screen state
+// hints) but NOT navigation away from it. Section 4's screen state
 // machine routes round 5's "Next" to DAILY_SUMMARY rather than back through
 // LOADING -- that's a parent/screen-router concern, so this component just
 // calls `onComplete(results)` once the 5th round is confirmed and lets the
@@ -97,7 +97,6 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
     handleMapClick,
     handleHint,
     handleConfirm,
-    handleSkip,
     handleNextSite,
     handleStart,
   } = useDailyRound(sites);
@@ -117,7 +116,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
     const map = mapRef.current;
     if (!map || !mapReady) return;
 
-    if (roundState === 'REVEALING' && result && !result.skipped) {
+    if (roundState === 'REVEALING' && result) {
       const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 200;
       setCardHeight(measuredHeight);
       const fitPadding = { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 };
@@ -178,18 +177,6 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
     }
   }, [isLastRound, results, handleNextSite, onComplete]);
 
-  // Skip bypasses the correct-answer reveal entirely -- per direct request,
-  // pressing Skip should just move straight to the next site, not show what
-  // was missed. finalizeRound (shared with Confirm/timeout) still always
-  // transitions to REVEALING first, since that's the one path that records
-  // a RoundResult -- this effect just immediately fires the same "advance"
-  // handleNext already does on a real Next/Results click, so a skipped round
-  // never actually renders the reveal card (gated out below) or the map's
-  // result layer (gated out in Effect 1 above).
-  useEffect(() => {
-    if (roundState === 'REVEALING' && result?.skipped) handleNext();
-  }, [roundState, result, handleNext]);
-
   // BottomCard's "Show Site Boundary" button -- zooms in tight on the
   // revealed site's polygon on demand (Effect 1 above deliberately no
   // longer does this automatically; see resultLayer.js's zoomToSiteBoundary
@@ -202,12 +189,13 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
     zoomToSiteBoundary(map, { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 });
   }
 
-  const skipDisabled = roundState !== 'READING' && roundState !== 'PLACING';
   const dailyTotal = results.reduce((sum, r) => sum + r.finalScore, 0);
 
   return (
     <div style={style} className="eg-daily-map">
-      {/* Section 8 Daily sub-header: [timer] 1:43   Round 2/5   [Skip] */}
+      {/* Section 8 Daily sub-header: [timer] 1:43   Round 2/5 -- Skip removed
+          per direct request; pushed down below Header.jsx's title bar so it
+          no longer overlaps "EcoGuesser" (see .eg-daily-subheader's `top`). */}
       <div className="eg-daily-subheader">
         <span className="eg-timer" style={{ color: timerColor(timeRemaining) }}>
           {formatTime(timeRemaining)}
@@ -215,9 +203,6 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
         <span className="eg-round-counter">
           Round {roundIndex + 1}/{totalRounds}
         </span>
-        <button className="btn-skip" onClick={handleSkip} disabled={skipDisabled}>
-          Skip
-        </button>
       </div>
 
       {/* Section 8 Daily layer panel: OFM (always on) + Satellite + Political.
@@ -279,7 +264,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
           hintLevel={hintLevel}
           onHint={handleHint}
           onConfirm={handleConfirm}
-          result={result?.skipped ? null : result}
+          result={result}
           dailyTotal={dailyTotal}
           onNextSite={handleNext}
           onShowBoundary={handleShowBoundary}

@@ -17,10 +17,7 @@
 // Daily-only concerns Classic deliberately doesn't have, per Section 5 /
 // Decision #2 (Game Modes):
 //   - 2-min countdown per round, auto-submit at 0 with whatever marker exists
-//     (or 0 pts if none was placed -- "null = skip, 0 pts" in spec language,
-//     but distinguished here via `timedOut` so it's never confused with an
-//     explicit Skip click in stats/analytics later).
-//   - Explicit Skip button -- always 0 pts, discards any placed marker.
+//     (or 0 pts if none was placed), distinguished via `timedOut`.
 //   - Hints cost -500/each (`SCORING.HINT_PENALTY`), unlike Classic's free hints.
 //   - Fixed 5-round progression across DAILY.CATEGORIES, not infinite/random.
 
@@ -89,9 +86,13 @@ export function useDailyRound(allSites) {
     setRoundState('READING');
   }, []);
 
-  // Single scoring path shared by Confirm, Skip, and timer-expiry so the three
-  // entry points can never disagree about how a round's RoundResult is built.
-  const finalizeRound = useCallback((finalGuess, { timedOut = false, skipped = false } = {}) => {
+  // Single scoring path shared by Confirm and timer-expiry so the two entry
+  // points can never disagree about how a round's RoundResult is built.
+  // `skipped` stays on the result shape (stats.js/ShareCard.jsx both still
+  // read it for historical rounds recorded before Skip was removed from
+  // Daily) but is always false now -- there's no remaining caller that can
+  // set it true.
+  const finalizeRound = useCallback((finalGuess, { timedOut = false } = {}) => {
     // Defensive idempotency guard: a stray double-fire (e.g. Confirm clicked
     // in the same tick the timer's interval also expires) must not push two
     // results for one round.
@@ -103,8 +104,8 @@ export function useDailyRound(allSites) {
       ? haversine(finalGuess.lat, finalGuess.lng, currentSite.centroid_lat, currentSite.centroid_lng)
       : null; // calcScore's null guard turns this into 0, not 5000
 
-    const rawScore = skipped ? 0 : calcScore(distanceKm);
-    const finalScore = skipped ? 0 : applyHintPenalty(rawScore, hintsUsed);
+    const rawScore = calcScore(distanceKm);
+    const finalScore = applyHintPenalty(rawScore, hintsUsed);
 
     const roundResult = {
       site: currentSite,
@@ -116,7 +117,7 @@ export function useDailyRound(allSites) {
       hintPenalty: hintsUsed * SCORING.HINT_PENALTY,
       finalScore,
       timedOut,
-      skipped,
+      skipped: false,
     };
 
     setResult(roundResult);
@@ -170,11 +171,6 @@ export function useDailyRound(allSites) {
     finalizeRound(guessRef.current, {});
   }, [finalizeRound]);
 
-  const handleSkip = useCallback(() => {
-    // Skip always discards any placed marker -- 0 pts regardless of where it was.
-    finalizeRound(null, { skipped: true });
-  }, [finalizeRound]);
-
   // Advances to the next round. The caller (screen-level component) must NOT
   // call this on the final round -- check `isLastRound` first and route to
   // DAILY_SUMMARY instead (Section 4: round 5's [Next] goes to DAILY_SUMMARY,
@@ -209,7 +205,6 @@ export function useDailyRound(allSites) {
     handleMapClick,
     handleHint,
     handleConfirm,
-    handleSkip,
     handleNextSite,
     handleStart,
   };

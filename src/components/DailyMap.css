@@ -14,11 +14,13 @@
   height: 100%;
 }
 
-/* ---- Sub-header: [timer] 1:43   Round 2/5   [Skip] --------------------- */
+/* ---- Sub-header: [timer] 1:43   Round 2/5 ------------------------------- */
 
 .eg-daily-subheader {
   position: absolute;
-  top: 10px;
+  /* Pulled down below Header.jsx's 52px title bar (+ safe-area inset) so
+     the pill no longer sits on top of "EcoGuesser". */
+  top: calc(52px + env(safe-area-inset-top, 0px) + 10px);
   left: 50%;
   /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
      see the comment there for the full writeup. Can't add a second
@@ -50,27 +52,6 @@
   font-size: 13px;
   font-weight: 700;
   color: #e5e7eb;
-}
-
-.btn-skip {
-  border: none;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 5px 12px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background 0.15s ease, opacity 0.2s ease;
-}
-
-.btn-skip:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.btn-skip:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
 }
 
 /* ---- Layer panel -- same placeholder treatment as ClassicMap's ---------- */

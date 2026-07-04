@@ -1,7 +1,7 @@
 /* src/components/RecenterButton.css */
 /*
   Fixed left:16px, stacked above the BottomCard. Default `bottom` here
-  assumes the pill state's fixed 64px height (.bottom-card.is-pill's own
+  assumes the pill state's 128px height (.bottom-card.is-pill's own
   max-height, in BottomCard.css) -- during REVEALING the caller overrides
   `bottom` inline with the expanded card's real measured height instead (see
   RecenterButton.jsx), since that height varies with content.
@@ -10,7 +10,7 @@
 .eg-recenter-btn {
   position: fixed;
   left: 16px;
-  bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 64px + 12px);
+  bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 128px + 12px);
   z-index: 25;
   width: 44px;
   height: 44px;
