@@ -87,9 +87,9 @@
 }
 
 .bc-hint-state {
-  font-size: 12px;
-  font-weight: 400;
-  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6d28d9;
 }
 
 .bc-pill-actions {
@@ -127,16 +127,16 @@
   height: 38px;
   border-radius: 999px;
   border: none;
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  background: #facc15;
+  color: #4a3208;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s ease, color 0.15s ease, opacity 0.2s ease;
 }
 
 .bc-hint-btn:hover:not(:disabled) {
-  background: rgba(245, 158, 11, 0.28);
-  color: #d97706;
+  background: #eab308;
+  color: #3a2706;
 }
 
 .bc-hint-btn:disabled {

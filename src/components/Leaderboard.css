@@ -118,9 +118,16 @@
   color: #6b7280;
 }
 
-.lb-today-line {
-  color: #111827;
-  font-weight: 700;
+.lb-you {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  vertical-align: middle;
 }
 
 .lb-actions {
@@ -132,7 +139,8 @@
 }
 
 .lb-share-btn,
-.lb-classic-btn {
+.lb-classic-btn,
+.lb-blitz-btn {
   flex: 1;
   height: 44px;
   border-radius: 14px;
@@ -154,5 +162,10 @@
 
 .lb-classic-btn {
   background: #16a34a;
+  color: #fff;
+}
+
+.lb-blitz-btn {
+  background: #f59e0b;
   color: #fff;
 }

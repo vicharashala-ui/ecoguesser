@@ -193,10 +193,16 @@ export default function App() {
           totalDist={dailySummaryData.totalDist}
           onDone={handleSummaryDone}
           onPlayClassic={() => switchTab('classic')}
+          onPlayBlitz={() => switchTab('blitz')}
         />
       )}
       {activeTab === 'daily' && dailyPhase === 'leaderboard' && (
-        <Leaderboard data={dailyLeaderboardData} onPlayClassic={() => switchTab('classic')} />
+        <Leaderboard
+          data={dailyLeaderboardData}
+          onPlayClassic={() => switchTab('classic')}
+          onPlayBlitz={() => switchTab('blitz')}
+          allSites={allSites}
+        />
       )}
       {activeTab === 'stats' && <StatsView />}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />

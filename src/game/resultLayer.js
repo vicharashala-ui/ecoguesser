@@ -225,13 +225,14 @@ export async function showResult(map, guess, site, opts = {}) {
       'text-field': ['get', 'distance'],
       'symbol-placement': 'line-center',
       'text-font': ['Noto Sans Bold'],
-      'text-size': 15,
+      'text-size': 16,
+      'text-offset': [0, -1.1],
       'text-allow-overlap': true,
     },
     paint: {
-      'text-color': '#111827',
+      'text-color': '#1f2937',
       'text-halo-color': '#ffffff',
-      'text-halo-width': 2,
+      'text-halo-width': 2.8,
     },
   });
 

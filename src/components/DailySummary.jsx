@@ -30,7 +30,7 @@ import './DailySummary.css';
 
 const DAILY_MAX_TOTAL = SCORING.MAX_SCORE * DAILY.CATEGORIES.length; // 25,000 -- same derivation as BottomCard.jsx
 
-export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassic }) {
+export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassic, onPlayBlitz }) {
   const [phase, setPhase] = useState(
     () => (localStorage.getItem(LS_KEYS.NAME) ? 'submitting' : 'name_prompt')
   );
@@ -100,9 +100,14 @@ export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassi
         </>
       )}
 
-      <button type="button" className="ds-play-classic" onClick={onPlayClassic}>
-        Play Classic
-      </button>
+      <div className="ds-play-row">
+        <button type="button" className="ds-play-classic" onClick={onPlayClassic}>
+          Play Classic
+        </button>
+        <button type="button" className="ds-play-blitz" onClick={onPlayBlitz}>
+          Play Blitz
+        </button>
+      </div>
 
       {phase === 'name_prompt' && <NamePromptModal onSave={handleSave} onSkip={handleSkip} />}
     </div>

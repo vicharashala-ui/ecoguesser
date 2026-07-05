@@ -53,7 +53,7 @@ export function showHint2(map, site) {
       type: 'fill',
       source: STATE_SOURCE_ID,
       filter,
-      paint: { 'fill-color': '#22c55e', 'fill-opacity': 0.25 },
+      paint: { 'fill-color': '#8b5cf6', 'fill-opacity': 0.25 },
     });
   }
 
@@ -65,7 +65,7 @@ export function showHint2(map, site) {
       type: 'line',
       source: STATE_SOURCE_ID,
       filter,
-      paint: { 'line-color': '#22c55e', 'line-width': 1.5, 'line-opacity': 1 },
+      paint: { 'line-color': '#8b5cf6', 'line-width': 1.5, 'line-opacity': 1 },
     });
     startPulse(map);
   }

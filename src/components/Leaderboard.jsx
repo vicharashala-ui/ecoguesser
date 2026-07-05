@@ -35,10 +35,8 @@ function computeRanks(top10) {
 }
 
 function formatShortDate(dateStr) {
-  return new Date(`${dateStr}T00:00:00`).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
+  const [y, m, d] = dateStr.split('-');
+  return `${d}-${m}-${y}`;
 }
 
 /** Rank is unset unless RANK_TODAY's stored date is actually today --
@@ -52,7 +50,7 @@ function readRankToday() {
   }
 }
 
-export default function Leaderboard({ data, onPlayClassic }) {
+export default function Leaderboard({ data, onPlayClassic, onPlayBlitz }) {
   const today = getTodayString();
   const [fetched, setFetched] = useState(data ?? null);
   const [fetchError, setFetchError] = useState(false);
@@ -83,21 +81,11 @@ export default function Leaderboard({ data, onPlayClassic }) {
   const banner = fetched?.banner ?? null;
   const ranked = computeRanks(top10);
 
-  // Section 8: three distinct "Today:" states -- ranked, unranked-but-scored
-  // (outside top 10), and unranked-because-zero. rank/todayEntry cover both
-  // reasons `rank` can be null without collapsing them into one "--".
-  const todayLine =
-    rank != null
-      ? `Today: #${rank}${todayEntry ? ` · ${todayEntry.total.toLocaleString()} pts` : ''}`
-      : todayEntry && todayEntry.total > 0
-        ? 'Today: Outside top 10'
-        : 'Today: --';
-
   return (
     <div className="lb-screen">
       <div className="lb-header">
         <h1>Today's Leaderboard</h1>
-        <span className="lb-date">{today}</span>
+        <span className="lb-date">{formatShortDate(today)}</span>
       </div>
 
       {banner === 'already_submitted' && (
@@ -128,7 +116,12 @@ export default function Leaderboard({ data, onPlayClassic }) {
             {ranked.map((row, i) => (
               <div className="lb-row" key={i}>
                 <span>{row.tableRank}</span>
-                <span className="lb-name">{row.player_name}</span>
+                <span className="lb-name">
+                  {row.player_name}
+                  {rank != null && row.tableRank === rank && (
+                    <span className="lb-you">You</span>
+                  )}
+                </span>
                 <span>{row.total_pts.toLocaleString()}</span>
                 <span>{Math.round(row.total_dist).toLocaleString()} km</span>
               </div>
@@ -143,7 +136,6 @@ export default function Leaderboard({ data, onPlayClassic }) {
               ? `Your best: ${best.total.toLocaleString()} (${formatShortDate(best.date)})`
               : 'Your best: --'}
           </p>
-          <p className="lb-summary-line lb-today-line">{todayLine}</p>
         </>
       )}
 
@@ -158,6 +150,9 @@ export default function Leaderboard({ data, onPlayClassic }) {
         </button>
         <button type="button" className="lb-classic-btn" onClick={onPlayClassic}>
           Play Classic
+        </button>
+        <button type="button" className="lb-blitz-btn" onClick={onPlayBlitz}>
+          Play Blitz
         </button>
       </div>
 

@@ -1,0 +1,110 @@
+/* src/components/DailyRecap.css */
+
+.dr-card {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.dr-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.dr-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dr-wordmark {
+  font-weight: 800;
+  font-size: 15px;
+  color: #16a34a;
+}
+
+.dr-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.dr-player {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.dr-body {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.dr-list {
+  flex: 1;
+  min-width: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dr-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.dr-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.dr-site-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dr-site-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dr-site-state {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.dr-map {
+  width: 140px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.dr-outline {
+  fill: #e8e2c8;
+  stroke: #b8ad86;
+  stroke-width: 1;
+}
