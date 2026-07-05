@@ -52,6 +52,23 @@ import { showHint2, hideHint2 } from '../game/stateHighlight.js';
 import { MAP_CONFIG } from '../config.js';
 import './DailyMap.css';
 
+// Icons -- same inline-SVG, currentColor convention as BottomCard.jsx's IconSkip etc.
+function IconPause({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M8 5v14M16 5v14" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconPlay({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M7 5v14l12-7L7 5Z" fill="currentColor" />
+    </svg>
+  );
+}
+
 function formatTime(totalSeconds) {
   const clamped = Math.max(0, totalSeconds);
   const m = Math.floor(clamped / 60);
@@ -61,12 +78,12 @@ function formatTime(totalSeconds) {
 
 // Decision #6: white -> amber <30s -> red <10s.
 function timerColor(remaining) {
-  if (remaining < 10) return '#dc2626';
-  if (remaining < 30) return '#f59e0b';
-  return '#ffffff';
+  if (remaining < 10) return '#f87171';
+  if (remaining < 30) return '#fbbf24';
+  return '#f8fafc';
 }
 
-export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange }) {
+export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
   const cardRef = useRef(null);
   // Tracks BottomCard's real height during REVEALING, so RecenterButton can
   // be positioned above the expanded card instead of being hidden by it
@@ -90,19 +107,14 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
     result,
     results,
     timeRemaining,
+    paused,
     handleMapClick,
     handleHint,
     handleConfirm,
     handleNextSite,
     handleStart,
-  } = useDailyRound(sites);
-
-  // Lets App.jsx gate bottom-nav taps: READING/PLACING means an unconfirmed
-  // guess is in flight (Section 4's "Leave this round?" case), NOT_STARTED
-  // and REVEALING are safe to navigate away from.
-  useEffect(() => {
-    onRoundStateChange?.(roundState);
-  }, [roundState, onRoundStateChange]);
+    handlePauseToggle,
+  } = useDailyRound(sites, active);
 
   // Effect 1 (mirrors ClassicMap.jsx): resultLayer.js off [mapReady, roundState, result].
   // fitPadding is measured from the real card height, same fix as Section 10's
@@ -214,10 +226,30 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
             </span>
           )}
         </div>
-        <div className="dm-timer-pill" style={{ color: timerColor(timeRemaining) }}>
-          {formatTime(timeRemaining)}
+        <div className="dm-timer-card">
+          {(roundState === 'READING' || roundState === 'PLACING') && (
+            <button
+              type="button"
+              className="dm-pause-btn"
+              onClick={handlePauseToggle}
+              aria-label={paused ? 'Resume timer' : 'Pause timer'}
+            >
+              {paused ? <IconPlay /> : <IconPause />}
+            </button>
+          )}
+          <span className="dm-timer-time" style={{ color: timerColor(timeRemaining) }}>
+            {formatTime(timeRemaining)}
+          </span>
+          <div className="dm-timer-dots" aria-hidden="true">
+            {Array.from({ length: 5 }, (_, i) => {
+              const dotState = i < results.length ? 'done' : 'upcoming';
+              return <span key={i} className={`dm-timer-dot dm-timer-dot--${dotState}`} />;
+            })}
+          </div>
         </div>
       </div>
+
+      {paused && <div className="dm-paused-overlay">Paused</div>}
 
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />
       <RecenterButton

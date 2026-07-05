@@ -29,7 +29,7 @@ import { DAILY, SCORING } from '../config.js';
 
 const TOTAL_ROUNDS = DAILY.CATEGORIES.length; // 5
 
-export function useDailyRound(allSites) {
+export function useDailyRound(allSites, active = true) {
   const [sites, setSites] = useState(null); // Site[5], null until allSites is ready
   const [roundIndex, setRoundIndex] = useState(0);
   const [roundState, setRoundState] = useState('LOADING');
@@ -37,6 +37,7 @@ export function useDailyRound(allSites) {
   const [hintLevel, setHintLevel] = useState(0);
   const [result, setResult] = useState(null);
   const [results, setResults] = useState([]); // finalized RoundResult[], grows to length 5
+  const [paused, setPaused] = useState(false); // player-facing pause, READING/PLACING only
 
   // Plain-value mirrors of state, read inside callbacks/timer-expiry instead of
   // stale closures -- same technique as useMapState's politicalRef/mapReadyRef,
@@ -44,10 +45,12 @@ export function useDailyRound(allSites) {
   const roundStateRef = useRef(roundState);
   const guessRef = useRef(guess);
   const hintLevelRef = useRef(hintLevel);
+  const pausedRef = useRef(paused);
   const siteRef = useRef(null);
   roundStateRef.current = roundState;
   guessRef.current = guess;
   hintLevelRef.current = hintLevel;
+  pausedRef.current = paused;
 
   // Today's 5 sites are computed once, as soon as the site pool is available.
   useEffect(() => {
@@ -145,8 +148,8 @@ export function useDailyRound(allSites) {
   // if onExpire already cleared the interval itself, e.g. a true timeout).
   useEffect(() => {
     if (roundState === 'READING') timer.start();
-    if (roundState === 'LOADING') timer.reset();
-    if (roundState === 'REVEALING') timer.pause();
+    if (roundState === 'LOADING') { timer.reset(); setPaused(false); }
+    if (roundState === 'REVEALING') { timer.pause(); setPaused(false); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roundState]);
 
@@ -156,9 +159,36 @@ export function useDailyRound(allSites) {
     // inside setRoundState's updater (React 18 Strict Mode double-invokes
     // updaters in dev; a nested setGuess side effect would fire twice).
     if (roundStateRef.current !== 'READING' && roundStateRef.current !== 'PLACING') return;
+    if (pausedRef.current) return; // pause button blocks marker placement too
     setGuess({ lat, lng });
     setRoundState('PLACING');
   }, []);
+
+  // Player-facing pause/resume, only meaningful while the clock is actually
+  // running (READING/PLACING) -- DailyMap.jsx hides the button otherwise.
+  const handlePauseToggle = useCallback(() => {
+    if (roundStateRef.current !== 'READING' && roundStateRef.current !== 'PLACING') return;
+    setPaused((wasPaused) => {
+      if (wasPaused) timer.resume();
+      else timer.pause();
+      return !wasPaused;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-pause on navigating away to another in-app tab mid-round, instead
+  // of App.jsx's old confirm()-and-block guard -- the round just freezes and
+  // waits, same site/progress intact (DailyMap stays mounted, display:none,
+  // per Section 4), and the player resumes manually via handlePauseToggle
+  // when they come back. Doesn't auto-resume on return -- that's a deliberate
+  // player action, not automatic.
+  useEffect(() => {
+    if (!active && !pausedRef.current && (roundStateRef.current === 'READING' || roundStateRef.current === 'PLACING')) {
+      setPaused(true);
+      timer.pause();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   const handleHint = useCallback(() => {
     if (roundStateRef.current !== 'READING' && roundStateRef.current !== 'PLACING') return;
@@ -202,10 +232,12 @@ export function useDailyRound(allSites) {
     result,
     results, // pass to DAILY_SUMMARY for total_pts/total_dist + the /api/score POST body
     timeRemaining: timer.remaining,
+    paused,
     handleMapClick,
     handleHint,
     handleConfirm,
     handleNextSite,
     handleStart,
+    handlePauseToggle,
   };
 }

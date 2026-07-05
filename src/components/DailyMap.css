@@ -21,20 +21,30 @@
   /* Pulled down below Header.jsx's title bar (+ safe-area inset) via the
      shared --eg-header-height var. */
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
-  right: 10px;
+  /* 20px, not 10px -- the pause button sits 10px outside .dm-timer-card's own
+     edge (see .dm-pause-btn below), so 10px of stack clearance put it flush
+     with the viewport edge, right where a scrollbar/safe-area can eat it. */
+  right: 20px;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  /* stretch (not flex-end) -- .dm-timer-card has no width of its own now, so
+     it takes on the stack's width, which is sized to its widest child
+     (.dm-layer-panel). This is what makes the two boxes line up. */
+  align-items: stretch;
   gap: 10px;
 }
 
-.dm-timer-pill {
-  min-width: 54px;
-  text-align: center;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(17, 24, 39, 0.78);
+.dm-timer-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px 10px;
+  border-radius: 16px;
+  background: linear-gradient(155deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
@@ -42,8 +52,82 @@
   isolation: isolate;
   transform: translateZ(0);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
-  font-size: 16px;
+}
+
+.dm-timer-time {
+  font-size: 20px;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* ---- Round-progress dots -- one per Daily round, filled as they complete */
+
+.dm-timer-dots {
+  display: flex;
+  gap: 7px;
+}
+
+.dm-timer-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.dm-timer-dot--done {
+  background: #22c55e;
+}
+
+.dm-timer-dot--upcoming {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+}
+
+/* ---- Pause button -- sits in the timer card's top-right corner --------- */
+
+.dm-pause-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: #1f2937;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.dm-pause-btn:hover {
+  background: #374151;
+}
+
+/* ---- Paused overlay -- confirms the map isn't accepting clicks --------- */
+
+.dm-paused-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  pointer-events: none;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ffffff;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* ---- Layer panel -- same placeholder treatment as ClassicMap's ---------- */
