@@ -7,6 +7,20 @@ import { SATELLITE_VISUAL } from '../config.js';
 // Anchored to the viewport (redraws on resize), not the map content -- it should
 // NOT redraw on pan/zoom/rotate, per the spec's "simulates atmospheric scatter at
 // the viewport rim" framing.
+//
+// isolation/translateZ(0) below: this is the one piece of Classic's satellite
+// view that Daily's doesn't have -- ClassicMap.jsx renders it, DailyMap.jsx never
+// imports SatelliteOverlay at all. A <canvas> always gets its own GPU compositing
+// layer in Chromium regardless of CSS, so turning satellite on in Classic puts a
+// SECOND always-own-layer canvas (this one) on top of MapLibre's WebGL canvas,
+// alongside the several already-isolated fixed elements (BottomCard, RecenterButton,
+// BottomNav -- see RecenterButton.css's writeup on the backdrop-filter/WebGL
+// compositor bug those needed). Daily only ever has the one (WebGL) canvas layer
+// in that stack. This canvas was the one layer in that group that had never been
+// given the same explicit-layer treatment -- adding it here gives the compositor
+// the same stable boundary for every layer in the stack instead of just most of
+// them, which is the most likely reason the existing fix was covering Daily's
+// satellite view fine but not Classic's.
 // @param active: boolean -- pass the `satellite` value from useMapState()
 export default function SatelliteOverlay({ active }) {
   const canvasRef = useRef(null);
@@ -73,6 +87,8 @@ export default function SatelliteOverlay({ active }) {
         position: 'absolute', inset: 0,
         pointerEvents: 'none', // let map drag/zoom/click pass through untouched
         zIndex: 5,
+        isolation: 'isolate',
+        transform: 'translateZ(0)',
       }}
     />
   );

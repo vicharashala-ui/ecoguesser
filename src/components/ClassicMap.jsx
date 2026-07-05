@@ -128,10 +128,10 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     if (!map || !mapReady) return;
 
     if (roundState === 'REVEALING' && result && result.guessLat != null) {
-      // Borders give useful context for the highlighted site boundary --
-      // turn them on for this reveal. Turned back off at the next LOADING
-      // below; the player can re-enable manually for a round if they want.
-      setPolitical(true);
+      // Borders/names stay exactly as the difficulty level (or the player's
+      // own manual toggle) has them set -- no longer force-enabled here.
+      // Hard mode's no-borders setting now holds through the reveal too,
+      // as originally envisioned.
 
       // BottomCard has already re-rendered into its expanded layout by the
       // time this effect runs (same commit), so this reads its real height
@@ -145,13 +145,15 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
       });
     } else if (roundState === 'LOADING') {
       clearResult(map);
-      setPolitical(false);
+      // Borders/names are no longer force-disabled here -- whatever the
+      // difficulty level (or the player's own manual toggle) had them set to
+      // simply carries over into the next round, as originally envisioned.
       // Next Site lands here -- reset the view to the default India-wide
       // framing per direct request, same fitBounds call RecenterButton/
       // MapContainer's initial load both use.
       map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING });
     }
-  }, [mapRef, mapReady, roundState, result, setPolitical]);
+  }, [mapRef, mapReady, roundState, result]);
 
   // (v8.19) BottomCard.css transitions max-height over 0.3s on pill->expanded
   // (is-pill -> is-expanded). The reveal effect above measures cardRef's

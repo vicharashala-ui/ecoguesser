@@ -70,6 +70,22 @@ export const SATELLITE_VISUAL = {
   BOUNDARY_COLOR:   '#E8ECEF',
   BOUNDARY_OPACITY: 0.55,
   BOUNDARY_WIDTH:   1,
+  // Dark casing drawn directly beneath the (near-white) boundary lines,
+  // satellite-mode only. Without it the pale BOUNDARY_COLOR line all but
+  // disappears over bright/snow-covered terrain (Himalayan north -- Ladakh,
+  // Aksai Chin, the Nepal/China frontier), since a light line at 0.55
+  // opacity has almost no contrast against light-colored imagery. The dark
+  // casing guarantees contrast against ANY background brightness: it reads
+  // as an outline on light terrain, and simply sits invisible behind the
+  // light line over dark terrain. Same technique as road-casing in
+  // cartography. Only added to the three international-boundary line
+  // layers (boundary_2 / boundary_disputed / INDIA_BOUNDARY_LINE) -- state
+  // lines (STATE_LINE_COLOR) are a warm tan, not near-white, and don't have
+  // this problem.
+  BOUNDARY_CASING_COLOR:   '#04101c',
+  BOUNDARY_CASING_OPACITY: 0.65,
+  BOUNDARY_CASING_WIDTH:   3,      // vs. the flat BOUNDARY_WIDTH:1 used by boundary_2/disputed in satellite
+  INDIA_BOUNDARY_CASING_WIDTH: 3.5, // INDIA_BOUNDARY_LINE's own width is a constant 1.5, unaffected by BOUNDARY_WIDTH
   // Deliberately its own tone, not BOUNDARY_COLOR -- state lines (the
   // "Borders" toggle) must still read as a distinct gameplay hint overlay
   // from the international border, not a second copy of it, even on
@@ -144,6 +160,9 @@ export const LAYER_IDS = {
   RESULT_BOUNDARY:     'result-boundary',
   CORRECT_PIN:         'correct-pin',
   INDIA_BOUNDARY_LINE: 'india-boundary-line',
+  BOUNDARY_2_CASING:      'boundary-2-casing',
+  BOUNDARY_DISPUTED_CASING: 'boundary-disputed-casing',
+  INDIA_BOUNDARY_CASING:  'india-boundary-line-casing',
   BLITZ_FILL:          'blitz-fill',
   BLITZ_OUTLINE:       'blitz-outline',
   BLITZ_BOUNDARY:      'blitz-boundary',

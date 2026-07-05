@@ -80,6 +80,16 @@ export function useMapState(mapRef, mode) {
         map.setPaintProperty(id, 'line-opacity', toSatellite ? SV.BOUNDARY_OPACITY : BV.BOUNDARY_OPACITY_EXPR);
         map.setPaintProperty(id, 'line-width', toSatellite ? SV.BOUNDARY_WIDTH : BV.BOUNDARY_WIDTH_EXPR);
       }
+      // Dark casing layers, satellite-only -- see config.js's BOUNDARY_CASING_*
+      // comment. Base mode's dark BOUNDARY_COLOR already has plenty of contrast
+      // against the light basemap, so the casing stays hidden there.
+      const casingIds = [
+        LAYER_IDS.BOUNDARY_2_CASING, LAYER_IDS.BOUNDARY_DISPUTED_CASING, LAYER_IDS.INDIA_BOUNDARY_CASING,
+      ];
+      for (const id of casingIds) {
+        if (!map.getLayer(id)) continue;
+        map.setLayoutProperty(id, 'visibility', toSatellite ? 'visible' : 'none');
+      }
       for (const id of ['waterway_river', 'waterway_other']) {
         if (!map.getLayer(id)) continue;
         map.setPaintProperty(id, 'line-color', toSatellite ? SV.RIVER_COLOR : BV.RIVER_COLOR);
@@ -334,8 +344,51 @@ export function useMapState(mapRef, mode) {
         });
       }
 
+      // Dark casing for boundary_2/boundary_disputed (both already present in
+      // map-style.json by the time 'load' fires), inserted directly beneath
+      // each via the `before` id so it renders as an outline, not a
+      // duplicate line. Hidden by default -- restyleBordersAndRivers flips
+      // these visible only in satellite mode, where the near-white
+      // BOUNDARY_COLOR line needs the extra contrast (see config.js).
+      if (map.getLayer('boundary_2')) {
+        map.addLayer({
+          id: LAYER_IDS.BOUNDARY_2_CASING, type: 'line', source: 'openmaptiles', 'source-layer': 'boundary',
+          filter: ['all', ['==', ['get', 'admin_level'], 2], ['!=', ['get', 'maritime'], 1], ['!=', ['get', 'disputed'], 1], ['!', ['has', 'claimed_by']]],
+          layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+          paint: {
+            'line-color':   SATELLITE_VISUAL.BOUNDARY_CASING_COLOR,
+            'line-opacity': SATELLITE_VISUAL.BOUNDARY_CASING_OPACITY,
+            'line-width':   SATELLITE_VISUAL.BOUNDARY_CASING_WIDTH,
+          },
+        }, 'boundary_2');
+      }
+      if (map.getLayer('boundary_disputed')) {
+        map.addLayer({
+          id: LAYER_IDS.BOUNDARY_DISPUTED_CASING, type: 'line', source: 'openmaptiles', 'source-layer': 'boundary',
+          filter: ['all', ['!=', ['get', 'maritime'], 1], ['==', ['get', 'disputed'], 1]],
+          layout: { visibility: 'none' },
+          paint: {
+            'line-color':   SATELLITE_VISUAL.BOUNDARY_CASING_COLOR,
+            'line-opacity': SATELLITE_VISUAL.BOUNDARY_CASING_OPACITY,
+            'line-width':   SATELLITE_VISUAL.BOUNDARY_CASING_WIDTH,
+          },
+        }, 'boundary_disputed');
+      }
+
       map.addSource('india-boundary', { type: 'geojson', data: '/india-boundary.geojson' });
 
+      // Casing added immediately before INDIA_BOUNDARY_LINE (both appended in
+      // order below, nothing else renders between them) so it sits directly
+      // underneath as an outline, same technique as the two layers above.
+      map.addLayer({
+        id: LAYER_IDS.INDIA_BOUNDARY_CASING, type: 'line', source: 'india-boundary',
+        layout: { visibility: 'none' },
+        paint: {
+          'line-color':   SATELLITE_VISUAL.BOUNDARY_CASING_COLOR,
+          'line-opacity': SATELLITE_VISUAL.BOUNDARY_CASING_OPACITY,
+          'line-width':   SATELLITE_VISUAL.INDIA_BOUNDARY_CASING_WIDTH,
+        },
+      });
       map.addLayer({
         id: LAYER_IDS.INDIA_BOUNDARY_LINE, type: 'line', source: 'india-boundary',
         paint: { 'line-color': BASE_VISUAL.BOUNDARY_COLOR, 'line-width': 1.5 },
