@@ -24,8 +24,10 @@ import { CATEGORY_META } from '../config.js';
 import {
   loadDailyStats,
   loadNormalStats,
+  loadBlitzStats,
   computeDailyStats,
   computeClassicStats,
+  computeBlitzStats,
 } from '../game/stats.js';
 import './StatsView.css';
 
@@ -190,6 +192,49 @@ function ClassicSection() {
   );
 }
 
+function BlitzSection() {
+  const stats = useMemo(() => computeBlitzStats(loadBlitzStats()), []);
+
+  if (stats.rounds === 0) {
+    return (
+      <div className="sv-empty">
+        <p>No Blitz rounds played yet.</p>
+        <p className="sv-empty-sub">Play a round of Blitz to start building your stats.</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="sv-stat-row">
+        <div className="sv-stat">
+          <span className="sv-stat-value">{stats.rounds.toLocaleString()}</span>
+          <span className="sv-stat-label">Rounds</span>
+        </div>
+        <div className="sv-stat">
+          <span className="sv-stat-value">{stats.accuracy}%</span>
+          <span className="sv-stat-label">Accuracy</span>
+        </div>
+        <div className="sv-stat">
+          <span className="sv-stat-value">{stats.bestStreak}</span>
+          <span className="sv-stat-label">Best streak</span>
+        </div>
+      </div>
+
+      <p className="sv-heading">By category</p>
+      <div className="sv-cat-grid">
+        {Object.entries(stats.byCategory).map(([cat, accuracy]) => (
+          <div className="sv-cat-item" key={cat}>
+            <span className="sv-cat-dot" style={{ background: CATEGORY_META[cat].color }} />
+            <span className="sv-cat-label">{CATEGORY_META[cat].label}</span>
+            <span className="sv-cat-score">{accuracy != null ? `${accuracy}%` : '--'}</span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 export default function StatsView() {
   const [tab, setTab] = useState('daily');
 
@@ -212,10 +257,17 @@ export default function StatsView() {
         >
           Classic
         </button>
+        <button
+          type="button"
+          className={`sv-subtab${tab === 'blitz' ? ' sv-subtab-active' : ''}`}
+          onClick={() => setTab('blitz')}
+        >
+          Blitz
+        </button>
       </div>
 
       <div className="sv-body">
-        {tab === 'daily' ? <DailySection /> : <ClassicSection />}
+        {tab === 'daily' ? <DailySection /> : tab === 'classic' ? <ClassicSection /> : <BlitzSection />}
       </div>
     </div>
   );

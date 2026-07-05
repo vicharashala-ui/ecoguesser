@@ -66,8 +66,6 @@ export default function SideDrawer({
   onNavigate,
 }) {
   const [name, setName] = useState(() => localStorage.getItem(LS_KEYS.NAME) ?? '');
-  const [draftCategories, setDraftCategories] = useState(filters.categories);
-  const [draftStates, setDraftStates] = useState(filters.states);
   const [expandedRegion, setExpandedRegion] = useState(null);
   // Each region's state list is measured (not guessed) because some state
   // names wrap to two lines at this drawer width -- a fixed per-row height
@@ -100,16 +98,6 @@ export default function SideDrawer({
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackPhase, setFeedbackPhase] = useState('idle'); // 'idle' | 'sending' | 'sent'
 
-  // Draft resets to the last-applied filters every time the drawer opens --
-  // closing without Apply must not leave a half-edited draft lingering for
-  // next time.
-  useEffect(() => {
-    if (open) {
-      setDraftCategories(filters.categories);
-      setDraftStates(filters.states);
-    }
-  }, [open, filters]);
-
   // Reverts the "Thanks!" confirmation back to an empty box a couple
   // seconds after sending. This drawer doesn't unmount on close (App.jsx
   // renders it unconditionally; `open` just gates its own early return
@@ -126,7 +114,7 @@ export default function SideDrawer({
   for (const s of sites) categoryCounts[s.category] = (categoryCounts[s.category] ?? 0) + 1;
 
   const matchCount = sites.filter(
-    (s) => draftCategories.includes(s.category) && s.state.some((st) => draftStates.includes(st))
+    (s) => filters.categories.includes(s.category) && s.state.some((st) => filters.states.includes(st))
   ).length;
 
   function handleNameChange(e) {
@@ -135,11 +123,6 @@ export default function SideDrawer({
     const trimmed = value.trim();
     if (trimmed) localStorage.setItem(LS_KEYS.NAME, trimmed);
     else localStorage.removeItem(LS_KEYS.NAME);
-  }
-
-  function handleApply() {
-    onApplyFilters({ categories: draftCategories, states: draftStates });
-    onClose();
   }
 
   function handleNavigate(dest) {
@@ -158,7 +141,7 @@ export default function SideDrawer({
 
   function regionState(region) {
     const states = REGION_STATES[region];
-    const selectedCount = states.filter((s) => draftStates.includes(s)).length;
+    const selectedCount = states.filter((s) => filters.states.includes(s)).length;
     if (selectedCount === 0) return 'none';
     if (selectedCount === states.length) return 'all';
     return 'partial';
@@ -166,9 +149,11 @@ export default function SideDrawer({
 
   function toggleRegion(region) {
     const states = REGION_STATES[region];
-    setDraftStates((prev) =>
-      regionState(region) === 'all' ? prev.filter((s) => !states.includes(s)) : [...new Set([...prev, ...states])]
-    );
+    const nextStates =
+      regionState(region) === 'all'
+        ? filters.states.filter((s) => !states.includes(s))
+        : [...new Set([...filters.states, ...states])];
+    onApplyFilters({ categories: filters.categories, states: nextStates });
   }
 
   if (!mounted) return null;
@@ -233,7 +218,7 @@ export default function SideDrawer({
               <p className="sd-heading">Category</p>
               <div className="sd-cat-list">
                 {CATEGORIES.map((cat) => {
-                  const active = draftCategories.includes(cat);
+                  const active = filters.categories.includes(cat);
                   const color = CATEGORY_META[cat].color;
                   return (
                     <button
@@ -241,7 +226,7 @@ export default function SideDrawer({
                       type="button"
                       className={`sd-cat-row${active ? ' sd-cat-row-active' : ''}`}
                       style={active ? { borderColor: color } : undefined}
-                      onClick={() => setDraftCategories((prev) => toggle(prev, cat))}
+                      onClick={() => onApplyFilters({ categories: toggle(filters.categories, cat), states: filters.states })}
                       aria-pressed={active}
                     >
                       <span className="sd-cat-dot" style={{ background: color }} />
@@ -288,9 +273,15 @@ export default function SideDrawer({
                           <label key={st} className="sd-state-item">
                             <input
                               type="checkbox"
-                              checked={draftStates.includes(st)}
-                              onChange={() => setDraftStates((prev) => toggle(prev, st))}
+                              className="sd-state-checkbox-input"
+                              checked={filters.states.includes(st)}
+                              onChange={() => onApplyFilters({ categories: filters.categories, states: toggle(filters.states, st) })}
                             />
+                            <span className="sd-state-checkbox">
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M4 12.5l5 5L20 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </span>
                             {st}
                           </label>
                         ))}
@@ -305,9 +296,6 @@ export default function SideDrawer({
               <p className="sd-count">
                 {matchCount === 0 ? 'No sites match these filters' : `Showing ${matchCount} sites`}
               </p>
-              <button type="button" className="sd-apply-btn" disabled={matchCount === 0} onClick={handleApply}>
-                Apply Filters
-              </button>
             </div>
           </>
         )}

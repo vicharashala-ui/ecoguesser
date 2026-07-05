@@ -39,6 +39,7 @@ import {
   showHintRegion, hideHintRegion,
 } from '../game/blitzHighlight.js';
 import { siteMatchesFilter, DEFAULT_FILTERS, getRegionHintStates } from '../utils/filters.js';
+import { recordBlitzResult } from '../game/stats.js';
 import { LAYER_IDS, MAP_CONFIG, MAP_STYLE_BLITZ } from '../config.js';
 import './BlitzMap.css';
 
@@ -64,7 +65,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   );
 
   const {
-    roundState, site, selectedState, result,
+    roundState, site, selectedState, result, streak,
     handleStateClick, handleConfirm, handleNextSite, handleSkip,
   } = useBlitzRound(sitePool);
 
@@ -146,6 +147,18 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     }
   }, [mapRef, mapReady, roundState, result]);
 
+  // Blitz's post-REVEALING stats write, same idempotency shape as
+  // ClassicMap.jsx's recordClassicResult effect: guarded by object identity
+  // against `result` (not a boolean) so React 18 Strict Mode's dev-only
+  // double-invoke can't record the same round twice.
+  const recordedResultRef = useRef(null);
+  useEffect(() => {
+    if (roundState !== 'REVEALING' || !result) return;
+    if (recordedResultRef.current === result) return;
+    recordedResultRef.current = result;
+    recordBlitzResult(result, streak);
+  }, [roundState, result, streak]);
+
   // State names: fully player-controlled via the toggle below -- no longer
   // force-shown on REVEALING (the player now chooses whether to reveal
   // them, per direct request). Still resets to hidden every new LOADING so
@@ -199,13 +212,15 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   return (
     <div style={style}>
       <div className="bz-layer-panel">
-        <label>
+        <label className="eg-toggle">
           <input
             type="checkbox"
+            className="eg-toggle-input"
             checked={politicalNames}
             disabled={!mapReady}
             onChange={() => setPoliticalNames(!politicalNames)}
           />
+          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
           State Names
         </label>
       </div>

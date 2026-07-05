@@ -242,9 +242,21 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
       {/* TEMPORARY layer toggle panel, carried over from the old MapSmokeTest --
           replace with the real icon-based control from Section 8 once built. */}
       <div className="cm-layer-panel">
-        <label><input type="checkbox" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} /> Borders</label>
-        <label><input type="checkbox" checked={politicalNames} disabled={!mapReady} onChange={(e) => setPoliticalNames(e.target.checked)} /> Names</label>
-        <label><input type="checkbox" checked={satellite} disabled={!mapReady} onChange={(e) => setSatellite(e.target.checked)} /> Satellite</label>
+        <label className="eg-toggle">
+          <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
+          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
+          Borders
+        </label>
+        <label className="eg-toggle">
+          <input type="checkbox" className="eg-toggle-input" checked={politicalNames} disabled={!mapReady} onChange={(e) => setPoliticalNames(e.target.checked)} />
+          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
+          Names
+        </label>
+        <label className="eg-toggle">
+          <input type="checkbox" className="eg-toggle-input" checked={satellite} disabled={!mapReady} onChange={(e) => setSatellite(e.target.checked)} />
+          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
+          Satellite
+        </label>
         {satelliteUnavailable && <div className="cm-sat-warning">Satellite unavailable</div>}
       </div>
 

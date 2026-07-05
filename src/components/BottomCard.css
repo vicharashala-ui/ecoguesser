@@ -127,16 +127,16 @@
   height: 38px;
   border-radius: 999px;
   border: none;
-  background: rgba(17, 24, 39, 0.06);
-  color: #6b7280;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s ease, color 0.15s ease, opacity 0.2s ease;
 }
 
 .bc-hint-btn:hover:not(:disabled) {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.28);
+  color: #d97706;
 }
 
 .bc-hint-btn:disabled {

@@ -197,13 +197,15 @@ export function DailyMap({ mapRef, style, sites, onComplete, onRoundStateChange 
           moved up here per direct request. */}
       <div className="dm-top-right-stack">
         <div className="dm-layer-panel">
-          <label>
+          <label className="eg-toggle">
             <input
               type="checkbox"
+              className="eg-toggle-input"
               checked={satellite}
               disabled={!mapReady || satelliteUnavailable}
               onChange={() => setSatellite(!satellite)}
             />
+            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
             Satellite
           </label>
           {satelliteUnavailable && (

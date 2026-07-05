@@ -178,5 +178,6 @@ export const LS_KEYS = {
   DIFFICULTY:  'ecoguesser_difficulty',
   STATS_DAILY: 'stats_daily',
   STATS_NORM:  'stats_normal',
+  STATS_BLITZ: 'stats_blitz',
   RANK_TODAY:  'ecoguesser_rank_today', // { date, rank } -- rank only valid when date === today
 };

@@ -49,3 +49,72 @@ button, a, input, textarea, select {
 @keyframes eg-spin {
   to { transform: rotate(360deg); }
 }
+
+/* Shared small toggle switch -- used for the map's Borders/Names/Satellite
+   layer controls (ClassicMap, DailyMap, BlitzMap). One definition here
+   instead of duplicating it per map stylesheet. The real checkbox stays in
+   the DOM (for click/keyboard/checked state) but is visually hidden;
+   .eg-toggle-track + .eg-toggle-thumb are what's actually shown. */
+.eg-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.eg-toggle-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.eg-toggle-track {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 18px;
+  border-radius: 999px;
+  background: #d1d5db;
+  transition: background-color 0.15s ease;
+}
+
+.eg-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.eg-toggle-input:checked ~ .eg-toggle-track {
+  background: #16a34a;
+}
+
+.eg-toggle-input:checked ~ .eg-toggle-track .eg-toggle-thumb {
+  transform: translateX(14px);
+}
+
+.eg-toggle-input:disabled ~ .eg-toggle-track {
+  opacity: 0.5;
+}
+
+.eg-toggle-input:disabled {
+  cursor: not-allowed;
+}
+
+.eg-toggle-input:focus-visible ~ .eg-toggle-track {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eg-toggle-track,
+  .eg-toggle-thumb {
+    transition: none;
+  }
+}

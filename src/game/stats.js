@@ -133,6 +133,40 @@ export function recordClassicResult(result) {
 }
 
 // ---------------------------------------------------------------------------
+// Blitz -- new this pass
+// ---------------------------------------------------------------------------
+
+export function loadBlitzStats() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LS_KEYS.STATS_BLITZ));
+    if (!raw || typeof raw !== 'object') throw new Error();
+    return {
+      bestStreak: raw.bestStreak ?? 0,
+      history: Array.isArray(raw.history) ? raw.history : [],
+    };
+  } catch {
+    return { bestStreak: 0, history: [] };
+  }
+}
+
+/**
+ * Writes one Blitz round to localStorage. Blitz has no distance/score --
+ * useBlitzRound.js is "purely binary correct/wrong plus a session streak" --
+ * so only whether the guess was correct and its category get persisted,
+ * which is enough to derive accuracy and a by-category breakdown.
+ */
+export function recordBlitzResult(result, sessionStreak) {
+  const stats = loadBlitzStats();
+
+  stats.bestStreak = Math.max(stats.bestStreak, sessionStreak);
+  stats.history.push({ correct: result.isCorrect, cat: result.site.category, ts: Date.now() });
+  if (stats.history.length > 200) stats.history.shift();
+
+  localStorage.setItem(LS_KEYS.STATS_BLITZ, JSON.stringify(stats));
+  return stats;
+}
+
+// ---------------------------------------------------------------------------
 // Section 9b derived fields
 // ---------------------------------------------------------------------------
 
@@ -247,4 +281,34 @@ export function computeClassicStats(stats) {
   const trend = stats.history.slice(-20).map((h) => h.score);
 
   return { rounds: stats.rounds, avgDist, avgScore, bestGuess, trend };
+}
+
+/**
+ * @param {ReturnType<typeof loadBlitzStats>} stats
+ * @returns {{
+ *   rounds: number, accuracy: number|null, bestStreak: number,
+ *   byCategory: Record<string, number|null>,  // % correct per category
+ * }}
+ */
+export function computeBlitzStats(stats) {
+  const rounds = stats.history.length;
+
+  if (rounds === 0) {
+    const emptyByCategory = {};
+    for (const cat of DAILY.CATEGORIES) emptyByCategory[cat] = null;
+    return { rounds: 0, accuracy: null, bestStreak: stats.bestStreak, byCategory: emptyByCategory };
+  }
+
+  const correct = stats.history.filter((h) => h.correct).length;
+  const accuracy = Math.round((correct / rounds) * 100);
+
+  const byCategory = {};
+  for (const cat of DAILY.CATEGORIES) {
+    const catRounds = stats.history.filter((h) => h.cat === cat);
+    byCategory[cat] = catRounds.length
+      ? Math.round((catRounds.filter((h) => h.correct).length / catRounds.length) * 100)
+      : null;
+  }
+
+  return { rounds, accuracy, bestStreak: stats.bestStreak, byCategory };
 }
