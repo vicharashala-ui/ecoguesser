@@ -22,6 +22,7 @@ import { getTodayString } from '../game/daily.js';
 import { getLeaderboard } from '../game/api.js';
 import { loadDailyStats, bestDailyScore } from '../game/stats.js';
 import ShareCard from './ShareCard.jsx';
+import DailyRecap from './DailyRecap.jsx';
 import './Leaderboard.css';
 
 function computeRanks(top10) {
@@ -50,7 +51,7 @@ function readRankToday() {
   }
 }
 
-export default function Leaderboard({ data, onPlayClassic, onPlayBlitz }) {
+export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites }) {
   const today = getTodayString();
   const [fetched, setFetched] = useState(data ?? null);
   const [fetchError, setFetchError] = useState(false);
@@ -136,6 +137,8 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz }) {
               ? `Your best: ${best.total.toLocaleString()} (${formatShortDate(best.date)})`
               : 'Your best: --'}
           </p>
+
+          <DailyRecap date={today} allSites={allSites} totalDist={todayEntry?.dist ?? null} />
         </>
       )}
 

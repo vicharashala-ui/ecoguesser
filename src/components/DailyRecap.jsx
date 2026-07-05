@@ -3,18 +3,20 @@
 // Shown inside Leaderboard once the day's 5 rounds are done. Reconstructs
 // the day's sites via getDailySites (same deterministic pick used to run the
 // round) since stats_daily only persists category/distance/score, not the
-// full site objects (see daily.js). Renders a small India outline with a
-// pin per site, colored by CATEGORY_META, plus a name+state list.
+// full site objects (see daily.js). Renders an India outline with a pin per
+// site, colored by CATEGORY_META, a name+state legend, and (when today's
+// stats_daily entry has a recorded distance) a Total Distance stat box.
 
 import { getDailySites } from '../game/daily.js';
-import { OUTLINE_VIEWBOX, INDIA_OUTLINE_PATH, projectToOutline } from '../data/indiaOutline.js';
+import { OUTLINE_VIEWBOX, INDIA_OUTLINE_PATH, INDIA_STATE_BORDERS_PATH, projectToOutline } from '../data/indiaOutline.js';
 import { CATEGORY_META, LS_KEYS } from '../config.js';
 import './DailyRecap.css';
 
 function PinMarker({ x, y, color }) {
-  // Same teardrop shape as BottomCard's IconPin, scaled down and filled
-  // solid (vs. outlined) to read clearly at mini-map size.
-  const scale = 0.028;
+  // Same teardrop shape as BottomCard's IconPin, scaled to read clearly at
+  // the enlarged mini-map size (previously 0.028 -- a leftover scale tuned
+  // for a much smaller map -- which rendered pins at a fraction of a pixel).
+  const scale = 0.5;
   return (
     <g transform={`translate(${x}, ${y}) scale(${scale}) translate(-12, -21)`}>
       <path
@@ -28,7 +30,13 @@ function PinMarker({ x, y, color }) {
   );
 }
 
-export default function DailyRecap({ date, allSites }) {
+function formatDisplayDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
+export default function DailyRecap({ date, allSites, totalDist }) {
   if (!allSites || allSites.length === 0) return null;
 
   const sites = getDailySites(date, allSites);
@@ -37,14 +45,38 @@ export default function DailyRecap({ date, allSites }) {
   return (
     <div className="dr-card">
       <div className="dr-header">
-        <div className="dr-brand">
-          <span className="dr-wordmark">EcoGuesser</span>
-          <span className="dr-pill">Daily</span>
+        <div className="dr-brand-block">
+          <div className="dr-brand">
+            <span className="dr-wordmark">EcoGuesser</span>
+            <span className="dr-pill">Daily</span>
+          </div>
+          <span className="dr-date">{formatDisplayDate(date)}</span>
         </div>
         <span className="dr-player">{playerName}</span>
       </div>
 
-      <div className="dr-body">
+      <svg
+        className="dr-map"
+        viewBox={`0 0 ${OUTLINE_VIEWBOX.width} ${OUTLINE_VIEWBOX.height}`}
+        role="img"
+        aria-label="Map of today's 5 sites"
+      >
+        <path d={INDIA_OUTLINE_PATH} className="dr-outline" />
+        <path d={INDIA_STATE_BORDERS_PATH} className="dr-state-borders" />
+        {sites.map((site) => {
+          const { x, y } = projectToOutline(site.centroid_lat, site.centroid_lng);
+          return (
+            <PinMarker
+              key={site.id}
+              x={x}
+              y={y}
+              color={CATEGORY_META[site.category].color}
+            />
+          );
+        })}
+      </svg>
+
+      <div className="dr-lower">
         <ul className="dr-list">
           {sites.map((site) => (
             <li key={site.id} className="dr-list-item">
@@ -60,25 +92,13 @@ export default function DailyRecap({ date, allSites }) {
           ))}
         </ul>
 
-        <svg
-          className="dr-map"
-          viewBox={`0 0 ${OUTLINE_VIEWBOX.width} ${OUTLINE_VIEWBOX.height}`}
-          role="img"
-          aria-label="Map of today's 5 sites"
-        >
-          <path d={INDIA_OUTLINE_PATH} className="dr-outline" />
-          {sites.map((site) => {
-            const { x, y } = projectToOutline(site.centroid_lat, site.centroid_lng);
-            return (
-              <PinMarker
-                key={site.id}
-                x={x}
-                y={y}
-                color={CATEGORY_META[site.category].color}
-              />
-            );
-          })}
-        </svg>
+        {totalDist != null && (
+          <div className="dr-stats-box">
+            <span className="dr-stats-label">Total Distance</span>
+            <span className="dr-stats-value">{Math.round(totalDist).toLocaleString()}</span>
+            <span className="dr-stats-unit">km</span>
+          </div>
+        )}
       </div>
     </div>
   );
