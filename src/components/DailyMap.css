@@ -43,10 +43,11 @@
   gap: 8px;
   padding: 12px 20px 10px;
   border-radius: 16px;
-  background: linear-gradient(155deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.92));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(248, 246, 241, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
   /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
      see the comment there for the full writeup. */
   isolation: isolate;

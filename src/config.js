@@ -146,6 +146,17 @@ export const BASE_VISUAL = {
   STATE_LINE_COLOR:   '#4a4438',
   STATE_LINE_WIDTH:   1.1,
   STATE_LINE_OPACITY: 0.85,
+  // Light casing behind boundary_2/boundary_disputed/INDIA_BOUNDARY_LINE --
+  // mirrors SATELLITE_VISUAL's dark casing, just inverted, since here it's a
+  // DARK line (BOUNDARY_COLOR) that can vanish over dark terrain (the
+  // 3200-4800m hypsometric-tint band + hillshade shadow in the Himalayan
+  // north / Northeast hills), not a light one. Same technique either way:
+  // a casing of the opposite tone guarantees contrast regardless of what's
+  // underneath.
+  BOUNDARY_CASING_COLOR:   '#fdf8ec',
+  BOUNDARY_CASING_OPACITY: 0.6,
+  BOUNDARY_CASING_WIDTH:   3,
+  INDIA_BOUNDARY_CASING_WIDTH: 3.5,
 };
 
 export const LAYER_IDS = {

@@ -49,7 +49,7 @@ import { useDailyRound } from '../hooks/useDailyRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { showResult, clearResult, zoomToSiteBoundary } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
-import { MAP_CONFIG } from '../config.js';
+import { MAP_CONFIG, DAILY, CATEGORY_META } from '../config.js';
 import './DailyMap.css';
 
 // Icons -- same inline-SVG, currentColor convention as BottomCard.jsx's IconSkip etc.
@@ -76,11 +76,14 @@ function formatTime(totalSeconds) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-// Decision #6: white -> amber <30s -> red <10s.
+// Decision #6: dark -> amber <30s -> red <10s (flipped from white-on-dark
+// now that .dm-timer-card is light glass -- #111827/#f59e0b/#dc2626 are the
+// same dark-text/amber/red already established in BottomCard.css, not new
+// colors).
 function timerColor(remaining) {
-  if (remaining < 10) return '#f87171';
-  if (remaining < 30) return '#fbbf24';
-  return '#f8fafc';
+  if (remaining < 10) return '#dc2626';
+  if (remaining < 30) return '#f59e0b';
+  return '#111827';
 }
 
 export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
@@ -173,6 +176,21 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
     return () => card.removeEventListener('transitionend', onTransitionEnd);
   }, [roundState]);
 
+  // Effect 3: pausing freezes the map in place -- disable every pan/zoom/
+  // rotate handler on pause, restore them on resume. Scoped strictly to
+  // `paused` (unlike the old REVEALING pan lock removed above, which stays
+  // pannable on purpose).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    const handlers = [
+      map.dragPan, map.scrollZoom, map.boxZoom,
+      map.dragRotate, map.touchZoomRotate, map.touchPitch,
+      map.doubleClickZoom, map.keyboard,
+    ];
+    handlers.forEach((h) => (paused ? h.disable() : h.enable()));
+  }, [paused, mapReady, mapRef]);
+
   // Round 5's "Next" hands off to the parent instead of looping back to
   // LOADING (Section 4). useDailyRound's own handleNextSite already no-ops
   // past the last round, so this branch is what actually triggers the
@@ -241,9 +259,11 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
             {formatTime(timeRemaining)}
           </span>
           <div className="dm-timer-dots" aria-hidden="true">
-            {Array.from({ length: 5 }, (_, i) => {
+            {DAILY.CATEGORIES.map((cat, i) => {
               const dotState = i < results.length ? 'done' : 'upcoming';
-              return <span key={i} className={`dm-timer-dot dm-timer-dot--${dotState}`} />;
+              const color = CATEGORY_META[cat].color;
+              const dotStyle = dotState === 'done' ? { background: color } : { borderColor: color };
+              return <span key={cat} className={`dm-timer-dot dm-timer-dot--${dotState}`} style={dotStyle} />;
             })}
           </div>
         </div>
