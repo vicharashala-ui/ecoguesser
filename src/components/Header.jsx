@@ -19,7 +19,10 @@
 // crawlable/selectable text either way (not an image), which is what
 // actually matters for discoverability here.
 
+import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './Header.css';
+
+const LOGO_SIZE = 24;
 
 export default function Header({ onMenuClick }) {
   return (
@@ -30,7 +33,17 @@ export default function Header({ onMenuClick }) {
         </svg>
       </button>
       <div className="eg-header-title-block">
-        <span className="eg-header-title">EcoGuesser</span>
+        <div className="eg-header-title-row">
+          <svg
+            width={LOGO_SIZE}
+            height={Math.round(LOGO_SIZE * TIGER_MARK_ASPECT)}
+            viewBox={TIGER_MARK_VIEWBOX}
+            aria-hidden="true"
+          >
+            <path fill="#fff" fillRule="evenodd" d={TIGER_MARK_PATH} />
+          </svg>
+          <span className="eg-header-title">EcoGuesser</span>
+        </div>
         <p className="eg-header-tagline">Explore &bull; Learn &bull; Protect</p>
       </div>
     </header>

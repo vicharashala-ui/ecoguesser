@@ -2,19 +2,20 @@ import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { MAP_STYLE, MAP_CONFIG } from '../config.js';
+import { TIGER_MARK_VIEWBOX, TIGER_MARK_PATH } from './tigerMarkPath';
 import './MapContainer.css';
 
-// Google Maps-style teardrop pin. Inline SVG + inline sizing (rather than
-// relying on .eg-guess-marker's CSS) so this doesn't depend on whatever
-// shape/color rules already exist there for the old plain dot.
+// Guess marker: the tiger mark itself (no separate pin frame) -- its head
+// shape already tapers to a point at the chin, the same role the old
+// teardrop's tip played. That tip sits just above the shadow ellipse, and
+// anchor: 'bottom' (below) aligns the whole box's bottom edge to the guess
+// coordinate, same convention the teardrop used.
 const GUESS_PIN_SVG = `
-  <svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="15" cy="37.5" rx="4" ry="1.6" fill="#000000" opacity="0.22"/>
-    <path
-      d="M15 1C7.8 1 2 6.8 2 14c0 9.5 11.2 21.6 12.1 22.6.5.5 1.3.5 1.8 0C16.8 35.6 28 23.5 28 14 28 6.8 22.2 1 15 1Z"
-      fill="#EA4335" stroke="#B0291D" stroke-width="0.5"
-    />
-    <circle cx="15" cy="14" r="5.2" fill="#ffffff"/>
+  <svg width="32" height="40" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="16" cy="38" rx="7" ry="2" fill="#000000" opacity="0.22"/>
+    <svg x="0" y="0" width="32" height="37" viewBox="${TIGER_MARK_VIEWBOX}">
+      <path d="${TIGER_MARK_PATH}" fill="#EA4335" fill-rule="evenodd"/>
+    </svg>
   </svg>`;
 
 // @param mapRef: React.MutableRefObject<maplibregl.Map|null>
@@ -88,7 +89,7 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
       el.innerHTML = GUESS_PIN_SVG;
       // Inline overrides in case .eg-guess-marker's CSS still sizes/colors
       // it as the old dot (e.g. a fixed small width/height + border-radius).
-      el.style.width = '30px';
+      el.style.width = '32px';
       el.style.height = '40px';
       el.style.background = 'transparent';
       markerRef.current = new maplibregl.Marker({ element: el, anchor: 'bottom' })

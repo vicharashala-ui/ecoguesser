@@ -12,16 +12,17 @@
 // plain array-position with no tie handling, table rank is tie-aware. Not a
 // bug if they disagree on an exact-tie day.
 //
-// Share opens ShareCard.jsx (Section 8b) with today's already-recorded
-// stats_daily entry -- disabled only if that entry is somehow missing
+// Share captures the rendered DailyRecap card (below) as a PNG via
+// html-to-image and shares/downloads it directly -- no separate preview
+// modal. Disabled only if today's stats_daily entry is somehow missing
 // (shouldn't happen; Leaderboard is only reachable after playing today).
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { LS_KEYS } from '../config.js';
 import { getTodayString } from '../game/daily.js';
 import { getLeaderboard } from '../game/api.js';
 import { loadDailyStats, bestDailyScore } from '../game/stats.js';
-import ShareCard from './ShareCard.jsx';
+import { shareNodeAsImage } from '../game/shareImage.js';
 import DailyRecap from './DailyRecap.jsx';
 import './Leaderboard.css';
 
@@ -56,7 +57,8 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   const [fetched, setFetched] = useState(data ?? null);
   const [fetchError, setFetchError] = useState(false);
   const [loading, setLoading] = useState(data == null);
-  const [shareOpen, setShareOpen] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const dailyRecapRef = useRef(null);
 
   const fetchLeaderboard = useCallback(() => {
     setLoading(true);
@@ -76,6 +78,22 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   const best = bestDailyScore(stats);
   const lastEntry = stats.scores[stats.scores.length - 1];
   const todayEntry = lastEntry?.date === today ? lastEntry : null;
+
+  const handleShare = async () => {
+    if (sharing) return;
+    setSharing(true);
+    try {
+      await shareNodeAsImage(dailyRecapRef.current, {
+        filename: `ecoguesser-daily-${today}.png`,
+        shareTitle: 'EcoGuesser',
+        shareText: todayEntry
+          ? `My EcoGuesser Daily recap: ${todayEntry.total.toLocaleString()} today`
+          : 'My EcoGuesser Daily recap',
+      });
+    } finally {
+      setSharing(false);
+    }
+  };
 
   const top10 = fetched?.top10 ?? [];
   const rank = fetched?.rank ?? null;
@@ -138,7 +156,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
               : 'Your best: --'}
           </p>
 
-          <DailyRecap date={today} allSites={allSites} totalDist={todayEntry?.dist ?? null} />
+          <DailyRecap ref={dailyRecapRef} date={today} allSites={allSites} totalDist={todayEntry?.dist ?? null} />
         </>
       )}
 
@@ -146,10 +164,10 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
         <button
           type="button"
           className="lb-share-btn"
-          disabled={!todayEntry}
-          onClick={() => setShareOpen(true)}
+          disabled={!todayEntry || sharing}
+          onClick={handleShare}
         >
-          Share
+          {sharing ? 'Preparing…' : 'Share'}
         </button>
         <button type="button" className="lb-classic-btn" onClick={onPlayClassic}>
           Play Classic
@@ -158,16 +176,6 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
           Play Blitz
         </button>
       </div>
-
-      {shareOpen && todayEntry && (
-        <ShareCard
-          total={todayEntry.total}
-          rounds={todayEntry.rounds}
-          date={today}
-          rank={rank}
-          onClose={() => setShareOpen(false)}
-        />
-      )}
     </div>
   );
 }

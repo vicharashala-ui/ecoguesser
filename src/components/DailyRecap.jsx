@@ -7,6 +7,7 @@
 // site, colored by CATEGORY_META, a name+state legend, and (when today's
 // stats_daily entry has a recorded distance) a Total Distance stat box.
 
+import { forwardRef } from 'react';
 import { getDailySites } from '../game/daily.js';
 import { OUTLINE_VIEWBOX, INDIA_OUTLINE_PATH, INDIA_STATE_BORDERS_PATH, projectToOutline } from '../data/indiaOutline.js';
 import { CATEGORY_META, LS_KEYS } from '../config.js';
@@ -36,14 +37,14 @@ function formatDisplayDate(dateStr) {
   return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
 }
 
-export default function DailyRecap({ date, allSites, totalDist }) {
+const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist }, ref) {
   if (!allSites || allSites.length === 0) return null;
 
   const sites = getDailySites(date, allSites);
   const playerName = localStorage.getItem(LS_KEYS.NAME) || 'You';
 
   return (
-    <div className="dr-card">
+    <div className="dr-card" ref={ref}>
       <div className="dr-header">
         <div className="dr-brand-block">
           <div className="dr-brand">
@@ -102,4 +103,6 @@ export default function DailyRecap({ date, allSites, totalDist }) {
       </div>
     </div>
   );
-}
+});
+
+export default DailyRecap;

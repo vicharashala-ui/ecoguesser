@@ -9,14 +9,17 @@
 //      round-state-machine formally enters PLACING. This matches Decision #8
 //      ("greyed until marker placed") literally and avoids a layout jump
 //      between READING and PLACING.
-//   2. One generic icon (leaf), tinted with the round's category color, is
-//      used in both pill and card -- the spec's `[tree]` placeholder appears
-//      identically across all five categories in both mockups, not as a
-//      per-category icon.
+//   2. One generic icon (the tiger mark), tinted with the round's category
+//      color, is used in both pill and card -- the spec's `[tree]`
+//      placeholder appears identically across all five categories in both
+//      mockups, not as a per-category icon.
 //
 // No icon library dependency -- everything below is a small inline SVG so
 // this drops in without an `npm install`. Swap for lucide-react later if
 // preferred; the call sites (<IconHint />, <IconPin /> etc.) won't change.
+// IconMark is the one exception -- its path data lives in tigerMarkPath.js
+// and is imported rather than pasted here, since it's reused by Header.jsx,
+// BlitzCard.jsx and MapContainer.jsx and is too large (~7.5KB) to duplicate.
 //
 // Show Site Boundary sits as a small chip (.bc-boundary-btn-sm) at the right
 // edge of the state-name meta row, rather than its own full-width row below
@@ -26,6 +29,7 @@
 
 import { useId, forwardRef } from 'react';
 import { CATEGORY_META, SCORING, DAILY } from '../config';
+import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './BottomCard.css';
 
 const DAILY_MAX_TOTAL = SCORING.MAX_SCORE * DAILY.CATEGORIES.length; // 25,000
@@ -34,14 +38,12 @@ const DAILY_MAX_TOTAL = SCORING.MAX_SCORE * DAILY.CATEGORIES.length; // 25,000
 // Icons -- minimal inline SVGs, currentColor so they inherit text color.
 // ---------------------------------------------------------------------------
 
-function IconLeaf({ size = 18 }) {
+// Sized up from the old leaf's 18/22px -- the tiger mark's internal detail
+// (stripes, eyes) blurs into a blob below ~24px.
+function IconMark({ size = 24 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M20 4C12 4 4 9 4 17c0 1.66 1.34 3 3 3 8 0 13-8 13-16Z"
-        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
-      />
-      <path d="M7 19c3-4 7-8 12-12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <svg width={size} height={Math.round(size * TIGER_MARK_ASPECT)} viewBox={TIGER_MARK_VIEWBOX} aria-hidden="true">
+      <path fill="currentColor" fillRule="evenodd" d={TIGER_MARK_PATH} />
     </svg>
   );
 }
@@ -187,7 +189,7 @@ const BottomCard = forwardRef(function BottomCard({
       {!isRevealing && (
         <div className="bc-pill">
           <div className="bc-pill-top">
-            <span className="bc-icon" aria-hidden="true"><IconLeaf /></span>
+            <span className="bc-icon" aria-hidden="true"><IconMark /></span>
             <span className="bc-pill-text">
               <span id={titleId} className="bc-site-name">{site.name}</span>
               {hintLevel >= 1 && (
@@ -241,7 +243,7 @@ const BottomCard = forwardRef(function BottomCard({
       {isRevealing && result && (
         <div className="bc-card">
           <div className="bc-card-header">
-            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconLeaf size={22} /></span>
+            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
             <span className="bc-category-label">{meta.label.toUpperCase()}</span>
           </div>
 

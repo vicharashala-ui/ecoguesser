@@ -91,7 +91,8 @@ export function useDailyRound(allSites, active = true) {
 
   // Single scoring path shared by Confirm and timer-expiry so the two entry
   // points can never disagree about how a round's RoundResult is built.
-  // `skipped` stays on the result shape (stats.js/ShareCard.jsx both still
+  // `skipped` stays on the result shape (stats.js and the DailyRecap-image
+  // share flow both still
   // read it for historical rounds recorded before Skip was removed from
   // Daily) but is always false now -- there's no remaining caller that can
   // set it true.

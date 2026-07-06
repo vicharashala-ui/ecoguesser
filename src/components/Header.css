@@ -53,6 +53,12 @@
   max-width: calc(100% - 100px);
 }
 
+.eg-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .eg-header-title {
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-weight: 800;

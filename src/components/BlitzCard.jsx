@@ -22,17 +22,18 @@
 
 import { useId, forwardRef } from 'react';
 import { CATEGORY_META } from '../config.js';
+import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './BottomCard.css';
 import './BlitzCard.css';
 
-function IconLeaf({ size = 18 }) {
+// Same mark BottomCard.jsx uses -- path data is imported from
+// tigerMarkPath.js rather than duplicated (it's ~7.5KB), unlike the small
+// inline SVGs below which do follow this file's usual no-shared-module
+// pattern.
+function IconMark({ size = 24 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M20 4C12 4 4 9 4 17c0 1.66 1.34 3 3 3 8 0 13-8 13-16Z"
-        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
-      />
-      <path d="M7 19c3-4 7-8 12-12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <svg width={size} height={Math.round(size * TIGER_MARK_ASPECT)} viewBox={TIGER_MARK_VIEWBOX} aria-hidden="true">
+      <path fill="currentColor" fillRule="evenodd" d={TIGER_MARK_PATH} />
     </svg>
   );
 }
@@ -120,7 +121,7 @@ const BlitzCard = forwardRef(function BlitzCard({
       {!isRevealing && (
         <div className="bc-pill">
           <div className="bc-pill-top">
-            <span className="bc-icon" aria-hidden="true"><IconLeaf /></span>
+            <span className="bc-icon" aria-hidden="true"><IconMark /></span>
             <span className="bc-pill-text">
               <span id={titleId} className="bc-site-name">{site.name}</span>
             </span>
@@ -165,7 +166,7 @@ const BlitzCard = forwardRef(function BlitzCard({
       {isRevealing && result && (
         <div className="bc-card bz-compact">
           <div className="bc-card-header">
-            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconLeaf size={22} /></span>
+            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
             <span className="bc-category-label">{meta.label.toUpperCase()}</span>
           </div>
 

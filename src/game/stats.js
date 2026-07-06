@@ -14,7 +14,7 @@
 //     per-category means, hint/timeout/skip sums, Classic's sparkline trend
 //     array). Pulled into this file rather than left inline in StatsView.jsx
 //     so they're unit-testable independent of rendering, and so a future
-//     ShareCard-style consumer doesn't have to duplicate the math.
+//     share/recap consumer doesn't have to duplicate the math.
 
 import { LS_KEYS, DAILY } from '../config.js';
 import { getTodayString, getYesterdayString } from './daily.js';
