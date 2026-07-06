@@ -5,12 +5,14 @@
 // round) since stats_daily only persists category/distance/score, not the
 // full site objects (see daily.js). Renders an India outline with a pin per
 // site, colored by CATEGORY_META, a name+state legend, and (when today's
-// stats_daily entry has a recorded distance) a Total Distance stat box.
+// stats_daily entry has recorded totals) a Total Score box above a Total
+// Distance box. Logo is the same shared tiger mark used in Header.jsx.
 
 import { forwardRef } from 'react';
 import { getDailySites } from '../game/daily.js';
 import { OUTLINE_VIEWBOX, INDIA_OUTLINE_PATH, INDIA_STATE_BORDERS_PATH, projectToOutline } from '../data/indiaOutline.js';
 import { CATEGORY_META, LS_KEYS } from '../config.js';
+import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath.js';
 import './DailyRecap.css';
 
 function PinMarker({ x, y, color }) {
@@ -37,7 +39,9 @@ function formatDisplayDate(dateStr) {
   return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
 }
 
-const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist }, ref) {
+const LOGO_SIZE = 22;
+
+const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist, totalScore }, ref) {
   if (!allSites || allSites.length === 0) return null;
 
   const sites = getDailySites(date, allSites);
@@ -48,6 +52,15 @@ const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist },
       <div className="dr-header">
         <div className="dr-brand-block">
           <div className="dr-brand">
+            <svg
+              className="dr-logo"
+              width={LOGO_SIZE}
+              height={Math.round(LOGO_SIZE * TIGER_MARK_ASPECT)}
+              viewBox={TIGER_MARK_VIEWBOX}
+              aria-hidden="true"
+            >
+              <path fillRule="evenodd" d={TIGER_MARK_PATH} />
+            </svg>
             <span className="dr-wordmark">EcoGuesser</span>
             <span className="dr-pill">Daily</span>
           </div>
@@ -93,11 +106,22 @@ const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist },
           ))}
         </ul>
 
-        {totalDist != null && (
-          <div className="dr-stats-box">
-            <span className="dr-stats-label">Total Distance</span>
-            <span className="dr-stats-value">{Math.round(totalDist).toLocaleString()}</span>
-            <span className="dr-stats-unit">km</span>
+        {(totalScore != null || totalDist != null) && (
+          <div className="dr-stats-col">
+            {totalScore != null && (
+              <div className="dr-stats-box">
+                <span className="dr-stats-label">Total Score</span>
+                <span className="dr-stats-value">{Math.round(totalScore).toLocaleString()}</span>
+                <span className="dr-stats-unit">pts</span>
+              </div>
+            )}
+            {totalDist != null && (
+              <div className="dr-stats-box">
+                <span className="dr-stats-label">Total Distance</span>
+                <span className="dr-stats-value">{Math.round(totalDist).toLocaleString()}</span>
+                <span className="dr-stats-unit">km</span>
+              </div>
+            )}
           </div>
         )}
       </div>

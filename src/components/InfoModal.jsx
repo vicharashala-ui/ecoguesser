@@ -105,8 +105,8 @@ function AboutContent() {
           OpenFreeMap
         </a>{' '}
         and satellite imagery from{' '}
-        <a href="https://s2maps.eu/" target="_blank" rel="noreferrer">
-          EOX's Sentinel-2 cloudless project
+        <a href="https://www.esri.com/en-us/arcgis/products/arcgis-world-imagery" target="_blank" rel="noreferrer">
+          Esri World Imagery
         </a>
         , both built on open data.
       </p>
@@ -152,7 +152,8 @@ function PrivacyContent() {
         </li>
         <li>
           <strong>Map tiles.</strong> Loading the map requests tiles, fonts,
-          and imagery from OpenFreeMap and EOX. Like any web request, those
+          and imagery from OpenFreeMap and Esri (ArcGIS World Imagery, via
+          this app's own proxy). Like any web request, those
           providers' servers may log standard request metadata (e.g. IP
           address) per their own policies -- this app doesn't control or see
           that logging.

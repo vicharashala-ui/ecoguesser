@@ -32,9 +32,14 @@
   gap: 8px;
 }
 
+.dr-logo {
+  flex-shrink: 0;
+  fill: #16a34a;
+}
+
 .dr-wordmark {
   font-weight: 800;
-  font-size: 17px;
+  font-size: 21px;
   color: #16a34a;
 }
 
@@ -55,7 +60,7 @@
 }
 
 .dr-player {
-  font-size: 30px;
+  font-size: 18px;
   font-weight: 800;
   color: #14532d;
   line-height: 1;
@@ -146,14 +151,20 @@
   color: #6b7280;
 }
 
-.dr-stats-box {
+.dr-stats-col {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dr-stats-box {
   width: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 16px 10px;
+  padding: 14px 10px;
   border: 1px solid #cfe0c2;
   border-radius: 16px;
   background: rgba(22, 163, 74, 0.03);
@@ -167,7 +178,7 @@
 }
 
 .dr-stats-value {
-  font-size: 38px;
+  font-size: 30px;
   font-weight: 800;
   color: #16a34a;
   line-height: 1;

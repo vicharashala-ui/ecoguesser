@@ -164,7 +164,13 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
           completed round has to stay visible on every Daily-tab open
           regardless of server/connectivity state. */}
       {!loading && todayEntry && (
-        <DailyRecap ref={dailyRecapRef} date={today} allSites={allSites} totalDist={todayEntry?.dist ?? null} />
+        <DailyRecap
+          ref={dailyRecapRef}
+          date={today}
+          allSites={allSites}
+          totalScore={todayEntry?.total ?? null}
+          totalDist={todayEntry?.dist ?? null}
+        />
       )}
 
       <div className="lb-actions">

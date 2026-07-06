@@ -91,11 +91,8 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
       const el = document.createElement('div');
       el.className = 'eg-guess-marker';
       el.innerHTML = GUESS_PIN_SVG;
-      // Inline overrides in case .eg-guess-marker's CSS still sizes/colors
-      // it as the old dot (e.g. a fixed small width/height + border-radius).
       el.style.width = '32px';
       el.style.height = '37px';
-      el.style.background = 'transparent';
       markerRef.current = new maplibregl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([guess.lng, guess.lat])
         .addTo(map);

@@ -32,11 +32,6 @@ export const MAP_CONFIG = {
 export const SATELLITE_TILES = '/tiles/{z}/{y}/{x}';
 export const SATELLITE_ATTRIBUTION = 'Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community';
 
-// Rollback path -- if ArcGIS quality/quota doesn't work out, swap SATELLITE_TILES
-// and SATELLITE_ATTRIBUTION back to these two. See spec v9.0 section 6.
-export const SATELLITE_TILES_EOX = 'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless_3857/default/g/{z}/{y}/{x}.jpg';
-export const SATELLITE_ATTRIBUTION_EOX = 'Sentinel-2 cloudless - https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017)';
-
 // v9.1 -- shared AWS Terrarium DEM source feeding BOTH satellite's optional
 // hillshade and the base map's always-on hillshade + hypsometric tint
 // (public/map-style.json: 'terrain-dem' source, 'hypsometric-tint' /

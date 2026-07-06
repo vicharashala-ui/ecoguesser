@@ -50,7 +50,7 @@ export function useMapState(mapRef, mode) {
   const politicalNamesRef = useRef(false); // mirrors state.politicalNames
 
   // Stabilises the satellite error listener so it can be targeted by .off() --
-  // .once('error', ...) would be consumed by ANY map error, not just an EOX-specific one.
+  // .once('error', ...) would be consumed by ANY map error, not just an ArcGIS-specific one.
   const onSatelliteErrorRef = useRef(null);
 
   // v9.0 -- applies/reverts the full satellite visual spec: ArcGIS raster color
