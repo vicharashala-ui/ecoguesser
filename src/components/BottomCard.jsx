@@ -22,10 +22,9 @@
 // BlitzCard.jsx and MapContainer.jsx and is too large (~7.5KB) to duplicate.
 //
 // Show Site Boundary sits as a small chip (.bc-boundary-btn-sm) at the right
-// edge of the state-name meta row, rather than its own full-width row below
-// -- compresses the expanded panel by a whole row per direct request. The
-// state+year items are wrapped in .bc-meta-group so they stay clustered on
-// the left while the chip anchors right via margin-left:auto.
+// edge of the result row (distance + pts), rather than its own full-width
+// row below -- compresses the expanded panel by a whole row per direct
+// request. It anchors right via margin-left:auto on that row.
 
 import { useId, forwardRef } from 'react';
 import { CATEGORY_META, SCORING, DAILY } from '../config';
@@ -250,23 +249,9 @@ const BottomCard = forwardRef(function BottomCard({
           <h2 id={titleId} className="bc-card-name">{site.name}</h2>
 
           <div className="bc-meta-row">
-            <span className="bc-meta-group">
-              <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {site.state.join(', ')}</span>
-              {site.year && (
-                <span className="bc-meta-item"><IconCalendar size={15} /> Est. {site.year}</span>
-              )}
-            </span>
-
-            {site.hasBoundary && onShowBoundary && (
-              <button
-                type="button"
-                className="bc-boundary-btn-sm"
-                onClick={onShowBoundary}
-                aria-label="Show site boundary"
-                title="Show site boundary"
-              >
-                <IconFrame size={14} /> Boundary
-              </button>
+            <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {site.state.join(', ')}</span>
+            {site.year && (
+              <span className="bc-meta-item"><IconCalendar size={15} /> Est. {site.year}</span>
             )}
           </div>
 
@@ -290,6 +275,18 @@ const BottomCard = forwardRef(function BottomCard({
             <span className="bc-meta-item bc-score">
               <IconStar size={15} /> {result.finalScore.toLocaleString()} pts
             </span>
+
+            {site.hasBoundary && onShowBoundary && (
+              <button
+                type="button"
+                className="bc-boundary-btn-sm"
+                onClick={onShowBoundary}
+                aria-label="Show site boundary"
+                title="Show site boundary"
+              >
+                <IconFrame size={14} /> Boundary
+              </button>
+            )}
           </div>
 
           {isDaily && result.hintPenalty > 0 && (

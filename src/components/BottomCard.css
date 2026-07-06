@@ -191,7 +191,7 @@
   padding: 18px 20px calc(20px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .bc-card-header {
@@ -224,17 +224,6 @@
   flex-wrap: wrap;
   gap: 16px;
   margin-top: 2px;
-}
-
-/* Groups the state+year items in BottomCard.jsx's first .bc-meta-row so they
-   stay clustered together on the left -- .bc-boundary-btn-sm sits as the
-   row's other flex child and pushes itself to the right via margin-left:auto,
-   without disturbing .bc-result-row (a plain 2-item row below, sharing the
-   .bc-meta-row rule above but with no such group/chip of its own). */
-.bc-meta-group {
-  display: flex;
-  align-items: center;
-  gap: 16px;
 }
 
 .bc-meta-item {
@@ -278,7 +267,7 @@
 .bc-divider {
   border: none;
   border-top: 1px solid #e5e7eb;
-  margin: 8px 0;
+  margin: 2px 0;
 }
 
 .bc-score {
@@ -296,13 +285,11 @@
 }
 
 /* "Site Boundary" chip -- sits at the right edge of BottomCard.jsx's
-   state-name meta row (per direct request: same line as the state name,
-   right-aligned), instead of the standalone full-width row it used to be.
-   Saves a whole row's worth of height, compressing the expanded panel.
-   Distinct from .bc-boundary-btn below (Blitz's larger half-width action-row
-   button) -- Classic/Daily's placement is an in-line chip, sized larger than
-   a typical small tag per direct request but still lighter than a full
-   action button. */
+   result row (distance + pts), right-aligned via margin-left:auto, just
+   above the Next Site actions. Distinct from .bc-boundary-btn below
+   (Blitz's larger half-width action-row button) -- Classic/Daily's
+   placement is an in-line chip, sized larger than a typical small tag per
+   direct request but still lighter than a full action button. */
 .bc-boundary-btn-sm {
   display: flex;
   align-items: center;

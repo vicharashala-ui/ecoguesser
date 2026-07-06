@@ -1,7 +1,7 @@
 [
   {
     "id": "np_anamudi_shola_np",
-    "name": "Anamudi Shola NP",
+    "name": "Anamudi Shola National Park",
     "category": "np",
     "state": [
       "Kerala"
@@ -13,7 +13,7 @@
   },
   {
     "id": "np_anshi_np",
-    "name": "Anshi NP",
+    "name": "Anshi National Park",
     "category": "np",
     "state": [
       "Karnataka"
@@ -25,7 +25,7 @@
   },
   {
     "id": "np_balphakram_np",
-    "name": "Balphakram NP",
+    "name": "Balphakram National Park",
     "category": "np",
     "state": [
       "Meghalaya"
@@ -37,7 +37,7 @@
   },
   {
     "id": "np_bandhavgarh_np",
-    "name": "Bandhavgarh NP",
+    "name": "Bandhavgarh National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -49,7 +49,7 @@
   },
   {
     "id": "np_bandipur_np",
-    "name": "Bandipur NP",
+    "name": "Bandipur National Park",
     "category": "np",
     "state": [
       "Karnataka"
@@ -61,7 +61,7 @@
   },
   {
     "id": "np_bannerghatta_np",
-    "name": "Bannerghatta NP",
+    "name": "Bannerghatta National Park",
     "category": "np",
     "state": [
       "Karnataka"
@@ -73,7 +73,7 @@
   },
   {
     "id": "np_betla_np",
-    "name": "Betla NP",
+    "name": "Betla National Park",
     "category": "np",
     "state": [
       "Jharkhand"
@@ -85,7 +85,7 @@
   },
   {
     "id": "np_bhagwan_mahavir_np",
-    "name": "Bhagwan Mahavir NP",
+    "name": "Bhagwan Mahavir National Park",
     "category": "np",
     "state": [
       "Goa"
@@ -97,7 +97,7 @@
   },
   {
     "id": "np_bhitarkanika_np",
-    "name": "Bhitarkanika NP",
+    "name": "Bhitarkanika National Park",
     "category": "np",
     "state": [
       "Odisha"
@@ -109,7 +109,7 @@
   },
   {
     "id": "np_bison_np",
-    "name": "Bison NP",
+    "name": "Bison National Park",
     "category": "np",
     "state": [
       "Tripura"
@@ -121,7 +121,7 @@
   },
   {
     "id": "np_blackbuck_np",
-    "name": "Blackbuck NP",
+    "name": "Blackbuck National Park",
     "category": "np",
     "state": [
       "Gujarat"
@@ -133,7 +133,7 @@
   },
   {
     "id": "np_buxa_np",
-    "name": "Buxa NP",
+    "name": "Buxa National Park",
     "category": "np",
     "state": [
       "West Bengal"
@@ -145,7 +145,7 @@
   },
   {
     "id": "np_campbell_bay_np",
-    "name": "Campbell Bay NP",
+    "name": "Campbell Bay National Park",
     "category": "np",
     "state": [
       "Andaman & Nicobar Islands"
@@ -157,7 +157,7 @@
   },
   {
     "id": "np_chandoli_np",
-    "name": "Chandoli NP",
+    "name": "Chandoli National Park",
     "category": "np",
     "state": [
       "Maharashtra"
@@ -169,7 +169,7 @@
   },
   {
     "id": "np_city_forest_np",
-    "name": "City Forest NP",
+    "name": "City Forest National Park",
     "category": "np",
     "state": [
       "Jammu & Kashmir"
@@ -181,7 +181,7 @@
   },
   {
     "id": "np_clouded_leopard_np",
-    "name": "Clouded Leopard NP",
+    "name": "Clouded Leopard National Park",
     "category": "np",
     "state": [
       "Tripura"
@@ -193,7 +193,7 @@
   },
   {
     "id": "np_corbett_np",
-    "name": "Corbett NP",
+    "name": "Corbett National Park",
     "category": "np",
     "state": [
       "Uttarakhand"
@@ -205,7 +205,7 @@
   },
   {
     "id": "np_dachigam_np",
-    "name": "Dachigam NP",
+    "name": "Dachigam National Park",
     "category": "np",
     "state": [
       "Jammu & Kashmir"
@@ -217,7 +217,7 @@
   },
   {
     "id": "np_dehing_patkai_np",
-    "name": "Dehing Patkai NP",
+    "name": "Dehing Patkai National Park",
     "category": "np",
     "state": [
       "Assam"
@@ -229,7 +229,7 @@
   },
   {
     "id": "np_desert_np",
-    "name": "Desert NP",
+    "name": "Desert National Park",
     "category": "np",
     "state": [
       "Rajasthan"
@@ -241,7 +241,7 @@
   },
   {
     "id": "np_dibru_saikhowa_np",
-    "name": "Dibru Saikhowa NP",
+    "name": "Dibru Saikhowa National Park",
     "category": "np",
     "state": [
       "Assam"
@@ -253,7 +253,7 @@
   },
   {
     "id": "np_dinosaur_fossil_np",
-    "name": "Dinosaur Fossil NP",
+    "name": "Dinosaur Fossil National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -265,7 +265,7 @@
   },
   {
     "id": "np_dudhwa_np",
-    "name": "Dudhwa NP",
+    "name": "Dudhwa National Park",
     "category": "np",
     "state": [
       "Uttar Pradesh"
@@ -277,7 +277,7 @@
   },
   {
     "id": "np_eravikulam_np",
-    "name": "Eravikulam NP",
+    "name": "Eravikulam National Park",
     "category": "np",
     "state": [
       "Kerala"
@@ -289,7 +289,7 @@
   },
   {
     "id": "np_fossil_np",
-    "name": "Fossil NP",
+    "name": "Fossil National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -301,7 +301,7 @@
   },
   {
     "id": "np_galathea_np",
-    "name": "Galathea NP",
+    "name": "Galathea National Park",
     "category": "np",
     "state": [
       "Andaman & Nicobar Islands"
@@ -313,7 +313,7 @@
   },
   {
     "id": "np_gangotri_np",
-    "name": "Gangotri NP",
+    "name": "Gangotri National Park",
     "category": "np",
     "state": [
       "Uttarakhand"
@@ -325,7 +325,7 @@
   },
   {
     "id": "np_gir_np",
-    "name": "Gir NP",
+    "name": "Gir National Park",
     "category": "np",
     "state": [
       "Gujarat"
@@ -337,7 +337,7 @@
   },
   {
     "id": "np_gorumara_np",
-    "name": "Gorumara NP",
+    "name": "Gorumara National Park",
     "category": "np",
     "state": [
       "West Bengal"
@@ -349,7 +349,7 @@
   },
   {
     "id": "np_govind_np",
-    "name": "Govind NP",
+    "name": "Govind National Park",
     "category": "np",
     "state": [
       "Uttarakhand"
@@ -373,7 +373,7 @@
   },
   {
     "id": "np_gugamal_np",
-    "name": "Gugamal NP",
+    "name": "Gugamal National Park",
     "category": "np",
     "state": [
       "Maharashtra"
@@ -385,7 +385,7 @@
   },
   {
     "id": "np_guindy_np",
-    "name": "Guindy NP",
+    "name": "Guindy National Park",
     "category": "np",
     "state": [
       "Tamil Nadu"
@@ -397,7 +397,7 @@
   },
   {
     "id": "np_gulf_of_mannar_marine_np",
-    "name": "Gulf of Mannar Marine NP",
+    "name": "Gulf of Mannar Marine National Park",
     "category": "np",
     "state": [
       "Tamil Nadu"
@@ -409,7 +409,7 @@
   },
   {
     "id": "np_guru_ghasidas_sanjay_np",
-    "name": "Guru Ghasidas (Sanjay) NP",
+    "name": "Guru Ghasidas (Sanjay) National Park",
     "category": "np",
     "state": [
       "Chhattisgarh"
@@ -421,7 +421,7 @@
   },
   {
     "id": "np_hemis_np",
-    "name": "Hemis NP",
+    "name": "Hemis National Park",
     "category": "np",
     "state": [
       "Ladakh"
@@ -445,7 +445,7 @@
   },
   {
     "id": "np_indira_gandhi_annamalai_np",
-    "name": "Indira Gandhi (Annamalai) NP",
+    "name": "Indira Gandhi (Annamalai) National Park",
     "category": "np",
     "state": [
       "Tamil Nadu"
@@ -457,7 +457,7 @@
   },
   {
     "id": "np_indravati_np",
-    "name": "Indravati NP",
+    "name": "Indravati National Park",
     "category": "np",
     "state": [
       "Chhattisgarh"
@@ -469,7 +469,7 @@
   },
   {
     "id": "np_intanki_np",
-    "name": "Intanki NP",
+    "name": "Intanki National Park",
     "category": "np",
     "state": [
       "Nagaland"
@@ -481,7 +481,7 @@
   },
   {
     "id": "np_jaldapara_np",
-    "name": "Jaldapara NP",
+    "name": "Jaldapara National Park",
     "category": "np",
     "state": [
       "West Bengal"
@@ -493,7 +493,7 @@
   },
   {
     "id": "np_kalesar_np",
-    "name": "Kalesar NP",
+    "name": "Kalesar National Park",
     "category": "np",
     "state": [
       "Haryana"
@@ -505,7 +505,7 @@
   },
   {
     "id": "np_kanger_ghati_np",
-    "name": "Kanger Ghati NP",
+    "name": "Kanger Ghati National Park",
     "category": "np",
     "state": [
       "Chhattisgarh"
@@ -517,7 +517,7 @@
   },
   {
     "id": "np_kanha_np",
-    "name": "Kanha NP",
+    "name": "Kanha National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -529,7 +529,7 @@
   },
   {
     "id": "np_kasu_brahmananda_reddy_np",
-    "name": "Kasu Brahmananda Reddy NP",
+    "name": "Kasu Brahmananda Reddy National Park",
     "category": "np",
     "state": [
       "Telangana"
@@ -541,7 +541,7 @@
   },
   {
     "id": "np_kazinag",
-    "name": "Kazinag",
+    "name": "Kazinag National Park",
     "category": "np",
     "state": [
       "Jammu & Kashmir"
@@ -553,7 +553,7 @@
   },
   {
     "id": "np_kaziranga_np",
-    "name": "Kaziranga NP",
+    "name": "Kaziranga National Park",
     "category": "np",
     "state": [
       "Assam"
@@ -565,7 +565,7 @@
   },
   {
     "id": "np_keibul_lamjao_np",
-    "name": "Keibul-Lamjao NP",
+    "name": "Keibul-Lamjao National Park",
     "category": "np",
     "state": [
       "Manipur"
@@ -577,7 +577,7 @@
   },
   {
     "id": "np_keoladeo_ghana_np",
-    "name": "Keoladeo Ghana NP",
+    "name": "Keoladeo Ghana National Park",
     "category": "np",
     "state": [
       "Rajasthan"
@@ -589,7 +589,7 @@
   },
   {
     "id": "np_khangchendzonga_np",
-    "name": "Khangchendzonga NP",
+    "name": "Khangchendzonga National Park",
     "category": "np",
     "state": [
       "Sikkim"
@@ -613,7 +613,7 @@
   },
   {
     "id": "np_kishtwar_np",
-    "name": "Kishtwar NP",
+    "name": "Kishtwar National Park",
     "category": "np",
     "state": [
       "Jammu & Kashmir"
@@ -625,7 +625,7 @@
   },
   {
     "id": "np_kudremukh_np",
-    "name": "Kudremukh NP",
+    "name": "Kudremukh National Park",
     "category": "np",
     "state": [
       "Karnataka"
@@ -637,7 +637,7 @@
   },
   {
     "id": "np_kuno_np",
-    "name": "Kuno NP",
+    "name": "Kuno National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -649,7 +649,7 @@
   },
   {
     "id": "np_madhav_np",
-    "name": "Madhav NP",
+    "name": "Madhav National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -661,7 +661,7 @@
   },
   {
     "id": "np_mahatma_gandhi_marine_wandoor_np",
-    "name": "Mahatma Gandhi Marine (Wandoor) NP",
+    "name": "Mahatma Gandhi Marine (Wandoor) National Park",
     "category": "np",
     "state": [
       "Andaman & Nicobar Islands"
@@ -673,7 +673,7 @@
   },
   {
     "id": "np_mahaveer_harina_vanasthali_np",
-    "name": "Mahaveer Harina Vanasthali NP",
+    "name": "Mahaveer Harina Vanasthali National Park",
     "category": "np",
     "state": [
       "Telangana"
@@ -685,7 +685,7 @@
   },
   {
     "id": "np_manas_np",
-    "name": "Manas NP",
+    "name": "Manas National Park",
     "category": "np",
     "state": [
       "Assam"
@@ -697,7 +697,7 @@
   },
   {
     "id": "np_marine_gulf_of_kachchh_np",
-    "name": "Marine (Gulf of Kachchh) NP",
+    "name": "Marine (Gulf of Kachchh) National Park",
     "category": "np",
     "state": [
       "Gujarat"
@@ -709,7 +709,7 @@
   },
   {
     "id": "np_mathikettan_shola_np",
-    "name": "Mathikettan Shola NP",
+    "name": "Mathikettan Shola National Park",
     "category": "np",
     "state": [
       "Kerala"
@@ -721,7 +721,7 @@
   },
   {
     "id": "np_mouling_np",
-    "name": "Mouling NP",
+    "name": "Mouling National Park",
     "category": "np",
     "state": [
       "Arunachal Pradesh"
@@ -733,7 +733,7 @@
   },
   {
     "id": "np_mount_harriett_np",
-    "name": "Mount Harriett NP",
+    "name": "Mount Harriett National Park",
     "category": "np",
     "state": [
       "Andaman & Nicobar Islands"
@@ -745,7 +745,7 @@
   },
   {
     "id": "np_mrugavani_np",
-    "name": "Mrugavani NP",
+    "name": "Mrugavani National Park",
     "category": "np",
     "state": [
       "Telangana"
@@ -757,7 +757,7 @@
   },
   {
     "id": "np_mudumalai_np",
-    "name": "Mudumalai NP",
+    "name": "Mudumalai National Park",
     "category": "np",
     "state": [
       "Tamil Nadu"
@@ -769,7 +769,7 @@
   },
   {
     "id": "np_mukundra_hills_np",
-    "name": "Mukundra Hills NP",
+    "name": "Mukundra Hills National Park",
     "category": "np",
     "state": [
       "Rajasthan"
@@ -781,7 +781,7 @@
   },
   {
     "id": "np_mukurthi_np",
-    "name": "Mukurthi NP",
+    "name": "Mukurthi National Park",
     "category": "np",
     "state": [
       "Tamil Nadu"
@@ -793,7 +793,7 @@
   },
   {
     "id": "np_murlen_np",
-    "name": "Murlen NP",
+    "name": "Murlen National Park",
     "category": "np",
     "state": [
       "Mizoram"
@@ -805,7 +805,7 @@
   },
   {
     "id": "np_namdapha_np",
-    "name": "Namdapha NP",
+    "name": "Namdapha National Park",
     "category": "np",
     "state": [
       "Arunachal Pradesh"
@@ -817,7 +817,7 @@
   },
   {
     "id": "np_nameri",
-    "name": "Nameri",
+    "name": "Nameri National Park",
     "category": "np",
     "state": [
       "Assam"
@@ -829,7 +829,7 @@
   },
   {
     "id": "np_nanda_devi_np",
-    "name": "Nanda Devi NP",
+    "name": "Nanda Devi National Park",
     "category": "np",
     "state": [
       "Uttarakhand"
@@ -841,7 +841,7 @@
   },
   {
     "id": "np_nawegaon_np",
-    "name": "Nawegaon NP",
+    "name": "Nawegaon National Park",
     "category": "np",
     "state": [
       "Maharashtra"
@@ -853,7 +853,7 @@
   },
   {
     "id": "np_neora_valley_np",
-    "name": "Neora Valley NP",
+    "name": "Neora Valley National Park",
     "category": "np",
     "state": [
       "West Bengal"
@@ -865,7 +865,7 @@
   },
   {
     "id": "np_nokrek_ridge_np",
-    "name": "Nokrek Ridge NP",
+    "name": "Nokrek Ridge National Park",
     "category": "np",
     "state": [
       "Meghalaya"
@@ -877,7 +877,7 @@
   },
   {
     "id": "np_orang_np",
-    "name": "Orang NP",
+    "name": "Orang National Park",
     "category": "np",
     "state": [
       "Assam"
@@ -889,7 +889,7 @@
   },
   {
     "id": "np_pambadum_shola_np",
-    "name": "Pambadum Shola NP",
+    "name": "Pambadum Shola National Park",
     "category": "np",
     "state": [
       "Kerala"
@@ -901,7 +901,7 @@
   },
   {
     "id": "np_panna_np",
-    "name": "Panna NP",
+    "name": "Panna National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -913,7 +913,7 @@
   },
   {
     "id": "np_papikonda_np",
-    "name": "Papikonda NP",
+    "name": "Papikonda National Park",
     "category": "np",
     "state": [
       "Andhra Pradesh"
@@ -925,7 +925,7 @@
   },
   {
     "id": "np_pench_jawaharlal_nehru",
-    "name": "Pench (Jawaharlal Nehru)",
+    "name": "Pench (Jawaharlal Nehru) National Park",
     "category": "np",
     "state": [
       "Maharashtra"
@@ -937,7 +937,7 @@
   },
   {
     "id": "np_pench_priyadarshni_np",
-    "name": "Pench (Priyadarshni) NP",
+    "name": "Pench (Priyadarshni) National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -949,7 +949,7 @@
   },
   {
     "id": "np_periyar_np",
-    "name": "Periyar NP",
+    "name": "Periyar National Park",
     "category": "np",
     "state": [
       "Kerala"
@@ -961,7 +961,7 @@
   },
   {
     "id": "np_phawngpui_blue_mountain_np",
-    "name": "Phawngpui Blue Mountain NP",
+    "name": "Phawngpui Blue Mountain National Park",
     "category": "np",
     "state": [
       "Mizoram"
@@ -985,7 +985,7 @@
   },
   {
     "id": "np_raimona_np",
-    "name": "Raimona NP",
+    "name": "Raimona National Park",
     "category": "np",
     "state": [
       "Assam"
@@ -997,7 +997,7 @@
   },
   {
     "id": "np_rajaji_np",
-    "name": "Rajaji NP",
+    "name": "Rajaji National Park",
     "category": "np",
     "state": [
       "Uttarakhand"
@@ -1009,7 +1009,7 @@
   },
   {
     "id": "np_rajiv_gandhi_nagarahole_np",
-    "name": "Rajiv Gandhi (Nagarahole) NP",
+    "name": "Rajiv Gandhi (Nagarahole) National Park",
     "category": "np",
     "state": [
       "Karnataka"
@@ -1021,7 +1021,7 @@
   },
   {
     "id": "np_rajiv_gandhi_rameswaram",
-    "name": "Rajiv Gandhi (Rameswaram)",
+    "name": "Rajiv Gandhi (Rameswaram) National Park",
     "category": "np",
     "state": [
       "Andhra Pradesh"
@@ -1033,7 +1033,7 @@
   },
   {
     "id": "np_rani_jhansi_marine_np",
-    "name": "Rani Jhansi Marine NP",
+    "name": "Rani Jhansi Marine National Park",
     "category": "np",
     "state": [
       "Andaman & Nicobar Islands"
@@ -1045,7 +1045,7 @@
   },
   {
     "id": "np_ranthambhore_np",
-    "name": "Ranthambhore NP",
+    "name": "Ranthambhore National Park",
     "category": "np",
     "state": [
       "Rajasthan"
@@ -1057,7 +1057,7 @@
   },
   {
     "id": "np_saddle_peak_np",
-    "name": "Saddle Peak NP",
+    "name": "Saddle Peak National Park",
     "category": "np",
     "state": [
       "Andaman & Nicobar Islands"
@@ -1069,7 +1069,7 @@
   },
   {
     "id": "np_sanjay_gandhi_borivilli_np",
-    "name": "Sanjay Gandhi (Borivilli) NP",
+    "name": "Sanjay Gandhi (Borivilli) National Park",
     "category": "np",
     "state": [
       "Maharashtra"
@@ -1081,7 +1081,7 @@
   },
   {
     "id": "np_sanjay_np",
-    "name": "Sanjay NP",
+    "name": "Sanjay National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -1093,7 +1093,7 @@
   },
   {
     "id": "np_sariska_np",
-    "name": "Sariska NP",
+    "name": "Sariska National Park",
     "category": "np",
     "state": [
       "Rajasthan"
@@ -1105,7 +1105,7 @@
   },
   {
     "id": "np_satpura_np",
-    "name": "Satpura NP",
+    "name": "Satpura National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -1117,7 +1117,7 @@
   },
   {
     "id": "np_shirui_np_sirohi_np",
-    "name": "Shirui NP (Sirohi NP)",
+    "name": "Shirui National Park (Sirohi National Park)",
     "category": "np",
     "state": [
       "Manipur"
@@ -1129,7 +1129,7 @@
   },
   {
     "id": "np_sikhna_jwhwlao_np",
-    "name": "Sikhna Jwhwlao NP",
+    "name": "Sikhna Jwhwlao National Park",
     "category": "np",
     "state": [
       "Assam"
@@ -1141,7 +1141,7 @@
   },
   {
     "id": "np_silent_valley_np",
-    "name": "Silent Valley NP",
+    "name": "Silent Valley National Park",
     "category": "np",
     "state": [
       "Kerala"
@@ -1165,7 +1165,7 @@
   },
   {
     "id": "np_simlipal_np",
-    "name": "Simlipal NP",
+    "name": "Simlipal National Park",
     "category": "np",
     "state": [
       "Odisha"
@@ -1177,7 +1177,7 @@
   },
   {
     "id": "np_singalila_np",
-    "name": "Singalila NP",
+    "name": "Singalila National Park",
     "category": "np",
     "state": [
       "West Bengal"
@@ -1189,7 +1189,7 @@
   },
   {
     "id": "np_sri_venkateswara_np",
-    "name": "Sri Venkateswara NP",
+    "name": "Sri Venkateswara National Park",
     "category": "np",
     "state": [
       "Andhra Pradesh"
@@ -1201,7 +1201,7 @@
   },
   {
     "id": "np_sultanpur_np",
-    "name": "Sultanpur NP",
+    "name": "Sultanpur National Park",
     "category": "np",
     "state": [
       "Haryana"
@@ -1213,7 +1213,7 @@
   },
   {
     "id": "np_sunderban_np",
-    "name": "Sunderban NP",
+    "name": "Sunderban National Park",
     "category": "np",
     "state": [
       "West Bengal"
@@ -1225,7 +1225,7 @@
   },
   {
     "id": "np_tadoba_np",
-    "name": "Tadoba NP",
+    "name": "Tadoba National Park",
     "category": "np",
     "state": [
       "Maharashtra"
@@ -1237,7 +1237,7 @@
   },
   {
     "id": "np_valley_of_flowers_np",
-    "name": "Valley of Flowers NP",
+    "name": "Valley of Flowers National Park",
     "category": "np",
     "state": [
       "Uttarakhand"
@@ -1249,7 +1249,7 @@
   },
   {
     "id": "np_valmiki_np",
-    "name": "Valmiki NP",
+    "name": "Valmiki National Park",
     "category": "np",
     "state": [
       "Bihar"
@@ -1261,7 +1261,7 @@
   },
   {
     "id": "np_van_vihar_np",
-    "name": "Van Vihar NP",
+    "name": "Van Vihar National Park",
     "category": "np",
     "state": [
       "Madhya Pradesh"
@@ -1273,7 +1273,7 @@
   },
   {
     "id": "np_vansda_np",
-    "name": "Vansda NP",
+    "name": "Vansda National Park",
     "category": "np",
     "state": [
       "Gujarat"
@@ -1285,7 +1285,7 @@
   },
   {
     "id": "ws_abohar_wls",
-    "name": "Abohar WLS",
+    "name": "Abohar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -1297,7 +1297,7 @@
   },
   {
     "id": "ws_abubshehar_wls",
-    "name": "Abubshehar WLS",
+    "name": "Abubshehar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Haryana"
@@ -1309,7 +1309,7 @@
   },
   {
     "id": "ws_achanakmar_wls",
-    "name": "Achanakmar WLS",
+    "name": "Achanakmar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -1321,7 +1321,7 @@
   },
   {
     "id": "ws_adichunchunagiri_peacock_wls",
-    "name": "Adichunchunagiri Peacock WLS",
+    "name": "Adichunchunagiri Peacock Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -1333,7 +1333,7 @@
   },
   {
     "id": "ws_amba_barwa_wls",
-    "name": "Amba Barwa WLS",
+    "name": "Amba Barwa Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -1345,7 +1345,7 @@
   },
   {
     "id": "ws_amchang_wls",
-    "name": "Amchang WLS",
+    "name": "Amchang Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -1357,7 +1357,7 @@
   },
   {
     "id": "ws_amrabad_nagarjunasagar_srisailam_wls",
-    "name": "Amrabad (Nagarjunasagar-Srisailam) WLS",
+    "name": "Amrabad (Nagarjunasagar-Srisailam) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Telangana"
@@ -1369,7 +1369,7 @@
   },
   {
     "id": "ws_andhari_wls",
-    "name": "Andhari WLS",
+    "name": "Andhari Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -1381,7 +1381,7 @@
   },
   {
     "id": "ws_aner_dam_wls",
-    "name": "Aner Dam WLS",
+    "name": "Aner Dam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -1393,7 +1393,7 @@
   },
   {
     "id": "ws_arabithittu_wls",
-    "name": "Arabithittu WLS",
+    "name": "Arabithittu Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -1405,7 +1405,7 @@
   },
   {
     "id": "ws_aralam_wls",
-    "name": "Aralam WLS",
+    "name": "Aralam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -1417,7 +1417,7 @@
   },
   {
     "id": "ws_arial_island_wls",
-    "name": "Arial Island WLS",
+    "name": "Arial Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -1429,7 +1429,7 @@
   },
   {
     "id": "ws_askot_musk_deer_wls",
-    "name": "Askot Musk Deer WLS",
+    "name": "Askot Musk Deer Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttarakhand"
@@ -1441,7 +1441,7 @@
   },
   {
     "id": "ws_asola_bhati_indira_priyadarshini_wls",
-    "name": "Asola Bhati (Indira Priyadarshini) WLS",
+    "name": "Asola Bhati (Indira Priyadarshini) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Delhi"
@@ -1453,7 +1453,7 @@
   },
   {
     "id": "ws_attiveri_bird_wls",
-    "name": "Attiveri Bird WLS",
+    "name": "Attiveri Bird Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -1465,7 +1465,7 @@
   },
   {
     "id": "ws_badalkhol_wls",
-    "name": "Badalkhol WLS",
+    "name": "Badalkhol Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -1477,7 +1477,7 @@
   },
   {
     "id": "ws_badrama_wls",
-    "name": "Badrama WLS",
+    "name": "Badrama Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -1489,7 +1489,7 @@
   },
   {
     "id": "ws_bagdara_wls",
-    "name": "Bagdara WLS",
+    "name": "Bagdara Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -1501,7 +1501,7 @@
   },
   {
     "id": "ws_baghmara_pitcher_plant_wls",
-    "name": "Baghmara Pitcher Plant WLS",
+    "name": "Baghmara Pitcher Plant Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Meghalaya"
@@ -1513,7 +1513,7 @@
   },
   {
     "id": "ws_baisipalli_wls",
-    "name": "Baisipalli WLS",
+    "name": "Baisipalli Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -1525,7 +1525,7 @@
   },
   {
     "id": "ws_bakhira_wls",
-    "name": "Bakhira WLS",
+    "name": "Bakhira Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -1537,7 +1537,7 @@
   },
   {
     "id": "ws_balaram_ambaji_wls",
-    "name": "Balaram Ambaji WLS",
+    "name": "Balaram Ambaji Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -1549,7 +1549,7 @@
   },
   {
     "id": "ws_ballavpur_wls",
-    "name": "Ballavpur WLS",
+    "name": "Ballavpur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -1561,7 +1561,7 @@
   },
   {
     "id": "ws_baltas_thajwas_wls",
-    "name": "Baltas-Thajwas WLS",
+    "name": "Baltas-Thajwas Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -1573,7 +1573,7 @@
   },
   {
     "id": "ws_balukhand_konark_wls",
-    "name": "Balukhand Konark WLS",
+    "name": "Balukhand Konark Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -1585,7 +1585,7 @@
   },
   {
     "id": "ws_bamboo_island_wls",
-    "name": "Bamboo Island WLS",
+    "name": "Bamboo Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -1597,7 +1597,7 @@
   },
   {
     "id": "ws_bandh_baratha_wls",
-    "name": "Bandh Baratha WLS",
+    "name": "Bandh Baratha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -1609,7 +1609,7 @@
   },
   {
     "id": "ws_bandli_wls",
-    "name": "Bandli WLS",
+    "name": "Bandli Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -1621,7 +1621,7 @@
   },
   {
     "id": "ws_barail_wls",
-    "name": "Barail WLS",
+    "name": "Barail Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -1633,7 +1633,7 @@
   },
   {
     "id": "ws_barda_wls",
-    "name": "Barda WLS",
+    "name": "Barda Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -1645,7 +1645,7 @@
   },
   {
     "id": "ws_barela_s_a_z_s_wls",
-    "name": "Barela S.A.Z.S. WLS",
+    "name": "Barela S.A.Z.S. Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -1657,7 +1657,7 @@
   },
   {
     "id": "ws_barnadi_wls",
-    "name": "Barnadi WLS",
+    "name": "Barnadi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -1669,7 +1669,7 @@
   },
   {
     "id": "ws_barnawapara_wls",
-    "name": "Barnawapara WLS",
+    "name": "Barnawapara Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -1681,7 +1681,7 @@
   },
   {
     "id": "ws_barren_island_wls",
-    "name": "Barren Island WLS",
+    "name": "Barren Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -1693,7 +1693,7 @@
   },
   {
     "id": "ws_barsey_rhododendron_wls",
-    "name": "Barsey Rhododendron WLS",
+    "name": "Barsey Rhododendron Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Sikkim"
@@ -1705,7 +1705,7 @@
   },
   {
     "id": "ws_bassi_wls",
-    "name": "Bassi WLS",
+    "name": "Bassi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -1717,7 +1717,7 @@
   },
   {
     "id": "ws_battimalv_island_wls",
-    "name": "Battimalv Island WLS",
+    "name": "Battimalv Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -1729,7 +1729,7 @@
   },
   {
     "id": "ws_belle_island_wls",
-    "name": "Belle Island WLS",
+    "name": "Belle Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -1741,7 +1741,7 @@
   },
   {
     "id": "ws_benett_island_wls",
-    "name": "Benett Island WLS",
+    "name": "Benett Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -1753,7 +1753,7 @@
   },
   {
     "id": "ws_bethuadahari_wls",
-    "name": "Bethuadahari WLS",
+    "name": "Bethuadahari Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -1765,7 +1765,7 @@
   },
   {
     "id": "ws_bhadra_wls",
-    "name": "Bhadra WLS",
+    "name": "Bhadra Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -1777,7 +1777,7 @@
   },
   {
     "id": "ws_bhagwan_mahavir_wls",
-    "name": "Bhagwan Mahavir WLS",
+    "name": "Bhagwan Mahavir Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Goa"
@@ -1789,7 +1789,7 @@
   },
   {
     "id": "ws_bhairamgarh_wls",
-    "name": "Bhairamgarh WLS",
+    "name": "Bhairamgarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -1801,7 +1801,7 @@
   },
   {
     "id": "ws_bhamragarh_wls",
-    "name": "Bhamragarh WLS",
+    "name": "Bhamragarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -1813,7 +1813,7 @@
   },
   {
     "id": "ws_bhensrodgarh_wls",
-    "name": "Bhensrodgarh WLS",
+    "name": "Bhensrodgarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -1825,7 +1825,7 @@
   },
   {
     "id": "ws_bherjan_borajan_podumoni_wls",
-    "name": "Bherjan-Borajan-Podumoni WLS",
+    "name": "Bherjan-Borajan-Podumoni Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -1837,7 +1837,7 @@
   },
   {
     "id": "ws_bhimashankar_wls",
-    "name": "Bhimashankar WLS",
+    "name": "Bhimashankar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -1849,7 +1849,7 @@
   },
   {
     "id": "ws_bhimbandh_wls",
-    "name": "Bhimbandh WLS",
+    "name": "Bhimbandh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -1861,7 +1861,7 @@
   },
   {
     "id": "ws_bhimgad_wls",
-    "name": "Bhimgad WLS",
+    "name": "Bhimgad Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -1873,7 +1873,7 @@
   },
   {
     "id": "ws_bhindawas_wls",
-    "name": "Bhindawas WLS",
+    "name": "Bhindawas Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Haryana"
@@ -1885,7 +1885,7 @@
   },
   {
     "id": "ws_bhitarkanika_wls",
-    "name": "Bhitarkanika WLS",
+    "name": "Bhitarkanika Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -1897,7 +1897,7 @@
   },
   {
     "id": "ws_bhoramdev_wls",
-    "name": "Bhoramdev WLS",
+    "name": "Bhoramdev Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -1909,7 +1909,7 @@
   },
   {
     "id": "ws_bibhutibhusan_wls",
-    "name": "Bibhutibhusan WLS",
+    "name": "Bibhutibhusan Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -1921,7 +1921,7 @@
   },
   {
     "id": "ws_biligiri_rangaswamy_temple_wls",
-    "name": "Biligiri Rangaswamy Temple WLS",
+    "name": "Biligiri Rangaswamy Temple Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -1933,7 +1933,7 @@
   },
   {
     "id": "ws_bingham_island_wls",
-    "name": "Bingham Island WLS",
+    "name": "Bingham Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -1945,7 +1945,7 @@
   },
   {
     "id": "ws_binsar_wls",
-    "name": "Binsar WLS",
+    "name": "Binsar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttarakhand"
@@ -1957,7 +1957,7 @@
   },
   {
     "id": "ws_bir_aishvan_wls",
-    "name": "Bir Aishvan WLS",
+    "name": "Bir Aishvan Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -1969,7 +1969,7 @@
   },
   {
     "id": "ws_bir_bhadson_wls",
-    "name": "Bir Bhadson WLS",
+    "name": "Bir Bhadson Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -1981,7 +1981,7 @@
   },
   {
     "id": "ws_bir_bunerheri_wls",
-    "name": "Bir Bunerheri WLS",
+    "name": "Bir Bunerheri Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -1993,7 +1993,7 @@
   },
   {
     "id": "ws_bir_dosanjh_wls",
-    "name": "Bir Dosanjh WLS",
+    "name": "Bir Dosanjh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -2005,7 +2005,7 @@
   },
   {
     "id": "ws_bir_gurdialpura_wls",
-    "name": "Bir Gurdialpura WLS",
+    "name": "Bir Gurdialpura Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -2017,7 +2017,7 @@
   },
   {
     "id": "ws_bir_mehaswala_wls",
-    "name": "Bir Mehaswala WLS",
+    "name": "Bir Mehaswala Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -2029,7 +2029,7 @@
   },
   {
     "id": "ws_bir_motibagh_wls",
-    "name": "Bir Motibagh WLS",
+    "name": "Bir Motibagh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -2041,7 +2041,7 @@
   },
   {
     "id": "ws_bir_shikargarh_wls",
-    "name": "Bir Shikargarh WLS",
+    "name": "Bir Shikargarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Haryana"
@@ -2053,7 +2053,7 @@
   },
   {
     "id": "ws_blister_island_wls",
-    "name": "Blister Island WLS",
+    "name": "Blister Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2065,7 +2065,7 @@
   },
   {
     "id": "ws_bluff_island_wls",
-    "name": "Bluff Island WLS",
+    "name": "Bluff Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2077,7 +2077,7 @@
   },
   {
     "id": "ws_bondla_wls",
-    "name": "Bondla WLS",
+    "name": "Bondla Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Goa"
@@ -2089,7 +2089,7 @@
   },
   {
     "id": "ws_bondoville_island_wls",
-    "name": "Bondoville Island WLS",
+    "name": "Bondoville Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2101,7 +2101,7 @@
   },
   {
     "id": "ws_bor_wls",
-    "name": "Bor WLS",
+    "name": "Bor Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -2113,7 +2113,7 @@
   },
   {
     "id": "ws_bori_wls",
-    "name": "Bori WLS",
+    "name": "Bori Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -2125,7 +2125,7 @@
   },
   {
     "id": "ws_brahmagiri_wls",
-    "name": "Brahmagiri WLS",
+    "name": "Brahmagiri Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -2137,7 +2137,7 @@
   },
   {
     "id": "ws_brush_island_wls",
-    "name": "Brush Island WLS",
+    "name": "Brush Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2149,7 +2149,7 @@
   },
   {
     "id": "ws_buchanan_island_wls",
-    "name": "Buchanan Island WLS",
+    "name": "Buchanan Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2161,7 +2161,7 @@
   },
   {
     "id": "ws_bukkapatna",
-    "name": "Bukkapatna",
+    "name": "Bukkapatna Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -2173,7 +2173,7 @@
   },
   {
     "id": "ws_bunning",
-    "name": "Bunning",
+    "name": "Bunning Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Manipur"
@@ -2185,7 +2185,7 @@
   },
   {
     "id": "ws_burachapori_wls",
-    "name": "Burachapori WLS",
+    "name": "Burachapori Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -2197,7 +2197,7 @@
   },
   {
     "id": "ws_buxa_wls",
-    "name": "Buxa WLS",
+    "name": "Buxa Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -2209,7 +2209,7 @@
   },
   {
     "id": "ws_cauvery_north_wls",
-    "name": "Cauvery North WLS",
+    "name": "Cauvery North Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -2221,7 +2221,7 @@
   },
   {
     "id": "ws_cauvery_wls",
-    "name": "Cauvery WLS",
+    "name": "Cauvery Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -2233,7 +2233,7 @@
   },
   {
     "id": "ws_chail_wls",
-    "name": "Chail WLS",
+    "name": "Chail Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -2245,7 +2245,7 @@
   },
   {
     "id": "ws_chakrashila_wls",
-    "name": "Chakrashila WLS",
+    "name": "Chakrashila Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -2257,7 +2257,7 @@
   },
   {
     "id": "ws_chandaka_dampara_wls",
-    "name": "Chandaka Dampara WLS",
+    "name": "Chandaka Dampara Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -2269,7 +2269,7 @@
   },
   {
     "id": "ws_chandartal_wls",
-    "name": "Chandartal WLS",
+    "name": "Chandartal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -2281,7 +2281,7 @@
   },
   {
     "id": "ws_chandraprabha_wls",
-    "name": "Chandraprabha WLS",
+    "name": "Chandraprabha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -2293,7 +2293,7 @@
   },
   {
     "id": "ws_chanel_island_wls",
-    "name": "Chanel Island WLS",
+    "name": "Chanel Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2305,7 +2305,7 @@
   },
   {
     "id": "ws_changthang_wls",
-    "name": "Changthang WLS",
+    "name": "Changthang Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Ladakh"
@@ -2317,7 +2317,7 @@
   },
   {
     "id": "ws_chaprala_wls",
-    "name": "Chaprala WLS",
+    "name": "Chaprala Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -2329,7 +2329,7 @@
   },
   {
     "id": "ws_chapramari_wls",
-    "name": "Chapramari WLS",
+    "name": "Chapramari Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -2341,7 +2341,7 @@
   },
   {
     "id": "ws_chhilchila_wls",
-    "name": "Chhilchila WLS",
+    "name": "Chhilchila Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Haryana"
@@ -2353,7 +2353,7 @@
   },
   {
     "id": "ws_chilika_nalaban_wls",
-    "name": "Chilika (Nalaban) WLS",
+    "name": "Chilika (Nalaban) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -2365,7 +2365,7 @@
   },
   {
     "id": "ws_chimmony_wls",
-    "name": "Chimmony WLS",
+    "name": "Chimmony Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -2377,7 +2377,7 @@
   },
   {
     "id": "ws_chincholi_wls",
-    "name": "Chincholi WLS",
+    "name": "Chincholi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -2389,7 +2389,7 @@
   },
   {
     "id": "ws_chinnar_wls",
-    "name": "Chinnar WLS",
+    "name": "Chinnar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -2401,7 +2401,7 @@
   },
   {
     "id": "ws_chintamani_kar_bird_wls",
-    "name": "Chintamani Kar Bird WLS",
+    "name": "Chintamani Kar Bird Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -2413,7 +2413,7 @@
   },
   {
     "id": "ws_chitrangudi_wls",
-    "name": "Chitrangudi WLS",
+    "name": "Chitrangudi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -2425,7 +2425,7 @@
   },
   {
     "id": "ws_chorao_island_dr_salim_ali_wls",
-    "name": "Chorao Island (Dr. Salim Ali) WLS",
+    "name": "Chorao Island (Dr. Salim Ali) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Goa"
@@ -2437,7 +2437,7 @@
   },
   {
     "id": "ws_chulannur_peafowl_wls",
-    "name": "Chulannur Peafowl WLS",
+    "name": "Chulannur Peafowl Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -2449,7 +2449,7 @@
   },
   {
     "id": "ws_churdhar_wls",
-    "name": "Churdhar WLS",
+    "name": "Churdhar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -2461,7 +2461,7 @@
   },
   {
     "id": "ws_cinque_island_wls",
-    "name": "Cinque Island WLS",
+    "name": "Cinque Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2485,7 +2485,7 @@
   },
   {
     "id": "ws_clyde_island_wls",
-    "name": "Clyde Island WLS",
+    "name": "Clyde Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2497,7 +2497,7 @@
   },
   {
     "id": "ws_cone_island_wls",
-    "name": "Cone Island WLS",
+    "name": "Cone Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2509,7 +2509,7 @@
   },
   {
     "id": "ws_coringa_wls",
-    "name": "Coringa WLS",
+    "name": "Coringa Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -2521,7 +2521,7 @@
   },
   {
     "id": "ws_cotigaon_wls",
-    "name": "Cotigaon WLS",
+    "name": "Cotigaon Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Goa"
@@ -2533,7 +2533,7 @@
   },
   {
     "id": "ws_curlew_b_p_island_wls",
-    "name": "Curlew (B.P.) Island WLS",
+    "name": "Curlew (B.P.) Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2545,7 +2545,7 @@
   },
   {
     "id": "ws_curlew_island_wls",
-    "name": "Curlew Island WLS",
+    "name": "Curlew Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2557,7 +2557,7 @@
   },
   {
     "id": "ws_cuthbert_bay_wls",
-    "name": "Cuthbert Bay WLS",
+    "name": "Cuthbert Bay Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2569,7 +2569,7 @@
   },
   {
     "id": "ws_d_ering_memorial_lali_wls",
-    "name": "D' Ering Memorial (Lali) WLS",
+    "name": "D' Ering Memorial (Lali) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -2581,7 +2581,7 @@
   },
   {
     "id": "ws_dadra_nagar_haveli_wls",
-    "name": "Dadra & Nagar Haveli WLS",
+    "name": "Dadra & Nagar Haveli Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Dadra & Nagar Haveli and Daman & Diu"
@@ -2593,7 +2593,7 @@
   },
   {
     "id": "ws_dalma_wls",
-    "name": "Dalma WLS",
+    "name": "Dalma Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -2605,7 +2605,7 @@
   },
   {
     "id": "ws_dampa_wls",
-    "name": "Dampa WLS",
+    "name": "Dampa Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Mizoram"
@@ -2617,7 +2617,7 @@
   },
   {
     "id": "ws_dandeli_wls",
-    "name": "Dandeli WLS",
+    "name": "Dandeli Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -2629,7 +2629,7 @@
   },
   {
     "id": "ws_daranghati_wls",
-    "name": "Daranghati WLS",
+    "name": "Daranghati Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -2641,7 +2641,7 @@
   },
   {
     "id": "ws_darlaghat_wls",
-    "name": "Darlaghat WLS",
+    "name": "Darlaghat Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -2653,7 +2653,7 @@
   },
   {
     "id": "ws_daroji_bear_wls",
-    "name": "Daroji Bear WLS",
+    "name": "Daroji Bear Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -2665,7 +2665,7 @@
   },
   {
     "id": "ws_darrah_wls",
-    "name": "Darrah WLS",
+    "name": "Darrah Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -2677,7 +2677,7 @@
   },
   {
     "id": "ws_debrigarh_wls",
-    "name": "Debrigarh WLS",
+    "name": "Debrigarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -2689,7 +2689,7 @@
   },
   {
     "id": "ws_deepar_beel_wls",
-    "name": "Deepar Beel WLS",
+    "name": "Deepar Beel Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -2701,7 +2701,7 @@
   },
   {
     "id": "ws_defence_island_wls",
-    "name": "Defence Island WLS",
+    "name": "Defence Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2713,7 +2713,7 @@
   },
   {
     "id": "ws_deolgaon_rehkuri_wls",
-    "name": "Deolgaon-Rehkuri WLS",
+    "name": "Deolgaon-Rehkuri Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -2725,7 +2725,7 @@
   },
   {
     "id": "ws_dhauladhar_wls",
-    "name": "Dhauladhar WLS",
+    "name": "Dhauladhar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -2737,7 +2737,7 @@
   },
   {
     "id": "ws_dhyanganga_wls",
-    "name": "Dhyanganga WLS",
+    "name": "Dhyanganga Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -2749,7 +2749,7 @@
   },
   {
     "id": "ws_dibang_wls",
-    "name": "Dibang WLS",
+    "name": "Dibang Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -2761,7 +2761,7 @@
   },
   {
     "id": "ws_dihing_patkai_wls",
-    "name": "Dihing Patkai WLS",
+    "name": "Dihing Patkai Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -2773,7 +2773,7 @@
   },
   {
     "id": "ws_dot_island_wls",
-    "name": "Dot Island WLS",
+    "name": "Dot Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2785,7 +2785,7 @@
   },
   {
     "id": "ws_dottrell_island_wls",
-    "name": "Dottrell Island WLS",
+    "name": "Dottrell Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2797,7 +2797,7 @@
   },
   {
     "id": "ws_dr_bhimrao_ambedkar_bird",
-    "name": "Dr. Bhimrao Ambedkar Bird",
+    "name": "Dr. Bhimrao Ambedkar Bird Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -2809,7 +2809,7 @@
   },
   {
     "id": "ws_duncan_island_wls",
-    "name": "Duncan Island WLS",
+    "name": "Duncan Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2821,7 +2821,7 @@
   },
   {
     "id": "ws_eagle_nest_wls",
-    "name": "Eagle Nest WLS",
+    "name": "Eagle Nest Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -2833,7 +2833,7 @@
   },
   {
     "id": "ws_east_island_wls",
-    "name": "East Island WLS",
+    "name": "East Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2845,7 +2845,7 @@
   },
   {
     "id": "ws_east_karbi_anglong_wls",
-    "name": "East Karbi Anglong WLS",
+    "name": "East Karbi Anglong Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -2857,7 +2857,7 @@
   },
   {
     "id": "ws_east_of_inglis_island_wls",
-    "name": "East of Inglis Island WLS",
+    "name": "East of Inglis Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2869,7 +2869,7 @@
   },
   {
     "id": "ws_egg_island_wls",
-    "name": "Egg Island WLS",
+    "name": "Egg Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2881,7 +2881,7 @@
   },
   {
     "id": "ws_elat_island_wls",
-    "name": "Elat Island WLS",
+    "name": "Elat Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2893,7 +2893,7 @@
   },
   {
     "id": "ws_entrance_island_wls",
-    "name": "Entrance Island WLS",
+    "name": "Entrance Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -2905,7 +2905,7 @@
   },
   {
     "id": "ws_eturnagaram_wls",
-    "name": "Eturnagaram WLS",
+    "name": "Eturnagaram Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Telangana"
@@ -2917,7 +2917,7 @@
   },
   {
     "id": "ws_fakim_wls",
-    "name": "Fakim WLS",
+    "name": "Fakim Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Nagaland"
@@ -2929,7 +2929,7 @@
   },
   {
     "id": "ws_fambong_lho_wls",
-    "name": "Fambong Lho WLS",
+    "name": "Fambong Lho Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Sikkim"
@@ -2941,7 +2941,7 @@
   },
   {
     "id": "ws_fudam_wls",
-    "name": "Fudam WLS",
+    "name": "Fudam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Dadra & Nagar Haveli and Daman & Diu"
@@ -2953,7 +2953,7 @@
   },
   {
     "id": "ws_girnar_wls",
-    "name": "GIRNAR WLS",
+    "name": "GIRNAR Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -2965,7 +2965,7 @@
   },
   {
     "id": "ws_gaga_great_indian_bustard_wls",
-    "name": "Gaga Great Indian Bustard WLS",
+    "name": "Gaga Great Indian Bustard Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -2977,7 +2977,7 @@
   },
   {
     "id": "ws_gahirmatha_marine_wls",
-    "name": "Gahirmatha (Marine) WLS",
+    "name": "Gahirmatha (Marine) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -2989,7 +2989,7 @@
   },
   {
     "id": "ws_galathea_bay_wls",
-    "name": "Galathea Bay WLS",
+    "name": "Galathea Bay Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -3001,7 +3001,7 @@
   },
   {
     "id": "ws_gamgul_siahbehi_wls",
-    "name": "Gamgul Siahbehi WLS",
+    "name": "Gamgul Siahbehi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -3013,7 +3013,7 @@
   },
   {
     "id": "ws_gander_island_wls",
-    "name": "Gander Island WLS",
+    "name": "Gander Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -3025,7 +3025,7 @@
   },
   {
     "id": "ws_gandhi_sagar_wls",
-    "name": "Gandhi Sagar WLS",
+    "name": "Gandhi Sagar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -3037,7 +3037,7 @@
   },
   {
     "id": "ws_gangaikondam_spotted_deer_wls",
-    "name": "Gangaikondam Spotted Deer WLS",
+    "name": "Gangaikondam Spotted Deer Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -3049,7 +3049,7 @@
   },
   {
     "id": "ws_garampani_wls",
-    "name": "Garampani WLS",
+    "name": "Garampani Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -3061,7 +3061,7 @@
   },
   {
     "id": "ws_gautala_autramghat_wls",
-    "name": "Gautala Autramghat WLS",
+    "name": "Gautala Autramghat Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -3073,7 +3073,7 @@
   },
   {
     "id": "ws_gautam_budha_wls",
-    "name": "Gautam Budha WLS",
+    "name": "Gautam Budha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -3085,7 +3085,7 @@
   },
   {
     "id": "ws_ghataprabha_wls",
-    "name": "Ghataprabha WLS",
+    "name": "Ghataprabha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -3097,7 +3097,7 @@
   },
   {
     "id": "ws_ghatigaon_wls",
-    "name": "Ghatigaon WLS",
+    "name": "Ghatigaon Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -3109,7 +3109,7 @@
   },
   {
     "id": "ws_ghodazari",
-    "name": "Ghodazari",
+    "name": "Ghodazari Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -3121,7 +3121,7 @@
   },
   {
     "id": "ws_gir_wls",
-    "name": "Gir WLS",
+    "name": "Gir Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -3133,7 +3133,7 @@
   },
   {
     "id": "ws_girjan_island_wls",
-    "name": "Girjan Island WLS",
+    "name": "Girjan Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -3145,7 +3145,7 @@
   },
   {
     "id": "ws_gomardha_wls",
-    "name": "Gomardha WLS",
+    "name": "Gomardha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -3157,7 +3157,7 @@
   },
   {
     "id": "ws_goose_island_wls",
-    "name": "Goose Island WLS",
+    "name": "Goose Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -3169,7 +3169,7 @@
   },
   {
     "id": "ws_govind_pashu_vihar_wls",
-    "name": "Govind Pashu Vihar WLS",
+    "name": "Govind Pashu Vihar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttarakhand"
@@ -3181,7 +3181,7 @@
   },
   {
     "id": "ws_govind_sagar_wls",
-    "name": "Govind Sagar WLS",
+    "name": "Govind Sagar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -3193,7 +3193,7 @@
   },
   {
     "id": "ws_great_indian_bustard_wls",
-    "name": "Great Indian Bustard WLS",
+    "name": "Great Indian Bustard Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -3205,7 +3205,7 @@
   },
   {
     "id": "ws_gudavi_bird_wls",
-    "name": "Gudavi Bird WLS",
+    "name": "Gudavi Bird Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -3217,7 +3217,7 @@
   },
   {
     "id": "ws_gudekote_sloth_bear",
-    "name": "Gudekote Sloth Bear",
+    "name": "Gudekote Sloth Bear Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -3229,7 +3229,7 @@
   },
   {
     "id": "ws_gudekote_wls",
-    "name": "Gudekote WLS",
+    "name": "Gudekote Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -3241,7 +3241,7 @@
   },
   {
     "id": "ws_gulmarg_wls",
-    "name": "Gulmarg WLS",
+    "name": "Gulmarg Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -3253,7 +3253,7 @@
   },
   {
     "id": "ws_gumti_wls",
-    "name": "Gumti WLS",
+    "name": "Gumti Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tripura"
@@ -3265,7 +3265,7 @@
   },
   {
     "id": "ws_gundla_brahmeswaram_wls",
-    "name": "Gundla Brahmeswaram WLS",
+    "name": "Gundla Brahmeswaram Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -3277,7 +3277,7 @@
   },
   {
     "id": "ws_hadgarh_wls",
-    "name": "Hadgarh WLS",
+    "name": "Hadgarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -3289,7 +3289,7 @@
   },
   {
     "id": "ws_haliday_island_wls",
-    "name": "Haliday Island WLS",
+    "name": "Haliday Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -3301,7 +3301,7 @@
   },
   {
     "id": "ws_hallongapara_gibbon_wls",
-    "name": "Hallongapara Gibbon WLS",
+    "name": "Hallongapara Gibbon Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -3313,7 +3313,7 @@
   },
   {
     "id": "ws_harike_lake_wls",
-    "name": "Harike Lake WLS",
+    "name": "Harike Lake Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -3325,7 +3325,7 @@
   },
   {
     "id": "ws_hastinapur_wls",
-    "name": "Hastinapur WLS",
+    "name": "Hastinapur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -3337,7 +3337,7 @@
   },
   {
     "id": "ws_hazaribagh_wls",
-    "name": "Hazaribagh WLS",
+    "name": "Hazaribagh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -3349,7 +3349,7 @@
   },
   {
     "id": "ws_hingolgarh_nature_reserve_wls",
-    "name": "Hingolgarh Nature Reserve WLS",
+    "name": "Hingolgarh Nature Reserve Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -3361,7 +3361,7 @@
   },
   {
     "id": "ws_hirpora_wls",
-    "name": "Hirpora WLS",
+    "name": "Hirpora Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -3373,7 +3373,7 @@
   },
   {
     "id": "ws_hokarsar_lake_wls",
-    "name": "Hokarsar Lake WLS",
+    "name": "Hokarsar Lake Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -3385,7 +3385,7 @@
   },
   {
     "id": "ws_hump_island_wls",
-    "name": "Hump Island WLS",
+    "name": "Hump Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -3397,7 +3397,7 @@
   },
   {
     "id": "ws_idukki_wls",
-    "name": "Idukki WLS",
+    "name": "Idukki Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -3409,7 +3409,7 @@
   },
   {
     "id": "ws_indira_gandhi_annamalai_wls",
-    "name": "Indira Gandhi (Annamalai) WLS",
+    "name": "Indira Gandhi (Annamalai) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -3421,7 +3421,7 @@
   },
   {
     "id": "ws_interview_island_wls",
-    "name": "Interview Island WLS",
+    "name": "Interview Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -3433,7 +3433,7 @@
   },
   {
     "id": "ws_itanagar_wls",
-    "name": "Itanagar WLS",
+    "name": "Itanagar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -3445,7 +3445,7 @@
   },
   {
     "id": "ws_jaikwadi_wls",
-    "name": "Jaikwadi WLS",
+    "name": "Jaikwadi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -3457,7 +3457,7 @@
   },
   {
     "id": "ws_jaisamand_wls",
-    "name": "Jaisamand WLS",
+    "name": "Jaisamand Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -3469,7 +3469,7 @@
   },
   {
     "id": "ws_jambugodha_wls",
-    "name": "Jambugodha WLS",
+    "name": "Jambugodha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -3481,7 +3481,7 @@
   },
   {
     "id": "ws_james_island_wls",
-    "name": "James Island WLS",
+    "name": "James Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -3493,7 +3493,7 @@
   },
   {
     "id": "ws_jamwa_ramgarh_wls",
-    "name": "Jamwa Ramgarh WLS",
+    "name": "Jamwa Ramgarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -3505,7 +3505,7 @@
   },
   {
     "id": "ws_jasrota_wls",
-    "name": "Jasrota WLS",
+    "name": "Jasrota Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -3517,7 +3517,7 @@
   },
   {
     "id": "ws_jawahar_sagar_wls",
-    "name": "Jawahar Sagar WLS",
+    "name": "Jawahar Sagar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -3529,7 +3529,7 @@
   },
   {
     "id": "ws_jessore_wls",
-    "name": "Jessore WLS",
+    "name": "Jessore Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -3541,7 +3541,7 @@
   },
   {
     "id": "ws_jhajjar_bachauli_wls",
-    "name": "Jhajjar Bachauli WLS",
+    "name": "Jhajjar Bachauli Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -3553,7 +3553,7 @@
   },
   {
     "id": "ws_jiri_makru",
-    "name": "Jiri Makru",
+    "name": "Jiri-Makru Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Manipur"
@@ -3565,7 +3565,7 @@
   },
   {
     "id": "ws_jogimatti",
-    "name": "Jogimatti",
+    "name": "Jogimatti Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -3577,7 +3577,7 @@
   },
   {
     "id": "ws_jorepokhri_salamander_wls",
-    "name": "Jorepokhri Salamander WLS",
+    "name": "Jorepokhri Salamander Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -3589,7 +3589,7 @@
   },
   {
     "id": "ws_jungle_island_wls",
-    "name": "Jungle Island WLS",
+    "name": "Jungle Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -3601,7 +3601,7 @@
   },
   {
     "id": "ws_kachchh_desert_wls",
-    "name": "Kachchh Desert WLS",
+    "name": "Kachchh Desert Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -3613,7 +3613,7 @@
   },
   {
     "id": "ws_kailadevi_wls",
-    "name": "Kailadevi WLS",
+    "name": "Kailadevi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -3625,7 +3625,7 @@
   },
   {
     "id": "ws_kailam",
-    "name": "Kailam",
+    "name": "Kailam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Manipur"
@@ -3637,7 +3637,7 @@
   },
   {
     "id": "ws_kaimur_wls",
-    "name": "Kaimur WLS",
+    "name": "Kaimur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -3649,7 +3649,7 @@
   },
   {
     "id": "ws_kais_wls",
-    "name": "Kais WLS",
+    "name": "Kais Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -3661,7 +3661,7 @@
   },
   {
     "id": "ws_kalakad_wls",
-    "name": "Kalakad WLS",
+    "name": "Kalakad Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -3673,7 +3673,7 @@
   },
   {
     "id": "ws_kalatop_khajjiar_wls",
-    "name": "Kalatop-Khajjiar WLS",
+    "name": "Kalatop-Khajjiar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -3685,7 +3685,7 @@
   },
   {
     "id": "ws_kalesar_wls",
-    "name": "Kalesar WLS",
+    "name": "Kalesar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Haryana"
@@ -3697,7 +3697,7 @@
   },
   {
     "id": "ws_kamasandra_wls",
-    "name": "Kamasandra WLS",
+    "name": "Kamasandra Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -3709,7 +3709,7 @@
   },
   {
     "id": "ws_kambalkonda_wls",
-    "name": "Kambalkonda WLS",
+    "name": "Kambalkonda Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -3720,20 +3720,8 @@
     "hasBoundary": true
   },
   {
-    "id": "ws_kamlang",
-    "name": "Kamlang",
-    "category": "wls",
-    "state": [
-      "Arunachal Pradesh"
-    ],
-    "area_km2": 77.6,
-    "centroid_lat": 27.8972,
-    "centroid_lng": 96.1866,
-    "hasBoundary": true
-  },
-  {
     "id": "ws_kamlang_wls",
-    "name": "Kamlang WLS",
+    "name": "Kamlang Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -3745,7 +3733,7 @@
   },
   {
     "id": "ws_kanawar_wls",
-    "name": "Kanawar WLS",
+    "name": "Kanawar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -3757,7 +3745,7 @@
   },
   {
     "id": "ws_kane_wls",
-    "name": "Kane WLS",
+    "name": "Kane Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -3769,7 +3757,7 @@
   },
   {
     "id": "ws_kanjirankulam_wls",
-    "name": "Kanjirankulam WLS",
+    "name": "Kanjirankulam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -3781,7 +3769,7 @@
   },
   {
     "id": "ws_kanwarjheel_wls",
-    "name": "Kanwarjheel WLS",
+    "name": "Kanwarjheel Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -3793,7 +3781,7 @@
   },
   {
     "id": "ws_kanyakumari_wls",
-    "name": "Kanyakumari WLS",
+    "name": "Kanyakumari Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -3805,7 +3793,7 @@
   },
   {
     "id": "ws_kapilash",
-    "name": "Kapilash",
+    "name": "Kapilash Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -3817,7 +3805,7 @@
   },
   {
     "id": "ws_kappathagudda",
-    "name": "Kappathagudda",
+    "name": "Kappatagudda Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -3829,7 +3817,7 @@
   },
   {
     "id": "ws_karaivetti_wls",
-    "name": "Karaivetti WLS",
+    "name": "Karaivetti Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -3841,7 +3829,7 @@
   },
   {
     "id": "ws_karakoram_nubra_shyok_wls",
-    "name": "Karakoram (Nubra Shyok) WLS",
+    "name": "Karakoram (Nubra Shyok) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Ladakh"
@@ -3853,7 +3841,7 @@
   },
   {
     "id": "ws_karanja_sohol_blackbuck_wls",
-    "name": "Karanja Sohol Blackbuck WLS",
+    "name": "Karanja Sohol Blackbuck Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -3865,7 +3853,7 @@
   },
   {
     "id": "ws_karera_wls",
-    "name": "Karera WLS",
+    "name": "Karera Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -3877,7 +3865,7 @@
   },
   {
     "id": "ws_karikili_wls",
-    "name": "Karikili WLS",
+    "name": "Karikili Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -3889,7 +3877,7 @@
   },
   {
     "id": "ws_karimpuzha",
-    "name": "Karimpuzha",
+    "name": "Karimpuzha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -3901,7 +3889,7 @@
   },
   {
     "id": "ws_karlapat_wls",
-    "name": "Karlapat WLS",
+    "name": "Karlapat Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -3913,7 +3901,7 @@
   },
   {
     "id": "ws_karnala_wls",
-    "name": "Karnala WLS",
+    "name": "Karnala Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -3925,7 +3913,7 @@
   },
   {
     "id": "ws_katepurna_wls",
-    "name": "Katepurna WLS",
+    "name": "Katepurna Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -3937,7 +3925,7 @@
   },
   {
     "id": "ws_katerniaghat_wls",
-    "name": "Katerniaghat WLS",
+    "name": "Katerniaghat Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -3949,7 +3937,7 @@
   },
   {
     "id": "ws_kathlaur_kushlian_wls",
-    "name": "Kathlaur Kushlian WLS",
+    "name": "Kathlaur Kushlian Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -3961,7 +3949,7 @@
   },
   {
     "id": "ws_kaundinya_wls",
-    "name": "Kaundinya WLS",
+    "name": "Kaundinya Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -3973,7 +3961,7 @@
   },
   {
     "id": "ws_kawal_wls",
-    "name": "Kawal WLS",
+    "name": "Kawal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Telangana"
@@ -3985,7 +3973,7 @@
   },
   {
     "id": "ws_kedarnath_wls",
-    "name": "Kedarnath WLS",
+    "name": "Kedarnath Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttarakhand"
@@ -3997,7 +3985,7 @@
   },
   {
     "id": "ws_ken_gharial_wls",
-    "name": "Ken Gharial WLS",
+    "name": "Ken Gharial Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -4009,7 +3997,7 @@
   },
   {
     "id": "ws_kesarbagh_wls",
-    "name": "Kesarbagh WLS",
+    "name": "Kesarbagh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -4021,7 +4009,7 @@
   },
   {
     "id": "ws_khalasuni_wls",
-    "name": "Khalasuni WLS",
+    "name": "Khalasuni Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -4033,7 +4021,7 @@
   },
   {
     "id": "ws_khaparwas_wls",
-    "name": "Khaparwas WLS",
+    "name": "Khaparwas Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Haryana"
@@ -4045,7 +4033,7 @@
   },
   {
     "id": "ws_khawnglung_wls",
-    "name": "Khawnglung WLS",
+    "name": "Khawnglung Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Mizoram"
@@ -4057,7 +4045,7 @@
   },
   {
     "id": "ws_kheoni_wls",
-    "name": "Kheoni WLS",
+    "name": "Kheoni Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -4069,7 +4057,7 @@
   },
   {
     "id": "ws_khijadiya_wls",
-    "name": "Khijadiya WLS",
+    "name": "Khijadiya Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -4081,7 +4069,7 @@
   },
   {
     "id": "ws_khokhan_wls",
-    "name": "Khokhan WLS",
+    "name": "Khokhan Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -4093,7 +4081,7 @@
   },
   {
     "id": "ws_kibber_wls",
-    "name": "Kibber WLS",
+    "name": "Kibber Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -4105,7 +4093,7 @@
   },
   {
     "id": "ws_kinnersani_wls",
-    "name": "Kinnersani WLS",
+    "name": "Kinnersani Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Telangana"
@@ -4117,7 +4105,7 @@
   },
   {
     "id": "ws_kishanpur_wls",
-    "name": "Kishanpur WLS",
+    "name": "Kishanpur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -4129,7 +4117,7 @@
   },
   {
     "id": "ws_kitam_bird_sanctuary_wls",
-    "name": "Kitam Bird Sanctuary WLS",
+    "name": "Kitam Bird Sanctuary",
     "category": "wls",
     "state": [
       "Sikkim"
@@ -4141,7 +4129,7 @@
   },
   {
     "id": "ws_kodaikanal_wls",
-    "name": "Kodaikanal WLS",
+    "name": "Kodaikanal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -4153,7 +4141,7 @@
   },
   {
     "id": "ws_koderma_wls",
-    "name": "Koderma WLS",
+    "name": "Koderma Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -4165,7 +4153,7 @@
   },
   {
     "id": "ws_koka",
-    "name": "Koka",
+    "name": "Koka Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -4177,7 +4165,7 @@
   },
   {
     "id": "ws_kolleru_wls",
-    "name": "Kolleru WLS",
+    "name": "Kolleru Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -4189,7 +4177,7 @@
   },
   {
     "id": "ws_koonthankulam_kadankulam_wls",
-    "name": "Koonthankulam-Kadankulam WLS",
+    "name": "Koonthankulam-Kadankulam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -4201,7 +4189,7 @@
   },
   {
     "id": "ws_kotagarh_wls",
-    "name": "Kotagarh WLS",
+    "name": "Kotagarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -4213,7 +4201,7 @@
   },
   {
     "id": "ws_kottiyoor_wls",
-    "name": "Kottiyoor WLS",
+    "name": "Kottiyoor Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -4225,7 +4213,7 @@
   },
   {
     "id": "ws_koyana_wls",
-    "name": "Koyana WLS",
+    "name": "Koyana Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -4237,7 +4225,7 @@
   },
   {
     "id": "ws_krishna_wls",
-    "name": "Krishna WLS",
+    "name": "Krishna Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -4249,7 +4237,7 @@
   },
   {
     "id": "ws_kugti_wls",
-    "name": "Kugti WLS",
+    "name": "Kugti Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -4261,7 +4249,7 @@
   },
   {
     "id": "ws_kuldiha_wls",
-    "name": "Kuldiha WLS",
+    "name": "Kuldiha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -4273,7 +4261,7 @@
   },
   {
     "id": "ws_kumbhalgarh_wls",
-    "name": "Kumbhalgarh WLS",
+    "name": "Kumbhalgarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -4285,7 +4273,7 @@
   },
   {
     "id": "ws_kurinjimala_wls",
-    "name": "Kurinjimala WLS",
+    "name": "Kurinjimala Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -4297,7 +4285,7 @@
   },
   {
     "id": "ws_kusheshwar_sthan_wls",
-    "name": "Kusheshwar Sthan WLS",
+    "name": "Kusheshwar Sthan Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -4309,7 +4297,7 @@
   },
   {
     "id": "ws_kwangtung_island_wls",
-    "name": "Kwangtung Island WLS",
+    "name": "Kwangtung Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4321,7 +4309,7 @@
   },
   {
     "id": "ws_kyd_island_wls",
-    "name": "Kyd Island WLS",
+    "name": "Kyd Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4333,7 +4321,7 @@
   },
   {
     "id": "ws_kyongnosla_alpine_wls",
-    "name": "Kyongnosla Alpine WLS",
+    "name": "Kyongnosla Alpine Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Sikkim"
@@ -4345,7 +4333,7 @@
   },
   {
     "id": "ws_lacchipora_wls",
-    "name": "Lacchipora WLS",
+    "name": "Lacchipora Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -4357,7 +4345,7 @@
   },
   {
     "id": "ws_lakh_bahosi_wls",
-    "name": "Lakh Bahosi WLS",
+    "name": "Lakh Bahosi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -4369,7 +4357,7 @@
   },
   {
     "id": "ws_lakhari_valley_wls",
-    "name": "Lakhari Valley WLS",
+    "name": "Lakhari Valley Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -4381,7 +4369,7 @@
   },
   {
     "id": "ws_lala_great_indian_bustard_wls",
-    "name": "Lala Great Indian Bustard WLS",
+    "name": "Lala Great Indian Bustard Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -4393,7 +4381,7 @@
   },
   {
     "id": "ws_landfall_island_wls",
-    "name": "Landfall Island WLS",
+    "name": "Landfall Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4405,7 +4393,7 @@
   },
   {
     "id": "ws_lanja_madugu_sivaram_wls",
-    "name": "Lanja Madugu Sivaram WLS",
+    "name": "Lanja Madugu Sivaram Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Telangana"
@@ -4417,7 +4405,7 @@
   },
   {
     "id": "ws_latouche_island_wls",
-    "name": "Latouche Island WLS",
+    "name": "Latouche Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4429,7 +4417,7 @@
   },
   {
     "id": "ws_lawalong_wls",
-    "name": "Lawalong WLS",
+    "name": "Lawalong Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -4441,7 +4429,7 @@
   },
   {
     "id": "ws_lawkhowa_wls",
-    "name": "Lawkhowa WLS",
+    "name": "Lawkhowa Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -4453,7 +4441,7 @@
   },
   {
     "id": "ws_lengteng_wls",
-    "name": "Lengteng WLS",
+    "name": "Lengteng Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Mizoram"
@@ -4465,7 +4453,7 @@
   },
   {
     "id": "ws_limber_wls",
-    "name": "Limber WLS",
+    "name": "Limber Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -4477,7 +4465,7 @@
   },
   {
     "id": "ws_lippa_asrang_wls",
-    "name": "Lippa Asrang WLS",
+    "name": "Lippa Asrang Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -4489,7 +4477,7 @@
   },
   {
     "id": "ws_lohabarrack_saltwater_crocodile_wls",
-    "name": "Lohabarrack (Saltwater Crocodile) WLS",
+    "name": "Lohabarrack (Saltwater Crocodile) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4501,7 +4489,7 @@
   },
   {
     "id": "ws_lonar_wls",
-    "name": "Lonar WLS",
+    "name": "Lonar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -4513,7 +4501,7 @@
   },
   {
     "id": "ws_lothian_island_wls",
-    "name": "Lothian Island WLS",
+    "name": "Lothian Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -4525,7 +4513,7 @@
   },
   {
     "id": "ws_madei_wls",
-    "name": "Madei WLS",
+    "name": "Madei Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Goa"
@@ -4537,7 +4525,7 @@
   },
   {
     "id": "ws_maenam_wls",
-    "name": "Maenam WLS",
+    "name": "Maenam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Sikkim"
@@ -4549,7 +4537,7 @@
   },
   {
     "id": "ws_mahananda_wls",
-    "name": "Mahananda WLS",
+    "name": "Mahananda Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -4561,7 +4549,7 @@
   },
   {
     "id": "ws_mahauaduar_wls",
-    "name": "Mahauaduar WLS",
+    "name": "Mahauaduar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -4573,7 +4561,7 @@
   },
   {
     "id": "ws_mahavir_swami_wls",
-    "name": "Mahavir Swami WLS",
+    "name": "Mahavir Swami Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -4585,7 +4573,7 @@
   },
   {
     "id": "ws_majathal_wls",
-    "name": "Majathal WLS",
+    "name": "Majathal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -4597,7 +4585,7 @@
   },
   {
     "id": "ws_malabar_wls",
-    "name": "Malabar WLS",
+    "name": "Malabar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -4609,7 +4597,7 @@
   },
   {
     "id": "ws_malaimahadeswara_wls",
-    "name": "Malaimahadeswara WLS",
+    "name": "Malaimahadeswara Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -4621,7 +4609,7 @@
   },
   {
     "id": "ws_malvan_marine_wls",
-    "name": "Malvan Marine WLS",
+    "name": "Malvan Marine Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -4633,7 +4621,7 @@
   },
   {
     "id": "ws_manali_wls",
-    "name": "Manali WLS",
+    "name": "Manali Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -4645,7 +4633,7 @@
   },
   {
     "id": "ws_mangalavanam_bird_wls",
-    "name": "Mangalavanam Bird WLS",
+    "name": "Mangalavanam Bird Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -4657,7 +4645,7 @@
   },
   {
     "id": "ws_mangrove_island_wls",
-    "name": "Mangrove Island WLS",
+    "name": "Mangrove Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4669,7 +4657,7 @@
   },
   {
     "id": "ws_manjira_wls",
-    "name": "Manjira WLS",
+    "name": "Manjira Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Telangana"
@@ -4681,7 +4669,7 @@
   },
   {
     "id": "ws_mansingdeo",
-    "name": "Mansingdeo",
+    "name": "Mansinghdeo Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -4693,7 +4681,7 @@
   },
   {
     "id": "ws_marat_longri_wls",
-    "name": "Marat Longri WLS",
+    "name": "Marat Longri Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -4705,7 +4693,7 @@
   },
   {
     "id": "ws_marine_gulf_of_kachchh_wls",
-    "name": "Marine (Gulf of Kachchh) WLS",
+    "name": "Marine (Gulf of Kachchh) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -4717,7 +4705,7 @@
   },
   {
     "id": "ws_mask_island_wls",
-    "name": "Mask Island WLS",
+    "name": "Mask Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4729,7 +4717,7 @@
   },
   {
     "id": "ws_mayo_island_wls",
-    "name": "Mayo Island WLS",
+    "name": "Mayo Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4741,7 +4729,7 @@
   },
   {
     "id": "ws_mayureswar_supe_wls",
-    "name": "Mayureswar Supe WLS",
+    "name": "Mayureswar Supe Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -4753,7 +4741,7 @@
   },
   {
     "id": "ws_megamalai",
-    "name": "Megamalai",
+    "name": "Megamalai Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -4765,7 +4753,7 @@
   },
   {
     "id": "ws_megapode_island_wls",
-    "name": "Megapode Island WLS",
+    "name": "Megapode Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4777,7 +4765,7 @@
   },
   {
     "id": "ws_mehao_wls",
-    "name": "Mehao WLS",
+    "name": "Mehao Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -4789,7 +4777,7 @@
   },
   {
     "id": "ws_melaselvanur_kilaselvanur_wls",
-    "name": "Melaselvanur-Kilaselvanur WLS",
+    "name": "Melaselvanur-Kilaselvanur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -4801,7 +4789,7 @@
   },
   {
     "id": "ws_melghat_wls",
-    "name": "Melghat WLS",
+    "name": "Melghat Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -4813,7 +4801,7 @@
   },
   {
     "id": "ws_melkote_temple_wls",
-    "name": "Melkote Temple WLS",
+    "name": "Melkote Temple Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -4825,7 +4813,7 @@
   },
   {
     "id": "ws_mitiyala_wls",
-    "name": "Mitiyala WLS",
+    "name": "Mitiyala Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -4837,7 +4825,7 @@
   },
   {
     "id": "ws_montogemery_island_wls",
-    "name": "Montogemery Island WLS",
+    "name": "Montogemery Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -4849,7 +4837,7 @@
   },
   {
     "id": "ws_mookambika_wls",
-    "name": "Mookambika WLS",
+    "name": "Mookambika Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -4861,7 +4849,7 @@
   },
   {
     "id": "ws_morni_hills_khol_hi_raitan_wls",
-    "name": "Morni Hills (Khol-Hi Raitan) WLS",
+    "name": "Morni Hills (Khol-Hi Raitan) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Haryana"
@@ -4873,7 +4861,7 @@
   },
   {
     "id": "ws_mount_abu_wls",
-    "name": "Mount Abu WLS",
+    "name": "Mount Abu Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -4885,7 +4873,7 @@
   },
   {
     "id": "ws_mudumalai_wls",
-    "name": "Mudumalai WLS",
+    "name": "Mudumalai Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -4897,7 +4885,7 @@
   },
   {
     "id": "ws_mundanthurai_wls",
-    "name": "Mundanthurai WLS",
+    "name": "Mundanthurai Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -4909,7 +4897,7 @@
   },
   {
     "id": "ws_mussoorie_wls",
-    "name": "Mussoorie WLS",
+    "name": "Mussoorie Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttarakhand"
@@ -4921,7 +4909,7 @@
   },
   {
     "id": "ws_nagarjunasagar_srisailam_wls",
-    "name": "Nagarjunasagar Srisailam WLS",
+    "name": "Nagarjunasagar Srisailam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -4933,7 +4921,7 @@
   },
   {
     "id": "ws_nagi_dam_wls",
-    "name": "Nagi Dam WLS",
+    "name": "Nagi Dam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -4945,7 +4933,7 @@
   },
   {
     "id": "ws_nagzira_wls",
-    "name": "Nagzira WLS",
+    "name": "Nagzira Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -4957,7 +4945,7 @@
   },
   {
     "id": "ws_nahar_wls",
-    "name": "Nahar WLS",
+    "name": "Nahar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Haryana"
@@ -4969,7 +4957,7 @@
   },
   {
     "id": "ws_nahargarh_wls",
-    "name": "Nahargarh WLS",
+    "name": "Nahargarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -4981,7 +4969,7 @@
   },
   {
     "id": "ws_naigaon_mayur_wls",
-    "name": "Naigaon Mayur WLS",
+    "name": "Naigaon Mayur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -4993,7 +4981,7 @@
   },
   {
     "id": "ws_nakti_dam_wls",
-    "name": "Nakti Dam WLS",
+    "name": "Nakti Dam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -5005,7 +4993,7 @@
   },
   {
     "id": "ws_nal_sarovar_wls",
-    "name": "Nal Sarovar WLS",
+    "name": "Nal Sarovar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -5017,7 +5005,7 @@
   },
   {
     "id": "ws_nambor_wls",
-    "name": "Nambor WLS",
+    "name": "Nambor Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -5029,7 +5017,7 @@
   },
   {
     "id": "ws_nambor_doigrung_wls",
-    "name": "Nambor-Doigrung WLS",
+    "name": "Nambor-Doigrung Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -5041,7 +5029,7 @@
   },
   {
     "id": "ws_nandankanan_wls",
-    "name": "Nandankanan WLS",
+    "name": "Nandankanan Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -5053,7 +5041,7 @@
   },
   {
     "id": "ws_nandhaur_wls",
-    "name": "Nandhaur WLS",
+    "name": "Nandhaur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttarakhand"
@@ -5065,7 +5053,7 @@
   },
   {
     "id": "ws_nandni_wls",
-    "name": "Nandni WLS",
+    "name": "Nandni Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -5077,7 +5065,7 @@
   },
   {
     "id": "ws_nandur_madhameshwar_wls",
-    "name": "Nandur Madhameshwar WLS",
+    "name": "Nandur Madhameshwar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -5089,7 +5077,7 @@
   },
   {
     "id": "ws_nangal_wls",
-    "name": "Nangal WLS",
+    "name": "Nangal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -5101,7 +5089,7 @@
   },
   {
     "id": "ws_narayan_sarovar_wls",
-    "name": "Narayan Sarovar WLS",
+    "name": "Narayan Sarovar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -5113,7 +5101,7 @@
   },
   {
     "id": "ws_narcondam_island_wls",
-    "name": "Narcondam Island WLS",
+    "name": "Narcondam Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5125,7 +5113,7 @@
   },
   {
     "id": "ws_nargu_wls",
-    "name": "Nargu WLS",
+    "name": "Nargu Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -5137,7 +5125,7 @@
   },
   {
     "id": "ws_narnala_wls",
-    "name": "Narnala WLS",
+    "name": "Narnala Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -5149,7 +5137,7 @@
   },
   {
     "id": "ws_narpuh",
-    "name": "Narpuh",
+    "name": "Narpuh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Meghalaya"
@@ -5161,7 +5149,7 @@
   },
   {
     "id": "ws_narsighgarh_wls",
-    "name": "Narsighgarh WLS",
+    "name": "Narsighgarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -5173,7 +5161,7 @@
   },
   {
     "id": "ws_national_chambal_wls",
-    "name": "National Chambal WLS",
+    "name": "National Chambal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -5185,7 +5173,7 @@
   },
   {
     "id": "ws_nawabganj_wls",
-    "name": "Nawabganj WLS",
+    "name": "Nawabganj Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -5197,7 +5185,7 @@
   },
   {
     "id": "ws_nawegaon_wls",
-    "name": "Nawegaon WLS",
+    "name": "Nawegaon Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -5209,7 +5197,7 @@
   },
   {
     "id": "ws_nellai_wls",
-    "name": "Nellai WLS",
+    "name": "Nellai Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -5221,7 +5209,7 @@
   },
   {
     "id": "ws_nellapattu_wls",
-    "name": "Nellapattu WLS",
+    "name": "Nellapattu Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -5233,7 +5221,7 @@
   },
   {
     "id": "ws_netravali_wls",
-    "name": "Netravali WLS",
+    "name": "Netravali Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Goa"
@@ -5245,7 +5233,7 @@
   },
   {
     "id": "ws_new_bor",
-    "name": "New Bor",
+    "name": "New Bor Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -5257,7 +5245,7 @@
   },
   {
     "id": "ws_new_nagzira",
-    "name": "New Nagzira",
+    "name": "New Nagzira Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -5269,7 +5257,7 @@
   },
   {
     "id": "ws_neyyar_wls",
-    "name": "Neyyar WLS",
+    "name": "Neyyar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -5281,7 +5269,7 @@
   },
   {
     "id": "ws_ngengpui_wls",
-    "name": "Ngengpui WLS",
+    "name": "Ngengpui Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Mizoram"
@@ -5293,7 +5281,7 @@
   },
   {
     "id": "ws_nongkhyllem_wls",
-    "name": "Nongkhyllem WLS",
+    "name": "Nongkhyllem Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Meghalaya"
@@ -5305,7 +5293,7 @@
   },
   {
     "id": "ws_noradehi_wls",
-    "name": "Noradehi WLS",
+    "name": "Noradehi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -5317,7 +5305,7 @@
   },
   {
     "id": "ws_north_brother_island_wls",
-    "name": "North Brother Island WLS",
+    "name": "North Brother Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5329,7 +5317,7 @@
   },
   {
     "id": "ws_north_island_wls",
-    "name": "North Island WLS",
+    "name": "North Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5341,7 +5329,7 @@
   },
   {
     "id": "ws_north_reef_island_wls",
-    "name": "North Reef Island WLS",
+    "name": "North Reef Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5353,7 +5341,7 @@
   },
   {
     "id": "ws_nugu_wls",
-    "name": "Nugu WLS",
+    "name": "Nugu Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -5365,7 +5353,7 @@
   },
   {
     "id": "ws_okhala_wls",
-    "name": "Okhala WLS",
+    "name": "Okhala Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -5377,7 +5365,7 @@
   },
   {
     "id": "ws_oliver_island_wls",
-    "name": "Oliver Island WLS",
+    "name": "Oliver Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5389,7 +5377,7 @@
   },
   {
     "id": "ws_orcha_wls",
-    "name": "Orcha WLS",
+    "name": "Orcha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -5401,7 +5389,7 @@
   },
   {
     "id": "ws_orchid_island_wls",
-    "name": "Orchid Island WLS",
+    "name": "Orchid Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5413,7 +5401,7 @@
   },
   {
     "id": "ws_oussudu_lake_bird",
-    "name": "Oussudu Lake Bird",
+    "name": "Oussudu Lake Bird Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -5425,7 +5413,7 @@
   },
   {
     "id": "ws_oussudu_lake_wls",
-    "name": "Oussudu Lake WLS",
+    "name": "Oussudu Lake Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Puducherry"
@@ -5437,7 +5425,7 @@
   },
   {
     "id": "ws_overa_aru_wls",
-    "name": "Overa-Aru WLS",
+    "name": "Overa-Aru Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -5449,7 +5437,7 @@
   },
   {
     "id": "ws_ox_island_wls",
-    "name": "Ox Island WLS",
+    "name": "Ox Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5461,7 +5449,7 @@
   },
   {
     "id": "ws_oyster_island_i_wls",
-    "name": "Oyster Island-I WLS",
+    "name": "Oyster Island-I Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5473,7 +5461,7 @@
   },
   {
     "id": "ws_oyster_island_ii_wls",
-    "name": "Oyster Island-II WLS",
+    "name": "Oyster Island-II Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5485,7 +5473,7 @@
   },
   {
     "id": "ws_pabitora_wls",
-    "name": "Pabitora WLS",
+    "name": "Pabitora Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -5497,7 +5485,7 @@
   },
   {
     "id": "ws_pachmarhi_wls",
-    "name": "Pachmarhi WLS",
+    "name": "Pachmarhi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -5509,7 +5497,7 @@
   },
   {
     "id": "ws_paget_island_wls",
-    "name": "Paget Island WLS",
+    "name": "Paget Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5521,7 +5509,7 @@
   },
   {
     "id": "ws_painganga_wls",
-    "name": "Painganga WLS",
+    "name": "Painganga Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -5533,7 +5521,7 @@
   },
   {
     "id": "ws_pakhal_wls",
-    "name": "Pakhal WLS",
+    "name": "Pakhal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Telangana"
@@ -5545,7 +5533,7 @@
   },
   {
     "id": "ws_pakhi_bitan_bird",
-    "name": "Pakhi Bitan Bird",
+    "name": "Pakhi Bitan Bird Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -5557,7 +5545,7 @@
   },
   {
     "id": "ws_pakhui_wls",
-    "name": "Pakhui WLS",
+    "name": "Pakhui Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -5569,7 +5557,7 @@
   },
   {
     "id": "ws_palamau_wls",
-    "name": "Palamau WLS",
+    "name": "Palamau Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -5581,7 +5569,7 @@
   },
   {
     "id": "ws_palkot_wls",
-    "name": "Palkot WLS",
+    "name": "Palkot Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -5593,7 +5581,7 @@
   },
   {
     "id": "ws_pamed_wls",
-    "name": "Pamed WLS",
+    "name": "Pamed Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -5605,7 +5593,7 @@
   },
   {
     "id": "ws_pangolakha_wls",
-    "name": "Pangolakha WLS",
+    "name": "Pangolakha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Sikkim"
@@ -5617,7 +5605,7 @@
   },
   {
     "id": "ws_pani_dihing_wls",
-    "name": "Pani-Dihing WLS",
+    "name": "Pani-Dihing Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -5629,7 +5617,7 @@
   },
   {
     "id": "ws_paniya_wls",
-    "name": "Paniya WLS",
+    "name": "Paniya Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -5641,7 +5629,7 @@
   },
   {
     "id": "ws_panna_gangau_wls",
-    "name": "Panna (Gangau) WLS",
+    "name": "Panna (Gangau) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -5653,7 +5641,7 @@
   },
   {
     "id": "ws_panpatha_wls",
-    "name": "Panpatha WLS",
+    "name": "Panpatha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -5665,7 +5653,7 @@
   },
   {
     "id": "ws_pant_rajgir_wls",
-    "name": "Pant (Rajgir) WLS",
+    "name": "Pant (Rajgir) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -5677,7 +5665,7 @@
   },
   {
     "id": "ws_parambikulam_wls",
-    "name": "Parambikulam WLS",
+    "name": "Parambikulam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -5689,7 +5677,7 @@
   },
   {
     "id": "ws_parasnath_wls",
-    "name": "Parasnath WLS",
+    "name": "Parasnath Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -5701,7 +5689,7 @@
   },
   {
     "id": "ws_parkinson_island_wls",
-    "name": "Parkinson Island WLS",
+    "name": "Parkinson Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5713,7 +5701,7 @@
   },
   {
     "id": "ws_parvati_aranga_wls",
-    "name": "Parvati Aranga WLS",
+    "name": "Parvati Aranga Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -5725,7 +5713,7 @@
   },
   {
     "id": "ws_passage_island_wls",
-    "name": "Passage Island WLS",
+    "name": "Passage Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5737,7 +5725,7 @@
   },
   {
     "id": "ws_patna_wls",
-    "name": "Patna WLS",
+    "name": "Patna Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -5749,7 +5737,7 @@
   },
   {
     "id": "ws_patric_island_wls",
-    "name": "Patric Island WLS",
+    "name": "Patric Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5773,7 +5761,7 @@
   },
   {
     "id": "ws_peacock_island_wls",
-    "name": "Peacock Island WLS",
+    "name": "Peacock Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5785,7 +5773,7 @@
   },
   {
     "id": "ws_peechi_vazhani_wls",
-    "name": "Peechi-Vazhani WLS",
+    "name": "Peechi-Vazhani Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -5797,7 +5785,7 @@
   },
   {
     "id": "ws_pench_moghli_wls",
-    "name": "Pench Moghli WLS",
+    "name": "Pench Moghli Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -5809,7 +5797,7 @@
   },
   {
     "id": "ws_peppara_wls",
-    "name": "Peppara WLS",
+    "name": "Peppara Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -5821,7 +5809,7 @@
   },
   {
     "id": "ws_periyar_wls",
-    "name": "Periyar WLS",
+    "name": "Periyar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -5833,7 +5821,7 @@
   },
   {
     "id": "ws_phansad_wls",
-    "name": "Phansad WLS",
+    "name": "Phansad Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -5845,7 +5833,7 @@
   },
   {
     "id": "ws_phen_wls",
-    "name": "Phen WLS",
+    "name": "Phen Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -5857,7 +5845,7 @@
   },
   {
     "id": "ws_phulwari_ki_nal_wls",
-    "name": "Phulwari Ki Nal WLS",
+    "name": "Phulwari Ki Nal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -5869,7 +5857,7 @@
   },
   {
     "id": "ws_pilibhit",
-    "name": "Pilibhit",
+    "name": "Pilibhit Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -5881,7 +5869,7 @@
   },
   {
     "id": "ws_pitman_island_wls",
-    "name": "Pitman Island WLS",
+    "name": "Pitman Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5893,7 +5881,7 @@
   },
   {
     "id": "ws_pitti_bird_island_wls",
-    "name": "Pitti (Bird Island) WLS",
+    "name": "Pitti (Bird Island) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Lakshadweep"
@@ -5905,7 +5893,7 @@
   },
   {
     "id": "ws_pocharam_wls",
-    "name": "Pocharam WLS",
+    "name": "Pocharam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Telangana"
@@ -5917,7 +5905,7 @@
   },
   {
     "id": "ws_point_calimere_block_a_block_b",
-    "name": "Point Calimere Block-A & Block-B",
+    "name": "Point Calimere Wildlife and Bird Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -5928,20 +5916,8 @@
     "hasBoundary": true
   },
   {
-    "id": "ws_point_calimere_wls",
-    "name": "Point Calimere WLS",
-    "category": "wls",
-    "state": [
-      "Tamil Nadu"
-    ],
-    "area_km2": 17.3,
-    "centroid_lat": 10.3076,
-    "centroid_lng": 79.8438,
-    "hasBoundary": true
-  },
-  {
     "id": "ws_point_island_wls",
-    "name": "Point Island WLS",
+    "name": "Point Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5953,7 +5929,7 @@
   },
   {
     "id": "ws_pong_dam_lake_wls",
-    "name": "Pong Dam Lake WLS",
+    "name": "Pong Dam Lake Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -5965,7 +5941,7 @@
   },
   {
     "id": "ws_porbandar_lake_wls",
-    "name": "Porbandar Lake WLS",
+    "name": "Porbandar Lake Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -5977,7 +5953,7 @@
   },
   {
     "id": "ws_potanma_islands_wls",
-    "name": "Potanma Islands WLS",
+    "name": "Potanma Islands Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -5989,7 +5965,7 @@
   },
   {
     "id": "ws_pranahita_wls",
-    "name": "Pranahita WLS",
+    "name": "Pranahita Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Telangana"
@@ -6001,7 +5977,7 @@
   },
   {
     "id": "ws_pualreng_wls",
-    "name": "Pualreng WLS",
+    "name": "Pualreng Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Mizoram"
@@ -6013,7 +5989,7 @@
   },
   {
     "id": "ws_pulicat_lake_wls",
-    "name": "Pulicat Lake WLS",
+    "name": "Pulicat Lake Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -6025,7 +6001,7 @@
   },
   {
     "id": "ws_puliebadze_wls",
-    "name": "Puliebadze WLS",
+    "name": "Puliebadze Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Nagaland"
@@ -6037,7 +6013,7 @@
   },
   {
     "id": "ws_purna_wls",
-    "name": "Purna WLS",
+    "name": "Purna Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -6049,7 +6025,7 @@
   },
   {
     "id": "ws_pushpagiri_wls",
-    "name": "Pushpagiri WLS",
+    "name": "Pushpagiri Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -6061,7 +6037,7 @@
   },
   {
     "id": "ws_radhanagari_wls",
-    "name": "Radhanagari WLS",
+    "name": "Radhanagari Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -6073,7 +6049,7 @@
   },
   {
     "id": "ws_raiganj_wls",
-    "name": "Raiganj WLS",
+    "name": "Raiganj Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -6085,7 +6061,7 @@
   },
   {
     "id": "ws_rajparian_daksum",
-    "name": "Rajparian (Daksum)",
+    "name": "Rajparian (Daksum) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -6097,7 +6073,7 @@
   },
   {
     "id": "ws_rakchham_chitkul_sangla_valley",
-    "name": "Rakchham Chitkul (Sangla Valley)",
+    "name": "Rakchham Chitkul (Sangla Valley) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -6109,7 +6085,7 @@
   },
   {
     "id": "ws_ralamandal_wls",
-    "name": "Ralamandal WLS",
+    "name": "Ralamandal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -6121,7 +6097,7 @@
   },
   {
     "id": "ws_ramadevara_betta_vulture_wls",
-    "name": "Ramadevara Betta Vulture WLS",
+    "name": "Ramadevara Betta Vulture Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -6133,7 +6109,7 @@
   },
   {
     "id": "ws_ramgarh_vishdhari_wls",
-    "name": "Ramgarh Vishdhari WLS",
+    "name": "Ramgarh Vishdhari Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -6145,7 +6121,7 @@
   },
   {
     "id": "ws_ramnabagan_wls",
-    "name": "Ramnabagan WLS",
+    "name": "Ramnabagan Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -6157,7 +6133,7 @@
   },
   {
     "id": "ws_ramnagar_rakha_wls",
-    "name": "Ramnagar Rakha WLS",
+    "name": "Ramnagar Rakha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -6169,7 +6145,7 @@
   },
   {
     "id": "ws_rampura_vidi_wls",
-    "name": "Rampura Vidi WLS",
+    "name": "Rampura Vidi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -6181,7 +6157,7 @@
   },
   {
     "id": "ws_ramsagar_wls",
-    "name": "Ramsagar WLS",
+    "name": "Ramsagar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -6193,7 +6169,7 @@
   },
   {
     "id": "ws_ranebennur_black_buck",
-    "name": "Ranebennur Black Buck",
+    "name": "Ranebennur Blackbuck Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -6205,7 +6181,7 @@
   },
   {
     "id": "ws_ranganathittu_bird",
-    "name": "Ranganathittu Bird",
+    "name": "Ranganathittu Bird Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -6217,7 +6193,7 @@
   },
   {
     "id": "ws_rangapahar_wls",
-    "name": "Rangapahar WLS",
+    "name": "Rangapahar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Nagaland"
@@ -6229,7 +6205,7 @@
   },
   {
     "id": "ws_rangayyanadurga_four_horned_antelope",
-    "name": "Rangayyanadurga Four-horned antelope",
+    "name": "Rangayyanadurga Four-horned Antelope Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -6241,7 +6217,7 @@
   },
   {
     "id": "ws_ranger_island_wls",
-    "name": "Ranger Island WLS",
+    "name": "Ranger Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6253,7 +6229,7 @@
   },
   {
     "id": "ws_ranipur_wls",
-    "name": "Ranipur WLS",
+    "name": "Ranipur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -6265,7 +6241,7 @@
   },
   {
     "id": "ws_ratanmahal_sloth_bear",
-    "name": "Ratanmahal Sloth Bear",
+    "name": "Ratanmahal Sloth Bear Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -6277,7 +6253,7 @@
   },
   {
     "id": "ws_ratapani_wls",
-    "name": "Ratapani WLS",
+    "name": "Ratapani Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -6289,7 +6265,7 @@
   },
   {
     "id": "ws_reef_island_wls",
-    "name": "Reef Island WLS",
+    "name": "Reef Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6301,7 +6277,7 @@
   },
   {
     "id": "ws_renukaji_wls",
-    "name": "Renukaji WLS",
+    "name": "Renukaji Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -6313,7 +6289,7 @@
   },
   {
     "id": "ws_rollapadu_wls",
-    "name": "Rollapadu WLS",
+    "name": "Rollapadu Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -6325,7 +6301,7 @@
   },
   {
     "id": "ws_roper_island_wls",
-    "name": "Roper Island WLS",
+    "name": "Roper Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6337,7 +6313,7 @@
   },
   {
     "id": "ws_ross_island_wls",
-    "name": "Ross Island WLS",
+    "name": "Ross Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6349,7 +6325,7 @@
   },
   {
     "id": "ws_rowa_wls",
-    "name": "Rowa WLS",
+    "name": "Rowa Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tripura"
@@ -6361,7 +6337,7 @@
   },
   {
     "id": "ws_rowe_island_wls",
-    "name": "Rowe Island WLS",
+    "name": "Rowe Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6373,7 +6349,7 @@
   },
   {
     "id": "ws_rupi_bhaba_wls",
-    "name": "Rupi Bhaba WLS",
+    "name": "Rupi Bhaba Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -6385,7 +6361,7 @@
   },
   {
     "id": "ws_sagareshwar_wls",
-    "name": "Sagareshwar WLS",
+    "name": "Sagareshwar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -6397,7 +6373,7 @@
   },
   {
     "id": "ws_sailana_wls",
-    "name": "Sailana WLS",
+    "name": "Sailana Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -6409,7 +6385,7 @@
   },
   {
     "id": "ws_sainj_wls",
-    "name": "Sainj WLS",
+    "name": "Sainj Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -6421,7 +6397,7 @@
   },
   {
     "id": "ws_sajjangarh_wls",
-    "name": "Sajjangarh WLS",
+    "name": "Sajjangarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -6433,7 +6409,7 @@
   },
   {
     "id": "ws_sajnakhali_wls",
-    "name": "Sajnakhali WLS",
+    "name": "Sajnakhali Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -6445,7 +6421,7 @@
   },
   {
     "id": "ws_sakkarakottai_bird_wls",
-    "name": "Sakkarakottai Bird WLS",
+    "name": "Sakkarakottai Bird Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -6457,7 +6433,7 @@
   },
   {
     "id": "ws_saman_bird",
-    "name": "Saman Bird",
+    "name": "Saman Bird Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -6469,7 +6445,7 @@
   },
   {
     "id": "ws_samaspur_bird",
-    "name": "Samaspur Bird",
+    "name": "Samaspur Bird Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -6481,7 +6457,7 @@
   },
   {
     "id": "ws_sandi_bird",
-    "name": "Sandi Bird",
+    "name": "Sandi Bird Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -6493,7 +6469,7 @@
   },
   {
     "id": "ws_sandy_island_wls",
-    "name": "Sandy Island WLS",
+    "name": "Sandy Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6505,7 +6481,7 @@
   },
   {
     "id": "ws_sanjay_dubri_wls",
-    "name": "Sanjay Dubri WLS",
+    "name": "Sanjay Dubri Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -6517,7 +6493,7 @@
   },
   {
     "id": "ws_sardarpur_wls",
-    "name": "Sardarpur WLS",
+    "name": "Sardarpur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -6529,7 +6505,7 @@
   },
   {
     "id": "ws_sariska_wls",
-    "name": "Sariska WLS",
+    "name": "Sariska Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -6541,7 +6517,7 @@
   },
   {
     "id": "ws_sathyamangalam_wls",
-    "name": "Sathyamangalam WLS",
+    "name": "Sathyamangalam Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -6553,7 +6529,7 @@
   },
   {
     "id": "ws_satkosia_gorge_wls",
-    "name": "Satkosia Gorge WLS",
+    "name": "Satkosia Gorge Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -6565,7 +6541,7 @@
   },
   {
     "id": "ws_sawai_man_singh_wls",
-    "name": "Sawai Man Singh WLS",
+    "name": "Sawai Man Singh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -6577,7 +6553,7 @@
   },
   {
     "id": "ws_sawaimadhopur_wls",
-    "name": "Sawaimadhopur WLS",
+    "name": "Sawaimadhopur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -6589,7 +6565,7 @@
   },
   {
     "id": "ws_sea_serpent_island_wls",
-    "name": "Sea Serpent Island WLS",
+    "name": "Sea Serpent Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6601,7 +6577,7 @@
   },
   {
     "id": "ws_sechu_tuan_nala_wls",
-    "name": "Sechu Tuan Nala WLS",
+    "name": "Sechu Tuan Nala Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -6613,7 +6589,7 @@
   },
   {
     "id": "ws_semarsot_wls",
-    "name": "Semarsot WLS",
+    "name": "Semarsot Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -6625,7 +6601,7 @@
   },
   {
     "id": "ws_senchal_wls",
-    "name": "Senchal WLS",
+    "name": "Senchal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -6637,7 +6613,7 @@
   },
   {
     "id": "ws_sepahijala_wls",
-    "name": "Sepahijala WLS",
+    "name": "Sepahijala Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tripura"
@@ -6649,7 +6625,7 @@
   },
   {
     "id": "ws_sessa_orchid_wls",
-    "name": "Sessa Orchid WLS",
+    "name": "Sessa Orchid Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -6661,7 +6637,7 @@
   },
   {
     "id": "ws_sharavathi_valley_ltm_wls",
-    "name": "Sharavathi Valley LTM WLS",
+    "name": "Sharavathi Valley LTM Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -6673,7 +6649,7 @@
   },
   {
     "id": "ws_shark_island_wls",
-    "name": "Shark Island WLS",
+    "name": "Shark Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6685,7 +6661,7 @@
   },
   {
     "id": "ws_shearme_island_wls",
-    "name": "Shearme Island WLS",
+    "name": "Shearme Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6709,7 +6685,7 @@
   },
   {
     "id": "ws_shendurney_wls",
-    "name": "Shendurney WLS",
+    "name": "Shendurney Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -6721,7 +6697,7 @@
   },
   {
     "id": "ws_shergarh_wls",
-    "name": "Shergarh WLS",
+    "name": "Shergarh Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -6733,7 +6709,7 @@
   },
   {
     "id": "ws_shettihalli_wls",
-    "name": "Shettihalli WLS",
+    "name": "Shettihalli Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -6745,7 +6721,7 @@
   },
   {
     "id": "ws_shikari_devi_wls",
-    "name": "Shikari Devi WLS",
+    "name": "Shikari Devi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -6757,7 +6733,7 @@
   },
   {
     "id": "ws_shilli_wls",
-    "name": "Shilli WLS",
+    "name": "Shilli Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -6769,7 +6745,7 @@
   },
   {
     "id": "ws_shimla_water_catchment_wls",
-    "name": "Shimla Water Catchment WLS",
+    "name": "Shimla Water Catchment Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -6781,7 +6757,7 @@
   },
   {
     "id": "ws_shingba_rhododendron_wls",
-    "name": "Shingba (Rhododendron) WLS",
+    "name": "Shingba (Rhododendron) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Sikkim"
@@ -6793,7 +6769,7 @@
   },
   {
     "id": "ws_shoolpaneswar_dhumkhal_wls",
-    "name": "Shoolpaneswar (Dhumkhal) WLS",
+    "name": "Shoolpaneswar (Dhumkhal) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -6805,7 +6781,7 @@
   },
   {
     "id": "ws_shri_naina_devi_wls",
-    "name": "Shri Naina Devi WLS",
+    "name": "Shri Naina Devi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -6817,7 +6793,7 @@
   },
   {
     "id": "ws_siju_wls",
-    "name": "Siju WLS",
+    "name": "Siju Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Meghalaya"
@@ -6829,7 +6805,7 @@
   },
   {
     "id": "ws_simlipal_wls",
-    "name": "Simlipal WLS",
+    "name": "Simlipal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -6841,7 +6817,7 @@
   },
   {
     "id": "ws_singhori_wls",
-    "name": "Singhori WLS",
+    "name": "Singhori Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -6853,7 +6829,7 @@
   },
   {
     "id": "ws_singphan_national_park",
-    "name": "Singphan National Park",
+    "name": "Singphan Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Nagaland"
@@ -6865,7 +6841,7 @@
   },
   {
     "id": "ws_sir_hugh_rose_island_wls",
-    "name": "Sir Hugh Rose Island WLS",
+    "name": "Sir Hugh Rose Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6877,7 +6853,7 @@
   },
   {
     "id": "ws_sister_island_wls",
-    "name": "Sister Island WLS",
+    "name": "Sister Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6889,7 +6865,7 @@
   },
   {
     "id": "ws_sitamata_wls",
-    "name": "Sitamata WLS",
+    "name": "Sitamata Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -6901,7 +6877,7 @@
   },
   {
     "id": "ws_sitanadi_wls",
-    "name": "Sitanadi WLS",
+    "name": "Sitanadi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -6913,7 +6889,7 @@
   },
   {
     "id": "ws_snake_island_i_wls",
-    "name": "Snake Island-I WLS",
+    "name": "Snake Island-I Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6925,7 +6901,7 @@
   },
   {
     "id": "ws_snake_island_ii_wls",
-    "name": "Snake Island-II WLS",
+    "name": "Snake Island-II Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -6937,7 +6913,7 @@
   },
   {
     "id": "ws_sohagibarwa_wls",
-    "name": "Sohagibarwa WLS",
+    "name": "Sohagibarwa Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -6949,7 +6925,7 @@
   },
   {
     "id": "ws_sohelwa_wls",
-    "name": "Sohelwa WLS",
+    "name": "Sohelwa Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -6961,7 +6937,7 @@
   },
   {
     "id": "ws_someshwara_wls",
-    "name": "Someshwara WLS",
+    "name": "Someshwara Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -6973,7 +6949,7 @@
   },
   {
     "id": "ws_son_gharial_wls",
-    "name": "Son Gharial WLS",
+    "name": "Son Gharial Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -6985,7 +6961,7 @@
   },
   {
     "id": "ws_sonai_rupai_wls",
-    "name": "Sonai-Rupai WLS",
+    "name": "Sonai-Rupai Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Assam"
@@ -6997,7 +6973,7 @@
   },
   {
     "id": "ws_sonanadi_wls",
-    "name": "Sonanadi WLS",
+    "name": "Sonanadi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttarakhand"
@@ -7009,7 +6985,7 @@
   },
   {
     "id": "ws_south_brother_island_wls",
-    "name": "South Brother Island WLS",
+    "name": "South Brother Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7021,7 +6997,7 @@
   },
   {
     "id": "ws_south_reef_island_wls",
-    "name": "South Reef Island WLS",
+    "name": "South Reef Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7033,7 +7009,7 @@
   },
   {
     "id": "ws_south_sentinel_island_wls",
-    "name": "South Sentinel Island WLS",
+    "name": "South Sentinel Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7045,7 +7021,7 @@
   },
   {
     "id": "ws_spike_island_i_wls",
-    "name": "Spike Island-I WLS",
+    "name": "Spike Island-I Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7057,7 +7033,7 @@
   },
   {
     "id": "ws_spike_island_ii_wls",
-    "name": "Spike Island-II WLS",
+    "name": "Spike Island-II Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7069,7 +7045,7 @@
   },
   {
     "id": "ws_sri_lankamalleswaram_wls",
-    "name": "Sri Lankamalleswaram WLS",
+    "name": "Sri Lankamalleswaram Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -7081,7 +7057,7 @@
   },
   {
     "id": "ws_sri_penusila_narasimha_wls",
-    "name": "Sri Penusila Narasimha WLS",
+    "name": "Sri Penusila Narasimha Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -7093,7 +7069,7 @@
   },
   {
     "id": "ws_sri_venkateswara_wls",
-    "name": "Sri Venkateswara WLS",
+    "name": "Sri Venkateswara Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andhra Pradesh"
@@ -7105,7 +7081,7 @@
   },
   {
     "id": "ws_srivilliputhur_giant_squirrel_wls",
-    "name": "Srivilliputhur (Giant Squirrel) WLS",
+    "name": "Srivilliputhur (Giant Squirrel) Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -7117,7 +7093,7 @@
   },
   {
     "id": "ws_stoat_island_wls",
-    "name": "Stoat Island WLS",
+    "name": "Stoat Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7129,7 +7105,7 @@
   },
   {
     "id": "ws_sudha_gad_fort",
-    "name": "Sudha Gad Fort",
+    "name": "Sudhagad Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -7153,7 +7129,7 @@
   },
   {
     "id": "ws_sunabeda_wls",
-    "name": "Sunabeda WLS",
+    "name": "Sunabeda Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Odisha"
@@ -7165,7 +7141,7 @@
   },
   {
     "id": "ws_sur_sarovar_bird",
-    "name": "Sur Sarovar Bird",
+    "name": "Sur Sarovar Bird Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -7177,7 +7153,7 @@
   },
   {
     "id": "ws_surat_island_wls",
-    "name": "Surat Island WLS",
+    "name": "Surat Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7189,7 +7165,7 @@
   },
   {
     "id": "ws_surha_tal_wls",
-    "name": "Surha Tal WLS",
+    "name": "Surha Tal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -7201,7 +7177,7 @@
   },
   {
     "id": "ws_surinsar_mansar_wls",
-    "name": "Surinsar Mansar WLS",
+    "name": "Surinsar Mansar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -7213,7 +7189,7 @@
   },
   {
     "id": "ws_swamp_island_wls",
-    "name": "Swamp Island WLS",
+    "name": "Swamp Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7225,7 +7201,7 @@
   },
   {
     "id": "ws_table_delgarno_island_wls",
-    "name": "Table (Delgarno) Island WLS",
+    "name": "Table (Delgarno) Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7237,7 +7213,7 @@
   },
   {
     "id": "ws_table_excelsior_island_wls",
-    "name": "Table (excelsior) Island WLS",
+    "name": "Table (excelsior) Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7249,7 +7225,7 @@
   },
   {
     "id": "ws_tadgarh_raoli_wls",
-    "name": "Tadgarh Raoli WLS",
+    "name": "Tadgarh Raoli Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -7261,7 +7237,7 @@
   },
   {
     "id": "ws_takhni_rehampur_wls",
-    "name": "Takhni-Rehampur WLS",
+    "name": "Takhni-Rehampur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Punjab"
@@ -7273,7 +7249,7 @@
   },
   {
     "id": "ws_tal_chhapper_wls",
-    "name": "Tal Chhapper WLS",
+    "name": "Tal Chhapper Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -7285,7 +7261,7 @@
   },
   {
     "id": "ws_talabaicha_island_wls",
-    "name": "Talabaicha Island WLS",
+    "name": "Talabaicha Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7297,7 +7273,7 @@
   },
   {
     "id": "ws_talakaveri_wls",
-    "name": "Talakaveri WLS",
+    "name": "Talakaveri Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -7309,7 +7285,7 @@
   },
   {
     "id": "ws_tale_valley_wls",
-    "name": "Tale Valley WLS",
+    "name": "Tale Valley Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -7321,7 +7297,7 @@
   },
   {
     "id": "ws_talra_wls",
-    "name": "Talra WLS",
+    "name": "Talra Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -7333,7 +7309,7 @@
   },
   {
     "id": "ws_tamhini_wildlife_sanctury",
-    "name": "Tamhini Wildlife Sanctury",
+    "name": "Tamhini Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -7345,7 +7321,7 @@
   },
   {
     "id": "ws_tamorpingla_wls",
-    "name": "Tamorpingla WLS",
+    "name": "Tamorpingla Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -7357,7 +7333,7 @@
   },
   {
     "id": "ws_tansa_wls",
-    "name": "Tansa WLS",
+    "name": "Tansa Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -7369,7 +7345,7 @@
   },
   {
     "id": "ws_tawi_wls",
-    "name": "Tawi WLS",
+    "name": "Tawi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Mizoram"
@@ -7381,7 +7357,7 @@
   },
   {
     "id": "ws_temple_island_wls",
-    "name": "Temple Island WLS",
+    "name": "Temple Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7405,7 +7381,7 @@
   },
   {
     "id": "ws_thattekad_bird",
-    "name": "Thattekad Bird",
+    "name": "Thattekad Bird Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -7417,7 +7393,7 @@
   },
   {
     "id": "ws_theerthangal_bird_wls",
-    "name": "Theerthangal Bird WLS",
+    "name": "Theerthangal Bird Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -7429,7 +7405,7 @@
   },
   {
     "id": "ws_thol_lake_wls",
-    "name": "Thol Lake WLS",
+    "name": "Thol Lake Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -7441,7 +7417,7 @@
   },
   {
     "id": "ws_thorangtlang_wls",
-    "name": "Thorangtlang WLS",
+    "name": "Thorangtlang Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Mizoram"
@@ -7453,7 +7429,7 @@
   },
   {
     "id": "ws_tilongchang_island_wls",
-    "name": "Tilongchang Island WLS",
+    "name": "Tilongchang Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7465,7 +7441,7 @@
   },
   {
     "id": "ws_tipeshwar_wls",
-    "name": "Tipeshwar WLS",
+    "name": "Tipeshwar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -7477,7 +7453,7 @@
   },
   {
     "id": "ws_tirthan_wls",
-    "name": "Tirthan WLS",
+    "name": "Tirthan Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -7489,7 +7465,7 @@
   },
   {
     "id": "ws_tokalo_wls",
-    "name": "Tokalo WLS",
+    "name": "Tokalo Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Mizoram"
@@ -7501,7 +7477,7 @@
   },
   {
     "id": "ws_topchanchi_wls",
-    "name": "Topchanchi WLS",
+    "name": "Topchanchi Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -7513,7 +7489,7 @@
   },
   {
     "id": "ws_tree_island_wls",
-    "name": "Tree Island WLS",
+    "name": "Tree Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7525,7 +7501,7 @@
   },
   {
     "id": "ws_trikuta_wls",
-    "name": "Trikuta WLS",
+    "name": "Trikuta Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Jammu & Kashmir"
@@ -7537,7 +7513,7 @@
   },
   {
     "id": "ws_trilby_island_wls",
-    "name": "Trilby Island WLS",
+    "name": "Trilby Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7549,7 +7525,7 @@
   },
   {
     "id": "ws_trishna_wls",
-    "name": "Trishna WLS",
+    "name": "Trishna Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tripura"
@@ -7561,7 +7537,7 @@
   },
   {
     "id": "ws_tuft_island_wls",
-    "name": "Tuft Island WLS",
+    "name": "Tuft Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7573,7 +7549,7 @@
   },
   {
     "id": "ws_tundah_wls",
-    "name": "Tundah WLS",
+    "name": "Tundah Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Himachal Pradesh"
@@ -7585,7 +7561,7 @@
   },
   {
     "id": "ws_tungareshwar_wls",
-    "name": "Tungareshwar WLS",
+    "name": "Tungareshwar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -7597,7 +7573,7 @@
   },
   {
     "id": "ws_turtle_islands_wls",
-    "name": "Turtle Islands WLS",
+    "name": "Turtle Islands Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7609,7 +7585,7 @@
   },
   {
     "id": "ws_turtle_wls",
-    "name": "Turtle WLS",
+    "name": "Turtle Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -7621,7 +7597,7 @@
   },
   {
     "id": "ws_udanti_wild_buffalo",
-    "name": "Udanti Wild Buffalo",
+    "name": "Udanti Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Chhattisgarh"
@@ -7633,7 +7609,7 @@
   },
   {
     "id": "ws_udayamarthandapuram_lake_wls",
-    "name": "Udayamarthandapuram Lake WLS",
+    "name": "Udayamarthandapuram Lake Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -7645,7 +7621,7 @@
   },
   {
     "id": "ws_udaypur_wls",
-    "name": "Udaypur WLS",
+    "name": "Udaypur Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -7657,7 +7633,7 @@
   },
   {
     "id": "ws_udhwa_lake_bird",
-    "name": "Udhwa Lake Bird",
+    "name": "Udhwa Lake Bird Sanctuary",
     "category": "wls",
     "state": [
       "Jharkhand"
@@ -7669,7 +7645,7 @@
   },
   {
     "id": "ws_vaduvoor_bird",
-    "name": "Vaduvoor Bird",
+    "name": "Vaduvoor Bird Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -7681,7 +7657,7 @@
   },
   {
     "id": "ws_valmiki_wls",
-    "name": "Valmiki WLS",
+    "name": "Valmiki Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -7693,7 +7669,7 @@
   },
   {
     "id": "ws_van_vihar_wls",
-    "name": "Van Vihar WLS",
+    "name": "Van Vihar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Rajasthan"
@@ -7705,7 +7681,7 @@
   },
   {
     "id": "ws_vedanthangal_lake_bird",
-    "name": "Vedanthangal Lake Bird",
+    "name": "Vedanthangal Bird Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -7717,7 +7693,7 @@
   },
   {
     "id": "ws_veerangna_durgawati_wls",
-    "name": "Veerangna Durgawati WLS",
+    "name": "Veerangna Durgawati Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Madhya Pradesh"
@@ -7729,7 +7705,7 @@
   },
   {
     "id": "ws_vellanadu_blackbuck",
-    "name": "Vellanadu Blackbuck",
+    "name": "Vellanadu Blackbuck Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -7741,7 +7717,7 @@
   },
   {
     "id": "ws_vellode_bird_wls",
-    "name": "Vellode Bird WLS",
+    "name": "Vellode Bird Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -7753,7 +7729,7 @@
   },
   {
     "id": "ws_vettangudi_bird",
-    "name": "Vettangudi Bird",
+    "name": "Vettangudi Bird Sanctuary",
     "category": "wls",
     "state": [
       "Tamil Nadu"
@@ -7765,7 +7741,7 @@
   },
   {
     "id": "ws_vijai_sagar_wls",
-    "name": "Vijai Sagar WLS",
+    "name": "Vijai Sagar Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Uttar Pradesh"
@@ -7777,7 +7753,7 @@
   },
   {
     "id": "ws_vikramshila_gangetic_dolphin_wls",
-    "name": "Vikramshila Gangetic Dolphin WLS",
+    "name": "Vikramshila Gangetic Dolphin Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Bihar"
@@ -7789,7 +7765,7 @@
   },
   {
     "id": "ws_wan_wls",
-    "name": "Wan WLS",
+    "name": "Wan Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -7801,7 +7777,7 @@
   },
   {
     "id": "ws_wayanad_wls",
-    "name": "Wayanad WLS",
+    "name": "Wayanad Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Kerala"
@@ -7813,7 +7789,7 @@
   },
   {
     "id": "ws_west_island_wls",
-    "name": "West Island WLS",
+    "name": "West Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7825,7 +7801,7 @@
   },
   {
     "id": "ws_west_sunderbans_wls",
-    "name": "West Sunderbans WLS",
+    "name": "West Sunderbans Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "West Bengal"
@@ -7837,7 +7813,7 @@
   },
   {
     "id": "ws_wharf_island_wls",
-    "name": "Wharf Island WLS",
+    "name": "Wharf Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7849,7 +7825,7 @@
   },
   {
     "id": "ws_white_cliff_island_wls",
-    "name": "White Cliff Island WLS",
+    "name": "White Cliff Island Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Andaman & Nicobar Islands"
@@ -7861,7 +7837,7 @@
   },
   {
     "id": "ws_wild_ass_wls",
-    "name": "Wild Ass WLS",
+    "name": "Wild Ass Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Gujarat"
@@ -7873,7 +7849,7 @@
   },
   {
     "id": "ws_yangoupokpi_lokchao_wls",
-    "name": "Yangoupokpi-Lokchao WLS",
+    "name": "Yangoupokpi-Lokchao Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Manipur"
@@ -7885,7 +7861,7 @@
   },
   {
     "id": "ws_yawal_wls",
-    "name": "Yawal WLS",
+    "name": "Yawal Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -7897,7 +7873,7 @@
   },
   {
     "id": "ws_yedahalli_chinkara_wildlife_sanctury",
-    "name": "Yedahalli Chinkara Wildlife Sanctury",
+    "name": "Yadahalli Chinkara Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Karnataka"
@@ -7909,7 +7885,7 @@
   },
   {
     "id": "ws_yedsi_ramlinghat_wls",
-    "name": "Yedsi Ramlinghat WLS",
+    "name": "Yedsi Ramlinghat Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -7921,7 +7897,7 @@
   },
   {
     "id": "ws_yordi_rabe_supse",
-    "name": "Yordi-Rabe Supse",
+    "name": "Yordi-Rabe Supse Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Arunachal Pradesh"
@@ -7933,7 +7909,7 @@
   },
   {
     "id": "ws_zeilad_wls",
-    "name": "Zeilad WLS",
+    "name": "Zeilad Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Manipur"
@@ -7945,7 +7921,7 @@
   },
   {
     "id": "ws_kalsubai_wls",
-    "name": "kalsubai WLS",
+    "name": "kalsubai Wildlife Sanctuary",
     "category": "wls",
     "state": [
       "Maharashtra"
@@ -7957,7 +7933,7 @@
   },
   {
     "id": "tr_achanakmar",
-    "name": "Achanakmar",
+    "name": "Achanakmar Tiger Reserve",
     "category": "tr",
     "state": [
       "Chhattisgarh"
@@ -7969,7 +7945,7 @@
   },
   {
     "id": "tr_amrabad",
-    "name": "Amrabad",
+    "name": "Amrabad Tiger Reserve",
     "category": "tr",
     "state": [
       "Telangana"
@@ -7981,7 +7957,7 @@
   },
   {
     "id": "tr_anamalai",
-    "name": "Anamalai",
+    "name": "Anamalai Tiger Reserve",
     "category": "tr",
     "state": [
       "Tamil Nadu"
@@ -7993,7 +7969,7 @@
   },
   {
     "id": "tr_bandhavgarh",
-    "name": "Bandhavgarh",
+    "name": "Bandhavgarh Tiger Reserve",
     "category": "tr",
     "state": [
       "Madhya Pradesh"
@@ -8005,7 +7981,7 @@
   },
   {
     "id": "tr_bandipur",
-    "name": "Bandipur",
+    "name": "Bandipur Tiger Reserve",
     "category": "tr",
     "state": [
       "Karnataka"
@@ -8017,7 +7993,7 @@
   },
   {
     "id": "tr_bhadra",
-    "name": "Bhadra",
+    "name": "Bhadra Tiger Reserve",
     "category": "tr",
     "state": [
       "Karnataka"
@@ -8029,7 +8005,7 @@
   },
   {
     "id": "tr_biligiri_ranganatha_temple",
-    "name": "Biligiri Ranganatha Temple",
+    "name": "Biligiri Ranganatha Temple Tiger Reserve",
     "category": "tr",
     "state": [
       "Karnataka"
@@ -8041,7 +8017,7 @@
   },
   {
     "id": "tr_bor",
-    "name": "Bor",
+    "name": "Bor Tiger Reserve",
     "category": "tr",
     "state": [
       "Maharashtra"
@@ -8053,7 +8029,7 @@
   },
   {
     "id": "tr_buxa",
-    "name": "Buxa",
+    "name": "Buxa Tiger Reserve",
     "category": "tr",
     "state": [
       "West Bengal"
@@ -8065,7 +8041,7 @@
   },
   {
     "id": "tr_corbett",
-    "name": "Corbett",
+    "name": "Corbett Tiger Reserve",
     "category": "tr",
     "state": [
       "Uttarakhand"
@@ -8077,7 +8053,7 @@
   },
   {
     "id": "tr_dampa",
-    "name": "Dampa",
+    "name": "Dampa Tiger Reserve",
     "category": "tr",
     "state": [
       "Mizoram"
@@ -8089,7 +8065,7 @@
   },
   {
     "id": "tr_dholpur_karauli",
-    "name": "Dholpur-Karauli",
+    "name": "Dholpur-Karauli Tiger Reserve",
     "category": "tr",
     "state": [
       "Rajasthan"
@@ -8101,7 +8077,7 @@
   },
   {
     "id": "tr_dudhwa",
-    "name": "Dudhwa",
+    "name": "Dudhwa Tiger Reserve",
     "category": "tr",
     "state": [
       "Uttar Pradesh"
@@ -8113,7 +8089,7 @@
   },
   {
     "id": "tr_guru_ghasidas_tamor_pingla",
-    "name": "Guru Ghasidas-Tamor Pingla",
+    "name": "Guru Ghasidas-Tamor Pingla Tiger Reserve",
     "category": "tr",
     "state": [
       "Chhattisgarh"
@@ -8125,7 +8101,7 @@
   },
   {
     "id": "tr_indravati",
-    "name": "Indravati",
+    "name": "Indravati Tiger Reserve",
     "category": "tr",
     "state": [
       "Chhattisgarh"
@@ -8137,7 +8113,7 @@
   },
   {
     "id": "tr_kalakad_mundanthurai",
-    "name": "Kalakad-Mundanthurai",
+    "name": "Kalakad-Mundanthurai Tiger Reserve",
     "category": "tr",
     "state": [
       "Tamil Nadu"
@@ -8149,7 +8125,7 @@
   },
   {
     "id": "tr_kali_anshi_dandeli",
-    "name": "Kali (Anshi-Dandeli)",
+    "name": "Kali (Anshi-Dandeli) Tiger Reserve",
     "category": "tr",
     "state": [
       "Karnataka"
@@ -8161,7 +8137,7 @@
   },
   {
     "id": "tr_kamlang",
-    "name": "Kamlang",
+    "name": "Kamlang Tiger Reserve",
     "category": "tr",
     "state": [
       "Arunachal Pradesh"
@@ -8173,7 +8149,7 @@
   },
   {
     "id": "tr_kanha",
-    "name": "Kanha",
+    "name": "Kanha Tiger Reserve",
     "category": "tr",
     "state": [
       "Madhya Pradesh"
@@ -8185,7 +8161,7 @@
   },
   {
     "id": "tr_kawal",
-    "name": "Kawal",
+    "name": "Kawal Tiger Reserve",
     "category": "tr",
     "state": [
       "Telangana"
@@ -8197,7 +8173,7 @@
   },
   {
     "id": "tr_kaziranga",
-    "name": "Kaziranga",
+    "name": "Kaziranga Tiger Reserve",
     "category": "tr",
     "state": [
       "Assam"
@@ -8209,7 +8185,7 @@
   },
   {
     "id": "tr_madhav",
-    "name": "Madhav",
+    "name": "Madhav Tiger Reserve",
     "category": "tr",
     "state": [
       "Madhya Pradesh"
@@ -8221,7 +8197,7 @@
   },
   {
     "id": "tr_manas",
-    "name": "Manas",
+    "name": "Manas Tiger Reserve",
     "category": "tr",
     "state": [
       "Assam"
@@ -8233,7 +8209,7 @@
   },
   {
     "id": "tr_melghat",
-    "name": "Melghat",
+    "name": "Melghat Tiger Reserve",
     "category": "tr",
     "state": [
       "Maharashtra"
@@ -8245,7 +8221,7 @@
   },
   {
     "id": "tr_mudumalai",
-    "name": "Mudumalai",
+    "name": "Mudumalai Tiger Reserve",
     "category": "tr",
     "state": [
       "Tamil Nadu"
@@ -8257,7 +8233,7 @@
   },
   {
     "id": "tr_mukundra_hills",
-    "name": "Mukundra Hills",
+    "name": "Mukundra Hills Tiger Reserve",
     "category": "tr",
     "state": [
       "Rajasthan"
@@ -8269,7 +8245,7 @@
   },
   {
     "id": "tr_nagarhole",
-    "name": "Nagarhole",
+    "name": "Nagarhole Tiger Reserve",
     "category": "tr",
     "state": [
       "Karnataka"
@@ -8281,7 +8257,7 @@
   },
   {
     "id": "tr_nagarjunasagar_srisailam",
-    "name": "Nagarjunasagar-Srisailam",
+    "name": "Nagarjunasagar-Srisailam Tiger Reserve",
     "category": "tr",
     "state": [
       "Andhra Pradesh"
@@ -8293,7 +8269,7 @@
   },
   {
     "id": "tr_namdapha",
-    "name": "Namdapha",
+    "name": "Namdapha Tiger Reserve",
     "category": "tr",
     "state": [
       "Arunachal Pradesh"
@@ -8305,7 +8281,7 @@
   },
   {
     "id": "tr_nameri",
-    "name": "Nameri",
+    "name": "Nameri Tiger Reserve",
     "category": "tr",
     "state": [
       "Assam"
@@ -8317,7 +8293,7 @@
   },
   {
     "id": "tr_nawegaon_nagzira",
-    "name": "Nawegaon-Nagzira",
+    "name": "Nawegaon-Nagzira Tiger Reserve",
     "category": "tr",
     "state": [
       "Maharashtra"
@@ -8329,7 +8305,7 @@
   },
   {
     "id": "tr_orang",
-    "name": "Orang",
+    "name": "Orang Tiger Reserve",
     "category": "tr",
     "state": [
       "Assam"
@@ -8341,7 +8317,7 @@
   },
   {
     "id": "tr_pakke",
-    "name": "Pakke",
+    "name": "Pakke Tiger Reserve",
     "category": "tr",
     "state": [
       "Arunachal Pradesh"
@@ -8353,7 +8329,7 @@
   },
   {
     "id": "tr_palamau",
-    "name": "Palamau",
+    "name": "Palamau Tiger Reserve",
     "category": "tr",
     "state": [
       "Jharkhand"
@@ -8365,7 +8341,7 @@
   },
   {
     "id": "tr_panna",
-    "name": "Panna",
+    "name": "Panna Tiger Reserve",
     "category": "tr",
     "state": [
       "Madhya Pradesh"
@@ -8377,7 +8353,7 @@
   },
   {
     "id": "tr_parambikulam",
-    "name": "Parambikulam",
+    "name": "Parambikulam Tiger Reserve",
     "category": "tr",
     "state": [
       "Kerala"
@@ -8389,7 +8365,7 @@
   },
   {
     "id": "tr_pench",
-    "name": "Pench",
+    "name": "Pench Tiger Reserve",
     "category": "tr",
     "state": [
       "Madhya Pradesh"
@@ -8401,7 +8377,7 @@
   },
   {
     "id": "tr_pench_maharashtra",
-    "name": "Pench (Maharashtra)",
+    "name": "Pench (Maharashtra) Tiger Reserve",
     "category": "tr",
     "state": [
       "Maharashtra"
@@ -8413,7 +8389,7 @@
   },
   {
     "id": "tr_periyar",
-    "name": "Periyar",
+    "name": "Periyar Tiger Reserve",
     "category": "tr",
     "state": [
       "Kerala"
@@ -8425,7 +8401,7 @@
   },
   {
     "id": "tr_pilibhit",
-    "name": "Pilibhit",
+    "name": "Pilibhit Tiger Reserve",
     "category": "tr",
     "state": [
       "Uttar Pradesh"
@@ -8437,7 +8413,7 @@
   },
   {
     "id": "tr_rajaji",
-    "name": "Rajaji",
+    "name": "Rajaji Tiger Reserve",
     "category": "tr",
     "state": [
       "Uttarakhand"
@@ -8449,7 +8425,7 @@
   },
   {
     "id": "tr_ramgarh_vishdhari",
-    "name": "Ramgarh Vishdhari",
+    "name": "Ramgarh Vishdhari Tiger Reserve",
     "category": "tr",
     "state": [
       "Rajasthan"
@@ -8461,7 +8437,7 @@
   },
   {
     "id": "tr_ranipur",
-    "name": "Ranipur",
+    "name": "Ranipur Tiger Reserve",
     "category": "tr",
     "state": [
       "Uttar Pradesh"
@@ -8473,7 +8449,7 @@
   },
   {
     "id": "tr_ranthambhore",
-    "name": "Ranthambhore",
+    "name": "Ranthambhore Tiger Reserve",
     "category": "tr",
     "state": [
       "Rajasthan"
@@ -8485,7 +8461,7 @@
   },
   {
     "id": "tr_ratapani",
-    "name": "Ratapani",
+    "name": "Ratapani Tiger Reserve",
     "category": "tr",
     "state": [
       "Madhya Pradesh"
@@ -8497,7 +8473,7 @@
   },
   {
     "id": "tr_sahyadri",
-    "name": "Sahyadri",
+    "name": "Sahyadri Tiger Reserve",
     "category": "tr",
     "state": [
       "Maharashtra"
@@ -8509,7 +8485,7 @@
   },
   {
     "id": "tr_sanjay_dubri",
-    "name": "Sanjay-Dubri",
+    "name": "Sanjay-Dubri Tiger Reserve",
     "category": "tr",
     "state": [
       "Madhya Pradesh"
@@ -8521,7 +8497,7 @@
   },
   {
     "id": "tr_sariska",
-    "name": "Sariska",
+    "name": "Sariska Tiger Reserve",
     "category": "tr",
     "state": [
       "Rajasthan"
@@ -8533,7 +8509,7 @@
   },
   {
     "id": "tr_sathyamangalam",
-    "name": "Sathyamangalam",
+    "name": "Sathyamangalam Tiger Reserve",
     "category": "tr",
     "state": [
       "Tamil Nadu"
@@ -8545,7 +8521,7 @@
   },
   {
     "id": "tr_satkosia",
-    "name": "Satkosia",
+    "name": "Satkosia Tiger Reserve",
     "category": "tr",
     "state": [
       "Odisha"
@@ -8557,7 +8533,7 @@
   },
   {
     "id": "tr_satpura",
-    "name": "Satpura",
+    "name": "Satpura Tiger Reserve",
     "category": "tr",
     "state": [
       "Madhya Pradesh"
@@ -8569,7 +8545,7 @@
   },
   {
     "id": "tr_similipal",
-    "name": "Similipal",
+    "name": "Similipal Tiger Reserve",
     "category": "tr",
     "state": [
       "Odisha"
@@ -8581,7 +8557,7 @@
   },
   {
     "id": "tr_srivilliputhur_megamalai",
-    "name": "Srivilliputhur-Megamalai",
+    "name": "Srivilliputhur-Megamalai Tiger Reserve",
     "category": "tr",
     "state": [
       "Tamil Nadu"
@@ -8593,7 +8569,7 @@
   },
   {
     "id": "tr_sundarbans",
-    "name": "Sundarbans",
+    "name": "Sundarbans Tiger Reserve",
     "category": "tr",
     "state": [
       "West Bengal"
@@ -8605,7 +8581,7 @@
   },
   {
     "id": "tr_tadoba_andhari",
-    "name": "Tadoba-Andhari",
+    "name": "Tadoba-Andhari Tiger Reserve",
     "category": "tr",
     "state": [
       "Maharashtra"
@@ -8617,7 +8593,7 @@
   },
   {
     "id": "tr_udanti_sitanadi",
-    "name": "Udanti-Sitanadi",
+    "name": "Udanti-Sitanadi Tiger Reserve",
     "category": "tr",
     "state": [
       "Chhattisgarh"
@@ -8629,7 +8605,7 @@
   },
   {
     "id": "tr_valmiki",
-    "name": "Valmiki",
+    "name": "Valmiki Tiger Reserve",
     "category": "tr",
     "state": [
       "Bihar"
@@ -8641,7 +8617,7 @@
   },
   {
     "id": "tr_veerangana_durgavati",
-    "name": "Veerangana Durgavati",
+    "name": "Veerangana Durgavati Tiger Reserve",
     "category": "tr",
     "state": [
       "Madhya Pradesh"
@@ -9245,7 +9221,7 @@
   },
   {
     "id": "rs_keoladeo_ghana_np",
-    "name": "Keoladeo Ghana NP",
+    "name": "Keoladeo Ghana National Park",
     "category": "ramsar",
     "state": [
       "Rajasthan"
