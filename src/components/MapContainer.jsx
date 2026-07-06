@@ -5,17 +5,21 @@ import { MAP_STYLE, MAP_CONFIG } from '../config.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_PATH } from './tigerMarkPath';
 import './MapContainer.css';
 
-// Guess marker: the tiger mark itself (no separate pin frame) -- its head
-// shape already tapers to a point at the chin, the same role the old
-// teardrop's tip played. That tip sits just above the shadow ellipse, and
-// anchor: 'bottom' (below) aligns the whole box's bottom edge to the guess
-// coordinate, same convention the teardrop used.
+// Guess marker: just the tiger head, nothing else. Its own shape tapers to
+// a point at the chin, the same role the old teardrop's tip played, and
+// anchor: 'bottom' aligns the box's bottom edge to the guess coordinate.
+//
+// The path data is fundamentally line-art (thin connected strokes), not a
+// solid silhouette with a few cutout holes -- fill-rule:nonzero fills the
+// whole enclosed shape solid, while fill-rule:evenodd renders only the thin
+// strokes themselves. So: red nonzero underneath for the solid dominant
+// fill, white evenodd on top for the thin outline/eyes/nose/stripe detail
+// lines -- two copies of the same TIGER_MARK_PATH, no separate outline
+// asset to hand-trace, no backing shape, no shadow.
 const GUESS_PIN_SVG = `
-  <svg width="32" height="40" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="16" cy="38" rx="7" ry="2" fill="#000000" opacity="0.22"/>
-    <svg x="0" y="0" width="32" height="37" viewBox="${TIGER_MARK_VIEWBOX}">
-      <path d="${TIGER_MARK_PATH}" fill="#EA4335" fill-rule="evenodd"/>
-    </svg>
+  <svg width="32" height="37" viewBox="${TIGER_MARK_VIEWBOX}" xmlns="http://www.w3.org/2000/svg">
+    <path d="${TIGER_MARK_PATH}" fill="#EA4335" fill-rule="nonzero"/>
+    <path d="${TIGER_MARK_PATH}" fill="#ffffff" fill-rule="evenodd"/>
   </svg>`;
 
 // @param mapRef: React.MutableRefObject<maplibregl.Map|null>
@@ -90,7 +94,7 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
       // Inline overrides in case .eg-guess-marker's CSS still sizes/colors
       // it as the old dot (e.g. a fixed small width/height + border-radius).
       el.style.width = '32px';
-      el.style.height = '40px';
+      el.style.height = '37px';
       el.style.background = 'transparent';
       markerRef.current = new maplibregl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([guess.lng, guess.lat])

@@ -155,9 +155,16 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
               ? `Your best: ${best.total.toLocaleString()} (${formatShortDate(best.date)})`
               : 'Your best: --'}
           </p>
-
-          <DailyRecap ref={dailyRecapRef} date={today} allSites={allSites} totalDist={todayEntry?.dist ?? null} />
         </>
+      )}
+
+      {/* Deliberately outside the !fetchError gate above -- the recap is
+          built entirely from local stats_daily + allSites (no network
+          call), so a flaky leaderboard fetch must not hide it. Today's
+          completed round has to stay visible on every Daily-tab open
+          regardless of server/connectivity state. */}
+      {!loading && todayEntry && (
+        <DailyRecap ref={dailyRecapRef} date={today} allSites={allSites} totalDist={todayEntry?.dist ?? null} />
       )}
 
       <div className="lb-actions">
