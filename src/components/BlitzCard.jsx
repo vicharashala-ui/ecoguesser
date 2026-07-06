@@ -21,7 +21,7 @@
 // badge below already names it ("Wrong -- it's in ...").
 
 import { useId, forwardRef } from 'react';
-import { CATEGORY_META } from '../config.js';
+import { CATEGORY_META, formatSiteName } from '../config.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './BottomCard.css';
 import './BlitzCard.css';
@@ -123,7 +123,7 @@ const BlitzCard = forwardRef(function BlitzCard({
           <div className="bc-pill-top">
             <span className="bc-icon" aria-hidden="true"><IconMark /></span>
             <span className="bc-pill-text">
-              <span id={titleId} className="bc-site-name">{site.name}</span>
+              <span id={titleId} className="bc-site-name">{formatSiteName(site)}</span>
             </span>
           </div>
 
@@ -170,7 +170,7 @@ const BlitzCard = forwardRef(function BlitzCard({
             <span className="bc-category-label">{meta.label.toUpperCase()}</span>
           </div>
 
-          <h2 id={titleId} className="bc-card-name">{site.name}</h2>
+          <h2 id={titleId} className="bc-card-name">{formatSiteName(site)}</h2>
 
           {(site.area_km2 != null || result.isCorrect) && (
             <div className="bc-meta-row">

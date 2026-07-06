@@ -27,7 +27,7 @@
 // request. It anchors right via margin-left:auto on that row.
 
 import { useId, forwardRef } from 'react';
-import { CATEGORY_META, SCORING, DAILY } from '../config';
+import { CATEGORY_META, SCORING, DAILY, formatSiteName } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './BottomCard.css';
 
@@ -190,7 +190,7 @@ const BottomCard = forwardRef(function BottomCard({
           <div className="bc-pill-top">
             <span className="bc-icon" aria-hidden="true"><IconMark /></span>
             <span className="bc-pill-text">
-              <span id={titleId} className="bc-site-name">{site.name}</span>
+              <span id={titleId} className="bc-site-name">{formatSiteName(site)}</span>
               {hintLevel >= 1 && (
                 <span className="bc-hint-state">{site.state.join(', ')}</span>
               )}
@@ -246,7 +246,7 @@ const BottomCard = forwardRef(function BottomCard({
             <span className="bc-category-label">{meta.label.toUpperCase()}</span>
           </div>
 
-          <h2 id={titleId} className="bc-card-name">{site.name}</h2>
+          <h2 id={titleId} className="bc-card-name">{formatSiteName(site)}</h2>
 
           <div className="bc-meta-row">
             <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {site.state.join(', ')}</span>

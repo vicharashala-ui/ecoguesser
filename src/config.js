@@ -197,6 +197,14 @@ export const CATEGORY_META = {
   ramsar: { label:'Ramsar Site',        color:'#0284c7' },
 };
 
+// Ramsar site names (e.g. "Chilika Lake") don't carry a category word the
+// way NP/WLS/TR/BR names do, so the guess panel and Daily Recap card both
+// append this suffix for that category only. Shared here so the two call
+// sites can't drift out of sync.
+export function formatSiteName(site) {
+  return site.category === 'ramsar' ? `${site.name} (Ramsar Site)` : site.name;
+}
+
 export const LS_KEYS = {
   UUID:        'ecoguesser_uuid',
   NAME:        'ecoguesser_name',

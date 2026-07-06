@@ -11,7 +11,7 @@
 import { forwardRef } from 'react';
 import { getDailySites } from '../game/daily.js';
 import { OUTLINE_VIEWBOX, INDIA_OUTLINE_PATH, INDIA_STATE_BORDERS_PATH, projectToOutline } from '../data/indiaOutline.js';
-import { CATEGORY_META, LS_KEYS } from '../config.js';
+import { CATEGORY_META, LS_KEYS, formatSiteName } from '../config.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath.js';
 import './DailyRecap.css';
 
@@ -99,7 +99,7 @@ const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist, t
                 style={{ background: CATEGORY_META[site.category].color }}
               />
               <span className="dr-site-text">
-                <span className="dr-site-name">{site.name}</span>
+                <span className="dr-site-name">{formatSiteName(site)}</span>
                 <span className="dr-site-state">{site.state.join(', ')}</span>
               </span>
             </li>
