@@ -16,7 +16,7 @@
 // Show Site Boundary renders as a small chip at the right edge of the
 // result row (distance + pts) rather than its own row, to save vertical space.
 
-import { useId, forwardRef } from 'react';
+import { useId, useState, useEffect, forwardRef } from 'react';
 import { CATEGORY_META, SCORING, DAILY } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './BottomCard.css';
@@ -115,6 +115,15 @@ function IconSkip({ size = 18 }) {
   );
 }
 
+function IconChevron({ size = 16, direction = 'down' }) {
+  const rotation = direction === 'up' ? 180 : 0;
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ transform: `rotate(${rotation}deg)` }}>
+      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // BottomCard
 // ---------------------------------------------------------------------------
@@ -168,6 +177,15 @@ const BottomCard = forwardRef(function BottomCard({
   // Daily round with hint penalties correctly does NOT celebrate a
   // boundary hit that got docked below 5000.
   const isPerfect = isRevealing && result && result.finalScore === SCORING.MAX_SCORE;
+
+  // Collapse toggle -- lets the player tuck the expanded reveal card down to
+  // just name + state so it doesn't block the map. Keyed off `result` (a new
+  // object every round) rather than a boolean so a fresh round always opens
+  // expanded, matching recordedResultRef's identity-check pattern elsewhere.
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    setCollapsed(false);
+  }, [result]);
 
   return (
     <div
@@ -232,93 +250,106 @@ const BottomCard = forwardRef(function BottomCard({
       )}
 
       {isRevealing && result && (
-        <div className="bc-card">
+        <div className={`bc-card${collapsed ? ' bc-card-collapsed' : ''}`}>
           <div className="bc-card-header">
             <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
             <span className="bc-category-label">{meta.label.toUpperCase()}</span>
+            <button
+              type="button"
+              className="bc-collapse-btn"
+              onClick={() => setCollapsed((c) => !c)}
+              aria-label={collapsed ? 'Expand details' : 'Collapse details'}
+              title={collapsed ? 'Expand' : 'Collapse'}
+            >
+              <IconChevron direction={collapsed ? 'up' : 'down'} />
+            </button>
           </div>
 
           <h2 id={titleId} className="bc-card-name">{site.name}</h2>
 
           <div className="bc-meta-row">
             <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {site.state.join(', ')}</span>
-            {site.year && (
+            {!collapsed && site.year && (
               <span className="bc-meta-item"><IconCalendar size={15} /> Est. {site.year}</span>
             )}
           </div>
 
-          {site.desc && <p className="bc-desc">{site.desc}</p>}
-
-          {site.species && (
-            <div className="bc-species">
-              <IconPaw size={15} /> Key species: {site.species}
-            </div>
-          )}
-
-          <hr className="bc-divider" />
-
-          <div className="bc-result-row">
-            <span className="bc-meta-item">
-              <IconPin size={15} />
-              {result.skipped || result.distanceKm == null
-                ? 'Skipped'
-                : `${Math.round(result.distanceKm).toLocaleString()} km away`}
-            </span>
-            <span className={`bc-meta-item bc-score ${isPerfect ? 'bc-score-perfect' : ''}`}>
-              <IconStar size={15} /> {result.finalScore.toLocaleString()} pts
-              {isPerfect && (
-                <span className="bc-celebrate" key={site.id} aria-hidden="true">
-                  <span className="bc-celebrate-label">Perfect!</span>
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <span key={i} className="bc-spark" style={{ '--i': i }} />
-                  ))}
-                </span>
-              )}
-            </span>
-
-            {site.hasBoundary && onShowBoundary && (
-              <button
-                type="button"
-                className="bc-boundary-btn-sm"
-                onClick={onShowBoundary}
-                aria-label="Show site boundary"
-                title="Show site boundary"
-              >
-                <IconFrame size={14} /> Boundary
-              </button>
-            )}
-          </div>
-
-          {isDaily && result.hintPenalty > 0 && (
-            <div className="bc-daily-line bc-penalty">
-              Hint penalty: -{result.hintPenalty.toLocaleString()}
-            </div>
-          )}
-          {isDaily && (
+          {!collapsed && (
             <>
-              <div className="bc-daily-line">
-                Round score: {result.finalScore.toLocaleString()} pts
+              {site.desc && <p className="bc-desc">{site.desc}</p>}
+
+              {site.species && (
+                <div className="bc-species">
+                  <IconPaw size={15} /> Key species: {site.species}
+                </div>
+              )}
+
+              <hr className="bc-divider" />
+
+              <div className="bc-result-row">
+                <span className="bc-meta-item">
+                  <IconPin size={15} />
+                  {result.skipped || result.distanceKm == null
+                    ? 'Skipped'
+                    : `${Math.round(result.distanceKm).toLocaleString()} km away`}
+                </span>
+                <span className={`bc-meta-item bc-score ${isPerfect ? 'bc-score-perfect' : ''}`}>
+                  <IconStar size={15} /> {result.finalScore.toLocaleString()} pts
+                  {isPerfect && (
+                    <span className="bc-celebrate" key={site.id} aria-hidden="true">
+                      <span className="bc-celebrate-label">Perfect!</span>
+                      {Array.from({ length: 8 }).map((_, i) => (
+                        <span key={i} className="bc-spark" style={{ '--i': i }} />
+                      ))}
+                    </span>
+                  )}
+                </span>
+
+                {site.hasBoundary && onShowBoundary && (
+                  <button
+                    type="button"
+                    className="bc-boundary-btn-sm"
+                    onClick={onShowBoundary}
+                    aria-label="Show site boundary"
+                    title="Show site boundary"
+                  >
+                    <IconFrame size={14} /> Boundary
+                  </button>
+                )}
               </div>
-              <div className="bc-daily-line">
-                Total: {(dailyTotal ?? 0).toLocaleString()} / {DAILY_MAX_TOTAL.toLocaleString()}
+
+              {isDaily && result.hintPenalty > 0 && (
+                <div className="bc-daily-line bc-penalty">
+                  Hint penalty: -{result.hintPenalty.toLocaleString()}
+                </div>
+              )}
+              {isDaily && (
+                <>
+                  <div className="bc-daily-line">
+                    Round score: {result.finalScore.toLocaleString()} pts
+                  </div>
+                  <div className="bc-daily-line">
+                    Total: {(dailyTotal ?? 0).toLocaleString()} / {DAILY_MAX_TOTAL.toLocaleString()}
+                  </div>
+                </>
+              )}
+
+              <div className="bc-actions">
+                <button
+                  type="button"
+                  className="bc-trivia-btn"
+                  disabled
+                  aria-label="Play Trivia - coming soon"
+                  title="Coming soon"
+                >
+                  Play Trivia
+                </button>
+                <button type="button" className="bc-next-btn" onClick={onNextSite}>
+                  {nextLabel}
+                </button>
               </div>
             </>
           )}
-
-          <div className="bc-actions">
-            <button
-              type="button"
-              className="bc-trivia-btn"
-              disabled
-              aria-label="Play Trivia - coming soon"
-              title="Coming soon"
-            >
-              Play Trivia
-            </button>
-            <button type="button" className="bc-next-btn" onClick={onNextSite}>
-              {nextLabel}
-            </button>
-          </div>
         </div>
       )}
     </div>

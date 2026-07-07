@@ -194,6 +194,10 @@
   gap: 4px;
 }
 
+.bc-card-collapsed {
+  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+}
+
 .bc-card-header {
   display: flex;
   align-items: center;
@@ -209,6 +213,26 @@
   font-weight: 800;
   letter-spacing: 0.06em;
   color: var(--eg-accent, #16a34a);
+}
+
+.bc-collapse-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.bc-collapse-btn:hover {
+  background: rgba(17, 24, 39, 0.06);
+  color: #374151;
 }
 
 .bc-card-name {
