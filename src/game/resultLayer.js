@@ -15,6 +15,7 @@
 
 import { LAYER_IDS, CATEGORY_META, MAP_CONFIG } from '../config.js';
 import { haversine } from './scoring.js';
+import { fetchBoundary } from './boundaryCache.js';
 
 const LINE_ANIMATION_MS = 600;
 const FALLBACK_COLOR = '#16a34a';
@@ -150,14 +151,7 @@ export async function showResult(map, guess, site, opts = {}) {
 
   // Kick off the boundary fetch immediately -- it runs in parallel with the
   // line/pin animation below (see the module-level boundaryPromise).
-  boundaryPromise = site.hasBoundary
-    ? fetch(`/boundaries/${site.id}.geojson`)
-        .then((r) => {
-          if (!r.ok) throw new Error('boundary fetch failed');
-          return r.json();
-        })
-        .catch(() => null)
-    : null;
+  boundaryPromise = fetchBoundary(site);
 
   const distanceKm =
     distanceKmOverride ?? haversine(guess.lat, guess.lng, site.centroid_lat, site.centroid_lng);

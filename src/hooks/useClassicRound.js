@@ -19,8 +19,10 @@
 // their events. Site pool filtering (category/region drawer) is the
 // caller's job -- pass the already-filtered pool in.
 
-import { useState, useEffect, useCallback } from 'react';
-import { haversine, calcScore, applyHintPenalty } from '../game/scoring.js';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { haversine, calcScore, applyHintPenalty, isPointInBoundary } from '../game/scoring.js';
+import { fetchBoundary } from '../game/boundaryCache.js';
+import { SCORING } from '../config.js';
 
 const MAX_HINTS = 2;
 
@@ -49,6 +51,13 @@ export function useClassicRound(sitePool) {
   const [hintLevel, setHintLevel] = useState(0);
   const [result, setResult] = useState(null);
 
+  // Boundary GeoJSON for the current site, prefetched the moment the site
+  // loads (READING/PLACING give plenty of time before Confirm). A plain
+  // ref, not state -- handleConfirm just reads whatever's landed so far;
+  // if the fetch hasn't resolved yet it falls back to distance scoring
+  // rather than blocking Confirm on a network request.
+  const boundaryRef = useRef(null);
+
   // LOADING -> pick a site -> READING. Re-runs whenever something puts us
   // back into LOADING (Next Site), or whenever the filtered pool changes
   // while we're already waiting on one (e.g. the drawer narrowed the pool
@@ -58,6 +67,8 @@ export function useClassicRound(sitePool) {
     if (!sitePool || sitePool.length === 0) return; // nothing to pick -- stay in LOADING
 
     const next = sitePool[Math.floor(Math.random() * sitePool.length)];
+    boundaryRef.current = null;
+    fetchBoundary(next).then((geo) => { boundaryRef.current = geo; });
     setSite(next);
     setGuess(null);
     setHintLevel(0);
@@ -83,7 +94,8 @@ export function useClassicRound(sitePool) {
     if (roundState !== 'PLACING' || !guess || !site) return; // Confirm is disabled in the UI until both hold
 
     const distanceKm = haversine(guess.lat, guess.lng, site.centroid_lat, site.centroid_lng);
-    const rawScore = calcScore(distanceKm);
+    const insideBoundary = isPointInBoundary(guess.lat, guess.lng, boundaryRef.current);
+    const rawScore = insideBoundary ? SCORING.MAX_SCORE : calcScore(distanceKm);
     // Classic callers always pass hintsUsed=0 into applyHintPenalty per
     // scoring.js's own spec -- hintLevel is still recorded on the result
     // below for stats, it just never reduces finalScore in this mode.

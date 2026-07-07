@@ -221,9 +221,15 @@
 .bc-meta-row,
 .bc-result-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
   margin-top: 2px;
+}
+
+.bc-result-row .bc-meta-item {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .bc-meta-item {
@@ -297,6 +303,7 @@
   height: 32px;
   padding: 0 14px;
   margin-left: auto; /* pushes the chip to the row's right edge */
+  flex-shrink: 0;
   border-radius: 999px;
   border: 1.5px solid var(--eg-accent, #16a34a);
   background: rgba(255, 255, 255, 0.6);

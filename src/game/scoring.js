@@ -24,6 +24,46 @@ export function calcScore(distKm) {
   return Math.round(SCORING.MAX_SCORE * Math.exp(-distKm / SCORING.DECAY_KM));
 }
 
+// Even-odd ray-casting test against a single ring. `ring`: [[lng,lat], ...].
+function pointInRing(lng, lat, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i];
+    const [xj, yj] = ring[j];
+    const crosses = yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
+    if (crosses) inside = !inside;
+  }
+  return inside;
+}
+
+// `rings`: [outerRing, ...holeRings]. A point counts only if it's inside the
+// outer ring and outside every hole.
+function pointInPolygon(lng, lat, rings) {
+  if (!pointInRing(lng, lat, rings[0])) return false;
+  return rings.slice(1).every((hole) => !pointInRing(lng, lat, hole));
+}
+
+/**
+ * Tests whether (lat, lng) falls inside a site's boundary GeoJSON. Handles
+ * Polygon and MultiPolygon (disjoint sites -- islands, marine parks split
+ * across coastline, etc.), each with any number of holes, across every
+ * feature in a FeatureCollection.
+ */
+export function isPointInBoundary(lat, lng, geojson) {
+  if (!geojson) return false;
+  const features =
+    geojson.type === 'FeatureCollection' ? geojson.features
+    : geojson.type === 'Feature' ? [geojson]
+    : [{ geometry: geojson }];
+
+  return features.some((f) => {
+    const geom = f?.geometry;
+    if (geom?.type === 'Polygon') return pointInPolygon(lng, lat, geom.coordinates);
+    if (geom?.type === 'MultiPolygon') return geom.coordinates.some((poly) => pointInPolygon(lng, lat, poly));
+    return false;
+  });
+}
+
 /** Great-circle midpoint between two lat/lng points (for centering the result view). */
 export function midpoint(lat1, lng1, lat2, lng2) {
   const toRad = (deg) => (deg * Math.PI) / 180;

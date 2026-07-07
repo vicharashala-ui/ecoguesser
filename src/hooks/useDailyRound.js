@@ -21,7 +21,8 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { getTodayString, getDailySites } from '../game/daily.js';
-import { haversine, calcScore, applyHintPenalty } from '../game/scoring.js';
+import { haversine, calcScore, applyHintPenalty, isPointInBoundary } from '../game/scoring.js';
+import { fetchBoundary } from '../game/boundaryCache.js';
 import { useCountdownTimer } from './useCountdownTimer.js';
 import { DAILY, SCORING } from '../config.js';
 
@@ -58,6 +59,16 @@ export function useDailyRound(allSites, active = true) {
 
   const site = sites ? sites[roundIndex] : null;
   siteRef.current = site;
+
+  // Boundary GeoJSON for the current site, prefetched as soon as the round
+  // has a site (same best-effort ref pattern as useClassicRound -- READING
+  // gives plenty of time before Confirm/timeout; if it hasn't landed yet,
+  // finalizeRound just falls back to distance scoring).
+  const boundaryRef = useRef(null);
+  useEffect(() => {
+    boundaryRef.current = null;
+    if (site) fetchBoundary(site).then((geo) => { boundaryRef.current = geo; });
+  }, [site]);
 
   // Round 1 only: the LOADING->READING handoff is gated behind an explicit
   // Start press (handleStart below) rather than firing automatically the
@@ -100,8 +111,10 @@ export function useDailyRound(allSites, active = true) {
     const distanceKm = finalGuess
       ? haversine(finalGuess.lat, finalGuess.lng, currentSite.centroid_lat, currentSite.centroid_lng)
       : null; // calcScore's null guard turns this into 0, not 5000
+    const insideBoundary =
+      finalGuess != null && isPointInBoundary(finalGuess.lat, finalGuess.lng, boundaryRef.current);
 
-    const rawScore = calcScore(distanceKm);
+    const rawScore = insideBoundary ? SCORING.MAX_SCORE : calcScore(distanceKm);
     const finalScore = applyHintPenalty(rawScore, hintsUsed);
 
     const roundResult = {
