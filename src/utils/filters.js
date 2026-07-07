@@ -4,7 +4,7 @@
  * side drawer. Filtering itself always happens against the flat `states`
  * array, not against region names.
  *
- * Verified against protected-areas.json (839 sites, 36/36 state strings):
+ * Verified against protected-areas.json (837 sites, 36/36 state strings):
  * every name below matches `site.state[]` exactly. One mismatch was caught
  * and fixed during verification -- the merged Dadra & Nagar Haveli/Daman &
  * Diu UT uses mixed '&'/'and' ('Dadra & Nagar Haveli and Daman & Diu'), not
