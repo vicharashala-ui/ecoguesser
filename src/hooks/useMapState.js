@@ -312,8 +312,27 @@ export function useMapState(mapRef, mode) {
 
       map.addLayer({
         id: LAYER_IDS.STATE_LABELS, type: 'symbol', source: 'india-state-labels',
-        layout: { 'text-field': ['get', 'st_nm'], 'text-size': 11, visibility: 'none' },
-        paint: { 'text-color': '#374151', 'text-halo-color': '#fff', 'text-halo-width': 1 },
+        layout: {
+          'text-field': ['get', 'st_nm'],
+          'text-font': ['Noto Sans Bold'],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 3, 12, 6, 15, 9, 18],
+          'text-letter-spacing': 0.02,
+          visibility: 'none',
+        },
+        // Opaque near-black text + a thick, fully-opaque white halo (not the
+        // previous thin translucent one) so the name holds up over BOTH the
+        // light base map AND satellite imagery -- same "always contrasts
+        // regardless of background" casing technique used for the
+        // international boundary lines above.
+        // Solid white fill with a dark halo outline (inverse of the previous
+        // dark-fill/white-halo combo) -- reads clearly over both satellite
+        // imagery and the tan base map without looking washed out.
+        paint: {
+          'text-color': '#ffffff',
+          'text-halo-color': '#1f2937',
+          'text-halo-width': 1.6,
+          'text-halo-blur': 0.2,
+        },
       });
 
       if (mode === 'blitz') {

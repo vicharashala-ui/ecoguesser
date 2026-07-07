@@ -73,6 +73,54 @@ function buildCountryLabelLayer() {
   };
 }
 
+// The blanket 'place' removal also strips city/town/village labels (used
+// in-game as location context clues), not just country labels. Re-added
+// here, alongside the country layer, with the same solid-white-fill /
+// dark-halo treatment used everywhere else in the style so text stays
+// legible over both the light base map and satellite imagery -- a plain
+// dark-fill/white-halo combo (the OFM Liberty default) washes out badly
+// over bright satellite terrain.
+// White text with a soft, blurred dark shadow (not a hard outline ring) --
+// matches the label treatment used in Google Maps' satellite view: the
+// text reads as "floating" over the imagery rather than boxed in a ring.
+const PLACE_TEXT_PAINT = {
+  'text-color': '#ffffff',
+  'text-halo-color': 'rgba(0,0,0,0.55)',
+  'text-halo-width': 1,
+  'text-halo-blur': 0.8,
+};
+
+const PLACE_TEXT_FIELD = ['case', ['has', 'name:nonlatin'],
+  ['concat', ['get', 'name:latin'], '\n', ['get', 'name:nonlatin']],
+  ['coalesce', ['get', 'name_en'], ['get', 'name']]];
+
+function buildPlaceLabelLayer(id, cls, minzoom, sizeStops) {
+  return {
+    id, type: 'symbol', source: 'openmaptiles', 'source-layer': 'place',
+    minzoom, filter: ['==', ['get', 'class'], cls],
+    layout: {
+      'text-field': PLACE_TEXT_FIELD,
+      'text-font': ['Noto Sans Regular'],
+      'text-size': ['interpolate', ['linear'], ['zoom'], ...sizeStops],
+      'text-offset': [0, 0.8],
+      'text-anchor': 'top',
+    },
+    paint: PLACE_TEXT_PAINT,
+  };
+}
+
+function buildCityLabelLayer() {
+  return buildPlaceLabelLayer('place_city_label', 'city', 6, [4, 10, 8, 15]);
+}
+
+function buildTownLabelLayer() {
+  return buildPlaceLabelLayer('place_town_label', 'town', 9, [7, 9, 10, 13]);
+}
+
+function buildVillageLabelLayer() {
+  return buildPlaceLabelLayer('place_village_label', 'village', 11, [9, 8, 11, 11]);
+}
+
 async function main() {
   console.log(`Fetching ${STYLE_URL} ...`);
   const res = await fetch(STYLE_URL);
@@ -83,6 +131,9 @@ async function main() {
 
   const before = style.layers.length;
   style.layers = filterLayers(style.layers);
+  style.layers.push(buildCityLabelLayer());
+  style.layers.push(buildTownLabelLayer());
+  style.layers.push(buildVillageLabelLayer());
   style.layers.push(buildCountryLabelLayer());
   const after = style.layers.length;
 
