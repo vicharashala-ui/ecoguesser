@@ -181,7 +181,12 @@
 /* Daily Recap: same wrap, same DailyRecap instance/ref, in both its inline
    and modal appearances -- only the lb-recap-wrap-open modifier (added
    while recapOpen) changes anything, turning the wrap from a normal block
-   in the page flow into a full-viewport modal with a dark backdrop. */
+   in the page flow into a full-viewport modal with a dark backdrop.
+   lb-recap-wrap-closing is added alongside -open for a brief window while
+   closeRecap's setTimeout runs (Leaderboard.jsx), swapping the open/pop-in
+   animations for their fade-out/pop-out reverses so the modal animates
+   away instead of -open being dropped mid-frame and snapping the wrap
+   straight back into the page's inline flow. */
 .lb-recap-wrap {
   width: 100%;
   max-width: 460px;
@@ -222,6 +227,17 @@
   margin: auto 0;
   cursor: default;
   animation: lb-recap-pop-in 0.22s ease-out;
+}
+
+/* Reverse animations, forwards-filled so the wrap stays faded/shrunk for
+   the rest of the 0.2s setTimeout window in Leaderboard.jsx instead of
+   snapping back to its opening state after finishing early. */
+.lb-recap-wrap-open.lb-recap-wrap-closing {
+  animation: lb-recap-fade-in 0.18s ease-out reverse forwards;
+}
+
+.lb-recap-wrap-open.lb-recap-wrap-closing .lb-recap-inner {
+  animation: lb-recap-pop-in 0.18s ease-out reverse forwards;
 }
 
 /* DailyRecap.css gives .dr-outer a 16px top margin for its normal in-flow

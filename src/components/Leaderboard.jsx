@@ -105,16 +105,29 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   // are recomputed every render) so this doesn't re-fire and re-open the
   // modal after the player has closed it.
   const [recapOpen, setRecapOpen] = useState(false);
+  // True for the duration of the closing animation only -- keeps the modal
+  // styling (backdrop, fixed position) applied while lb-recap-wrap-closing
+  // plays the reverse fade/pop-out, instead of recapOpen snapping the wrap
+  // straight back to its inline layout with no transition at all.
+  const [recapClosing, setRecapClosing] = useState(false);
+  const closeTimerRef = useRef(null);
   useEffect(() => {
     if (!loading && hasTodayEntry && hasSites) setRecapOpen(true);
   }, [loading, hasTodayEntry, hasSites]);
+
+  useEffect(() => () => clearTimeout(closeTimerRef.current), []);
 
   const closeRecap = () => {
     // Ignore close attempts mid-share -- html-to-image is actively reading
     // the live DOM node; unmounting it out from under that capture could
     // produce a blank/partial image.
-    if (sharing) return;
-    setRecapOpen(false);
+    if (sharing || recapClosing) return;
+    setRecapClosing(true);
+    // Matches the reverse fade/pop animation duration in Leaderboard.css.
+    closeTimerRef.current = setTimeout(() => {
+      setRecapOpen(false);
+      setRecapClosing(false);
+    }, 180);
   };
 
   const handleShare = async () => {
@@ -215,7 +228,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
           -- identical to a plain always-inline card. */}
       {!loading && hasTodayEntry && hasSites && (
         <div
-          className={`lb-recap-wrap${recapOpen ? ' lb-recap-wrap-open' : ''}`}
+          className={`lb-recap-wrap${recapOpen ? ' lb-recap-wrap-open' : ''}${recapClosing ? ' lb-recap-wrap-closing' : ''}`}
           onClick={recapOpen ? closeRecap : undefined}
         >
           <div
