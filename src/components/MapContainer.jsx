@@ -52,8 +52,20 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
       minZoom: MAP_CONFIG.MIN_ZOOM,
       maxZoom: MAP_CONFIG.MAX_ZOOM,
       attributionControl: { compact: true },
+      dragRotate: false, // no rotate-via-right-click-drag/two-finger-drag
+      touchPitch: false, // paired with dragRotate: false -- no drag-up/down pitch either
       // Do NOT pass center/zoom here -- fitBounds handles it in the load event below.
     });
+
+    // dragRotate: false above only covers the drag gesture. Touch-pinch
+    // rotation and the Shift+arrow keyboard shortcut are separate handlers
+    // with their own rotation flags, so each needs its own disableRotation()
+    // call -- per MapLibre's own "Disable map rotation" example. These flags
+    // are independent of the handler's enable()/disable() (used by
+    // DailyMap.jsx's pause/resume effect), so rotation stays off even after
+    // a pause/resume cycle re-enables the rest of the handler.
+    mapRef.current.touchZoomRotate.disableRotation();
+    mapRef.current.keyboard.disableRotation();
 
     mapRef.current.once('load', () => {
       mapRef.current.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, animate: false });

@@ -109,16 +109,28 @@ function buildPlaceLabelLayer(id, cls, minzoom, sizeStops) {
   };
 }
 
+// minzoom for every place category dropped by 1 from the original city:6/
+// town:9/village:11 -- each label class now appears one zoom level earlier.
 function buildCityLabelLayer() {
-  return buildPlaceLabelLayer('place_city_label', 'city', 6, [4, 10, 8, 15]);
+  return buildPlaceLabelLayer('place_city_label', 'city', 5, [4, 10, 8, 15]);
 }
 
 function buildTownLabelLayer() {
-  return buildPlaceLabelLayer('place_town_label', 'town', 9, [7, 9, 10, 13]);
+  return buildPlaceLabelLayer('place_town_label', 'town', 8, [7, 9, 10, 13]);
 }
 
 function buildVillageLabelLayer() {
-  return buildPlaceLabelLayer('place_village_label', 'village', 11, [9, 8, 11, 11]);
+  return buildPlaceLabelLayer('place_village_label', 'village', 10, [9, 8, 11, 11]);
+}
+
+// New: hamlet class wasn't previously re-added (only city/town/village were),
+// so the smallest, most numerous OpenMapTiles place class was invisible.
+// Adding it puts noticeably more named places on the map, especially useful
+// context around rural protected areas where a hamlet may be the nearest
+// named place. minzoom 11 (one below the pre-existing village-label
+// baseline of 12, matching the same "-1" shift as the other three classes).
+function buildHamletLabelLayer() {
+  return buildPlaceLabelLayer('place_hamlet_label', 'hamlet', 11, [9, 7, 11, 10]);
 }
 
 async function main() {
@@ -134,6 +146,7 @@ async function main() {
   style.layers.push(buildCityLabelLayer());
   style.layers.push(buildTownLabelLayer());
   style.layers.push(buildVillageLabelLayer());
+  style.layers.push(buildHamletLabelLayer());
   style.layers.push(buildCountryLabelLayer());
   const after = style.layers.length;
 

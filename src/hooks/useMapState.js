@@ -319,7 +319,10 @@ export function useMapState(mapRef, mode) {
         layout: {
           'text-field': ['get', 'st_nm'],
           'text-font': ['Noto Sans Bold'],
-          'text-size': ['interpolate', ['linear'], ['zoom'], 3, 12, 6, 15, 9, 18],
+          // Sized down ~15% from the original [3,12 / 6,15 / 9,18] stops so
+          // state names read as background context rather than competing
+          // with place labels / hint highlights for attention.
+          'text-size': ['interpolate', ['linear'], ['zoom'], 3, 10, 6, 13, 9, 15],
           'text-letter-spacing': 0.02,
           visibility: 'none',
         },
@@ -331,11 +334,15 @@ export function useMapState(mapRef, mode) {
         // Solid white fill with a dark halo outline (inverse of the previous
         // dark-fill/white-halo combo) -- reads clearly over both satellite
         // imagery and the tan base map without looking washed out.
+        // text-opacity slightly under 1 (paired with the smaller text-size
+        // above) so names sit further into the background -- still fully
+        // legible, just visibly less prominent than before.
         paint: {
           'text-color': '#ffffff',
           'text-halo-color': '#1f2937',
-          'text-halo-width': 1.6,
+          'text-halo-width': 1.3,
           'text-halo-blur': 0.2,
+          'text-opacity': 0.85,
         },
       });
 
