@@ -1,6 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import ClassicMap from './components/ClassicMap.jsx';
-import BlitzMap from './components/BlitzMap.jsx';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { DailyMap } from './components/DailyMap.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import DailySummary from './components/DailySummary.jsx';
@@ -12,6 +10,14 @@ import InfoModal from './components/InfoModal.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
 import { LS_KEYS } from './config.js';
+
+// Code-split, not eagerly imported: DailyMap (default tab) already pulls in
+// MapLibre on first paint, so these buy nothing there -- but Classic/Blitz
+// only ever mount after their tab is first activated (see
+// classicEverActivated/blitzEverActivated below), so deferring their
+// module fetch to that moment keeps them out of the initial bundle.
+const ClassicMap = lazy(() => import('./components/ClassicMap.jsx'));
+const BlitzMap = lazy(() => import('./components/BlitzMap.jsx'));
 
 const screenStyle = {
   display: 'flex',
@@ -156,21 +162,25 @@ export default function App() {
           display:none, not unmount, so MapLibre never recreates its WebGL
           context on every tab switch. */}
       {classicEverActivated.current && (
-        <ClassicMap
-          mapRef={classicMapRef}
-          sites={allSites}
-          filters={classicFilters}
-          difficulty={classicDifficulty}
-          style={{ position: 'absolute', inset: 0, display: activeTab === 'classic' ? 'block' : 'none' }}
-        />
+        <Suspense fallback={null}>
+          <ClassicMap
+            mapRef={classicMapRef}
+            sites={allSites}
+            filters={classicFilters}
+            difficulty={classicDifficulty}
+            style={{ position: 'absolute', inset: 0, display: activeTab === 'classic' ? 'block' : 'none' }}
+          />
+        </Suspense>
       )}
       {blitzEverActivated.current && (
-        <BlitzMap
-          mapRef={blitzMapRef}
-          sites={allSites}
-          filters={classicFilters}
-          style={{ position: 'absolute', inset: 0, display: activeTab === 'blitz' ? 'block' : 'none' }}
-        />
+        <Suspense fallback={null}>
+          <BlitzMap
+            mapRef={blitzMapRef}
+            sites={allSites}
+            filters={classicFilters}
+            style={{ position: 'absolute', inset: 0, display: activeTab === 'blitz' ? 'block' : 'none' }}
+          />
+        </Suspense>
       )}
       <DailyMap
         mapRef={dailyMapRef}
