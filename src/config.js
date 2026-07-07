@@ -2,10 +2,10 @@ export const FEEDBACK_FORM_URL = import.meta.env.VITE_FEEDBACK_FORM_URL;
 export const FEEDBACK_ENTRY_ID = import.meta.env.VITE_FEEDBACK_ENTRY_ID;
 export const APP_URL   = 'https://ecoguesser.pages.dev';
 export const MAP_STYLE = '/map-style.json';
-// v9.1 reverted Blitz's basemap request -- state-fill/outline highlighting reads
-// worse over the terrain/hillshade look, so Blitz alone keeps the pre-terrain
-// plain OFM style (Classic/Daily keep MAP_STYLE). Static file, not derived from
-// MAP_STYLE at runtime, so it can't drift if map-style.json changes later.
+// Blitz keeps the pre-terrain plain OFM style since state-fill/outline
+// highlighting reads worse over the terrain/hillshade look (Classic/Daily
+// keep MAP_STYLE). Static file, not derived from MAP_STYLE at runtime, so
+// it can't drift if map-style.json changes later.
 export const MAP_STYLE_BLITZ = '/map-style-ofm.json';
 
 export const MAP_CONFIG = {
@@ -24,24 +24,24 @@ export const MAP_CONFIG = {
 };
 // Do NOT pass INDIA_CENTER/INDIA_ZOOM to MapLibre constructor.
 
-// v9.0 -- satellite source switched from EOX Sentinel-2 cloudless to ArcGIS World
-// Imagery, routed through our own edge-caching proxy (functions/tiles/[[path]].js)
-// to stay within a 2M-tile/month ArcGIS quota as player count grows -- repeat
-// requests for the same tile (very likely, since locations are a fixed set of
-// protected areas) are served from Cloudflare's cache instead of hitting ArcGIS.
+// Satellite source is ArcGIS World Imagery, routed through our own edge-
+// caching proxy (functions/tiles/[[path]].js) to stay within a 2M-tile/
+// month ArcGIS quota -- repeat requests for the same tile (likely, since
+// locations are a fixed set of protected areas) are served from
+// Cloudflare's cache instead of hitting ArcGIS.
 export const SATELLITE_TILES = '/tiles/{z}/{y}/{x}';
 export const SATELLITE_ATTRIBUTION = 'Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community';
 
-// v9.1 -- shared AWS Terrarium DEM source feeding BOTH satellite's optional
+// Shared AWS Terrarium DEM source feeding both satellite's optional
 // hillshade and the base map's always-on hillshade + hypsometric tint
 // (public/map-style.json: 'terrain-dem' source, 'hypsometric-tint' /
 // 'base-hillshade' layers). Hoisted here once instead of duplicated per-mode.
 export const TERRAIN_TILES    = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
 export const TERRAIN_ENCODING = 'terrarium';
 
-// v9.0 -- full satellite visual spec. hillshade "multiply blend" is NOT a literal
-// MapLibre paint property -- closest available parameter is hillshade-exaggeration,
-// which controls shading strength, not a true blend mode.
+// Full satellite visual spec. hillshade "multiply blend" is not a literal
+// MapLibre paint property -- closest available parameter is
+// hillshade-exaggeration, which controls shading strength, not a true blend mode.
 export const SATELLITE_VISUAL = {
   BACKGROUND: '#021B3A',
   // Scoped to the satellite raster layer only (raster-* paint properties), not a
@@ -49,8 +49,7 @@ export const SATELLITE_VISUAL = {
   // shared canvas, so a container-level filter would also tint boundary/hint colors.
   // Values below target the same "punchier, slightly darkened" feel as a CSS
   // contrast(1.15) saturate(1.1) brightness(0.85) filter, mapped onto MapLibre's
-  // raster-paint scale rather than a literal unit conversion -- re-tune against
-  // real ArcGIS tiles if the look needs adjusting (spec v9.0 open item).
+  // raster-paint scale rather than a literal unit conversion.
   RASTER_PAINT: {
     saturation:     0.15,
     contrast:       0.15,
@@ -90,9 +89,8 @@ export const SATELLITE_VISUAL = {
   STATE_LINE_COLOR:   '#e8d9ad',
   STATE_LINE_OPACITY: 0.85,
   STATE_LINE_WIDTH:   1.3,
-  // Dropped for v9.0 (not deleted) -- reference look (test7.html) has no 3D terrain
-  // at all. Config kept intact so re-enabling later is a one-line flip of
-  // HILLSHADE_ENABLED, not a rebuild.
+  // Not currently used -- the reference look has no 3D terrain. Config kept
+  // intact so re-enabling later is a one-line flip of HILLSHADE_ENABLED.
   HILLSHADE_ENABLED: false,
   HILLSHADE: {
     illuminationDirection: 335,
@@ -102,9 +100,8 @@ export const SATELLITE_VISUAL = {
     highlightColor:        '#F5F7F7',
     accentColor:           '#D8E3EA',
   },
-  // v9.0 -- stronger, two-stop vignette matching the reference's steeper edge
-  // darkening (near-transparent center, ~45% black at the mid stop, ~85% black at
-  // the edge) -- v8.9's single falloff to 12% barely read as intentional.
+  // Two-stop vignette: near-transparent center, ~45% black at the mid
+  // stop, ~85% black at the edge.
   VIGNETTE: {
     innerStopRatio: 0.28,
     midStopRatio:   0.68,
@@ -123,9 +120,9 @@ export const SATELLITE_VISUAL = {
 export const BASE_VISUAL = {
   RIVER_COLOR:   '#7996ac',
   RIVER_OPACITY: 1,
-  // v9.2 -- lowered so hypsometric-tint's ocean-depth gradient (same
-  // terrain-dem source, negative-elevation stops) shows through as a
-  // bathymetry effect instead of being hidden under a flat tint.
+  // Lowered so hypsometric-tint's ocean-depth gradient (same terrain-dem
+  // source, negative-elevation stops) shows through as a bathymetry effect
+  // instead of being hidden under a flat tint.
   WATER_COLOR:   '#8fadc7',
   WATER_OPACITY: 0.4,
   BACKGROUND:    '#f8f4f0',

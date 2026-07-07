@@ -1,6 +1,6 @@
 // src/hooks/useClassicRound.js
 //
-// Drives the round state machine for Classic mode, per spec Section 5:
+// Drives the round state machine for Classic mode:
 //
 //   LOADING   -> pick site -> READING
 //   READING   -> player taps map -> PLACING
@@ -10,14 +10,14 @@
 // Daily mode is NOT handled here on purpose -- it adds a timer, 5-round
 // progression, and a leaderboard POST on top of this same shape. Building
 // those into a shared hook now would mean threading Daily-only concerns
-// through Classic's simpler path. A `useDailyRound` hook can reuse
+// through Classic's simpler path. useDailyRound reuses
 // `scoring.js`/`calcScore`/`applyHintPenalty` the same way this one does;
-// only the bits in the "Daily adds" comment blocks below would differ.
+// only the bits in the "Daily adds" comment blocks below differ.
 //
 // This hook owns no map state and no API calls -- it just produces the
 // values <BottomCard> and <MapContainer> need, and exposes handlers for
-// their events. Site pool filtering (category/region drawer, Decision #10)
-// is the caller's job -- pass the already-filtered pool in.
+// their events. Site pool filtering (category/region drawer) is the
+// caller's job -- pass the already-filtered pool in.
 
 import { useState, useEffect, useCallback } from 'react';
 import { haversine, calcScore, applyHintPenalty } from '../game/scoring.js';
@@ -74,7 +74,7 @@ export function useClassicRound(sitePool) {
   const handleHint = useCallback(() => {
     if (roundState !== 'READING' && roundState !== 'PLACING') return; // no hints after reveal
     setHintLevel((h) => Math.min(MAX_HINTS, h + 1));
-    // Classic: hints are free (Decision #1) -- no penalty bookkeeping needed
+    // Classic: hints are free -- no penalty bookkeeping needed
     // here. hintLevel still feeds BottomCard's "Hint 1: state name in pill"
     // display and is recorded in the result for stats, just never docked.
   }, [roundState]);
@@ -108,20 +108,15 @@ export function useClassicRound(sitePool) {
     setRoundState('LOADING');
   }, []);
 
-  // Per direct request: an icon-only Skip in the guess panel, letting the
-  // player abandon a site they don't want to guess and get a new one --
-  // Classic has no round limit, so unlike Daily's Skip (which records a
-  // 0-score round to keep the fixed 5-round progression moving) there's
-  // nothing to "give up on" here, just a site to swap out. Mechanically
-  // identical to handleNextSite (both just re-enter LOADING, which the
-  // effect above turns into a fresh random pick) -- kept as its own named
-  // handler rather than reusing onNextSite under a different button,
-  // since the two are semantically distinct actions to the player (skip
-  // *before* guessing vs. move on *after* seeing the reveal), and a
-  // shared name would read oddly wired to two different buttons.
-  // Guessing before Confirm never produces a `result`, so a skipped site
-  // is never recorded by ClassicMap.jsx's stats-write effect -- it simply
-  // never played this round, not a round played and thrown away.
+  // Icon-only Skip in the guess panel lets the player abandon a site they
+  // don't want to guess and get a new one -- Classic has no round limit, so
+  // unlike Daily's Skip (which records a 0-score round to keep the fixed
+  // 5-round progression moving) there's nothing to "give up on" here, just
+  // a site to swap out. Mechanically identical to handleNextSite (both
+  // re-enter LOADING) but kept as its own handler since skip-before-
+  // guessing and move-on-after-reveal are semantically distinct actions to
+  // the player. Guessing before Confirm never produces a `result`, so a
+  // skipped site is never recorded by ClassicMap.jsx's stats-write effect.
   const handleSkip = useCallback(() => {
     if (roundState !== 'READING' && roundState !== 'PLACING') return; // nothing to skip once revealed
     setRoundState('LOADING');

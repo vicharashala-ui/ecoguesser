@@ -1,7 +1,7 @@
 /* src/components/MapContainer.css */
 /*
   Guess marker only -- the CORRECT_PIN shown on REVEALING is a separate
-  GeoJSON-layer pin owned by resultLayer.js (Section 10), not this element.
+  GeoJSON-layer pin owned by resultLayer.js, not this element.
   Just the tiger-head SVG (tigerMarkPath.js) plus a drop-in animation --
   no background/border/radius here, those belonged to the old solid-dot
   marker this replaced and left the SVG boxed in a visible white circle.

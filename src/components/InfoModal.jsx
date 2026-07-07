@@ -1,25 +1,18 @@
 // src/components/InfoModal.jsx
+// Static pages: How to Play / About / Privacy Policy, reached from
+// SideDrawer's footer links via App.jsx's onNavigate handler.
 //
-// Decision #16's static pages: How to Play / About / Privacy Policy,
-// reached from SideDrawer's footer links via App.jsx's onNavigate handler.
+// Rendered as a conditionally-rendered full-screen overlay rather than a
+// URL-addressable route -- there's no router library installed, and every
+// other secondary screen (Leaderboard, DailySummary) follows the same
+// pattern. If shareable/bookmarkable URLs are wanted later, react-router's
+// HashRouter would drop in around this without touching the content below.
 //
-// Implementation note: the spec's decision log describes these as "routes"
-// (/about + /privacy-policy), but this project has no router library
-// installed (package.json has no react-router-dom or similar), and every
-// other secondary screen in the codebase -- Leaderboard, DailySummary --
-// is a conditionally-rendered full-screen overlay, not a URL-addressable
-// route. Followed that existing precedent rather than adding a new
-// dependency and a second navigation paradigm for three screens of static
-// text. If real routing (shareable/bookmarkable URLs) is wanted later,
-// react-router's HashRouter would drop in around this without needing to
-// touch the content below.
-//
-// Privacy Policy content is a plain, factual description of this app's own
-// actual data handling, grounded in what's really in the codebase (the
-// three fetch destinations below are the only three that exist anywhere in
-// src/ or public/map-style.json -- verified while writing this) -- not
-// boilerplate legal text. It's a starting draft, flagged as such in-page;
-// swap in real legal review before treating it as a binding policy.
+// Privacy Policy content describes this app's actual data handling (the
+// three fetch destinations below are the only ones anywhere in src/ or
+// public/map-style.json) rather than boilerplate legal text. It's a
+// starting draft, flagged as such in-page; swap in real legal review
+// before treating it as a binding policy.
 
 import { useEffect, useId } from 'react';
 import { APP_URL } from '../config.js';

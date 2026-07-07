@@ -1,32 +1,14 @@
 // src/components/BlitzMap.jsx
-//
 // Wires MapContainer + BlitzCard + useBlitzRound into the playable Blitz
-// screen. Mirrors ClassicMap.jsx's role but stripped of everything
-// pin-drop/distance-specific: no SatelliteOverlay, no layer-toggle panel
-// (borders are forced on inside useMapState for mode==='blitz'), no
-// difficulty. Category + Region/State filters ARE shared with Classic now
-// (per direct request) -- same `filters` prop/SideDrawer instance, applied
-// here the same way ClassicMap.jsx applies it to its own sitePool.
+// screen. Mirrors ClassicMap.jsx's role, stripped of pin-drop/distance
+// specifics: no SatelliteOverlay, no layer-toggle panel (borders are forced
+// on inside useMapState for mode==='blitz'), no difficulty. Category +
+// Region/State filters are shared with Classic via the same `filters` prop.
 //
-// RecenterButton's REVEALING-time offset now reads BlitzCard's real
-// measured height via cardRef, same cardRef/cardHeight/transitionend
-// pattern as ClassicMap.jsx -- it used to assume a static 260px estimate,
-// but BlitzCard's expanded content isn't actually constant-height:
-// correctStates can list more than one state for sites that straddle a
-// border, wrapping the badge/state line onto an extra line, so a fixed
-// estimate could undershoot and let the expanded card cover the crosshair
-// button. handleShowBoundary passes the same measured height through to
-// blitzHighlight.js's zoomToBoundary() so the tight boundary zoom doesn't
-// end up under the card either.
-//
-// State Names: the top-right toggle is fully player-controlled now -- it
-// used to force itself on during REVEALING regardless of what the player
-// had set, so the answer always appeared automatically. It now only resets
-// to hidden at the start of each new round (LOADING), same as before.
-//
-// BlitzMap.css holds the one thing left to style at this level: the
-// top-right "State Names" toggle (mirrors DailyMap.css's .dm-layer-panel).
-// Borders themselves stay forced-on/non-togglable per useMapState.
+// cardRef/cardHeight/transitionend mirror ClassicMap.jsx's pattern for
+// measuring BlitzCard's real height (it isn't constant-height -- a site's
+// correctStates can wrap onto an extra line), so RecenterButton and the
+// boundary zoom don't end up under the expanded card.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import MapContainer from './MapContainer.jsx';
@@ -43,20 +25,18 @@ import { recordBlitzResult } from '../game/stats.js';
 import { LAYER_IDS, MAP_CONFIG, MAP_STYLE_BLITZ } from '../config.js';
 import './BlitzMap.css';
 
-// Used to build zoomToBoundary()'s fitPadding once "Show Boundary" is
-// pressed -- top/left/right are fixed screen margins; `bottom` is computed
-// per-round from cardRef's actual measured height, same constants
-// ClassicMap.jsx uses for its own REVEAL_FIT_SIDES/REVEAL_CARD_GAP.
+// fitPadding for zoomToBoundary() once "Show Boundary" is pressed; `bottom`
+// is computed per round from cardRef's measured height, same constants
+// ClassicMap.jsx uses for REVEAL_FIT_SIDES/REVEAL_CARD_GAP.
 const REVEAL_FIT_SIDES = { top: 60, left: 40, right: 40 };
-const REVEAL_CARD_GAP = 20; // breathing room above the card's top edge
+const REVEAL_CARD_GAP = 20; // gap above the card's top edge
 
 /**
  * @param {{current: import('maplibre-gl').Map|null}} mapRef
  * @param {React.CSSProperties} style
  * @param {import('../config').Site[]} sites - full unfiltered list from App.jsx
  * @param {{categories: string[], states: string[]}} [filters] - same lifted
- *   filter state as ClassicMap.jsx (Category + Region/State), now shared
- *   with Blitz per direct request.
+ *   filter state as ClassicMap.jsx (Category + Region/State), shared with Blitz.
  */
 export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTERS }) {
   const sitePool = useMemo(
@@ -74,9 +54,9 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // -- this component never calls setPolitical itself. politicalNames (the
   // "State Names" toggle below) stays player-controlled.
 
-  const cardRef = useRef(null); // measures BlitzCard's real height, same role as ClassicMap.jsx's cardRef
-  // Tracks that height during REVEALING so RecenterButton can sit above the
-  // expanded card instead of being hidden by it.
+  const cardRef = useRef(null); // measures BlitzCard's height, same role as ClassicMap.jsx's cardRef
+  // Tracked during REVEALING so RecenterButton can sit above the expanded
+  // card instead of being hidden by it.
   const [cardHeight, setCardHeight] = useState(null);
 
   function handleMapClick(lat, lng) {
@@ -124,12 +104,9 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     else clearAll(map);
   }, [mapRef, mapReady, roundState, selectedState]);
 
-  // REVEALING -> green/red (showReveal opens with its own clearAll), plus an
-  // immediate fast reset to the default India-wide framing per direct
-  // request -- Blitz previously never touched the camera on reveal, so
-  // whatever zoom/pan the player was at when they tapped a state just sat
-  // there. 500ms keeps it snappy and distinct from the 1200ms "Show
-  // Boundary" zoom below, which is meant to linger once requested.
+  // REVEALING -> green/red (showReveal opens with its own clearAll), plus a
+  // fast reset to the default India-wide framing (500ms, distinct from the
+  // slower 1200ms "Show Boundary" zoom, which is meant to linger).
   // LOADING -> clear everything before the next site's blue preview starts.
   useEffect(() => {
     const map = mapRef.current;
@@ -147,10 +124,9 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     }
   }, [mapRef, mapReady, roundState, result]);
 
-  // Blitz's post-REVEALING stats write, same idempotency shape as
-  // ClassicMap.jsx's recordClassicResult effect: guarded by object identity
-  // against `result` (not a boolean) so React 18 Strict Mode's dev-only
-  // double-invoke can't record the same round twice.
+  // Records the round once REVEALING starts; same identity-guard shape as
+  // ClassicMap.jsx's recordClassicResult effect (prevents Strict Mode's
+  // dev-only double-invoke from recording the same round twice).
   const recordedResultRef = useRef(null);
   useEffect(() => {
     if (roundState !== 'REVEALING' || !result) return;
@@ -159,12 +135,10 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     recordBlitzResult(result, streak);
   }, [roundState, result, streak]);
 
-  // State names: fully player-controlled via the toggle below -- no longer
-  // force-shown on REVEALING (the player now chooses whether to reveal
-  // them, per direct request). Still resets to hidden every new LOADING so
-  // each round starts blank rather than carrying over from the last one.
-  // Also clears any "Show Boundary" polygon from the previous site here,
-  // for the same reason.
+  // State names are fully player-controlled via the toggle below; this only
+  // resets them to hidden on each new round (LOADING) so nothing carries
+  // over from the last one. Also clears any "Show Boundary" polygon and
+  // pending hint timer from the previous site.
   useEffect(() => {
     if (roundState === 'LOADING') {
       setPoliticalNames(false);
@@ -184,13 +158,11 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     };
   }, []);
 
-  // Measures BlitzCard's real expanded height the instant roundState flips
-  // to REVEALING -- synchronously, in the same commit the class changes in,
-  // well before BottomCard.css's 0.3s max-height transition finishes -- so
-  // this initially reads a height still close to the pill's 64px, not the
-  // expanded card's real height. Corrected by the transitionend effect below
-  // once the animation actually completes. Same race/fix ClassicMap.jsx
-  // documents for its own cardRef.
+  // Measures BlitzCard's height the instant roundState flips to REVEALING,
+  // before BottomCard.css's 0.3s max-height transition finishes -- so this
+  // initially reads a height close to the pill's 64px. Corrected by the
+  // transitionend effect below once the animation completes (same
+  // race/fix as ClassicMap.jsx's cardRef).
   useEffect(() => {
     if (roundState !== 'REVEALING') return;
     const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 0;

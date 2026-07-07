@@ -1,16 +1,15 @@
 // src/components/Leaderboard.jsx
-//
-// Section 4's LEADERBOARD screen -- entered two ways:
+// LEADERBOARD screen -- entered two ways:
 //   1. From DailySummary.onDone() -- `data` prop already carries
 //      top10/rank/banner, no fetch needed here.
-//   2. Direct Daily-tab nav after already playing today ("no in-memory POST
-//      response" per spec) -- App.jsx passes `data={null}`, so this fetches
+//   2. Direct Daily-tab nav after already playing today (no in-memory POST
+//      response) -- App.jsx passes `data={null}`, so this fetches
 //      GET /api/leaderboard?date=today itself and reads LS_KEYS.RANK_TODAY.
 //
 // Table rank (1,1,3 tie pattern, computeRanks below) and the "Today: #N"
-// line deliberately use DIFFERENT numbers per spec -- POST's `rank` is
-// plain array-position with no tie handling, table rank is tie-aware. Not a
-// bug if they disagree on an exact-tie day.
+// line deliberately use DIFFERENT numbers -- POST's `rank` is plain
+// array-position with no tie handling, table rank is tie-aware. Not a bug
+// if they disagree on an exact-tie day.
 //
 // The DailyRecap card auto-opens as a popup modal once today's entry (and
 // allSites) are ready -- see recapOpen below. Tapping Close, or tapping
@@ -21,6 +20,13 @@
 // shares/downloads it directly -- no separate preview step. Disabled only
 // if today's stats_daily entry is somehow missing (shouldn't happen;
 // Leaderboard is only reachable after playing today).
+//
+// The same handleShare is also wired to a persistent Share button in the
+// bottom action row (lb-actions), left of Play Classic, so sharing doesn't
+// require opening the recap modal first. It's disabled rather than hidden
+// when hasTodayEntry/hasSites are false, since dailyRecapRef.current is
+// null in that case (DailyRecap isn't mounted at all -- see the gate a few
+// lines below).
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { LS_KEYS } from '../config.js';
@@ -231,8 +237,8 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
                   disabled={sharing}
                   onClick={handleShare}
                 >
-                  <ShareIcon />
                   {sharing ? 'Preparing…' : 'Share'}
+                  <ShareIcon />
                 </button>
                 <button type="button" className="lb-recap-close-btn" onClick={closeRecap}>
                   Close
@@ -244,6 +250,15 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
       )}
 
       <div className="lb-actions">
+        <button
+          type="button"
+          className="lb-share-btn"
+          disabled={sharing || !hasTodayEntry || !hasSites}
+          onClick={handleShare}
+        >
+          {sharing ? 'Preparing…' : 'Share'}
+          <ShareIcon />
+        </button>
         <button type="button" className="lb-classic-btn" onClick={onPlayClassic}>
           Play Classic
         </button>

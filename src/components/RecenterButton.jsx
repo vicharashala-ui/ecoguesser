@@ -5,12 +5,12 @@
 // by ClassicMap.jsx and DailyMap.jsx rather than duplicated, since both
 // already hold the same mapRef contract.
 //
-// Stays visible through REVEALING (per direct request) -- the caller passes
-// a `style` override with a `bottom` computed from BottomCard's real
-// measured height during REVEALING (same cardRef.getBoundingClientRect()
-// pattern already used for resultLayer.js's fitPadding), so this never sits
-// underneath the expanded card. Outside REVEALING, no override is passed and
-// RecenterButton.css's fixed 64px-pill-clearance default applies.
+// Stays visible through REVEALING -- the caller passes a `style` override
+// with a `bottom` computed from BottomCard's real measured height during
+// REVEALING (same cardRef.getBoundingClientRect() pattern already used for
+// resultLayer.js's fitPadding), so this never sits underneath the expanded
+// card. Outside REVEALING, no override is passed and RecenterButton.css's
+// fixed 64px-pill-clearance default applies.
 
 import { MAP_CONFIG } from '../config.js';
 import './RecenterButton.css';

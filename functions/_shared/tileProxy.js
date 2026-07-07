@@ -3,10 +3,9 @@
 // Fronts ArcGIS World Imagery with Cloudflare's edge Cache API. EcoGuesser's
 // satellite tiles are requested for a fixed, finite set of protected-area
 // locations, so the same tile gets re-requested across many players -- caching
-// is the primary lever for staying within the 2M-tile/month ArcGIS quota
-// (spec v9.0 section 3). First request for a given z/y/x pays the ArcGIS quota;
-// every later request for that same tile, from any player, is served from the
-// edge for free.
+// is the primary lever for staying within the 2M-tile/month ArcGIS quota.
+// First request for a given z/y/x pays the ArcGIS quota; every later request
+// for that same tile, from any player, is served from the edge for free.
 
 const ARCGIS_BASE = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile';
 

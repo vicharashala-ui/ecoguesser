@@ -4,8 +4,8 @@
   #f59e0b/#dc2626) and to ClassicMap.css's placeholder panel treatment --
   .dm-layer-panel mirrors .cm-layer-panel's glassmorphism rather than
   introducing a second visual language for what's still a placeholder on
-  both screens (Section 8's real icon-button layer UI isn't built for
-  either mode yet).
+  both screens (the real icon-button layer UI isn't built for either mode
+  yet).
 */
 
 .eg-daily-map {

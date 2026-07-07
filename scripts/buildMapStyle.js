@@ -19,12 +19,8 @@ const OUT_PATH  = path.join(__dirname, '../public/map-style.json');
 
 const REMOVE_ID_PATTERNS = [
   'road', 'tunnel', 'bridge', 'building', 'parking', 'transit', 'rail', 'aeroway',
-  // v8.9: park/landuse/landcover are fill-type layers -- the checks below only
-  // ever catch id-substring matches (this list) or symbol-type layers via
-  // REMOVE_SYMBOL_SOURCE_LAYERS, so these survived every previous run and leaked
-  // mottled green landcover/landuse blotches onto what's supposed to be a flat,
-  // minimal political map. Caught visually in a live screenshot, not by re-reading
-  // this file -- worth remembering next time something "looks off" on the map.
+  // Fill-type layers, not caught by id-substring alone -- previously leaked
+  // green landcover/landuse blotches onto the map before being added here.
   'park', 'landuse', 'landcover',
 ];
 
@@ -59,11 +55,9 @@ function filterLayers(layers) {
   });
 }
 
-// v8.9: REMOVE_SYMBOL_SOURCE_LAYERS' blanket 'place' match removes city/town/
-// village labels (correct) but also removes country labels (wrong) -- they all
-// share source-layer "place" and there's no id/source-layer check that can tell
-// admin classes apart at the layer level. Rather than trying to make the filter
-// smart enough to spare it, just append a hand-built replacement after filtering.
+// The blanket 'place' removal above also strips country labels (they share
+// source-layer "place" with city/town labels; there's no layer-level way to
+// tell admin classes apart). Re-added here as a hand-built layer.
 function buildCountryLabelLayer() {
   return {
     id: 'country_label', type: 'symbol', source: 'openmaptiles', 'source-layer': 'place',

@@ -1,12 +1,13 @@
 // src/game/resultLayer.js
-// Implements Section 10 (Post-guess Visualization) of the EcoGuesser spec.
+// Post-guess visualization: draws the line/pin/boundary reveal after a
+// guess is confirmed.
 //
-// Wire-up (Round State Machine, Section 5):
+// Wire-up (round state machine):
 //   PLACING -> REVEALING:  await showResult(map, guess, site, { distanceKmOverride, fitPadding })
 //   REVEALING -> LOADING:  clearResult(map)   (call BEFORE picking the next site)
 //
 // `guess` shape: { lat, lng }  (same shape MapContainer's marker already tracks)
-// `site` shape: see Section 6's `Site` interface (uses centroid_lat/centroid_lng, NOT lat/lng)
+// `site` shape: see config.js's `Site` type (uses centroid_lat/centroid_lng, NOT lat/lng)
 //
 // Distance is recomputed internally via haversine() so this module only needs
 // (map, guess, site) -- pass opts.distanceKmOverride if you'd rather hand it the
@@ -131,7 +132,8 @@ function extendBounds(box, points) {
 }
 
 /**
- * Runs the full PLACING -> REVEALING reveal sequence (Section 10, steps 1-3).
+ * Runs the full PLACING -> REVEALING reveal sequence: draws the line/pin,
+ * kicks off the boundary fetch, and fits the camera to the reveal.
  * Safe to `await` -- resolves once the boundary fetch has settled (or been skipped).
  *
  * @param {object} [opts]
@@ -147,7 +149,7 @@ export async function showResult(map, guess, site, opts = {}) {
   const padding = fitPadding ?? DEFAULT_FIT_PADDING;
 
   // Kick off the boundary fetch immediately -- it runs in parallel with the
-  // line/pin animation below, per Section 10's module-level boundaryPromise.
+  // line/pin animation below (see the module-level boundaryPromise).
   boundaryPromise = site.hasBoundary
     ? fetch(`/boundaries/${site.id}.geojson`)
         .then((r) => {
@@ -305,7 +307,7 @@ export async function zoomToSiteBoundary(map, fitPadding = null) {
   });
 }
 
-/** LOADING cleanup (Section 10) -- call before picking the next site. */
+/** LOADING cleanup -- call before picking the next site. */
 export function clearResult(map) {
   if (animationFrameId !== null) {
     cancelAnimationFrame(animationFrameId);

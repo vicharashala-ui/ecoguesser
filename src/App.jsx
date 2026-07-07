@@ -38,15 +38,14 @@ export default function App() {
   const [allSites, setAllSites] = useState([]);
   const [sitesError, setSitesError] = useState(false);
 
-  // Section 4's tab-switching machinery. classicEverActivated is a ref (not
-  // state) deliberately -- per spec, so flipping it doesn't cost a second
-  // render; by the time switchTab's setActiveTab triggers the real render,
-  // the ref is already true and ClassicMap mounts in that same pass.
+  // Tab-switching machinery. classicEverActivated is a ref (not state)
+  // deliberately, so flipping it doesn't cost a second render -- by the
+  // time switchTab's setActiveTab triggers the real render, the ref is
+  // already true and ClassicMap mounts in that same pass.
   //
-  // activeTab now has a third value, 'stats' (Section 9b), alongside
-  // 'daily'/'classic' -- it needs no entry in classicEverActivated/the
-  // resize RAF below since StatsView isn't a map; it just needs to be a
-  // value switchTab can be called with.
+  // activeTab also takes 'stats', alongside 'daily'/'classic'/'blitz' -- it
+  // needs no entry in classicEverActivated/the resize RAF below since
+  // StatsView isn't a map.
   const classicEverActivated = useRef(false);
   const blitzEverActivated = useRef(false);
   const [activeTab, setActiveTab] = useState('daily');
@@ -54,33 +53,32 @@ export default function App() {
   const dailyMapRef = useRef(null);
   const blitzMapRef = useRef(null);
 
-  // Section 4 Daily sub-flow: 'round' (DailyMap) -> 'summary' (auto-submit)
-  // -> 'leaderboard'. Starts at 'leaderboard' if today's already been played
-  // -- checked against localStorage, not just in-session state, so a
+  // Daily sub-flow: 'round' (DailyMap) -> 'summary' (auto-submit) ->
+  // 'leaderboard'. Starts at 'leaderboard' if today's already been played --
+  // checked against localStorage, not just in-session state, so a
   // returning player who reloads mid-day lands on the leaderboard instead
   // of a fresh round.
   const [dailyPhase, setDailyPhase] = useState(() => (hasPlayedToday() ? 'leaderboard' : 'round'));
   const [dailySummaryData, setDailySummaryData] = useState(null); // { totalPts, totalDist }
   const [dailyLeaderboardData, setDailyLeaderboardData] = useState(null); // { top10, rank, banner } | null
 
-  // Section 9 -- drawerOpen is global (both tabs), classicFilters affects
-  // ClassicMap's AND BlitzMap's site pools (per direct request); Daily's
-  // pool is fixed per Section 6 and untouched by this.
+  // drawerOpen is global (both tabs); classicFilters affects ClassicMap's
+  // AND BlitzMap's site pools. Daily's pool is fixed and untouched by this.
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [classicFilters, setClassicFilters] = useState(DEFAULT_FILTERS);
-  // Decision #3 -- lifted the same way as classicFilters, so SideDrawer's
-  // DIFFICULTY buttons and ClassicMap's useMapState-backed setter can both
-  // stay controlled by one source of truth. Seeded from localStorage
-  // directly (not via useMapState, which doesn't exist yet at this point in
-  // the tree) so the drawer shows the right button highlighted even before
+  // Lifted the same way as classicFilters, so SideDrawer's DIFFICULTY
+  // buttons and ClassicMap's useMapState-backed setter can both stay
+  // controlled by one source of truth. Seeded from localStorage directly
+  // (not via useMapState, which doesn't exist yet at this point in the
+  // tree) so the drawer shows the right button highlighted even before
   // ClassicMap has ever mounted.
   const [classicDifficulty, setClassicDifficulty] = useState(
     () => localStorage.getItem(LS_KEYS.DIFFICULTY) || 'normal'
   );
 
-  // Decision #16 -- null when closed, else one of 'howtoplay'/'about'/'privacy'.
-  // (Feedback isn't part of this -- it's now a self-contained box inside
-  // SideDrawer.jsx, same as Player Name, with no App.jsx-level state at all.)
+  // null when closed, else one of 'howtoplay'/'about'/'privacy'. (Feedback
+  // isn't part of this -- it's a self-contained box inside SideDrawer.jsx,
+  // same as Player Name, with no App.jsx-level state at all.)
   const [infoModalVariant, setInfoModalVariant] = useState(null);
 
   function switchTab(newTab) {
@@ -98,11 +96,9 @@ export default function App() {
     });
   }
 
-  // DailyMap's round 5 hands off here (Section 4: round 5's "Next" ->
-  // DAILY_SUMMARY, not back through LOADING). Stats are written here, once,
-  // right at the real completion -- not inside DailySummary itself, which
-  // can remount (see its own header comment on the mid-submit-tab-switch
-  // gap) and must not re-trigger the streak math on a second mount.
+  // DailyMap's round 5 hands off here. Stats are written once, right at
+  // the real completion -- not inside DailySummary itself, which can
+  // remount and must not re-trigger the streak math on a second mount.
   function handleDailyComplete(results) {
     const totalPts = results.reduce((sum, r) => sum + r.finalScore, 0);
     const totalDist = results.reduce((sum, r) => sum + (r.distanceKm ?? 0), 0);
@@ -155,10 +151,10 @@ export default function App() {
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      {/* DailyMap mounts immediately (Section 4: "DailyMap mounted
-          immediately"); ClassicMap only after its tab is first activated,
-          and both stay mounted afterward -- display:none, not unmount, so
-          MapLibre never recreates its WebGL context on every tab switch. */}
+      {/* DailyMap mounts immediately; ClassicMap/BlitzMap only after their
+          tab is first activated, and all stay mounted afterward --
+          display:none, not unmount, so MapLibre never recreates its WebGL
+          context on every tab switch. */}
       {classicEverActivated.current && (
         <ClassicMap
           mapRef={classicMapRef}

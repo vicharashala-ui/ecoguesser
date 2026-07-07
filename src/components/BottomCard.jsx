@@ -1,30 +1,20 @@
 // src/components/BottomCard.jsx
+// Pre-guess floating pill -> post-guess expanded card.
 //
-// Pre-guess floating pill -> post-guess expanded card, per spec Section 8.
+// Two wiring choices worth flagging:
+//   1. Confirm Guess lives inside the pill at all times, disabled until
+//      `markerPlaced` is true, rather than only appearing in PLACING --
+//      avoids a layout jump between READING and PLACING.
+//   2. One generic icon (the tiger mark), tinted per the round's category
+//      color, is used in both pill and card, rather than a per-category icon.
 //
-// Two assumptions made where the spec's ASCII mockups didn't pin down the
-// exact wiring (flagged here so they're easy to revisit):
-//   1. Confirm Guess lives INSIDE the pre-guess pill at all times, disabled
-//      until `markerPlaced` is true -- rather than only appearing once the
-//      round-state-machine formally enters PLACING. This matches Decision #8
-//      ("greyed until marker placed") literally and avoids a layout jump
-//      between READING and PLACING.
-//   2. One generic icon (the tiger mark), tinted with the round's category
-//      color, is used in both pill and card -- the spec's `[tree]`
-//      placeholder appears identically across all five categories in both
-//      mockups, not as a per-category icon.
+// Icons below are inline SVGs (no icon-library dependency). IconMark's path
+// data lives in tigerMarkPath.js instead of being pasted here, since it's
+// also reused by Header.jsx, BlitzCard.jsx and MapContainer.jsx and is too
+// large (~7.5KB) to duplicate.
 //
-// No icon library dependency -- everything below is a small inline SVG so
-// this drops in without an `npm install`. Swap for lucide-react later if
-// preferred; the call sites (<IconHint />, <IconPin /> etc.) won't change.
-// IconMark is the one exception -- its path data lives in tigerMarkPath.js
-// and is imported rather than pasted here, since it's reused by Header.jsx,
-// BlitzCard.jsx and MapContainer.jsx and is too large (~7.5KB) to duplicate.
-//
-// Show Site Boundary sits as a small chip (.bc-boundary-btn-sm) at the right
-// edge of the result row (distance + pts), rather than its own full-width
-// row below -- compresses the expanded panel by a whole row per direct
-// request. It anchors right via margin-left:auto on that row.
+// Show Site Boundary renders as a small chip at the right edge of the
+// result row (distance + pts) rather than its own row, to save vertical space.
 
 import { useId, forwardRef } from 'react';
 import { CATEGORY_META, SCORING, DAILY, formatSiteName } from '../config';
@@ -138,22 +128,17 @@ function IconSkip({ size = 18 }) {
  * @param {() => void} props.onHint
  * @param {() => void} props.onConfirm
  * @param {() => void} props.onNextSite
- * @param {() => void} [props.onShowBoundary] - zooms the map in on the
- *   revealed site's boundary polygon (resultLayer.js's zoomToSiteBoundary).
- *   Rendered as a small chip at the right edge of the state-name meta row --
- *   button only renders when both this is provided and site.hasBoundary.
- * @param {() => void} [props.onSkip] - Classic-only, icon-only button in the
- *   guess panel (pre-Confirm pill) that abandons the current site for a new
- *   one. Renders only when both this is provided and mode !== 'daily'.
- * @param {string} [props.nextLabel='Next Site'] - round 5's button reads
- *   'Results' instead (Daily only); Classic never overrides this.
+ * @param {() => void} [props.onShowBoundary] - zooms in on the revealed
+ *   site's boundary (resultLayer.js's zoomToSiteBoundary). Renders only when
+ *   provided and site.hasBoundary.
+ * @param {() => void} [props.onSkip] - Classic-only; abandons the current
+ *   site for a new one. Renders only when provided and mode !== 'daily'.
+ * @param {string} [props.nextLabel='Next Site'] - Daily's round 5 uses 'Results'.
  * @param {'classic'|'daily'} props.mode
  * @param {import('../config').RoundResult|null} props.result - set once roundState === 'REVEALING'
- * @param {number|null} props.dailyTotal - cumulative score AFTER this round (daily mode only)
- * @param {React.Ref<HTMLDivElement>} ref - forwarded to the outer `.bottom-card` div so
- *   callers (ClassicMap.jsx) can measure its real rendered height -- the expanded
- *   card's height varies with content (site.desc length, daily-only lines), so
- *   resultLayer.js's map fitBounds padding reads this rather than a guessed constant.
+ * @param {number|null} props.dailyTotal - cumulative score after this round (daily only)
+ * @param {React.Ref<HTMLDivElement>} ref - forwarded to `.bottom-card` so
+ *   ClassicMap.jsx can measure its real rendered height for fitBounds padding.
  */
 const BottomCard = forwardRef(function BottomCard({
   roundState,

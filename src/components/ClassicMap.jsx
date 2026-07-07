@@ -1,44 +1,19 @@
 // src/components/ClassicMap.jsx
+// Wires MapContainer + BottomCard + useClassicRound into the playable
+// Classic mode screen. mapRef/style pass through from App.jsx's tab
+// switching; `sites` also comes from App.jsx (already loaded once there)
+// rather than being re-imported here.
 //
-// Wires MapContainer + BottomCard + useClassicRound into the actual
-// playable Classic mode screen. Matches the App-level tab-switching
-// convention from Section 4 -- mapRef and style are passed straight
-// through from the parent's classicMapRef/activeTab logic.
+// `filters` and `difficulty` are lifted state from App.jsx, set via
+// SideDrawer. Both default so Classic stays playable if rendered without
+// them. difficulty flows in as a prop rather than out as a callback because
+// setDifficulty lives inside useMapState(mapRef, 'classic'), instantiated
+// in this component.
 //
-// `sites` is passed down from App.jsx rather than imported here directly --
-// App.jsx already loads protected-areas.json and gates its loading/error
-// screens on that succeeding, so this avoids a second independent import of
-// the same data.
-//
-// Filters (Decision #10 -- category + region/state side drawer) come down
-// as a prop, controlled by App.jsx's lifted state + SideDrawer.jsx's Apply
-// Filters button (v8.19). Defaults to DEFAULT_FILTERS (every category,
-// every state) so Classic is still fully playable if this ever renders
-// without the prop.
-//
-// Update (this pass): Difficulty is now wired the same way -- `difficulty`
-// comes down as a controlled prop from App.jsx (lifted state, read from
-// LS_KEYS.DIFFICULTY on init), and SideDrawer's new DIFFICULTY buttons call
-// App.jsx's setter directly, mirroring how `onApplyFilters` already works.
-// This closes the gap SideDrawer.jsx's v8.20 header comment flagged:
-// `setDifficulty` lives inside useMapState(mapRef,'classic'), instantiated
-// here -- so it needs a prop coming IN (the desired level) rather than a
-// callback going out, unlike onRoundStateChange's pattern in DailyMap.jsx.
-//
-// useMapState + SatelliteOverlay move here from the old MapSmokeTest in
-// App.jsx -- this is now the component that actually owns the full-screen
-// map view, so it's the one that should own layer state. The checkbox
-// panel below is the same temporary control from MapSmokeTest, not the
-// real icon-based toggle UI from Section 8 (not built yet) -- swap it out
-// once that exists; setPolitical/setPoliticalNames/setSatellite don't need
-// to change.
-//
-// Section 10/11 wiring (resultLayer.js / stateHighlight.js): driven off
-// `result` rather than the hook's live `guess`/`site`, since `result` is the
-// immutable snapshot of exactly what got scored -- handleMapClick still
-// updates `guess` on any tap, including ones that land after Confirm, so
-// using it directly here could show a reveal line for a guess that was
-// never the one that got scored.
+// The reveal/hint effects below key off `result` (the immutable scored
+// snapshot), not the hook's live `guess`/`site` -- handleMapClick keeps
+// updating `guess` on any tap after Confirm, so using it directly could
+// show a reveal line for a guess that was never scored.
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import MapContainer from './MapContainer.jsx';
@@ -54,20 +29,17 @@ import { showHint2, hideHint2 } from '../game/stateHighlight.js';
 import { recordClassicResult } from '../game/stats.js';
 import './ClassicMap.css';
 
-// Used to build resultLayer.js's fitBounds padding once Confirm is pressed --
-// top/left/right are fixed screen margins; `bottom` is computed per-round from
-// cardRef's actual measured height (see the reveal effect below), since the
-// expanded BottomCard's height varies with site.desc length, daily-only
-// lines, etc.
+// fitBounds padding for the post-Confirm reveal; `bottom` is computed per
+// round from BottomCard's measured height (see reveal effect below).
 const REVEAL_FIT_SIDES = { top: 60, left: 40, right: 40 };
-const REVEAL_CARD_GAP = 20; // breathing room above the card's top edge
+const REVEAL_CARD_GAP = 20; // gap above the card's top edge
 
 /**
  * @param {{current: import('maplibre-gl').Map|null}} mapRef
  * @param {React.CSSProperties} style - controls display:block/none for tab switching
- * @param {import('../config').Site[]} sites - the full loaded site list (from App.jsx)
- * @param {{categories: string[], states: string[]}} [filters] - Decision #10, lifted to App.jsx
- * @param {'easy'|'normal'|'hard'} [difficulty] - Decision #3, lifted to App.jsx (SideDrawer's buttons)
+ * @param {import('../config').Site[]} sites - full loaded site list (from App.jsx)
+ * @param {{categories: string[], states: string[]}} [filters] - lifted to App.jsx via SideDrawer
+ * @param {'easy'|'normal'|'hard'} [difficulty] - lifted to App.jsx via SideDrawer
  */
 export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FILTERS, difficulty }) {
   const sitePool = useMemo(
@@ -94,48 +66,32 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     setPolitical, setPoliticalNames, setSatellite, setDifficulty,
   } = useMapState(mapRef, 'classic');
 
-  const cardRef = useRef(null); // measures BottomCard's real height for the reveal's fitBounds padding
-  // Tracks that same height during REVEALING so RecenterButton can sit above
-  // the expanded card instead of being hidden by it (per direct request --
-  // it now stays visible through REVEALING too).
+  const cardRef = useRef(null); // measures BottomCard's height for reveal fitBounds padding
+  // Tracked separately so RecenterButton can sit above the expanded card
+  // during REVEALING instead of being hidden behind it.
   const [cardHeight, setCardHeight] = useState(null);
 
-  // Section 9 -- applies the App.jsx-controlled `difficulty` prop whenever it
-  // changes. Also fires once on mount (as soon as mapReady flips true), which
-  // re-applies whatever useMapState's own init effect just read from
-  // LS_KEYS.DIFFICULTY -- harmless, since setDifficulty's underlying
-  // setPolitical/setPoliticalNames calls are idempotent (they just re-set the
-  // same layout visibility), not a duplicated side effect like a stats write
-  // would be.
+  // Applies the difficulty prop whenever it changes, including on mount once
+  // mapReady flips true. Re-running on mount duplicates useMapState's own
+  // init read from localStorage, but setDifficulty's underlying set calls
+  // are idempotent, so this is harmless.
   useEffect(() => {
     if (!mapReady || !difficulty) return;
     setDifficulty(difficulty);
   }, [difficulty, mapReady, setDifficulty]);
 
-  // Section 10 -- PLACING -> REVEALING shows the line/pin/boundary reveal;
-  // any -> LOADING (including initial mount) clears it. Built off `result`
-  // rather than `guess`/`site` so a post-Confirm tap can't desync the
-  // visualization from what was actually scored (see file-header note).
-  //
-  // mapReady (a one-time latch from useMapState), not isStyleLoaded() --
-  // isStyleLoaded() also flickers false during ANY in-flight style update,
-  // including showResult's own source.setData() calls during its line-draw
-  // animation, which was silently skipping this very effect's hint-hide
-  // logic mid-reveal. mapReady only reflects whether the map has loaded at
-  // least once, which is all addLayer/removeLayer actually need.
+  // PLACING -> REVEALING draws the reveal (line/pin/boundary); any -> LOADING
+  // clears it. Uses `mapReady` rather than isStyleLoaded(), which also
+  // flickers false during in-flight style updates -- including showResult's
+  // own source.setData() calls -- and was intermittently skipping this
+  // effect mid-reveal.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
 
     if (roundState === 'REVEALING' && result && result.guessLat != null) {
-      // Borders/names stay exactly as the difficulty level (or the player's
-      // own manual toggle) has them set -- no longer force-enabled here.
-      // Hard mode's no-borders setting now holds through the reveal too,
-      // as originally envisioned.
-
       // BottomCard has already re-rendered into its expanded layout by the
-      // time this effect runs (same commit), so this reads its real height
-      // rather than guessing at a fixed pixel value.
+      // time this runs, so this reads its real measured height.
       const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 0;
       setCardHeight(measuredHeight);
       const fitPadding = { ...REVEAL_FIT_SIDES, bottom: measuredHeight + REVEAL_CARD_GAP };
@@ -145,27 +101,16 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
       });
     } else if (roundState === 'LOADING') {
       clearResult(map);
-      // Borders/names are no longer force-disabled here -- whatever the
-      // difficulty level (or the player's own manual toggle) had them set to
-      // simply carries over into the next round, as originally envisioned.
-      // Next Site lands here -- reset the view to the default India-wide
-      // framing per direct request, same fitBounds call RecenterButton/
-      // MapContainer's initial load both use.
+      // Reset to the default India-wide framing for the next round.
       map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING });
     }
   }, [mapRef, mapReady, roundState, result]);
 
-  // (v8.19) BottomCard.css transitions max-height over 0.3s on pill->expanded
-  // (is-pill -> is-expanded). The reveal effect above measures cardRef's
-  // height the instant roundState flips to REVEALING -- synchronously, in
-  // the same commit the class changes in, well before that 0.3s animation
-  // finishes -- so it reads a height still close to the pill's 64px, not the
-  // expanded card's real ~300-400px. cardHeight (and therefore
-  // RecenterButton's computed `bottom` offset below) was getting frozen at
-  // that too-small value, so once the card finished growing open it became
-  // tall enough to sit on top of a RecenterButton that never moved to make
-  // room for it (z-index 30 > 25). Fix: re-measure once the transition
-  // actually completes and correct cardHeight then.
+  // BottomCard's max-height transition (pill -> expanded) takes 0.3s. The
+  // reveal effect above measures cardRef's height synchronously when
+  // roundState flips to REVEALING, before that transition finishes, so it
+  // reads a height close to the pill's 64px rather than the expanded card's
+  // real height. Re-measure once the transition completes and correct it.
   useEffect(() => {
     const card = cardRef.current;
     if (!card || roundState !== 'REVEALING') return;
@@ -178,14 +123,10 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     return () => card.removeEventListener('transitionend', onTransitionEnd);
   }, [roundState]);
 
-  // Section 11 -- Hint 2 highlights site.state on the map, but only while
-  // the player can still act on it (READING/PLACING). hintLevel itself
-  // isn't reset to 0 until the *next* round's LOADING effect runs -- it's
-  // still 2 all through REVEALING (handleConfirm records it on `result`,
-  // it doesn't clear it) -- so without the roundState check below the
-  // state highlight would sit on top of resultLayer's own site-boundary
-  // reveal for the entire REVEALING phase instead of handing off to it the
-  // moment Confirm is pressed.
+  // Hint 2 highlights site.state on the map, but only while the player can
+  // still act (READING/PLACING). hintLevel stays 2 through REVEALING (it's
+  // only reset by the next round's LOADING effect), so the roundState check
+  // hands off to resultLayer's own boundary reveal once Confirm is pressed.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !site) return;
@@ -198,15 +139,10 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     }
   }, [mapRef, mapReady, hintLevel, site, roundState]);
 
-  // Section 9b -- Classic's post-REVEALING stats write: loadNormalStats() ->
-  // push to history -> increment rounds -> bestDist = min(...) -> cap
-  // history at 200 -> write. Guarded by object identity against `result`
-  // (not a boolean flag) so React 18 Strict Mode's dev-only double-invoke of
-  // this effect (mount -> cleanup -> mount again, same commit) can't record
-  // the same round twice -- the ref persists across both invocations, but a
-  // genuinely new round's `result` object always compares unequal and gets
-  // recorded exactly once. Same idempotency shape as recordDailyResult's own
-  // date-based guard in stats.js.
+  // Records the round once REVEALING starts. Guarded by object identity
+  // against `result` (not a boolean) so React 18 Strict Mode's dev-only
+  // double-invoke of this effect can't record the same round twice -- a
+  // new round's `result` always compares unequal.
   const recordedResultRef = useRef(null);
   useEffect(() => {
     if (roundState !== 'REVEALING' || !result) return;
@@ -215,12 +151,8 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     recordClassicResult(result);
   }, [roundState, result]);
 
-  // BottomCard's "Show Site Boundary" button -- zooms in tight on the
-  // revealed site's polygon on demand (the reveal effect above deliberately
-  // no longer does this automatically; see resultLayer.js's
-  // zoomToSiteBoundary for why). Recomputes fitPadding the same way that
-  // effect does rather than reusing a stored value -- cardRef's height can
-  // only be read live.
+  // "Show Site Boundary" button -- zooms in on the revealed site's polygon.
+  // Recomputes fitPadding live since cardRef's height can only be read live.
   function handleShowBoundary() {
     const map = mapRef.current;
     if (!map) return;

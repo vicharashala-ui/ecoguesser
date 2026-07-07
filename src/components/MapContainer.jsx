@@ -74,7 +74,7 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
 
   // Syncs the player's guess pin to the map. A move (re-tap before Confirm)
   // updates the existing marker's position rather than recreating it, so
-  // the drop-in animation (Decision #8) only plays on first placement.
+  // the drop-in animation only plays on first placement.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;

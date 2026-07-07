@@ -15,16 +15,13 @@ const path = require('path');
 
 const RAW = path.join(__dirname, '../data/raw');
 
-// ---------------------------------------------------------------------------
-// Explicit polygon sources for each point-only tiger reserve.
-// Each entry maps Tiger_Reserve name (exact, as in the TR file) to one or
-// more { type, name } lookups in the NP or WLS source files.
-// Compound reserves (e.g. Pench MP = core NP + buffer WLS) are combined into
-// a single MultiPolygon — not a true spatial union, but correct for display.
+// Maps each point-only Tiger_Reserve name to one or more { type, name }
+// lookups in the NP/WLS source files. Compound reserves (e.g. Pench MP =
+// core NP + buffer WLS) combine into a single MultiPolygon (display-only,
+// not a true spatial union).
 //
-// Dholpur-Karauli and Veerangana Durgavati have no polygon source available —
-// they remain as Point and will be flagged hasBoundary:false by processData.js.
-// ---------------------------------------------------------------------------
+// Dholpur-Karauli and Veerangana Durgavati have no source polygon; they
+// stay Point and get hasBoundary:false in processData.js.
 const PATCH_MAP = {
   'Bandhavgarh': [
     { type: 'NP',  name: 'Bandhavgarh NP' },

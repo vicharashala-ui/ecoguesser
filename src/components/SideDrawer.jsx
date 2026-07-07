@@ -1,34 +1,20 @@
 // src/components/SideDrawer.jsx
+// Side drawer: Player Name, Difficulty (Classic only), Category +
+// Region/State filters (Classic and Blitz), footer links, and an inline
+// Feedback box.
 //
-// Section 9's side drawer: Player Name, Difficulty (Classic only), Category
-// + Region/State filters (Classic and Blitz, per direct request), footer
-// links, and an inline Feedback box.
+// Category renders as a vertical list (one row per category) with each
+// row's total site count computed once from the full `sites` prop -- a
+// stable "how many exist in total" number, not a live facet count that
+// shifts as the player toggles states. Difficulty stays a chip row (3
+// short mutually-exclusive options suit chips better than a list).
 //
-// This pass:
-//   1. Category switched from a wrapped chip row to a vertical list (one
-//      row per category), each row showing that category's total site
-//      count -- e.g. "National Park  42". Counts are computed once from the
-//      full `sites` prop (every state, regardless of the current draft
-//      filter selection) so they don't shift around as the player toggles
-//      states -- a simple, stable "how many exist in total" number rather
-//      than a live "how many would this leave me with" facet count.
-//      Difficulty keeps the old chip-row layout on purpose -- it's 3 short
-//      mutually-exclusive options, which is what chips are actually good
-//      for; the request was specifically about Category's long list.
-//   2. Feedback moved from FeedbackButton.jsx + FeedbackModal.jsx (both
-//      removed -- delete those two files' four remaining artifacts,
-//      FeedbackButton.jsx/.css and FeedbackModal.jsx/.css, they're no
-//      longer imported anywhere) into a plain box at the bottom of this
-//      drawer. Same textarea/counter/send behavior as the old modal,
-//      minus everything that only existed to run a modal: no
-//      backdrop/dialog markup, no Escape-key handler, no focus-on-open,
-//      no Cancel button. Submitting just clears the box and shows a small
-//      inline "Thanks!" line for a few seconds, then reverts.
-//   3. Statistics link removed from the footer (per direct request) --
-//      Stats is still reachable via BottomNav's own tab, so the drawer
-//      link was a pure duplicate route. `onNavigate` now only ever fires
-//      for 'howtoplay'/'about'/'privacy', matching InfoModal's variants
-//      1:1 -- App.jsx wires it straight to setInfoModalVariant.
+// Feedback is a plain box at the bottom of the drawer -- submitting clears
+// it and shows a brief inline "Thanks!" line, then reverts -- rather than a
+// separate modal.
+//
+// `onNavigate` only ever fires for 'howtoplay'/'about'/'privacy', matching
+// InfoModal's variants 1:1; Stats is reachable via BottomNav's own tab.
 
 import { useState, useEffect, useRef } from 'react';
 import { LS_KEYS, CATEGORY_META, FEEDBACK_FORM_URL, FEEDBACK_ENTRY_ID } from '../config.js';

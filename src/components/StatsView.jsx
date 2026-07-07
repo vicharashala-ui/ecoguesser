@@ -1,19 +1,7 @@
 // src/components/StatsView.jsx
-//
-// Section 9b's Stats tab. Reachable two ways -- BottomNav's Stats tab (now
-// wired instead of disabled) and SideDrawer's "Statistics" footer link,
-// which just calls the same switchTab('stats') App.jsx already uses for
-// Daily/Classic.
-//
-// Interpretation call: the spec heading says "Full-screen view, sub-tabs:
-// Daily | Classic," but the ASCII mockup below it shows both DAILY
-// CHALLENGE and CLASSIC MODE blocks stacked with a divider, which reads
-// more like "one scrollable page" than "two mutually-exclusive tabs." Went
-// with the heading's literal words -- real sub-tab switching, one section
-// visible at a time -- since mockups elsewhere in this spec are
-// consistently approximate (see BottomCard.jsx's own header comment on its
-// two gap-filling assumptions), and an actual toggle is the more useful
-// interaction on a phone-width screen than a long stacked scroll.
+// Stats tab, reachable via BottomNav. Sub-tabs (Daily | Classic) switch
+// between two stacked sections rather than a long scroll -- more useful on
+// a phone-width screen.
 //
 // Pure presentational component -- all math lives in stats.js
 // (computeDailyStats/computeClassicStats) so it stays testable independent

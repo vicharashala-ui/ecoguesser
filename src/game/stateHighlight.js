@@ -1,7 +1,7 @@
 // src/game/stateHighlight.js
-// Implements Section 11 (Hint System) of the EcoGuesser spec.
+// Hint 2: highlights a site's state(s) on the map.
 //
-// Wire-up (Round State Machine, Section 5):
+// Wire-up (round state machine):
 //   Hint 2 tapped:     showHint2(map, site)
 //   Any -> LOADING:    hideHint2(map)
 //
@@ -36,9 +36,9 @@ function startPulse(map) {
 
 /**
  * Highlights every state in `site.state` (always an array, even for
- * single-state sites -- see Section 6). Always visible regardless of the
- * Political (Borders) toggle, since HINT_FILL/HINT_OUTLINE are independent
- * layers with no `visibility: 'none'` tie to STATE_LINES.
+ * single-state sites). Always visible regardless of the Political
+ * (Borders) toggle, since HINT_FILL/HINT_OUTLINE are independent layers
+ * with no `visibility: 'none'` tie to STATE_LINES.
  */
 export function showHint2(map, site) {
   if (!map || !map.getSource(STATE_SOURCE_ID)) return;
@@ -71,7 +71,7 @@ export function showHint2(map, site) {
   }
 }
 
-/** Called at LOADING start (Section 11). */
+/** Called at LOADING start. */
 export function hideHint2(map) {
   if (pulseFrameId !== null) {
     cancelAnimationFrame(pulseFrameId);

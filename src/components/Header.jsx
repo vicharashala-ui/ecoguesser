@@ -1,23 +1,18 @@
 // src/components/Header.jsx
-//
-// Section 8's header, scoped down: `[=]     EcoGuesser     [Daily Challenge] * 7,450`
-// -- only the hamburger (opens SideDrawer) and the title are built here.
-// The mode label + running score on the right aren't specified precisely
-// enough to build correctly yet (unclear which score it tracks -- current
-// round's running Daily total already lives in BottomCard, so this would
-// be a second display of the same number, or a different one entirely) --
-// deferred rather than guessed at.
+// App header: hamburger (opens SideDrawer) + centered title. No mode
+// label/running score on the right -- current round's running Daily total
+// already lives in BottomCard, so a second display here would be either
+// redundant or a confusing second number.
 //
 // Title block (name + tagline) is centered independent of the hamburger --
 // absolutely positioned at left:50% rather than living in the flex row next
 // to the button, so it stays centered on the viewport regardless of the
-// button's width/padding, matching the reference design. Not an <h1>: this
-// header is mounted for every tab (App.jsx renders it unconditionally), and
-// Leaderboard.jsx/StatsView.jsx each already have their own page-level <h1>
-// -- a second one here would duplicate the page's primary heading, which
-// hurts rather than helps document structure/SEO. The brand name stays real,
-// crawlable/selectable text either way (not an image), which is what
-// actually matters for discoverability here.
+// button's width/padding. Not an <h1>: this header is mounted for every tab
+// (App.jsx renders it unconditionally), and Leaderboard.jsx/StatsView.jsx
+// each already have their own page-level <h1> -- a second one here would
+// duplicate the page's primary heading, which hurts rather than helps
+// document structure/SEO. The brand name stays real, crawlable/selectable
+// text either way (not an image).
 
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './Header.css';

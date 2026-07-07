@@ -1,25 +1,22 @@
 // src/components/DailySummary.jsx
-//
-// Section 4's DAILY_SUMMARY -- the transient auto-submit screen between the
-// 5th round's REVEALING and LEADERBOARD. Covers steps 2-6 of "DAILY_SUMMARY
-// (auto-submits on entry)":
+// DAILY_SUMMARY -- the transient auto-submit screen between the 5th
+// round's REVEALING and LEADERBOARD:
 //   1. (done by the caller) App.jsx's handleDailyComplete already called
 //      recordDailyResult before this component mounts -- that write must
-//      happen exactly once per real completion, not once per mount of this
-//      screen, so it doesn't live here.
+//      happen exactly once per real completion, not once per mount of
+//      this screen, so it doesn't live here.
 //   2. Name prompt modal if LS_KEYS.NAME is empty.
 //   3. POST /api/score, spinner shown throughout.
-//   4/5/6. All three outcomes (200 / 409 / network error) resolve to
-//      LEADERBOARD via onDone() -- just with different payloads.
+//   4. All outcomes (200 / 409 / network error) resolve to LEADERBOARD via
+//      onDone() -- just with different payloads.
 //
-// Known gap: this unmounts if the player switches tabs mid-submit (App.jsx
-// only renders it while activeTab==='daily'). The in-flight POST/GET still
+// Known gap: unmounts if the player switches tabs mid-submit (App.jsx only
+// renders it while activeTab==='daily'). The in-flight POST/GET still
 // completes, but onDone's result is dropped since nothing is listening --
-// dailyPhase stays 'summary', and reopening the Daily tab just re-runs this
-// flow from scratch (recordDailyResult's idempotency guard makes that safe,
-// just wasteful). Not fixed here; needs App.jsx to own the fetch outside
-// this component's lifecycle, the same "always mounted" treatment DailyMap
-// gets, if it matters in practice.
+// reopening the Daily tab just re-runs this flow from scratch
+// (recordDailyResult's idempotency guard makes that safe, just wasteful).
+// Fix would require App.jsx to own the fetch outside this component's
+// lifecycle, the same "always mounted" treatment DailyMap gets.
 
 import { useState, useEffect, useCallback } from 'react';
 import NamePromptModal from './NamePromptModal.jsx';

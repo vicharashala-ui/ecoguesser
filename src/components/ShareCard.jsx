@@ -1,9 +1,8 @@
 // src/components/ShareCard.jsx
-//
-// Section 8b's share card -- 1080x1080 canvas drawn client-side from that
-// day's already-recorded stats_daily entry (no network call), shared via
-// the Web Share API on mobile or downloaded as a PNG on desktop.
-// Opened from Leaderboard's Share button.
+// Share card -- 1080x1080 canvas drawn client-side from that day's
+// already-recorded stats_daily entry (no network call), shared via the Web
+// Share API on mobile or downloaded as a PNG on desktop. Opened from
+// Leaderboard's Share button.
 
 import { useEffect, useRef } from 'react';
 import { APP_URL, CATEGORY_META, DAILY, SCORING } from '../config.js';

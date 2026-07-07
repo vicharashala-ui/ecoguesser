@@ -1,12 +1,7 @@
 // src/components/BottomNav.jsx
 //
-// Section 8's bottom tab bar: [fire] Daily | [mountain] Classic | [chart] Stats.
-// Active-tab amber (#f59e0b) + scaled icon, per spec.
-//
-// Update: Stats is now a real tab, not the disabled "Coming soon" placeholder
-// from v8.17 -- StatsView.jsx exists now, so it's folded into the same TABS
-// array/onClick wiring Daily/Classic already use rather than kept as a
-// separate hardcoded disabled button.
+// Bottom tab bar: [fire] Daily | [mountain] Classic | [chart] Stats.
+// Active-tab amber (#f59e0b) + scaled icon.
 //
 // Icons match BottomCard.jsx's inline-SVG convention (currentColor,
 // viewBox 0 0 24 24, stroke-based, no fill) rather than a second icon style

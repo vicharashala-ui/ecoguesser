@@ -1,45 +1,18 @@
 // src/components/DailyMap.jsx
-//
 // Daily Challenge's playable round screen -- the Daily-mode counterpart to
-// ClassicMap.jsx. Wires MapContainer + BottomCard + useDailyRound + useMapState
-// together the same way ClassicMap.jsx does: two useEffects drive the map side
-// of the round state machine, since useDailyRound (like useClassicRound)
-// deliberately owns no map state and no API calls.
+// ClassicMap.jsx. Wires MapContainer + BottomCard + useDailyRound +
+// useMapState together the same way ClassicMap.jsx does; useDailyRound owns
+// no map state and no API calls.
 //
 // Scope boundary: this component owns the round itself (rounds 1-5, timer,
-// hints) but NOT navigation away from it. Section 4's screen state
-// machine routes round 5's "Next" to DAILY_SUMMARY rather than back through
-// LOADING -- that's a parent/screen-router concern, so this component just
-// calls `onComplete(results)` once the 5th round is confirmed and lets the
-// caller decide what happens next (DAILY_SUMMARY -> POST /api/score, etc.).
+// hints) but not navigation away from it. It calls `onComplete(results)`
+// once round 5 is confirmed and lets the caller (the screen router) decide
+// what happens next (DAILY_SUMMARY -> POST /api/score, etc.).
 //
-// Revised after seeing the real BottomCard.jsx/.css (previous draft guessed
-// wrong on a few points):
-//   - BottomCard is a DEFAULT export, not named.
-//   - The cumulative-score prop is `dailyTotal`, not `runningTotal` --
-//     "cumulative score AFTER this round." useDailyRound's `results` already
-//     includes the just-finalized round by the time roundState flips to
-//     REVEALING (finalizeRound pushes to `results` before setting
-//     REVEALING), so summing it here is correct, just renamed.
-//   - BottomCard reads `site.category` with no null-guard, so it cannot be
-//     rendered before `site` resolves. useDailyRound's `site` is null until
-//     `getDailySites` returns (on mount, before the LOADING->READING
-//     handoff) -- added an explicit loading branch below to cover that gap,
-//     which the previous draft would have crashed on.
-//
-// Confirmed against the real source (previous draft only inferred these):
-//   - MapContainer.jsx is a DEFAULT export, not named -- import fixed below.
-//   - MapContainer's `onMapClick`/`guess` props and useMapState's
-//     `useMapState(mapRef, mode)` signature were both correct as guessed.
-//
-// Design note (unchanged, not a guess): Decision #2's v8.16 Borders-auto-toggle
-// on REVEALING is Classic-only per spec -- deliberately not replicated below.
-//
-// Update: Section 3 Tile Efficiency's REVEALING pan lock (dragPan.disable(),
-// via useMapState's old lockInteraction/unlockInteraction) is removed, per
-// direct request -- panning should stay usable during the reveal the same
-// way zoom already was. useMapState no longer exposes those two at all
-// (DailyMap.jsx was their only caller).
+// Two things intentionally differ from ClassicMap.jsx: Daily doesn't
+// auto-toggle borders on REVEALING (state borders are forced on at all
+// times via useMapState instead), and panning stays enabled during the
+// reveal -- only the pause overlay disables map interaction (Effect 3 below).
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 import MapContainer from './MapContainer.jsx';
@@ -76,10 +49,7 @@ function formatTime(totalSeconds) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-// Decision #6: dark -> amber <30s -> red <10s (flipped from white-on-dark
-// now that .dm-timer-card is light glass -- #111827/#f59e0b/#dc2626 are the
-// same dark-text/amber/red already established in BottomCard.css, not new
-// colors).
+// Dark text -> amber under 30s -> red under 10s.
 function timerColor(remaining) {
   if (remaining < 10) return '#dc2626';
   if (remaining < 30) return '#f59e0b';
@@ -89,8 +59,7 @@ function timerColor(remaining) {
 export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
   const cardRef = useRef(null);
   // Tracks BottomCard's real height during REVEALING, so RecenterButton can
-  // be positioned above the expanded card instead of being hidden by it
-  // (per direct request -- it now stays visible through REVEALING too).
+  // be positioned above the expanded card instead of being hidden by it.
   const [cardHeight, setCardHeight] = useState(null);
 
   const {
@@ -119,10 +88,10 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
     handlePauseToggle,
   } = useDailyRound(sites, active);
 
-  // Effect 1 (mirrors ClassicMap.jsx): resultLayer.js off [mapReady, roundState, result].
-  // fitPadding is measured from the real card height, same fix as Section 10's
-  // v8.16 note -- a static guess breaks once Daily's extra summary lines
-  // (hint penalty / round score / running total) change the card's height.
+  // Effect 1 (mirrors ClassicMap.jsx): draws/clears the reveal off
+  // [mapReady, roundState, result]. fitPadding is measured from the real
+  // card height since Daily's extra summary lines (hint penalty / round
+  // score / running total) change the card's height.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
@@ -134,18 +103,18 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
       showResult(map, guess, site, { distanceKmOverride: result.distanceKm, fitPadding });
     } else if (roundState === 'LOADING') {
       clearResult(map);
-      // Next Site (and Skip's auto-advance) lands here -- reset the view to
-      // the default India-wide framing per direct request, same fitBounds
-      // call RecenterButton/MapContainer's initial load both use.
+      // Next Site (and Skip's auto-advance) lands here -- reset to the
+      // default India-wide framing, same fitBounds call RecenterButton/
+      // MapContainer's initial load both use.
       map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING });
     }
   }, [mapReady, roundState, result, guess, site, mapRef]);
 
   // Effect 2 (mirrors ClassicMap.jsx): Hint-2 highlight off
-  // [mapReady, hintLevel, site, roundState]. Gated on roundState, not just
-  // hintLevel -- hintLevel is still 2 throughout REVEALING (Section 11), so
-  // without this gate the highlight would sit on top of resultLayer.js's own
-  // boundary reveal instead of handing off to it the moment Confirm fires.
+  // [mapReady, hintLevel, site, roundState]. Gated on roundState since
+  // hintLevel stays 2 throughout REVEALING -- without this gate the
+  // highlight would sit on top of resultLayer.js's own boundary reveal
+  // instead of handing off to it the moment Confirm fires.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !site) return;
@@ -155,15 +124,10 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
     else hideHint2(map);
   }, [mapReady, hintLevel, site, roundState, mapRef]);
 
-  // (v8.19) Same fix as ClassicMap.jsx: BottomCard.css transitions
-  // max-height over 0.3s on pill->expanded, but Effect 1 above measures
-  // cardRef's height synchronously the instant roundState flips to
-  // REVEALING -- well before that transition finishes -- so cardHeight
-  // (and RecenterButton's `bottom` offset below) was getting frozen at a
-  // too-small, mid-transition reading. Once the card finished growing
-  // open, it became tall enough to sit on top of a RecenterButton that
-  // never moved to make room (z-index 30 > 25). Re-measure once the
-  // transition actually completes and correct cardHeight then.
+  // Same fix as ClassicMap.jsx: BottomCard.css's max-height transition
+  // (0.3s, pill->expanded) hasn't finished by the time Effect 1 measures
+  // cardRef's height, so cardHeight can freeze at a too-small, mid-
+  // transition reading. Re-measure once the transition completes.
   useEffect(() => {
     const card = cardRef.current;
     if (!card || roundState !== 'REVEALING') return;
@@ -177,9 +141,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
   }, [roundState]);
 
   // Effect 3: pausing freezes the map in place -- disable every pan/zoom/
-  // rotate handler on pause, restore them on resume. Scoped strictly to
-  // `paused` (unlike the old REVEALING pan lock removed above, which stays
-  // pannable on purpose).
+  // rotate handler on pause, restore them on resume.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
@@ -192,9 +154,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
   }, [paused, mapReady, mapRef]);
 
   // Round 5's "Next" hands off to the parent instead of looping back to
-  // LOADING (Section 4). useDailyRound's own handleNextSite already no-ops
-  // past the last round, so this branch is what actually triggers the
-  // DAILY_SUMMARY transition, not just a redundant guard.
+  // LOADING; this is what triggers the DAILY_SUMMARY transition.
   const handleNext = useCallback(() => {
     if (isLastRound) {
       onComplete?.(results);
@@ -203,11 +163,8 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
     }
   }, [isLastRound, results, handleNextSite, onComplete]);
 
-  // BottomCard's "Show Site Boundary" button -- zooms in tight on the
-  // revealed site's polygon on demand (Effect 1 above deliberately no
-  // longer does this automatically; see resultLayer.js's zoomToSiteBoundary
-  // for why). Recomputes fitPadding the same way Effect 1 does rather than
-  // reusing a stored value -- cardRef's height can only be read live.
+  // "Show Site Boundary" button -- zooms in on the revealed site's polygon.
+  // Recomputes fitPadding live since cardRef's height can only be read live.
   function handleShowBoundary() {
     const map = mapRef.current;
     if (!map) return;
@@ -219,12 +176,9 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
 
   return (
     <div style={style} className="eg-daily-map">
-      {/* Top-right stack: layer panel (Satellite only now -- Political was
-          removed per direct request, Daily forces state borders on at all
-          times via useMapState) with the round timer sitting directly below
-          it. Timer used to live in a separate centered "[timer] Round 2/5"
-          subheader pill -- the round counter text was removed and the timer
-          moved up here per direct request. */}
+      {/* Top-right stack: layer panel (Satellite only -- Daily forces state
+          borders on at all times via useMapState) with the round timer
+          sitting directly below it. */}
       <div className="dm-top-right-stack">
         <div className="dm-layer-panel">
           <label className="eg-toggle">
@@ -286,8 +240,8 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
       ) : roundState === 'NOT_STARTED' ? (
         // Round 1's Start gate -- timer hasn't started yet (useDailyRound
         // only calls timer.start() on entering READING, which handleStart
-        // triggers) and the guess panel hasn't appeared yet either, per
-        // direct request. Rounds 2-5 never hit this branch.
+        // triggers) and the guess panel hasn't appeared yet either. Rounds
+        // 2-5 never hit this branch.
         <div className="dm-start-pill">
           <button type="button" className="dm-start-btn" onClick={handleStart}>
             Start Daily Challenge

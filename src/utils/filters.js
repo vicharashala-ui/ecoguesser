@@ -1,16 +1,15 @@
 /**
- * Two-tier Region -> State filter (Key Decision #10). REGION_STATES is a
- * UI-facing grouping only: selecting a whole region just expands to its
- * member states in the side drawer. Filtering itself always happens against
- * the flat `states` array, not against region names.
+ * Two-tier Region -> State filter. REGION_STATES is a UI-facing grouping
+ * only: selecting a whole region just expands to its member states in the
+ * side drawer. Filtering itself always happens against the flat `states`
+ * array, not against region names.
  *
- * VERIFIED against protected-areas.json (839 sites, 36/36 state strings):
+ * Verified against protected-areas.json (839 sites, 36/36 state strings):
  * every name below matches `site.state[]` exactly. One mismatch was caught
  * and fixed during verification -- the merged Dadra & Nagar Haveli/Daman &
  * Diu UT uses mixed '&'/'and' ('Dadra & Nagar Haveli and Daman & Diu'), not
  * all-'and'. If protected-areas.json is ever regenerated, re-diff this list
- * against it (see br_great_nicobar_biosphere_reserve typo-state gap in
- * Critical Gotchas for why that matters).
+ * against it.
  */
 
 import { DAILY } from '../config.js';
@@ -32,10 +31,10 @@ export const REGION_STATES = {
   // 'Chhattisgarh' (double h) -- corrected from "Chattisgarh", the official spelling.
   'Centre-East': ['West Bengal', 'Odisha', 'Jharkhand', 'Chhattisgarh', 'Madhya Pradesh', 'Bihar'],
   UT: [
-    // Corrected to 'Andaman & Nicobar Islands' -- per Section 16, "and" is a
-    // typo variant in source data; the cleaned name in india-states.geojson/
-    // site.state[] uses '&'. Verified against protected-areas.json: 36/36
-    // states match exactly, including this and Jammu & Kashmir below.
+    // 'Andaman & Nicobar Islands', not 'and' -- the cleaned name in
+    // india-states.geojson/site.state[] uses '&'. Verified against
+    // protected-areas.json: 36/36 states match exactly, including this and
+    // Jammu & Kashmir below.
     'Andaman & Nicobar Islands',
     'Chandigarh',
     'Dadra & Nagar Haveli and Daman & Diu',

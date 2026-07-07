@@ -1,24 +1,21 @@
 // src/components/BlitzCard.jsx
-//
-// Blitz's guess panel: same pill -> expanded-card shell as
-// BottomCard.jsx, reusing BottomCard.css directly for the shell (.bottom-card,
-// .bc-pill, .bc-pill-top, .bc-pill-actions, .bc-card, .bc-card-header,
-// .bc-meta-row, .bc-actions, .bc-boundary-btn, etc.) -- pre-guess pill now
-// mirrors BottomCard.jsx's two-row layout exactly (name row, then
-// Skip/Hint/Confirm row), plus badge styles and the .bz-compact spacing
-// override in BlitzCard.css. If BottomCard.css is ever renamed, this file's
-// import below needs to follow.
+// Blitz's guess panel: same pill -> expanded-card shell as BottomCard.jsx,
+// reusing BottomCard.css directly for the shell (.bottom-card, .bc-pill,
+// .bc-pill-top, .bc-pill-actions, .bc-card, .bc-card-header, .bc-meta-row,
+// .bc-actions, .bc-boundary-btn, etc.), plus badge styles and the
+// .bz-compact spacing override in BlitzCard.css. If BottomCard.css is ever
+// renamed, this file's import below needs to follow.
 //
 // Critical: the pill must NEVER reveal site.state before Confirm -- Hint
 // only highlights the containing region(s) on the map (blitzHighlight.js's
 // showHintRegion), never the state name itself, so `site.state`/
 // `correctStates` text may only appear once roundState === 'REVEALING'.
 //
-// Expanded card is deliberately compact: no Streak line/divider (removed
-// per direct request -- Blitz's in-session streak is still tracked by
-// useBlitzRound.js, just no longer surfaced here), and the state name is
-// only shown once -- skipped in the meta row on a wrong guess since the
-// badge below already names it ("Wrong -- it's in ...").
+// Expanded card is deliberately compact: no Streak line/divider (Blitz's
+// in-session streak is still tracked by useBlitzRound.js, just not
+// surfaced here), and the state name is only shown once -- skipped in the
+// meta row on a wrong guess since the badge below already names it
+// ("Wrong -- it's in ...").
 
 import { useId, forwardRef } from 'react';
 import { CATEGORY_META, formatSiteName } from '../config.js';

@@ -10,12 +10,11 @@
   inset: 0;
   bottom: var(--eg-nav-height, 64px);
   /* Below Header's z-index:15 (Header.css), not above it like
-     Leaderboard/DailySummary (z-index:20) -- per direct request, the
-     hamburger menu should stay reachable while on the Stats tab. Header's
-     own container has pointer-events:none outside its button, so this
-     screen's content is still fully interactive everywhere except the
-     header's own title bar height. Leaderboard/DailySummary
-     were left as-is; only Stats was asked for. */
+     Leaderboard/DailySummary (z-index:20) -- the hamburger menu should
+     stay reachable while on the Stats tab. Header's own container has
+     pointer-events:none outside its button, so this screen's content is
+     still fully interactive everywhere except the header's own title bar
+     height. */
   z-index: 12;
   overflow-y: auto;
   background: #f8f6f1;

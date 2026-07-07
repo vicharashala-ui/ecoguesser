@@ -1,23 +1,21 @@
 // src/hooks/useDailyRound.js
+// Daily Challenge round state machine: LOADING -> READING -> PLACING ->
+// REVEALING -> LOADING, x5 fixed categories. Mirrors useClassicRound's
+// contract and division of labour -- owns no map state and no API calls,
+// just { roundState, site, guess, ... } + handlers. The screen-level Daily
+// component wires resultLayer.js/stateHighlight.js off this hook's state
+// (same two-useEffect pattern as ClassicMap.jsx) and routes to
+// DAILY_SUMMARY once `isComplete` flips true.
 //
-// Daily Challenge round state machine (Section 5: LOADING -> READING -> PLACING
-// -> REVEALING -> LOADING, x5 fixed categories). Mirrors useClassicRound's
-// contract and division of labour -- owns no map state and no API calls, just
-// { roundState, site, guess, ... } + handlers. The screen-level Daily component
-// is responsible for mounting DailyMap, wiring resultLayer.js/stateHighlight.js
-// off this hook's state (same two-useEffect pattern as ClassicMap.jsx), and
-// routing to DAILY_SUMMARY once `isComplete` flips true.
+// One extra state: round 1's first LOADING->READING handoff detours
+// through NOT_STARTED instead -- the timer must not start and the guess
+// panel must not appear until the player explicitly presses Start
+// (handleStart). Rounds 2-5 skip this detour (hasStartedRef latches true
+// on the first handleStart call).
 //
-// One state beyond Section 5's literal list: round 1's first LOADING->READING
-// handoff detours through NOT_STARTED instead, per direct request -- the
-// timer must not start and the guess panel must not appear until the player
-// explicitly presses Start (handleStart). Rounds 2-5 skip this detour
-// entirely (hasStartedRef latches true on the first handleStart call).
-//
-// Daily-only concerns Classic deliberately doesn't have, per Section 5 /
-// Decision #2 (Game Modes):
-//   - 2-min countdown per round, auto-submit at 0 with whatever marker exists
-//     (or 0 pts if none was placed), distinguished via `timedOut`.
+// Daily-only concerns Classic doesn't have:
+//   - 2-min countdown per round, auto-submit at 0 with whatever marker
+//     exists (or 0 pts if none was placed), distinguished via `timedOut`.
 //   - Hints cost -500/each (`SCORING.HINT_PENALTY`), unlike Classic's free hints.
 //   - Fixed 5-round progression across DAILY.CATEGORIES, not infinite/random.
 
@@ -39,9 +37,8 @@ export function useDailyRound(allSites, active = true) {
   const [results, setResults] = useState([]); // finalized RoundResult[], grows to length 5
   const [paused, setPaused] = useState(false); // player-facing pause, READING/PLACING only
 
-  // Plain-value mirrors of state, read inside callbacks/timer-expiry instead of
-  // stale closures -- same technique as useMapState's politicalRef/mapReadyRef,
-  // and the same fix useClassicRound needed for handleMapClick/handleHint.
+  // Plain-value mirrors of state, read inside callbacks/timer-expiry instead
+  // of stale closures (same technique used in useMapState and useClassicRound).
   const roundStateRef = useRef(roundState);
   const guessRef = useRef(guess);
   const hintLevelRef = useRef(hintLevel);
@@ -64,12 +61,11 @@ export function useDailyRound(allSites, active = true) {
 
   // Round 1 only: the LOADING->READING handoff is gated behind an explicit
   // Start press (handleStart below) rather than firing automatically the
-  // moment `site` resolves -- per spec, the timer must not start and the
-  // guess panel must not appear until the player presses Start. hasStartedRef
-  // (not state) since it only needs to be read inside the handoff effect,
-  // never rendered; once true it stays true for the rest of this mount
-  // (rounds 2-5 skip the gate, same as Daily progress generally not
-  // persisting across a refresh -- see Section 4's note on that).
+  // moment `site` resolves -- the timer must not start and the guess panel
+  // must not appear until the player presses Start. hasStartedRef (not
+  // state) only needs to be read inside the handoff effect, never
+  // rendered; once true it stays true for the rest of this mount (rounds
+  // 2-5 skip the gate).
   const hasStartedRef = useRef(false);
 
   // LOADING -> NOT_STARTED (round 1, first time) or READING (every other
@@ -91,11 +87,8 @@ export function useDailyRound(allSites, active = true) {
 
   // Single scoring path shared by Confirm and timer-expiry so the two entry
   // points can never disagree about how a round's RoundResult is built.
-  // `skipped` stays on the result shape (stats.js and the DailyRecap-image
-  // share flow both still
-  // read it for historical rounds recorded before Skip was removed from
-  // Daily) but is always false now -- there's no remaining caller that can
-  // set it true.
+  // `skipped` stays on the result shape for stats.js/DailyRecap compatibility
+  // but is always false now -- Skip was removed from Daily.
   const finalizeRound = useCallback((finalGuess, { timedOut = false } = {}) => {
     // Defensive idempotency guard: a stray double-fire (e.g. Confirm clicked
     // in the same tick the timer's interval also expires) must not push two
@@ -142,11 +135,11 @@ export function useDailyRound(allSites, active = true) {
 
   // Start the clock the moment a round goes live; reset it when the next
   // round starts loading. Intentionally NOT reset on PLACING -- placing a
-  // marker doesn't pause the timer (Decision #6/#2: 2-min countdown, runs
-  // through READING->PLACING per Section 5). Paused on REVEALING so an early
-  // Confirm/Skip freezes the displayed time instead of letting it keep
-  // counting down toward an already-scored round (timer.pause() is a no-op
-  // if onExpire already cleared the interval itself, e.g. a true timeout).
+  // marker doesn't pause the timer, it keeps running through
+  // READING->PLACING. Paused on REVEALING so an early Confirm/Skip freezes
+  // the displayed time instead of letting it keep counting down toward an
+  // already-scored round (timer.pause() is a no-op if onExpire already
+  // cleared the interval, e.g. a true timeout).
   useEffect(() => {
     if (roundState === 'READING') timer.start();
     if (roundState === 'LOADING') { timer.reset(); setPaused(false); }
@@ -155,10 +148,10 @@ export function useDailyRound(allSites, active = true) {
   }, [roundState]);
 
   const handleMapClick = useCallback((lat, lng) => {
-    // Same guard pattern as useClassicRound's v8.16 fix: read roundState as a
-    // plain ref value with an early return, rather than nesting this check
-    // inside setRoundState's updater (React 18 Strict Mode double-invokes
-    // updaters in dev; a nested setGuess side effect would fire twice).
+    // Reads roundState as a plain ref with an early return, rather than
+    // nesting this check inside setRoundState's updater (React 18 Strict
+    // Mode double-invokes updaters in dev; a nested setGuess side effect
+    // would fire twice).
     if (roundStateRef.current !== 'READING' && roundStateRef.current !== 'PLACING') return;
     if (pausedRef.current) return; // pause button blocks marker placement too
     setGuess({ lat, lng });
@@ -177,12 +170,11 @@ export function useDailyRound(allSites, active = true) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-pause on navigating away to another in-app tab mid-round, instead
-  // of App.jsx's old confirm()-and-block guard -- the round just freezes and
-  // waits, same site/progress intact (DailyMap stays mounted, display:none,
-  // per Section 4), and the player resumes manually via handlePauseToggle
-  // when they come back. Doesn't auto-resume on return -- that's a deliberate
-  // player action, not automatic.
+  // Auto-pause on navigating away to another in-app tab mid-round -- the
+  // round just freezes and waits, same site/progress intact (DailyMap
+  // stays mounted, display:none), and the player resumes manually via
+  // handlePauseToggle when they come back. Doesn't auto-resume on return --
+  // that's a deliberate player action, not automatic.
   useEffect(() => {
     if (!active && !pausedRef.current && (roundStateRef.current === 'READING' || roundStateRef.current === 'PLACING')) {
       setPaused(true);
@@ -198,15 +190,15 @@ export function useDailyRound(allSites, active = true) {
   }, []);
 
   const handleConfirm = useCallback(() => {
-    if (!guessRef.current) return; // Confirm Guess is greyed out until markerPlaced (Decision #8); belt-and-suspenders here
+    if (!guessRef.current) return; // Confirm Guess is greyed out until markerPlaced; belt-and-suspenders here
     finalizeRound(guessRef.current, {});
   }, [finalizeRound]);
 
-  // Advances to the next round. The caller (screen-level component) must NOT
-  // call this on the final round -- check `isLastRound` first and route to
-  // DAILY_SUMMARY instead (Section 4: round 5's [Next] goes to DAILY_SUMMARY,
-  // not back through LOADING). This hook deliberately has no opinion about
-  // screen routing, same boundary useClassicRound keeps around map state/API.
+  // Advances to the next round. The caller (screen-level component) must
+  // NOT call this on the final round -- check `isLastRound` first and
+  // route to DAILY_SUMMARY instead. This hook deliberately has no opinion
+  // about screen routing, same boundary useClassicRound keeps around map
+  // state/API.
   const handleNextSite = useCallback(() => {
     if (roundStateRef.current !== 'REVEALING') return;
     if (roundIndex >= TOTAL_ROUNDS - 1) return;

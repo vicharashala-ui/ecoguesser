@@ -1,26 +1,19 @@
 // src/game/stats.js
-//
-// Section 9b's stats persistence -- Daily side (loadDailyStats/
-// recordDailyResult/hasPlayedToday/bestDailyScore) is unchanged from v8.19.
-//
-// Added this pass, closing the gap the file-header comment used to flag
-// ("loadNormalStats()/Classic's post-REVEALING write ... aren't needed yet"):
-//   - loadNormalStats() / recordClassicResult() -- Classic's stats_normal
-//     read/write, spec-verbatim ("Classic stats write (after each
-//     REVEALING)": loadNormalStats -> push history -> increment rounds ->
-//     bestDist = Math.min(...) -> cap history at 200 -> write).
-//   - computeDailyStats() / computeClassicStats() -- the Section 9b derived
+// localStorage-backed stats persistence for all three modes:
+//   - Daily: loadDailyStats/recordDailyResult/hasPlayedToday/bestDailyScore
+//   - Classic: loadNormalStats/recordClassicResult
+//   - Blitz: loadBlitzStats/recordBlitzResult
+//   - computeDailyStats/computeClassicStats/computeBlitzStats -- derived
 //     fields (games played, streaks, averages, score distribution buckets,
-//     per-category means, hint/timeout/skip sums, Classic's sparkline trend
-//     array). Pulled into this file rather than left inline in StatsView.jsx
-//     so they're unit-testable independent of rendering, and so a future
-//     share/recap consumer doesn't have to duplicate the math.
+//     per-category means, hint/timeout/skip sums, Classic's sparkline
+//     trend array). Pulled into this file rather than left inline in
+//     StatsView.jsx so they're unit-testable independent of rendering.
 
 import { LS_KEYS, DAILY } from '../config.js';
 import { getTodayString, getYesterdayString } from './daily.js';
 
 // ---------------------------------------------------------------------------
-// Daily -- unchanged from v8.19
+// Daily
 // ---------------------------------------------------------------------------
 
 export function loadDailyStats() {
@@ -39,9 +32,9 @@ export function loadDailyStats() {
 }
 
 /** True once today's DAILY_SUMMARY write has already landed -- drives the
- *  Daily bottom-nav tab's DAILY_ROUND-vs-LEADERBOARD routing (Section 4) and
- *  guards App.jsx's initial dailyPhase against dropping a returning player
- *  back into a live round on page reload. */
+ *  Daily bottom-nav tab's DAILY_ROUND-vs-LEADERBOARD routing and guards
+ *  App.jsx's initial dailyPhase against dropping a returning player back
+ *  into a live round on page reload. */
 export function hasPlayedToday(stats = loadDailyStats()) {
   const today = getTodayString();
   const lastScore = stats.scores[stats.scores.length - 1];
@@ -50,10 +43,10 @@ export function hasPlayedToday(stats = loadDailyStats()) {
 
 /**
  * Writes one Daily run to localStorage: streak math + capped scores push.
- * Idempotent -- a second call for the same day is a no-op (spec step 2),
- * since a stray double-call (e.g. React Strict Mode re-firing the effect
- * that routes a Skip'd final round) must not double the streak or push two
- * entries for one day.
+ * Idempotent -- a second call for the same day is a no-op, since a stray
+ * double-call (e.g. React Strict Mode re-firing the effect that routes a
+ * Skip'd final round) must not double the streak or push two entries for
+ * one day.
  */
 export function recordDailyResult(results, totalPts, totalDist) {
   const stats = loadDailyStats();
@@ -83,15 +76,15 @@ export function recordDailyResult(results, totalPts, totalDist) {
   return stats;
 }
 
-/** Section 8's "Your best: 19,200 (May 28)" -- max of scores[].total per
- *  spec (today's just-written entry counts too). Returns null if empty. */
+/** Max of scores[].total (today's just-written entry counts too).
+ *  Returns null if empty. */
 export function bestDailyScore(stats) {
   if (stats.scores.length === 0) return null;
   return stats.scores.reduce((best, s) => (s.total > best.total ? s : best));
 }
 
 // ---------------------------------------------------------------------------
-// Classic -- new this pass
+// Classic
 // ---------------------------------------------------------------------------
 
 export function loadNormalStats() {
@@ -111,13 +104,13 @@ export function loadNormalStats() {
 }
 
 /**
- * Writes one Classic round to localStorage. Spec: loadNormalStats() -> push
- * to history -> increment rounds -> bestDist = Math.min(stats.bestDist, dist)
- * -> cap history at 200 -> write.
+ * Writes one Classic round to localStorage: push to history -> increment
+ * rounds -> bestDist = Math.min(stats.bestDist, dist) -> cap history at
+ * 200 -> write.
  *
- * Classic's Confirm button is disabled until a marker is placed (Decision
- * #8), so result.distanceKm is always a real number here -- unlike Daily,
- * there's no null/skip path to guard against.
+ * Classic's Confirm button is disabled until a marker is placed, so
+ * result.distanceKm is always a real number here -- unlike Daily, there's
+ * no null/skip path to guard against.
  */
 export function recordClassicResult(result) {
   const stats = loadNormalStats();
@@ -133,7 +126,7 @@ export function recordClassicResult(result) {
 }
 
 // ---------------------------------------------------------------------------
-// Blitz -- new this pass
+// Blitz
 // ---------------------------------------------------------------------------
 
 export function loadBlitzStats() {
@@ -167,7 +160,7 @@ export function recordBlitzResult(result, sessionStreak) {
 }
 
 // ---------------------------------------------------------------------------
-// Section 9b derived fields
+// Derived stats
 // ---------------------------------------------------------------------------
 
 const DAILY_BUCKET_SIZE = 5000; // 0-5k, 5-10k, 10-15k, 15-20k, 20-25k
@@ -276,7 +269,7 @@ export function computeClassicStats(stats) {
     stats.history.reduce((a, h) => a + h.score, 0) / stats.history.length
   );
   // bestDist, NOT min(history) -- history is capped at 200 entries, so an
-  // early great guess could have already scrolled out of it (Section 9b).
+  // early great guess could have already scrolled out of it.
   const bestGuess = stats.bestDist === 999999 ? null : Math.round(stats.bestDist);
   const trend = stats.history.slice(-20).map((h) => h.score);
 

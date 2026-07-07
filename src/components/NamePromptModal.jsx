@@ -1,11 +1,9 @@
 // src/components/NamePromptModal.jsx
-//
-// Section 9's "Name your score" modal -- shown once, on first-ever
-// DAILY_SUMMARY entry (LS_KEYS.NAME empty). Two exits only, both terminal:
-// Save & Submit (persists the name; it flows into the POST) or Skip (POST
-// goes out as 'Player', nothing written to localStorage) -- no backdrop or
-// Escape dismiss, since the spec gives this modal exactly those two named
-// actions and neither is "cancel and stay."
+// "Name your score" modal -- shown once, on first-ever DAILY_SUMMARY entry
+// (LS_KEYS.NAME empty). Two exits only, both terminal: Save & Submit
+// (persists the name; it flows into the POST) or Skip (POST goes out as
+// 'Player', nothing written to localStorage) -- no backdrop or Escape
+// dismiss, since neither exit is "cancel and stay."
 
 import { useState, useId } from 'react';
 import './NamePromptModal.css';

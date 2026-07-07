@@ -53,7 +53,7 @@ export function useMapState(mapRef, mode) {
   // .once('error', ...) would be consumed by ANY map error, not just an ArcGIS-specific one.
   const onSatelliteErrorRef = useRef(null);
 
-  // v9.0 -- applies/reverts the full satellite visual spec: ArcGIS raster color
+  // Applies/reverts the full satellite visual spec: ArcGIS raster color
   // grading, navy water tint, and a recolored border/river set shared with
   // INDIA_BOUNDARY_LINE + STATE_LINES (so Borders, if also toggled on, matches
   // the satellite palette rather than clashing with it). Hillshade is dropped for
@@ -116,8 +116,8 @@ export function useMapState(mapRef, mode) {
     function setBaseLayersVisible(visible) {
       // "All other vector layers (roads, labels, POIs, land-cover fills): hidden,
       // so raw satellite shows through on land." Roads/POIs/landcover are already
-      // gone from map-style.json entirely (Section 7) -- only water + labels remain
-      // to actually hide here.
+      // gone from map-style.json entirely -- only water + labels remain to
+      // actually hide here.
       const ids = ['water', 'waterway_line_label', 'water_name_point_label', 'water_name_line_label',
                    'country_label', 'hypsometric-tint', 'base-hillshade'];
       for (const id of ids) {
@@ -131,8 +131,8 @@ export function useMapState(mapRef, mode) {
       try {
         const firstNonBgId = map.getStyle().layers.find(l => l.type !== 'background')?.id;
 
-        // 1. ArcGIS satellite raster (via our tile-caching proxy), with the v9.0
-        //    color-grading paint properties.
+        // 1. ArcGIS satellite raster (via our tile-caching proxy), with the
+        //    color-grading paint properties from config.js.
         map.addSource('satellite-raster', {
           type: 'raster', tiles: [SATELLITE_TILES], tileSize: 256,
           maxzoom: MAP_CONFIG.SATELLITE_MAX_ZOOM,
@@ -150,7 +150,7 @@ export function useMapState(mapRef, mode) {
         }, firstNonBgId);
 
         // 2. AWS Terrarium hillshade, stacked directly above the satellite raster.
-        //    Dropped for v9.0 -- see SV.HILLSHADE_ENABLED comment in config.js.
+        //    Not currently enabled -- see SV.HILLSHADE_ENABLED comment in config.js.
         //    NOTE: hillshade-exaggeration controls shading strength, NOT a literal
         //    "multiply blend" -- MapLibre's style spec has no blend-mode paint
         //    property. This is the closest real parameter to the spec's intent.
@@ -261,7 +261,7 @@ export function useMapState(mapRef, mode) {
   }, [mapRef]);
 
   const setDifficulty = useCallback((level) => {
-    if (mode !== 'classic') return; // Key Decision #3: difficulty is Classic-only -- Blitz has no tiers either
+    if (mode !== 'classic') return; // difficulty is Classic-only -- Blitz has no tiers either
     const d = DIFFICULTY_DEFAULTS[level];
     // Scoped to Borders+Names only -- never touches satellite (independently user-toggled,
     // must survive a difficulty switch).
@@ -406,7 +406,7 @@ export function useMapState(mapRef, mode) {
       setState(prev => ({ ...prev, mapReady: true }));
 
       if (mode === 'daily') {
-        setPolitical(true); // mandatory, non-togglable per direct request -- Daily always shows state borders now
+        setPolitical(true); // mandatory, non-togglable -- Daily always shows state borders now
       } else if (mode === 'blitz') {
         setPolitical(true); // mandatory, non-togglable -- state shapes must read clearly
       } else {

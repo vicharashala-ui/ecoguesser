@@ -1,8 +1,7 @@
 /* src/components/BottomNav.css */
 /*
   Palette matches BottomCard.css/DailyMap.css: #f59e0b amber for the active
-  tab (Section 8: "active tab: amber #f59e0b, scaled icon"), #6b7280 gray
-  inactive, same Nunito stack as the rest of the floating UI.
+  tab, #6b7280 gray inactive, same Nunito stack as the rest of the floating UI.
 
   Height equals --eg-nav-height, a real var defined in index.css's :root
   (64px) -- BottomCard.css's and DailyMap.css's own bottom-offset calc()
@@ -10,21 +9,15 @@
   must stay in sync with that var or the bottom-card/loading-pill clearance
   breaks.
 
-  Update: switched from the frosted-glass backdrop-filter treatment (still
-  used elsewhere -- BottomCard.css, RecenterButton.css, StatsView.css) to a
-  plain near-solid background. Reported regression: this bar went fully
-  invisible under Chrome DevTools' mobile-device emulation, no console
-  error, reproducing even on the pre-round Daily screen before any of the
-  map's REVEALING-only code paths had run. Same failure signature as the
-  backdrop-filter/WebGL-compositing bug documented in RecenterButton.css --
-  but that bug's fix (isolation + transform: translateZ(0), still applied
-  below) was already present here and evidently isn't a guaranteed fix,
-  just a mitigation; whatever specifically retriggered it this time wasn't
-  reproducible outside a real Chromium GPU compositor, so rather than chase
-  a flaky rendering race further, this bar -- unlike a per-round card, it's
-  permanently on screen and is the only way to reach Classic/Stats -- drops
-  backdrop-filter entirely. A solid background can't lose GPU compositor
-  tracking the way a backdrop-filter layer can.
+  Uses a plain near-solid background instead of the frosted-glass
+  backdrop-filter treatment used elsewhere (BottomCard.css,
+  RecenterButton.css, StatsView.css) -- this bar went fully invisible
+  under Chrome DevTools' mobile-device emulation with backdrop-filter, a
+  GPU-compositor bug that reproduced even before any REVEALING-only code
+  ran. RecenterButton.css's isolation + translateZ(0) mitigation (also
+  applied below) didn't fix it here, so since this bar is permanently on
+  screen and the only way to reach Classic/Stats, it drops backdrop-filter
+  entirely rather than risk the same failure again.
 */
 
 .eg-bottom-nav {

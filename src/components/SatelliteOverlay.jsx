@@ -44,12 +44,12 @@ export default function SatelliteOverlay({ active }) {
       const maxWH = Math.max(width, height);
 
       // Vignette: transparent center -> mid-darkness -> black at edges.
-      // Three stops (v9.0) instead of v8.9's flat 0->1 falloff, matching the
-      // reference's steeper edge darkening. r0/r1 use different dimension bases
-      // (min vs max of width/height) same as before -- the mid stop's position is
-      // derived from where midStopRatio would fall using r1's basis, then expressed
-      // as a fraction of the r0..r1 span since canvas gradients position stops 0-1
-      // along that span, not in raw pixels.
+      // Three gradient stops for a steeper edge falloff than a flat 0->1.
+      // r0/r1 use different dimension bases (min vs max of width/height) --
+      // the mid stop's position is derived from where midStopRatio would
+      // fall using r1's basis, then expressed as a fraction of the r0..r1
+      // span since canvas gradients position stops 0-1 along that span,
+      // not in raw pixels.
       const v = SATELLITE_VISUAL.VIGNETTE;
       const r0 = minWH * v.innerStopRatio;
       const r1 = maxWH * v.outerStopRatio;
