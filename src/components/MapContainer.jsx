@@ -29,7 +29,10 @@ const GUESS_PIN_SVG = `
 //   position from useClassicRound. null removes the marker (e.g. on LOADING).
 // @param mapStyle: string -- style URL/path, defaults to MAP_STYLE. BlitzMap.jsx
 //   overrides this with MAP_STYLE_BLITZ (see config.js).
-export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP_STYLE }) {
+// @param guessMarkerVisible: boolean -- hides the tiger-head marker without
+//   removing it, so resultLayer.js's plain guess dot (drawn at the same
+//   coordinate during REVEALING) is the only thing shown at that spot.
+export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP_STYLE, guessMarkerVisible = true }) {
   const containerRef = useRef(null);
   const markerRef = useRef(null);
 
@@ -111,6 +114,11 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guess]);
+
+  useEffect(() => {
+    const el = markerRef.current?.getElement();
+    if (el) el.style.display = guessMarkerVisible ? '' : 'none';
+  }, [guess, guessMarkerVisible]);
 
   return <div ref={containerRef} style={{ position: 'absolute', inset: 0 }} />;
 }

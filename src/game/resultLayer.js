@@ -59,6 +59,11 @@ function buildResultData(guess, site, distanceKm) {
         properties: { kind: 'pin' },
         geometry: { type: 'Point', coordinates: to },
       },
+      {
+        type: 'Feature',
+        properties: { kind: 'guess' },
+        geometry: { type: 'Point', coordinates: from },
+      },
     ],
   };
 }
@@ -199,6 +204,19 @@ export async function showResult(map, guess, site, opts = {}) {
     },
   });
 
+  map.addLayer({
+    id: LAYER_IDS.GUESS_PIN,
+    type: 'circle',
+    source: LAYER_IDS.RESULT_DATA,
+    filter: ['==', ['get', 'kind'], 'guess'],
+    paint: {
+      'circle-radius': 7,
+      'circle-color': '#EA4335',
+      'circle-stroke-color': '#ffffff',
+      'circle-stroke-width': 2,
+    },
+  });
+
   await animateLine(map, data, from, to);
 
   // showResult could theoretically be superseded mid-animation (e.g. a very
@@ -316,6 +334,7 @@ export function clearResult(map) {
     `${LAYER_IDS.RESULT_BOUNDARY}-fill`,
     `${LAYER_IDS.RESULT_BOUNDARY}-outline`,
     LAYER_IDS.CORRECT_PIN,
+    LAYER_IDS.GUESS_PIN,
   ]) {
     if (map.getLayer(id)) map.removeLayer(id);
   }

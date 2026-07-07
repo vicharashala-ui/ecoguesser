@@ -10,7 +10,7 @@
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
   right: 10px;
   z-index: 10;
-  background: rgba(248, 246, 241, 0.82);
+  background: rgba(248, 246, 241, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
@@ -26,7 +26,7 @@
    Category/Region+State filters leave Blitz's site pool empty. */
 .bz-empty-pool {
   position: absolute;
-  top: 16px;
+  top: 50%;
   left: 16px;
   right: 16px;
   z-index: 20;
@@ -37,7 +37,7 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   isolation: isolate;
-  transform: translateZ(0);
+  transform: translateY(-50%) translateZ(0);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 4px 16px rgba(17, 24, 39, 0.12);
   font-family: 'Nunito', 'Segoe UI', sans-serif;

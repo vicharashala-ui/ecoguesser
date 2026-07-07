@@ -279,8 +279,8 @@ export default function SideDrawer({
             </div>
 
             <div className="sd-section">
-              <p className="sd-count">
-                {matchCount === 0 ? 'No sites match these filters' : `Showing ${matchCount} sites`}
+              <p className={`sd-count${matchCount === 0 ? ' sd-count-empty' : ''}`}>
+                {matchCount === 0 ? 'No sites match those filters' : `Showing ${matchCount}/${sites.length} sites`}
               </p>
             </div>
           </>

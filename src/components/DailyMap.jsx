@@ -225,7 +225,12 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
 
       {paused && <div className="dm-paused-overlay">Paused</div>}
 
-      <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />
+      <MapContainer
+        mapRef={mapRef}
+        onMapClick={handleMapClick}
+        guess={guess}
+        guessMarkerVisible={roundState !== 'REVEALING'}
+      />
       <RecenterButton
         mapRef={mapRef}
         style={

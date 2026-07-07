@@ -163,6 +163,7 @@ export const LAYER_IDS = {
   RESULT_LABEL:        'result-label',
   RESULT_BOUNDARY:     'result-boundary',
   CORRECT_PIN:         'correct-pin',
+  GUESS_PIN:           'guess-pin',
   INDIA_BOUNDARY_LINE: 'india-boundary-line',
   BOUNDARY_2_CASING:      'boundary-2-casing',
   BOUNDARY_DISPUTED_CASING: 'boundary-disputed-casing',

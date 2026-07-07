@@ -314,6 +314,14 @@
   color: #6b7280;
 }
 
+.sd-count-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  text-align: center;
+}
+
 .sd-links {
   display: flex;
   flex-direction: column;

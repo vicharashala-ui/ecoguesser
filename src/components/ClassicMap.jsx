@@ -162,7 +162,12 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
 
   return (
     <div style={style}>
-      <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={guess} />
+      <MapContainer
+        mapRef={mapRef}
+        onMapClick={handleMapClick}
+        guess={guess}
+        guessMarkerVisible={roundState !== 'REVEALING'}
+      />
       <RecenterButton
         mapRef={mapRef}
         style={
@@ -182,8 +187,8 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
           Borders
         </label>
-        <label className="eg-toggle">
-          <input type="checkbox" className="eg-toggle-input" checked={politicalNames} disabled={!mapReady} onChange={(e) => setPoliticalNames(e.target.checked)} />
+        <label className={`eg-toggle${!political ? ' eg-toggle-disabled' : ''}`}>
+          <input type="checkbox" className="eg-toggle-input" checked={politicalNames} disabled={!mapReady || !political} onChange={(e) => setPoliticalNames(e.target.checked)} />
           <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
           Names
         </label>
