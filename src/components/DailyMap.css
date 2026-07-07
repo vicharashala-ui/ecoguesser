@@ -1,11 +1,9 @@
 /* src/components/DailyMap.css */
 /*
   Palette/font matched to BottomCard.css (Nunito, #16a34a/#6b7280/#111827/
-  #f59e0b/#dc2626) and to ClassicMap.css's placeholder panel treatment --
-  .dm-layer-panel mirrors .cm-layer-panel's glassmorphism rather than
-  introducing a second visual language for what's still a placeholder on
-  both screens (the real icon-button layer UI isn't built for either mode
-  yet).
+  #f59e0b/#dc2626) and to ClassicMap.css's panel treatment -- .dm-layer-panel
+  mirrors .cm-layer-panel's glassmorphism so the layer toggles read as one
+  visual language across modes rather than each screen inventing its own.
 */
 
 .eg-daily-map {
@@ -131,22 +129,28 @@
   text-transform: uppercase;
 }
 
-/* ---- Layer panel -- same placeholder treatment as ClassicMap's ---------- */
+/* ---- Layer panel -- matches .dm-timer-card's glass treatment below it --- */
 
 .dm-layer-panel {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.75rem;
-  border-radius: 8px;
-  font-size: 14px;
+  background: rgba(248, 246, 241, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
+  isolation: isolate;
+  transform: translateZ(0);
+  padding: 10px 14px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
 }
 
 .dm-sat-warning {
   color: #dc2626;
   font-size: 12px;
+  font-weight: 700;
 }
 
 /* ---- Loading state (site not resolved yet) ------------------------------ */

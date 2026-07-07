@@ -15,6 +15,7 @@ export const MAP_CONFIG = {
   INDIA_ZOOM:         4.5,             // flyTo() Reset button only
   MIN_ZOOM: 3, MAX_ZOOM: 12,
   SATELLITE_MAX_ZOOM: 10,
+  DAILY_STATE_LABEL_MIN_ZOOM: 5, // Daily only -- state names stay hidden until zoomed in this far
   // Portrait viewports are much taller than INDIA_BOUNDS' aspect ratio, so
   // fitBounds always has vertical slack left over after the width fits.
   // Uneven top/bottom padding biases where that slack goes -- less above

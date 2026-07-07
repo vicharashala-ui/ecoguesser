@@ -1,7 +1,7 @@
 /* src/components/BlitzMap.css */
-/* Same placeholder glassmorphism treatment as DailyMap.css's .dm-layer-panel
-   and ClassicMap.css's .cm-layer-panel -- one checkbox, no Satellite/Political
-   rows here since Blitz forces borders on and has no satellite mode. */
+/* Same glassmorphism treatment as DailyMap.css's .dm-layer-panel and
+   ClassicMap.css's .cm-layer-panel -- one row here since Blitz forces
+   borders on and has no satellite mode. */
 
 .bz-layer-panel {
   position: absolute;
@@ -10,10 +10,15 @@
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
   right: 10px;
   z-index: 10;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.75rem;
-  border-radius: 8px;
-  font-size: 14px;
+  background: rgba(248, 246, 241, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
+  isolation: isolate;
+  transform: translateZ(0);
+  padding: 10px 14px;
+  border-radius: 16px;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
 }
 

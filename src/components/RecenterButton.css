@@ -32,8 +32,8 @@
      real repo with a real Chromium build: the DOM/CSS math itself is
      correct (elements measure the right rect, right z-index, opacity:1),
      which rules out a layout bug and points at this compositing class
-     instead -- every element that disappeared uses backdrop-filter, and the
-     one sibling panel that doesn't (.cm-layer-panel) stayed visible. */
+     instead -- every element that disappeared uses backdrop-filter, and
+     the elements that stayed visible were the ones without it. */
   isolation: isolate;
   transform: translateZ(0);
   box-shadow: 0 4px 14px rgba(17, 24, 39, 0.14);

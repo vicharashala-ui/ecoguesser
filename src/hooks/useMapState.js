@@ -312,6 +312,10 @@ export function useMapState(mapRef, mode) {
 
       map.addLayer({
         id: LAYER_IDS.STATE_LABELS, type: 'symbol', source: 'india-state-labels',
+        // Daily forces politicalNames on (below) since there's no Borders/Names
+        // toggle in that mode -- minzoom is what actually keeps labels hidden
+        // until the player has zoomed in far enough to want them.
+        minzoom: mode === 'daily' ? MAP_CONFIG.DAILY_STATE_LABEL_MIN_ZOOM : 0,
         layout: {
           'text-field': ['get', 'st_nm'],
           'text-font': ['Noto Sans Bold'],
@@ -426,6 +430,7 @@ export function useMapState(mapRef, mode) {
 
       if (mode === 'daily') {
         setPolitical(true); // mandatory, non-togglable -- Daily always shows state borders now
+        setPoliticalNames(true); // labels themselves gated by the layer's minzoom above, not this toggle
       } else if (mode === 'blitz') {
         setPolitical(true); // mandatory, non-togglable -- state shapes must read clearly
       } else {

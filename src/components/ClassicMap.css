@@ -7,17 +7,31 @@
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
   right: 10px;
   z-index: 10;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.75rem;
-  border-radius: 8px;
-  font-size: 14px;
+  background: rgba(248, 246, 241, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
+  /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
+     see the comment there for the full writeup. */
+  isolation: isolate;
+  transform: translateZ(0);
+  padding: 10px 14px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
+}
+
+.cm-layer-panel .eg-toggle:not(:first-child) {
+  padding-top: 8px;
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
 }
 
 .cm-sat-warning {
   color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 

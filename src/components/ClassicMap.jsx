@@ -173,8 +173,9 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
       />
       <SatelliteOverlay active={satellite} />
 
-      {/* TEMPORARY layer toggle panel, carried over from the old MapSmokeTest --
-          replace with the real icon-based control from Section 8 once built. */}
+      {/* Layer toggle panel -- functional checkbox toggles, styled with the
+          app's shared glassmorphism recipe. Swap for an icon-button layer UI
+          later if design calls for it; not required for that today. */}
       <div className="cm-layer-panel">
         <label className="eg-toggle">
           <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
