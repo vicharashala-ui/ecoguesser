@@ -17,7 +17,7 @@
 // result row (distance + pts) rather than its own row, to save vertical space.
 
 import { useId, forwardRef } from 'react';
-import { CATEGORY_META, SCORING, DAILY, formatSiteName } from '../config';
+import { CATEGORY_META, SCORING, DAILY } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './BottomCard.css';
 
@@ -161,6 +161,13 @@ const BottomCard = forwardRef(function BottomCard({
   const meta = CATEGORY_META[site.category];
   const hintsRemaining = 2 - hintLevel;
   const hintsExhausted = hintLevel >= 2;
+  // Perfect score only happens when the guess landed inside the site's
+  // boundary (useClassicRound.js / useDailyRound.js both short-circuit
+  // rawScore to SCORING.MAX_SCORE in that case) -- checking finalScore
+  // against MAX_SCORE rather than re-deriving insideBoundary here means a
+  // Daily round with hint penalties correctly does NOT celebrate a
+  // boundary hit that got docked below 5000.
+  const isPerfect = isRevealing && result && result.finalScore === SCORING.MAX_SCORE;
 
   return (
     <div
@@ -175,7 +182,7 @@ const BottomCard = forwardRef(function BottomCard({
           <div className="bc-pill-top">
             <span className="bc-icon" aria-hidden="true"><IconMark /></span>
             <span className="bc-pill-text">
-              <span id={titleId} className="bc-site-name">{formatSiteName(site)}</span>
+              <span id={titleId} className="bc-site-name">{site.name}</span>
               {hintLevel >= 1 && (
                 <span className="bc-hint-state">{site.state.join(', ')}</span>
               )}
@@ -231,7 +238,7 @@ const BottomCard = forwardRef(function BottomCard({
             <span className="bc-category-label">{meta.label.toUpperCase()}</span>
           </div>
 
-          <h2 id={titleId} className="bc-card-name">{formatSiteName(site)}</h2>
+          <h2 id={titleId} className="bc-card-name">{site.name}</h2>
 
           <div className="bc-meta-row">
             <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {site.state.join(', ')}</span>
@@ -257,8 +264,16 @@ const BottomCard = forwardRef(function BottomCard({
                 ? 'Skipped'
                 : `${Math.round(result.distanceKm).toLocaleString()} km away`}
             </span>
-            <span className="bc-meta-item bc-score">
+            <span className={`bc-meta-item bc-score ${isPerfect ? 'bc-score-perfect' : ''}`}>
               <IconStar size={15} /> {result.finalScore.toLocaleString()} pts
+              {isPerfect && (
+                <span className="bc-celebrate" key={site.id} aria-hidden="true">
+                  <span className="bc-celebrate-label">Perfect!</span>
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <span key={i} className="bc-spark" style={{ '--i': i }} />
+                  ))}
+                </span>
+              )}
             </span>
 
             {site.hasBoundary && onShowBoundary && (
