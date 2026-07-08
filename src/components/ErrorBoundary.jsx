@@ -14,8 +14,8 @@ export default class ErrorBoundary extends React.Component {
   render() {
     if (!this.state.hasError) return this.props.children;
     return (
-      <div style={{ display:'flex', flexDirection:'column', alignItems:'center',
-                    justifyContent:'center', height:'100vh', background:'#f8f6f1',
+      <div className="eg-app-shell-height" style={{ display:'flex', flexDirection:'column', alignItems:'center',
+                    justifyContent:'center', background:'#f8f6f1',
                     fontFamily:'Nunito, sans-serif', textAlign:'center', padding:'2rem' }}>
         <div style={{ fontSize:'2.5rem', marginBottom:'1rem' }}>
           EcoGuesser<sup style={{ fontSize:'0.4em', fontWeight:700, verticalAlign:'super', marginLeft:'0.1em' }}>™</sup>

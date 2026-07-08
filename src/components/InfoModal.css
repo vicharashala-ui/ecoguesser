@@ -12,6 +12,10 @@
 
 .im-modal {
   width: min(420px, 100%);
+  /* Same real-device-vs-DevTools-emulation vh discrepancy as the app shell
+     (see index.css's .eg-app-shell-height comment). @supports carries the
+     dvh override through production minification -- see BottomCard.css's
+     .is-expanded comment for why a plain second declaration doesn't. */
   max-height: 82vh;
   background: #fff;
   border-radius: 20px;
@@ -20,6 +24,11 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+@supports (height: 100dvh) {
+  .im-modal {
+    max-height: 82dvh;
+  }
 }
 
 .im-header {

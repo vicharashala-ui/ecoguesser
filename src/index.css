@@ -15,6 +15,33 @@
   --eg-header-height: 72px;
 }
 
+/* Fixed-viewport app shell height. `100vh` alone locks to the mobile
+   browser's *largest* possible viewport (address bar fully collapsed) --
+   Chrome DevTools' mobile emulation has no dynamic toolbar at all, so it
+   never shows this, but a real phone's address bar eats into the actually
+   visible area while it's showing. Combined with this shell's
+   position:fixed/overflow:hidden body (below) -- which never lets the page
+   scroll, so the browser never gets the scroll gesture it uses to
+   auto-collapse that toolbar -- every `bottom:0`-anchored child (BottomNav,
+   the two splash screens) resolves against a box taller than what's
+   actually on screen, and ends up rendered below the real fold, entirely
+   out of view. `100dvh` (the *dynamic* viewport height, which tracks the
+   real visible area as browser chrome shows/hides) fixes it.
+   `@supports` (not a plain second `height` declaration in the same rule)
+   is what actually carries the fallback through to production -- Vite's
+   build-time CSS minifier (Lightning CSS) collapses duplicate
+   same-property declarations within one rule down to just the last one,
+   silently dropping the 100vh fallback if written that way. Separate
+   rule blocks like these survive that pass intact. */
+.eg-app-shell-height {
+  height: 100vh;
+}
+@supports (height: 100dvh) {
+  .eg-app-shell-height {
+    height: 100dvh;
+  }
+}
+
 /* This app is a fixed-viewport shell (App.jsx's root div is position:
    relative, 100vw x 100vh) with position:fixed floating UI (BottomCard,
    RecenterButton, BottomNav) anchored on top of it. That combination only

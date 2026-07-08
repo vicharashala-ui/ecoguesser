@@ -24,7 +24,6 @@ const screenStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '100vh',
   background: '#f8f6f1',
   textAlign: 'center',
   padding: '2rem',
@@ -128,7 +127,7 @@ export default function App() {
 
   if (sitesError) {
     return (
-      <div style={screenStyle}>
+      <div className="eg-app-shell-height" style={screenStyle}>
         <div style={{ fontSize: '32px', fontWeight: 800, color: '#16a34a', marginBottom: '1rem' }}>
           EcoGuesser<sup style={{ fontSize: '0.4em', fontWeight: 700, verticalAlign: 'super', marginLeft: '0.1em' }}>™</sup>
         </div>
@@ -143,7 +142,7 @@ export default function App() {
 
   if (allSites.length === 0) {
     return (
-      <div style={screenStyle}>
+      <div className="eg-app-shell-height" style={screenStyle}>
         <div style={{ fontSize: '32px', fontWeight: 800, color: '#16a34a', marginBottom: '0.5rem' }}>
           EcoGuesser<sup style={{ fontSize: '0.4em', fontWeight: 700, verticalAlign: 'super', marginLeft: '0.1em' }}>™</sup>
         </div>
@@ -156,7 +155,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+    <div className="eg-app-shell-height" style={{ position: 'relative', width: '100vw' }}>
       {/* DailyMap mounts immediately; ClassicMap/BlitzMap only after their
           tab is first activated, and all stay mounted afterward --
           display:none, not unmount, so MapLibre never recreates its WebGL

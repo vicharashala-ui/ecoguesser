@@ -95,8 +95,18 @@
 
 .bottom-card.is-expanded {
   border-radius: 24px;
+  /* Same real-device-vs-DevTools-emulation vh discrepancy as the app shell
+     (see index.css's .eg-app-shell-height comment) -- 100vh's often taller
+     than the actually visible area. @supports (not a second same-property
+     declaration, which Lightning CSS strips at build time) carries the
+     dvh override through to production. */
   max-height: 80vh;
   overflow-y: auto;
+}
+@supports (height: 100dvh) {
+  .bottom-card.is-expanded {
+    max-height: 80dvh;
+  }
 }
 
 /* Collapsed reveal card (name + state only) -- much shorter cap than the
