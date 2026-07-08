@@ -9,16 +9,17 @@
 */
 
 /* ---- Session-start pin-placement tip ------------------------------------ */
-/* Positioned the same way RecenterButton.css is: fixed, offset up from the
-   nav bar by the pill's known 128px max-height (.bottom-card.is-pill above)
-   plus a small gap, since this only ever shows during the pre-guess pill
-   state (never REVEALING), so that assumption always holds here. Text
-   only -- no background/border/shadow shape -- so it reads as a caption
-   floating just above the guess panel. White fill + a dark drop-shadow
-   (rather than a light halo) keeps it legible over both the map/satellite
-   background and the light cream app chrome. */
+/* Positioned the same way RecenterButton.css is: offset up from the nav bar
+   by the pill's known 128px max-height (.bottom-card.is-pill below) plus a
+   small gap, since this only ever shows during the pre-guess pill state
+   (never REVEALING), so that assumption always holds here. Text only -- no
+   background/border/shadow shape -- so it reads as a caption floating just
+   above the guess panel. White fill + a dark drop-shadow (rather than a
+   light halo) keeps it legible over both the map/satellite background and
+   the light cream app chrome. position: absolute, not fixed -- see
+   .bottom-card below for why. */
 .bc-pin-tip {
-  position: fixed;
+  position: absolute;
   left: 16px;
   right: 16px;
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 128px + 2px);
@@ -33,7 +34,39 @@
 }
 
 .bottom-card {
-  position: fixed;
+  /* position: absolute, not fixed. This (plus the same change on
+     .bc-pin-tip above, .eg-recenter-btn, and .eg-bottom-nav) is the actual
+     fix for the "guess panel/nav bar/recenter button vanish when Satellite
+     is on in Classic" bug -- earlier attempts (isolation + translateZ(0)
+     here and on RecenterButton/BottomNav, then dropping backdrop-filter on
+     BottomNav specifically) treated it as a backdrop-filter-over-WebGL-
+     canvas GPU compositing bug. That theory didn't hold up: BottomNav has
+     had zero backdrop-filter since that change, and it still disappeared
+     alongside this card and RecenterButton in the same report -- so
+     backdrop-filter isn't the common factor. `position: fixed` is: it's
+     the one property every disappearing element shared and the one the
+     elements that *stayed* visible (Header, the layer-toggle panel, the
+     info button) never had -- they're all `position: absolute`.
+     `position: fixed` is also the single most bug-prone positioning mode on
+     mobile Chrome/Safari specifically when combined with a live WebGL
+     canvas and `env(safe-area-inset-*)` (both apply here), because it's
+     resolved against the browser's visual viewport rather than the layout
+     viewport -- a value mobile browsers recompute independently of normal
+     layout, including during GPU-canvas repaints, and can occasionally get
+     out of sync with. Toggling satellite is exactly the kind of canvas
+     repaint (new raster layer added, MapLibre repaints) that can retrigger
+     that recompute.
+     Every wrapper this card renders inside (ClassicMap.jsx's/DailyMap.jsx's
+     own `position: absolute; inset: 0` div, itself inside App.jsx's
+     `position: relative; width: 100vw; height: 100vh` root) already spans
+     the full viewport, so switching to `position: absolute` resolves to
+     the identical box a fixed position would -- same left/right/bottom
+     values, same visual result -- while sidestepping visual-viewport
+     resolution entirely. isolation/translateZ(0) below predate this and
+     are left in place; harmless on an absolutely positioned element (they
+     don't affect the element's own position, only a *descendant's*
+     containing block), just no longer load-bearing. */
+  position: absolute;
   left: 16px;
   right: 16px;
   /* Clears the bottom nav bar -- adjust --eg-nav-height if yours differs. */
@@ -43,11 +76,6 @@
   background: rgba(248, 246, 241, 0.82);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-  /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
-     see the comment there for the full writeup. This element (and
-     BottomNav, RecenterButton) went fully invisible under Chrome's
-     mobile-device-emulation/touch mode specifically, sitting on top of
-     MapLibre's WebGL canvas; forcing a stable own GPU layer fixes it. */
   isolation: isolate;
   transform: translateZ(0);
   border: 1px solid rgba(255, 255, 255, 0.5);

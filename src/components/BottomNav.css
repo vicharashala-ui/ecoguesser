@@ -11,17 +11,24 @@
 
   Uses a plain near-solid background instead of the frosted-glass
   backdrop-filter treatment used elsewhere (BottomCard.css,
-  RecenterButton.css, StatsView.css) -- this bar went fully invisible
-  under Chrome DevTools' mobile-device emulation with backdrop-filter, a
-  GPU-compositor bug that reproduced even before any REVEALING-only code
-  ran. RecenterButton.css's isolation + translateZ(0) mitigation (also
-  applied below) didn't fix it here, so since this bar is permanently on
-  screen and the only way to reach Classic/Stats, it drops backdrop-filter
-  entirely rather than risk the same failure again.
+  RecenterButton.css, StatsView.css) -- this bar previously went invisible
+  under Chrome DevTools' mobile-device emulation with backdrop-filter, so it
+  drops that entirely. That turned out to be treating a symptom, not the
+  cause, though: this bar (backdrop-filter or not) still disappeared
+  alongside BottomCard/RecenterButton in the Classic+Satellite report. The
+  actual fix is position: absolute below -- see BottomCard.css's .bottom-card
+  comment for the full writeup. Short version: `position: fixed` was the one
+  thing every disappearing element had in common (and the one property the
+  elements that stayed visible never had), and it's the single most
+  bug-prone positioning mode on mobile browsers when a live WebGL canvas and
+  env(safe-area-inset-*) are both in play, which they are here. This bar's
+  parent (App.jsx's root div) is `position: relative; width: 100vw; height:
+  100vh`, so an absolutely positioned child resolves to the same box a fixed
+  one would.
 */
 
 .eg-bottom-nav {
-  position: fixed;
+  position: absolute;
   left: 0;
   right: 0;
   bottom: 0;

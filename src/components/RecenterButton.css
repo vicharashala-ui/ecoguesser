@@ -1,14 +1,24 @@
 /* src/components/RecenterButton.css */
 /*
-  Fixed left:16px, stacked above the BottomCard. Default `bottom` here
+  Anchored left:16px, stacked above the BottomCard. Default `bottom` here
   assumes the pill state's 128px height (.bottom-card.is-pill's own
   max-height, in BottomCard.css) -- during REVEALING the caller overrides
   `bottom` inline with the expanded card's real measured height instead (see
   RecenterButton.jsx), since that height varies with content.
+
+  position: absolute, not fixed -- see BottomCard.css's writeup (the
+  authoritative one; this repeats the short version). Every mode's map
+  wrapper is itself `position: absolute; inset: 0` over an App root that's
+  `position: relative; width: 100vw; height: 100vh`, so an absolutely
+  positioned descendant here resolves to the exact same box a fixed one
+  would. The isolation/translateZ(0) below predates that change and is left
+  as-is -- harmless on an absolutely positioned element (only transform/
+  filter/perspective/etc. affect a *descendant's* containing block, never
+  the element's own), just no longer load-bearing for the fix.
 */
 
 .eg-recenter-btn {
-  position: fixed;
+  position: absolute;
   left: 16px;
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 128px + 12px);
   z-index: 25;
@@ -19,21 +29,6 @@
   background: rgba(248, 246, 241, 0.92);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-  /* Fix for the bug where every backdrop-filter element on screen (this
-     button, BottomCard, BottomNav) goes fully invisible specifically under
-     Chrome's mobile-device-emulation/touch mode, on top of MapLibre's WebGL
-     canvas -- Chromium has a known, currently-tracked bug class where
-     backdrop-filter loses track of what it's compositing when the layer
-     underneath is a GPU-composited canvas (see e.g. crbug 380416865 and
-     related backdrop-filter/WebGL compositor reports). isolation + a forced
-     own layer keeps this element's compositing stable independent of the
-     map canvas underneath. Confirmed by reproducing the exact bug report
-     (mobile-emulated viewport + touch, Classic + satellite) against the
-     real repo with a real Chromium build: the DOM/CSS math itself is
-     correct (elements measure the right rect, right z-index, opacity:1),
-     which rules out a layout bug and points at this compositing class
-     instead -- every element that disappeared uses backdrop-filter, and
-     the elements that stayed visible were the ones without it. */
   isolation: isolate;
   transform: translateZ(0);
   box-shadow: 0 4px 14px rgba(17, 24, 39, 0.14);
