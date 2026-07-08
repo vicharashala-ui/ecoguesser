@@ -62,8 +62,8 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
   } = useClassicRound(sitePool);
 
   const {
-    political, politicalNames, satellite, satelliteUnavailable, mapReady,
-    setPolitical, setPoliticalNames, setSatellite, setDifficulty,
+    political, satellite, satelliteUnavailable, mapReady,
+    setPolitical, setSatellite, setDifficulty,
   } = useMapState(mapRef, 'classic');
 
   const cardRef = useRef(null); // measures BottomCard's height for reveal fitBounds padding
@@ -186,11 +186,6 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
           <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
           Borders
-        </label>
-        <label className={`eg-toggle${!political ? ' eg-toggle-disabled' : ''}`}>
-          <input type="checkbox" className="eg-toggle-input" checked={politicalNames} disabled={!mapReady || !political} onChange={(e) => setPoliticalNames(e.target.checked)} />
-          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-          Names
         </label>
         <label className="eg-toggle">
           <input type="checkbox" className="eg-toggle-input" checked={satellite} disabled={!mapReady} onChange={(e) => setSatellite(e.target.checked)} />

@@ -70,10 +70,9 @@ function HowToPlayContent() {
 
       <h3>Difficulty (Classic only)</h3>
       <p>
-        <strong>Easy</strong> shows state borders and state name labels.{' '}
-        <strong>Normal</strong> shows borders without labels.{' '}
-        <strong>Hard</strong> hides both, so you're working from geography
-        alone.
+        <strong>Easy</strong> and <strong>Normal</strong> show state borders
+        (state names appear once you zoom in). <strong>Hard</strong> hides
+        borders entirely, so you're working from geography alone.
       </p>
     </>
   );

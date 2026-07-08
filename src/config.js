@@ -15,7 +15,11 @@ export const MAP_CONFIG = {
   INDIA_ZOOM:         4.5,             // flyTo() Reset button only
   MIN_ZOOM: 3, MAX_ZOOM: 12,
   SATELLITE_MAX_ZOOM: 10,
-  DAILY_STATE_LABEL_MIN_ZOOM: 5, // Daily only -- state names stay hidden until zoomed in this far
+  // Daily AND Classic both use this now -- state names stay hidden until
+  // zoomed in this far, with no manual toggle in either mode. Blitz is
+  // unaffected (its own "State Names" toggle shows/hides immediately,
+  // independent of zoom).
+  STATE_LABEL_MIN_ZOOM: 5,
   // Portrait viewports are much taller than INDIA_BOUNDS' aspect ratio, so
   // fitBounds always has vertical slack left over after the width fits.
   // Uneven top/bottom padding biases where that slack goes -- less above
@@ -182,10 +186,13 @@ export const DAILY = {
   COLLISION_KM: 50, TIMER_SECONDS: 120,
 };
 
+// State name labels are no longer difficulty-gated -- Classic shows them by
+// zoom alone (STATE_LABEL_MIN_ZOOM, same as Daily), same as every other
+// difficulty level. Only the Borders toggle default still varies by level.
 export const DIFFICULTY_DEFAULTS = {
-  easy:   { political:true,  politicalNames:true  },
-  normal: { political:true,  politicalNames:false },
-  hard:   { political:false, politicalNames:false },
+  easy:   { political:true  },
+  normal: { political:true  },
+  hard:   { political:false },
 };
 
 export const CATEGORY_META = {

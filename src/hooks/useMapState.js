@@ -263,12 +263,12 @@ export function useMapState(mapRef, mode) {
   const setDifficulty = useCallback((level) => {
     if (mode !== 'classic') return; // difficulty is Classic-only -- Blitz has no tiers either
     const d = DIFFICULTY_DEFAULTS[level];
-    // Scoped to Borders+Names only -- never touches satellite (independently user-toggled,
-    // must survive a difficulty switch).
+    // Scoped to Borders only -- never touches satellite (independently user-toggled,
+    // must survive a difficulty switch). State name labels are no longer
+    // difficulty-gated; see the forced setPoliticalNames(true) call in onLoad below.
     setPolitical(d.political);
-    setPoliticalNames(d.politicalNames);
     localStorage.setItem(LS_KEYS.DIFFICULTY, level);
-  }, [mode, setPolitical, setPoliticalNames]);
+  }, [mode, setPolitical]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -312,10 +312,11 @@ export function useMapState(mapRef, mode) {
 
       map.addLayer({
         id: LAYER_IDS.STATE_LABELS, type: 'symbol', source: 'india-state-labels',
-        // Daily forces politicalNames on (below) since there's no Borders/Names
-        // toggle in that mode -- minzoom is what actually keeps labels hidden
-        // until the player has zoomed in far enough to want them.
-        minzoom: mode === 'daily' ? MAP_CONFIG.DAILY_STATE_LABEL_MIN_ZOOM : 0,
+        // Daily and Classic both force politicalNames on (below) since neither
+        // has a Names toggle -- minzoom is what actually keeps labels hidden
+        // until the player has zoomed in far enough to want them. Blitz keeps
+        // minzoom 0 -- its "State Names" toggle shows/hides immediately at any zoom.
+        minzoom: (mode === 'daily' || mode === 'classic') ? MAP_CONFIG.STATE_LABEL_MIN_ZOOM : 0,
         layout: {
           'text-field': ['get', 'st_nm'],
           'text-font': ['Noto Sans Bold'],
@@ -441,6 +442,10 @@ export function useMapState(mapRef, mode) {
       } else if (mode === 'blitz') {
         setPolitical(true); // mandatory, non-togglable -- state shapes must read clearly
       } else {
+        // Classic: no more Names toggle -- force politicalNames on so labels
+        // follow the layer's minzoom (STATE_LABEL_MIN_ZOOM) alone, same as
+        // Daily. setDifficulty below only ever touches Borders now.
+        setPoliticalNames(true);
         const saved = localStorage.getItem(LS_KEYS.DIFFICULTY) || 'normal';
         setDifficulty(saved);
       }
