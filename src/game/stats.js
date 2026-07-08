@@ -175,7 +175,7 @@ const DAILY_BUCKET_COUNT = 5;
  *   avgDistPerGame: number|null,
  *   avgDistPerGuess: number|null,     // mean of all non-null rounds[].dist
  *   bestGuess: number|null,           // min of all non-null rounds[].dist
- *   byCategory: Record<string, number|null>,  // mean rounds[].score per cat
+ *   byCategory: Record<string, number|null>,  // mean rounds[].dist (km) per cat, non-null only
  *   hints: number, timeouts: number, skips: number,
  * }}
  */
@@ -223,9 +223,9 @@ export function computeDailyStats(stats) {
 
   const byCategory = {};
   for (const cat of DAILY.CATEGORIES) {
-    const catRounds = allRounds.filter((r) => r.cat === cat);
-    byCategory[cat] = catRounds.length
-      ? Math.round(catRounds.reduce((a, r) => a + r.score, 0) / catRounds.length)
+    const catDists = allRounds.filter((r) => r.cat === cat).map((r) => r.dist).filter((d) => d != null);
+    byCategory[cat] = catDists.length
+      ? Math.round(catDists.reduce((a, d) => a + d, 0) / catDists.length)
       : null;
   }
 

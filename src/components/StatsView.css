@@ -125,45 +125,88 @@
   text-transform: uppercase;
 }
 
-.sv-dist {
+/* Sits directly under .sv-heading (which owns the bottom margin normally) --
+   negative top margin pulls it up against the heading, sentence-case and a
+   lighter/smaller weight than the heading so it reads as a caption
+   clarifying the metric below, not a second heading of its own. */
+.sv-subheading {
+  margin: -6px 0 10px;
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: #9ca3af;
+}
+
+/* Vertical histogram (Daily's score distribution) -- a bordered card like
+   .sv-stat, containing one column per bucket. Bars grow from the bottom via
+   ScoreHistogram's mount-triggered height flip (0% -> real %) so the
+   `transition: height` below actually has something to animate; the bouncy
+   cubic-bezier gives them a small overshoot "pop" as they settle, rather
+   than a flat linear grow. */
+.sv-hist {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 168px;
+  padding: 16px 8px 0;
+  margin-bottom: 18px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.sv-hist-col {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  margin-bottom: 18px;
-}
-
-.sv-dist-row {
-  display: grid;
-  grid-template-columns: 56px 1fr 26px;
   align-items: center;
-  gap: 8px;
 }
 
-.sv-dist-label {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #374151;
-}
-
-.sv-dist-bar-track {
-  height: 10px;
-  border-radius: 999px;
-  background: #e5e7eb;
-  overflow: hidden;
-}
-
-.sv-dist-bar {
-  height: 100%;
-  border-radius: 999px;
-  background: #16a34a;
-  transition: width 0.3s ease;
-}
-
-.sv-dist-count {
-  font-size: 12.5px;
-  font-weight: 700;
+.sv-hist-count {
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
   color: #111827;
-  text-align: right;
+}
+
+/* Zero-count buckets still show their "0" (so the axis stays complete/
+   legible), just muted -- distinguishes "we have data, it's zero" from
+   the non-zero counts at a glance rather than making every label the same
+   weight/color. */
+.sv-hist-count-zero {
+  color: #d1d5db;
+}
+
+.sv-hist-bar-track {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.sv-hist-bar {
+  width: 100%;
+  border-radius: 7px 7px 3px 3px;
+  background: linear-gradient(180deg, #4ade80, #16a34a);
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.35);
+  transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sv-hist-label {
+  margin-top: 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sv-hist-bar {
+    transition: none;
+  }
 }
 
 .sv-cat-grid {

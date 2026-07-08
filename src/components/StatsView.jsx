@@ -7,7 +7,7 @@
 // (computeDailyStats/computeClassicStats) so it stays testable independent
 // of rendering, and no localStorage read/derivation logic is duplicated here.
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { CATEGORY_META } from '../config.js';
 import {
   loadDailyStats,
@@ -20,6 +20,42 @@ import {
 import './StatsView.css';
 
 const BUCKET_LABELS = ['0-5k', '5-10k', '10-15k', '15-20k', '20-25k'];
+
+// Vertical bar chart for Daily's score distribution (replaces the old
+// horizontal bar-row layout). Bars grow in on mount via a one-shot
+// rAF-delayed height change -- the height is set to 0 on first render, then
+// flipped to its real value a frame later so the CSS `transition: height`
+// in StatsView.css actually has something to animate between, instead of
+// the final height just appearing instantly on first paint.
+function ScoreHistogram({ distribution, labels }) {
+  const [grown, setGrown] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setGrown(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const max = Math.max(...distribution, 1);
+
+  return (
+    <div className="sv-hist" role="img" aria-label="Score distribution histogram">
+      {distribution.map((count, i) => (
+        <div className="sv-hist-col" key={labels[i]}>
+          <span className={`sv-hist-count${count === 0 ? ' sv-hist-count-zero' : ''}`}>
+            {count}
+          </span>
+          <div className="sv-hist-bar-track">
+            <div
+              className="sv-hist-bar"
+              style={{ height: grown ? `${(count / max) * 100}%` : '0%' }}
+            />
+          </div>
+          <span className="sv-hist-label">{labels[i]}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function Sparkline({ values }) {
   if (values.length === 0) return null;
@@ -56,8 +92,6 @@ function DailySection() {
     );
   }
 
-  const maxBucket = Math.max(...stats.distribution, 1);
-
   return (
     <>
       <div className="sv-stat-row">
@@ -87,17 +121,8 @@ function DailySection() {
       </div>
 
       <p className="sv-heading">Score distribution</p>
-      <div className="sv-dist">
-        {stats.distribution.map((count, i) => (
-          <div className="sv-dist-row" key={BUCKET_LABELS[i]}>
-            <span className="sv-dist-label">{BUCKET_LABELS[i]}</span>
-            <div className="sv-dist-bar-track">
-              <div className="sv-dist-bar" style={{ width: `${(count / maxBucket) * 100}%` }} />
-            </div>
-            <span className="sv-dist-count">{count}</span>
-          </div>
-        ))}
-      </div>
+      <p className="sv-subheading">Number of Daily Challenges finishing in each score range</p>
+      <ScoreHistogram distribution={stats.distribution} labels={BUCKET_LABELS} />
 
       <div className="sv-stat-row">
         <div className="sv-stat">
@@ -119,12 +144,13 @@ function DailySection() {
       </div>
 
       <p className="sv-heading">By category</p>
+      <p className="sv-subheading">Your average distance from that category's site, across all Daily Challenges played</p>
       <div className="sv-cat-grid">
-        {Object.entries(stats.byCategory).map(([cat, score]) => (
+        {Object.entries(stats.byCategory).map(([cat, dist]) => (
           <div className="sv-cat-item" key={cat}>
             <span className="sv-cat-dot" style={{ background: CATEGORY_META[cat].color }} />
             <span className="sv-cat-label">{CATEGORY_META[cat].label}</span>
-            <span className="sv-cat-score">{score != null ? score.toLocaleString() : '--'}</span>
+            <span className="sv-cat-score">{dist != null ? `${dist.toLocaleString()} km` : '--'}</span>
           </div>
         ))}
       </div>
