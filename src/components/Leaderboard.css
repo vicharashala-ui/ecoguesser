@@ -181,12 +181,15 @@
 /* Daily Recap: same wrap, same DailyRecap instance/ref, in both its inline
    and modal appearances -- only the lb-recap-wrap-open modifier (added
    while recapOpen) changes anything, turning the wrap from a normal block
-   in the page flow into a full-viewport modal with a dark backdrop.
-   lb-recap-wrap-closing is added alongside -open for a brief window while
-   closeRecap's setTimeout runs (Leaderboard.jsx), swapping the open/pop-in
-   animations for their fade-out/pop-out reverses so the modal animates
-   away instead of -open being dropped mid-frame and snapping the wrap
-   straight back into the page's inline flow. */
+   in the page flow into a full-viewport flex container that centers the
+   card. The dark backdrop is a SEPARATE element (.lb-recap-backdrop
+   below), not part of the wrap -- see closeRecap in Leaderboard.jsx for
+   why: closing drops the wrap's fixed positioning, which instantly
+   reflows every sibling below it (Play Classic/Blitz etc.) back into the
+   space the wrap now reclaims. A backdrop living on the wrap itself would
+   vanish at that same instant and expose the jump; a backdrop that stays
+   mounted (and fully opaque) a beat longer physically covers it instead,
+   then fades away afterwards over an already-settled, non-shifting page. */
 .lb-recap-wrap {
   width: 100%;
   max-width: 460px;
@@ -199,6 +202,28 @@
   gap: 8px;
 }
 
+.lb-recap-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 49; /* just below .lb-recap-wrap-open's 50, so the card renders
+                  on top of it */
+  background: rgba(15, 23, 42, 0.6);
+  cursor: pointer;
+  /* Only actually plays once, on mount (the backdrop stays mounted
+     continuously from open through the whole close sequence -- see the
+     header comment above -- so this never re-fires mid-close). */
+  animation: lb-recap-fade-in 0.18s ease-out;
+}
+
+/* Only added once the wrap has already reflowed back inline (phase 3 in
+   closeRecap) -- by then the page is fully settled, so this is a plain
+   opacity fade over a static layout, nothing left to shift. */
+.lb-recap-backdrop-fading {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in;
+}
+
 .lb-recap-wrap-open {
   position: fixed;
   inset: 0;
@@ -206,7 +231,6 @@
                   permanently covers the Share/Close row at the bottom,
                   even while the modal itself is scrolled */
   max-width: none;
-  background: rgba(15, 23, 42, 0.6);
   display: flex;
   justify-content: center;
   overflow-y: auto;
@@ -229,15 +253,18 @@
   animation: lb-recap-pop-in 0.22s ease-out;
 }
 
-/* Reverse animations, forwards-filled so the wrap stays faded/shrunk for
-   the rest of the 0.2s setTimeout window in Leaderboard.jsx instead of
-   snapping back to its opening state after finishing early. */
+/* Dedicated closing keyframes (not `reverse` of the open ones) -- direction:
+   reverse flips which keyframe is start/end but keeps the same ease-out
+   timing curve, which plays backwards as a fast snap then a slow crawl.
+   ease-in on a forward fade/pop-out is the correct mirror and reads smooth.
+   forwards-filled so the card stays faded/shrunk for the rest of the 0.18s
+   setTimeout window in Leaderboard.jsx instead of snapping back early. */
 .lb-recap-wrap-open.lb-recap-wrap-closing {
-  animation: lb-recap-fade-in 0.18s ease-out reverse forwards;
+  animation: lb-recap-fade-out 0.18s ease-in forwards;
 }
 
 .lb-recap-wrap-open.lb-recap-wrap-closing .lb-recap-inner {
-  animation: lb-recap-pop-in 0.18s ease-out reverse forwards;
+  animation: lb-recap-pop-out 0.18s ease-in forwards;
 }
 
 /* DailyRecap.css gives .dr-outer a 16px top margin for its normal in-flow
@@ -300,4 +327,14 @@
 @keyframes lb-recap-pop-in {
   from { opacity: 0; transform: translateY(12px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes lb-recap-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes lb-recap-pop-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(12px) scale(0.97); }
 }

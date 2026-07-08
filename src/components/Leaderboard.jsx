@@ -11,15 +11,18 @@
 // array-position with no tie handling, table rank is tie-aware. Not a bug
 // if they disagree on an exact-tie day.
 //
-// The DailyRecap card auto-opens as a popup modal once today's entry (and
-// allSites) are ready -- see recapOpen below. Tapping Close, or tapping
-// the dark backdrop outside the card, dismisses it (closeRecap) -- but the
-// same card then just keeps sitting inline in the page, exactly as it did
-// before the modal existed, until the next day's results replace it. Share
-// captures the rendered DailyRecap node as a PNG via html-to-image and
-// shares/downloads it directly -- no separate preview step. Disabled only
-// if today's stats_daily entry is somehow missing (shouldn't happen;
-// Leaderboard is only reachable after playing today).
+// The DailyRecap card auto-opens as a popup modal, 2s after today's entry
+// (and allSites) are ready -- see recapOpen below -- but only the first
+// time it's ready each day; LS_KEYS.RECAP_SHOWN persists the date so
+// revisiting the Daily tab later that same day doesn't reopen it. Tapping
+// Close, or tapping the dark backdrop outside the card, dismisses it
+// (closeRecap) -- but the same card then just keeps sitting inline in the
+// page, exactly as it did before the modal existed, until the next day's
+// results replace it. Share captures the rendered DailyRecap node as a PNG
+// via html-to-image and shares/downloads it directly -- no separate
+// preview step. Disabled only if today's stats_daily entry is somehow
+// missing (shouldn't happen; Leaderboard is only reachable after playing
+// today).
 //
 // The same handleShare is also wired to a persistent Share button in the
 // bottom action row (lb-actions), left of Play Classic, so sharing doesn't
@@ -71,6 +74,13 @@ function readRankToday() {
   }
 }
 
+/** True once the recap modal has already auto-opened for `date` -- a plain
+ *  date-string equality check, so a stale value from an earlier day never
+ *  suppresses today's one-time auto-open. */
+function hasAutoShownRecap(date) {
+  return localStorage.getItem(LS_KEYS.RECAP_SHOWN) === date;
+}
+
 export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites }) {
   const today = getTodayString();
   const [fetched, setFetched] = useState(data ?? null);
@@ -100,22 +110,41 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   const hasTodayEntry = !!todayEntry;
   const hasSites = !!(allSites && allSites.length > 0);
 
-  // Opens once, automatically, as soon as today's recap is ready. Deps are
-  // plain booleans (not the todayEntry/allSites objects themselves, which
-  // are recomputed every render) so this doesn't re-fire and re-open the
-  // modal after the player has closed it.
+  // Auto-opens once today's recap is ready, but only the first time: waits
+  // 2s (so the leaderboard/recap have visibly settled before popping the
+  // modal over them) then checks LS_KEYS.RECAP_SHOWN, which persists the
+  // date this already fired. Without that guard, revisiting the Daily tab
+  // later the same day would re-run this effect (loading/hasTodayEntry/
+  // hasSites all still true) and pop the modal open again every time.
   const [recapOpen, setRecapOpen] = useState(false);
-  // True for the duration of the closing animation only -- keeps the modal
-  // styling (backdrop, fixed position) applied while lb-recap-wrap-closing
-  // plays the reverse fade/pop-out, instead of recapOpen snapping the wrap
-  // straight back to its inline layout with no transition at all.
+  // True from the moment Close/backdrop is tapped until the whole close
+  // sequence (card fade-out, reflow, backdrop fade-out) has finished --
+  // see closeRecap for the phase breakdown and .lb-recap-backdrop in
+  // Leaderboard.css for why a separate backdrop element (rather than the
+  // wrap's own opacity) is what actually hides the mid-close reflow.
   const [recapClosing, setRecapClosing] = useState(false);
+  // True only during the backdrop's own final fade-out (phase 3 below) --
+  // toggles .lb-recap-backdrop-fading, which is what actually animates it.
+  const [backdropFading, setBackdropFading] = useState(false);
   const closeTimerRef = useRef(null);
+  const closeRafRef = useRef([]);
+  const fadeTimerRef = useRef(null);
+  const openTimerRef = useRef(null);
   useEffect(() => {
-    if (!loading && hasTodayEntry && hasSites) setRecapOpen(true);
-  }, [loading, hasTodayEntry, hasSites]);
+    if (loading || !hasTodayEntry || !hasSites) return undefined;
+    if (hasAutoShownRecap(today)) return undefined;
+    openTimerRef.current = setTimeout(() => {
+      localStorage.setItem(LS_KEYS.RECAP_SHOWN, today);
+      setRecapOpen(true);
+    }, 2000);
+    return () => clearTimeout(openTimerRef.current);
+  }, [loading, hasTodayEntry, hasSites, today]);
 
-  useEffect(() => () => clearTimeout(closeTimerRef.current), []);
+  useEffect(() => () => {
+    clearTimeout(closeTimerRef.current);
+    clearTimeout(fadeTimerRef.current);
+    closeRafRef.current.forEach(cancelAnimationFrame);
+  }, []);
 
   const closeRecap = () => {
     // Ignore close attempts mid-share -- html-to-image is actively reading
@@ -123,10 +152,34 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
     // produce a blank/partial image.
     if (sharing || recapClosing) return;
     setRecapClosing(true);
-    // Matches the reverse fade/pop animation duration in Leaderboard.css.
+    // Phase 1 (0-180ms): the card fades/shrinks per the existing animation
+    // in Leaderboard.css, still fixed-positioned on top of the backdrop,
+    // which stays fully opaque throughout.
     closeTimerRef.current = setTimeout(() => {
+      // Phase 2: drop the card's fixed positioning so it reflows back into
+      // the page's inline layout -- this instantly shifts every sibling
+      // below it (Play Classic/Blitz etc.), but the separate backdrop is
+      // still fully opaque and, being position:fixed with a higher
+      // z-index than the now-static wrap, physically covers that entire
+      // reflow regardless of the card's own opacity. The double rAF just
+      // waits a frame for that (now invisible) reflow to actually paint
+      // before phase 3 starts revealing it.
       setRecapOpen(false);
-      setRecapClosing(false);
+      const raf1 = requestAnimationFrame(() => {
+        const raf2 = requestAnimationFrame(() => {
+          // Phase 3: the page has already silently settled behind it, so
+          // fading the backdrop away now (.lb-recap-backdrop-fading) is a
+          // plain opacity transition over an already-final layout --
+          // nothing left to shift, nothing to flicker.
+          setBackdropFading(true);
+          fadeTimerRef.current = setTimeout(() => {
+            setRecapClosing(false);
+            setBackdropFading(false);
+          }, 200); // matches the backdrop's own fade-out transition duration
+        });
+        closeRafRef.current.push(raf2);
+      });
+      closeRafRef.current = [raf1];
     }, 180);
   };
 
@@ -217,49 +270,58 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
           next day's results replace todayEntry.
 
           One single DailyRecap instance/ref throughout: recapOpen only
-          toggles lb-recap-wrap-open, which turns this same wrap into a
-          full-viewport modal (dark backdrop + Share/Close footer). Closing
-          just drops that class -- the identical card then resumes sitting
-          inline right here, exactly where it would if the modal had never
-          existed. Tapping the wrap outside the card closes it; the inner
-          stopPropagation keeps taps on the card/buttons from bubbling up
-          and closing it. Both handlers are only attached while the modal
-          is actually open, so the inline (closed) state has zero listeners
-          -- identical to a plain always-inline card. */}
+          toggles lb-recap-wrap-open, which turns the wrap into a
+          full-viewport flex container that centers the card over a
+          separate .lb-recap-backdrop (kept as its own element, not part of
+          the wrap, specifically so it can stay opaque and hide the wrap's
+          close-time reflow -- see closeRecap). Tapping the backdrop, or
+          the wrap outside the card, closes it; the inner stopPropagation
+          keeps taps on the card/buttons from bubbling up and closing it.
+          Handlers are only attached while the modal is actually open, so
+          the inline (closed) state has zero listeners -- identical to a
+          plain always-inline card. */}
       {!loading && hasTodayEntry && hasSites && (
-        <div
-          className={`lb-recap-wrap${recapOpen ? ' lb-recap-wrap-open' : ''}${recapClosing ? ' lb-recap-wrap-closing' : ''}`}
-          onClick={recapOpen ? closeRecap : undefined}
-        >
-          <div
-            className="lb-recap-inner"
-            onClick={recapOpen ? (e) => e.stopPropagation() : undefined}
-          >
-            <DailyRecap
-              ref={dailyRecapRef}
-              date={today}
-              allSites={allSites}
-              totalScore={todayEntry?.total ?? null}
-              totalDist={todayEntry?.dist ?? null}
+        <>
+          {(recapOpen || recapClosing) && (
+            <div
+              className={`lb-recap-backdrop${backdropFading ? ' lb-recap-backdrop-fading' : ''}`}
+              onClick={recapOpen ? closeRecap : undefined}
             />
-            {recapOpen && (
-              <div className="lb-recap-actions">
-                <button
-                  type="button"
-                  className="lb-recap-share-btn"
-                  disabled={sharing}
-                  onClick={handleShare}
-                >
-                  {sharing ? 'Preparing…' : 'Share'}
-                  <ShareIcon />
-                </button>
-                <button type="button" className="lb-recap-close-btn" onClick={closeRecap}>
-                  Close
-                </button>
-              </div>
-            )}
+          )}
+          <div
+            className={`lb-recap-wrap${recapOpen ? ' lb-recap-wrap-open' : ''}${recapClosing ? ' lb-recap-wrap-closing' : ''}`}
+            onClick={recapOpen ? closeRecap : undefined}
+          >
+            <div
+              className="lb-recap-inner"
+              onClick={recapOpen ? (e) => e.stopPropagation() : undefined}
+            >
+              <DailyRecap
+                ref={dailyRecapRef}
+                date={today}
+                allSites={allSites}
+                totalScore={todayEntry?.total ?? null}
+                totalDist={todayEntry?.dist ?? null}
+              />
+              {recapOpen && (
+                <div className="lb-recap-actions">
+                  <button
+                    type="button"
+                    className="lb-recap-share-btn"
+                    disabled={sharing}
+                    onClick={handleShare}
+                  >
+                    {sharing ? 'Preparing…' : 'Share'}
+                    <ShareIcon />
+                  </button>
+                  <button type="button" className="lb-recap-close-btn" onClick={closeRecap}>
+                    Close
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       <div className="lb-actions">

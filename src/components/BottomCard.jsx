@@ -17,11 +17,9 @@
 // result row (distance + pts) rather than its own row, to save vertical space.
 
 import { useId, useEffect, useState, forwardRef } from 'react';
-import { CATEGORY_META, SCORING, DAILY } from '../config';
+import { CATEGORY_META, SCORING } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './BottomCard.css';
-
-const DAILY_MAX_TOTAL = SCORING.MAX_SCORE * DAILY.CATEGORIES.length; // 25,000
 
 // "Zoom in and tap to place pin" -- shown above the pill until the player's
 // first pin placement of the browser session (sessionStorage, not
@@ -158,7 +156,6 @@ function IconSkip({ size = 18 }) {
  * @param {string} [props.nextLabel='Next Site'] - Daily's round 5 uses 'Results'.
  * @param {'classic'|'daily'} props.mode
  * @param {import('../config').RoundResult|null} props.result - set once roundState === 'REVEALING'
- * @param {number|null} props.dailyTotal - cumulative score after this round (daily only)
  * @param {React.Ref<HTMLDivElement>} ref - forwarded to `.bottom-card` so
  *   ClassicMap.jsx can measure its real rendered height for fitBounds padding.
  */
@@ -175,7 +172,6 @@ const BottomCard = forwardRef(function BottomCard({
   nextLabel = 'Next Site',
   mode,
   result,
-  dailyTotal,
 }, ref) {
   const titleId = useId();
   const isRevealing = roundState === 'REVEALING';
@@ -358,14 +354,9 @@ const BottomCard = forwardRef(function BottomCard({
                 </div>
               )}
               {isDaily && (
-                <>
-                  <div className="bc-daily-line">
-                    Round score: {result.finalScore.toLocaleString()} pts
-                  </div>
-                  <div className="bc-daily-line">
-                    Total: {(dailyTotal ?? 0).toLocaleString()} / {DAILY_MAX_TOTAL.toLocaleString()}
-                  </div>
-                </>
+                <div className="bc-daily-line">
+                  Round score: {result.finalScore.toLocaleString()} / {SCORING.MAX_SCORE.toLocaleString()} pts
+                </div>
               )}
 
               <div className="bc-actions">

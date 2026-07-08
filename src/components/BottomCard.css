@@ -249,7 +249,7 @@
 
 .bc-card {
   position: relative; /* anchors .bc-collapse-toggle, which is absolute so it never reserves header row height when collapsed */
-  padding: 18px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  padding: 14px 18px calc(16px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -268,8 +268,8 @@
    logo/category-label sibling is present (they're hidden while collapsed). */
 .bc-collapse-toggle {
   position: absolute;
-  top: 14px;
-  right: 16px;
+  top: 10px;
+  right: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -541,7 +541,7 @@
 .bc-actions {
   display: flex;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .bc-trivia-btn,
