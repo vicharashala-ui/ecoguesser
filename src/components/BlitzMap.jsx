@@ -83,17 +83,49 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // 3s, then auto-clears. Can be tapped any number of times per round (no
   // counter/penalty); each tap just resets the 3s window rather than
   // stacking timers.
-  const hintTimeoutRef = useRef(null);
+  //
+  // Previously this called showHintRegion/hideHintRegion imperatively from
+  // handleHint + a bare setTimeout, with no re-sync on site/roundState
+  // change. That's an independent side-channel from React's render cycle --
+  // if a round advanced (Skip, a fast Confirm) while a hint was showing,
+  // there was a brief window where the PREVIOUS round's amber region was
+  // still the last thing painted on the map until something (a state
+  // change, or the timer) got around to correcting it, which read as the
+  // last hint flickering in before the current one. hintToken + the effect
+  // below instead mirrors stateHighlight.js's showHint2/hideHint2 wiring in
+  // ClassicMap.jsx: show/hide is fully derived from [site, roundState,
+  // hintToken] every render, so a site or roundState change is always
+  // reflected immediately rather than waiting on a stale timer callback.
+  const [hintToken, setHintToken] = useState(0); // 0 = hidden; >0 = shown, bumped on each tap
   function handleHint() {
-    const map = mapRef.current;
-    if (!map || !site) return;
-    if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current);
-    showHintRegion(map, getRegionHintStates(site.state));
-    hintTimeoutRef.current = setTimeout(() => {
-      hideHintRegion(mapRef.current);
-      hintTimeoutRef.current = null;
-    }, 3000);
+    setHintToken((t) => t + 1);
   }
+
+  // Declarative show/hide -- the only place that calls showHintRegion/
+  // hideHintRegion. Always re-evaluates against the CURRENT site, so a
+  // round change (site/roundState both flip together) can never leave a
+  // previous round's region on screen.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    const shouldShow = hintToken > 0 && site && (roundState === 'READING' || roundState === 'SELECTING');
+    if (shouldShow) showHintRegion(map, getRegionHintStates(site.state));
+    else hideHintRegion(map);
+  }, [mapRef, mapReady, site, roundState, hintToken]);
+
+  // Auto-hide after 3s of the most recent tap -- just resets hintToken;
+  // the effect above turns that into the actual hideHintRegion call.
+  useEffect(() => {
+    if (hintToken === 0) return;
+    const t = setTimeout(() => setHintToken(0), 3000);
+    return () => clearTimeout(t);
+  }, [hintToken]);
+
+  // Reset on every new round so a leftover hintToken from the last site
+  // can't immediately re-show once the next site's effect above re-runs.
+  useEffect(() => {
+    if (roundState === 'LOADING') setHintToken(0);
+  }, [roundState]);
 
   // SELECTING preview. Deliberately does nothing while REVEALING -- the
   // effect below owns the blue->green/red handoff so the two never race.
@@ -108,15 +140,12 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // fast reset to the default India-wide framing (500ms, distinct from the
   // slower 1200ms "Show Boundary" zoom, which is meant to linger).
   // LOADING -> clear everything before the next site's blue preview starts.
+  // (Hint region hide/show is fully owned by the declarative effect above --
+  // this effect no longer touches it.)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
     if (roundState === 'REVEALING' && result) {
-      if (hintTimeoutRef.current) {
-        clearTimeout(hintTimeoutRef.current);
-        hintTimeoutRef.current = null;
-      }
-      hideHintRegion(map);
       showReveal(map, result.correctStates, result.guessedState, result.isCorrect, result.site);
       map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 500 });
     } else if (roundState === 'LOADING') {
@@ -137,26 +166,14 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
 
   // State names are fully player-controlled via the toggle below; this only
   // resets them to hidden on each new round (LOADING) so nothing carries
-  // over from the last one. Also clears any "Show Boundary" polygon and
-  // pending hint timer from the previous site.
+  // over from the last one. Also clears any "Show Boundary" polygon from
+  // the previous site (hint reset is now the dedicated effect above).
   useEffect(() => {
     if (roundState === 'LOADING') {
       setPoliticalNames(false);
       clearBoundary(mapRef.current);
-      if (hintTimeoutRef.current) {
-        clearTimeout(hintTimeoutRef.current);
-        hintTimeoutRef.current = null;
-      }
-      hideHintRegion(mapRef.current);
     }
   }, [mapRef, roundState, setPoliticalNames]);
-
-  // Belt-and-braces cleanup if the player navigates away from Blitz mid-timer.
-  useEffect(() => {
-    return () => {
-      if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current);
-    };
-  }, []);
 
   // Measures BlitzCard's height the instant roundState flips to REVEALING,
   // before BottomCard.css's 0.3s max-height transition finishes -- so this

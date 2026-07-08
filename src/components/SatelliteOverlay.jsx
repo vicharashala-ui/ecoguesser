@@ -8,19 +8,21 @@ import { SATELLITE_VISUAL } from '../config.js';
 // NOT redraw on pan/zoom/rotate, per the spec's "simulates atmospheric scatter at
 // the viewport rim" framing.
 //
-// isolation/translateZ(0) below: this is the one piece of Classic's satellite
-// view that Daily's doesn't have -- ClassicMap.jsx renders it, DailyMap.jsx never
-// imports SatelliteOverlay at all. A <canvas> always gets its own GPU compositing
-// layer in Chromium regardless of CSS, so turning satellite on in Classic puts a
-// SECOND always-own-layer canvas (this one) on top of MapLibre's WebGL canvas,
-// alongside the several already-isolated fixed elements (BottomCard, RecenterButton,
-// BottomNav -- see RecenterButton.css's writeup on the backdrop-filter/WebGL
-// compositor bug those needed). Daily only ever has the one (WebGL) canvas layer
-// in that stack. This canvas was the one layer in that group that had never been
-// given the same explicit-layer treatment -- adding it here gives the compositor
-// the same stable boundary for every layer in the stack instead of just most of
-// them, which is the most likely reason the existing fix was covering Daily's
-// satellite view fine but not Classic's.
+// No isolation/transform here (deliberately -- see below). This is the one
+// piece of Classic's satellite view that Daily's doesn't have: ClassicMap.jsx
+// renders it, DailyMap.jsx never imports SatelliteOverlay at all. It used to
+// carry `isolation: isolate; transform: translateZ(0)`, added on the theory
+// that giving it "the same own-GPU-layer treatment" as BottomCard/RecenterButton/
+// BottomNav would help. That was backwards: this canvas is exactly the one
+// extra always-on-top-of-MapLibre's-WebGL-canvas layer Classic's satellite view
+// has that Daily's doesn't, and forcing it onto its own compositor layer (on
+// top of an already-known-flaky stack -- see BottomNav.css's writeup, which
+// documents that same isolation+translateZ(0) recipe *failing* to fix the
+// identical disappearing-fixed-element symptom there) is what was pushing
+// Classic's layer count over whatever the real trigger is. This canvas has no
+// positioned descendants and is pointer-events:none, so it never needed its
+// own stacking boundary -- z-index:5 alone already keeps it under every piece
+// of floating UI. Removing the forced layer is the fix, not another one.
 // @param active: boolean -- pass the `satellite` value from useMapState()
 export default function SatelliteOverlay({ active }) {
   const canvasRef = useRef(null);
@@ -87,8 +89,6 @@ export default function SatelliteOverlay({ active }) {
         position: 'absolute', inset: 0,
         pointerEvents: 'none', // let map drag/zoom/click pass through untouched
         zIndex: 5,
-        isolation: 'isolate',
-        transform: 'translateZ(0)',
       }}
     />
   );

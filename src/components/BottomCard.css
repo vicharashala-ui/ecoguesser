@@ -8,6 +8,30 @@
   --eg-accent is set inline per-instance from CATEGORY_META[site.category].color.
 */
 
+/* ---- Session-start pin-placement tip ------------------------------------ */
+/* Positioned the same way RecenterButton.css is: fixed, offset up from the
+   nav bar by the pill's known 128px max-height (.bottom-card.is-pill above)
+   plus a small gap, since this only ever shows during the pre-guess pill
+   state (never REVEALING), so that assumption always holds here. Text
+   only -- no background/border/shadow shape -- so it reads as a caption
+   floating just above the guess panel. White fill + a dark drop-shadow
+   (rather than a light halo) keeps it legible over both the map/satellite
+   background and the light cream app chrome. */
+.bc-pin-tip {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 128px + 2px);
+  z-index: 26;
+  text-align: center;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(17, 24, 39, 0.55), 0 1px 8px rgba(17, 24, 39, 0.35);
+  pointer-events: none; /* purely informational, never blocks a tap */
+}
+
 .bottom-card {
   position: fixed;
   left: 16px;
@@ -45,6 +69,14 @@
   border-radius: 24px;
   max-height: 80vh;
   overflow-y: auto;
+}
+
+/* Collapsed reveal card (name + state only) -- much shorter cap than the
+   full 80vh so the max-height transition actually animates a visible
+   shrink, same technique as is-pill/is-expanded's own two fixed values. */
+.bottom-card.is-expanded.is-collapsed {
+  max-height: 120px;
+  overflow-y: hidden;
 }
 
 /* ---- Pre-guess pill ---------------------------------------------------- */
@@ -188,20 +220,58 @@
 /* ---- Post-guess expanded card ------------------------------------------ */
 
 .bc-card {
+  position: relative; /* anchors .bc-collapse-toggle, which is absolute so it never reserves header row height when collapsed */
   padding: 18px 20px calc(20px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.bc-card-collapsed {
-  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-}
-
 .bc-card-header {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* Collapse/expand toggle -- top-right of the reveal card's header. One
+   chevron glyph, rotated 180deg when collapsed (IconChevronUp) rather than
+   swapped for a separate icon, so the rotation itself is the state cue.
+   margin-left:auto keeps it pinned to the right edge whether or not the
+   logo/category-label sibling is present (they're hidden while collapsed). */
+.bc-collapse-toggle {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  z-index: 1;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.25s ease;
+}
+
+.bc-collapse-toggle:hover {
+  background: rgba(17, 24, 39, 0.06);
+  color: #111827;
+}
+
+.bc-collapse-toggle:active {
+  transform: scale(0.9);
+}
+
+.bc-collapse-toggle.is-collapsed {
+  transform: rotate(180deg);
+}
+
+.bc-collapse-toggle.is-collapsed:active {
+  transform: rotate(180deg) scale(0.9);
 }
 
 .bc-icon-lg {
@@ -215,28 +285,9 @@
   color: var(--eg-accent, #16a34a);
 }
 
-.bc-collapse-btn {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: #6b7280;
-  cursor: pointer;
-}
-
-.bc-collapse-btn:hover {
-  background: rgba(17, 24, 39, 0.06);
-  color: #374151;
-}
-
 .bc-card-name {
   margin: 0;
+  padding-right: 40px; /* clears .bc-collapse-toggle, floated top-right */
   font-size: 20px;
   font-weight: 800;
   color: #111827;

@@ -16,12 +16,23 @@
 // Show Site Boundary renders as a small chip at the right edge of the
 // result row (distance + pts) rather than its own row, to save vertical space.
 
-import { useId, useState, useEffect, forwardRef } from 'react';
+import { useId, useEffect, useState, forwardRef } from 'react';
 import { CATEGORY_META, SCORING, DAILY } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './BottomCard.css';
 
 const DAILY_MAX_TOTAL = SCORING.MAX_SCORE * DAILY.CATEGORIES.length; // 25,000
+
+// "Zoom in and tap to place pin" -- shown above the pill until the player's
+// first pin placement of the browser session (sessionStorage, not
+// localStorage: it's meant to reappear next visit, just not mid-session --
+// e.g. after switching from Daily to Classic having already placed a pin).
+// Read/written directly on every render rather than mirrored into its own
+// piece of React state, so a flag set by one mode's BottomCard instance
+// (Classic/Daily each mount their own) is picked up by the other the next
+// time IT re-renders too, instead of only updating whichever instance
+// happened to be mounted at the moment the flag was set.
+const SEEN_PIN_TIP_KEY = 'eg_seen_pin_tip';
 
 // ---------------------------------------------------------------------------
 // Icons -- minimal inline SVGs, currentColor so they inherit text color.
@@ -106,20 +117,22 @@ function IconFrame({ size = 14 }) {
   );
 }
 
+// Single chevron, rotated via CSS (.bc-collapse-toggle.is-collapsed) rather
+// than swapped for a separate "up" glyph -- one icon, the rotation itself
+// communicates the toggle's other state.
+function IconChevronDown({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function IconSkip({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M4.5 6l7 6-7 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M13 6l7 6-7 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function IconChevron({ size = 16, direction = 'down' }) {
-  const rotation = direction === 'up' ? 180 : 0;
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ transform: `rotate(${rotation}deg)` }}>
-      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -178,23 +191,41 @@ const BottomCard = forwardRef(function BottomCard({
   // boundary hit that got docked below 5000.
   const isPerfect = isRevealing && result && result.finalScore === SCORING.MAX_SCORE;
 
-  // Collapse toggle -- lets the player tuck the expanded reveal card down to
-  // just name + state so it doesn't block the map. Keyed off `result` (a new
-  // object every round) rather than a boolean so a fresh round always opens
-  // expanded, matching recordedResultRef's identity-check pattern elsewhere.
+  // Only relevant pre-guess (READING/PLACING) -- once revealed there's
+  // nothing left to place, and markerPlaced already covers "this round's
+  // pin is down." sessionStorage.getItem is synchronous and re-read fresh
+  // on every render, so this stays correct even across BottomCard's two
+  // separate mount points (Classic + Daily).
+  const showPinTip = !isRevealing && !markerPlaced
+    && typeof sessionStorage !== 'undefined' && !sessionStorage.getItem(SEEN_PIN_TIP_KEY);
+
+  useEffect(() => {
+    if (markerPlaced && typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(SEEN_PIN_TIP_KEY, '1');
+    }
+  }, [markerPlaced]);
+
+  // Expanded reveal card's collapse toggle -- collapses down to just
+  // name + state (no logo/category label/description/score/etc.). Reset to
+  // expanded on every NEW result so a collapse from the last round never
+  // carries into the next one's reveal.
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
     setCollapsed(false);
   }, [result]);
 
   return (
-    <div
-      ref={ref}
-      className={`bottom-card ${isRevealing ? 'is-expanded' : 'is-pill'}`}
-      style={{ '--eg-accent': meta.color }}
-      role="region"
-      aria-labelledby={titleId}
-    >
+    <>
+      {showPinTip && (
+        <div className="bc-pin-tip" aria-hidden="true">Zoom in and tap to place pin</div>
+      )}
+      <div
+        ref={ref}
+        className={`bottom-card ${isRevealing ? `is-expanded ${collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
+        style={{ '--eg-accent': meta.color }}
+        role="region"
+        aria-labelledby={titleId}
+      >
       {!isRevealing && (
         <div className="bc-pill">
           <div className="bc-pill-top">
@@ -250,20 +281,23 @@ const BottomCard = forwardRef(function BottomCard({
       )}
 
       {isRevealing && result && (
-        <div className={`bc-card${collapsed ? ' bc-card-collapsed' : ''}`}>
-          <div className="bc-card-header">
-            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
-            <span className="bc-category-label">{meta.label.toUpperCase()}</span>
-            <button
-              type="button"
-              className="bc-collapse-btn"
-              onClick={() => setCollapsed((c) => !c)}
-              aria-label={collapsed ? 'Expand details' : 'Collapse details'}
-              title={collapsed ? 'Expand' : 'Collapse'}
-            >
-              <IconChevron direction={collapsed ? 'up' : 'down'} />
-            </button>
-          </div>
+        <div className="bc-card">
+          <button
+            type="button"
+            className={`bc-collapse-toggle ${collapsed ? 'is-collapsed' : ''}`}
+            onClick={() => setCollapsed((c) => !c)}
+            aria-label={collapsed ? 'Expand details' : 'Collapse details'}
+            title={collapsed ? 'Expand details' : 'Collapse details'}
+          >
+            <IconChevronDown />
+          </button>
+
+          {!collapsed && (
+            <div className="bc-card-header">
+              <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
+              <span className="bc-category-label">{meta.label.toUpperCase()}</span>
+            </div>
+          )}
 
           <h2 id={titleId} className="bc-card-name">{site.name}</h2>
 
@@ -352,7 +386,8 @@ const BottomCard = forwardRef(function BottomCard({
           )}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 });
 
