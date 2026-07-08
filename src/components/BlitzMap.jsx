@@ -96,9 +96,38 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // ClassicMap.jsx: show/hide is fully derived from [site, roundState,
   // hintToken] every render, so a site or roundState change is always
   // reflected immediately rather than waiting on a stale timer callback.
+  //
+  // That effect alone still isn't quite enough, though: useEffect runs
+  // AFTER the browser paints, while MapLibre draws to its own canvas on a
+  // separate render loop from React. So there's still one real frame,
+  // between a round-ending tap (Skip/Confirm/Next Site) and this effect
+  // actually firing, where React has already committed the new roundState
+  // but hideHintRegion hasn't run yet -- and that one frame is enough for
+  // the OLD round's amber hint to visibly flash before it's cleared. The
+  // three wrappers below (used in place of the raw handlers, JSX further
+  // down) clear the hint synchronously, in the exact same click handler
+  // that starts the transition, so there's no gap left for a stale frame
+  // to slip through. The declarative effect stays as the source of truth
+  // for the 3s auto-hide and any other site/roundState resync.
   const [hintToken, setHintToken] = useState(0); // 0 = hidden; >0 = shown, bumped on each tap
   function handleHint() {
     setHintToken((t) => t + 1);
+  }
+  function clearHintNow() {
+    hideHintRegion(mapRef.current);
+    setHintToken(0);
+  }
+  function handleConfirmClearingHint() {
+    clearHintNow();
+    handleConfirm();
+  }
+  function handleNextSiteClearingHint() {
+    clearHintNow();
+    handleNextSite();
+  }
+  function handleSkipClearingHint() {
+    clearHintNow();
+    handleSkip();
   }
 
   // Declarative show/hide -- the only place that calls showHintRegion/
@@ -235,9 +264,9 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
           site={site}
           selectedState={selectedState}
           result={result}
-          onConfirm={handleConfirm}
-          onNextSite={handleNextSite}
-          onSkip={handleSkip}
+          onConfirm={handleConfirmClearingHint}
+          onNextSite={handleNextSiteClearingHint}
+          onSkip={handleSkipClearingHint}
           onHint={handleHint}
           onShowBoundary={handleShowBoundary}
         />
