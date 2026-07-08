@@ -15,7 +15,36 @@
   --eg-header-height: 72px;
 }
 
+/* This app is a fixed-viewport shell (App.jsx's root div is position:
+   relative, 100vw x 100vh) with position:fixed floating UI (BottomCard,
+   RecenterButton, BottomNav) anchored on top of it. That combination only
+   works if the page itself never scrolls or pinch-zooms -- fixed
+   positioning on mobile Safari/Chrome is resolved against the browser's
+   *visual* viewport, which the browser recomputes independently of normal
+   layout during scroll/zoom/address-bar-collapse, and that recompute can
+   desync from a live WebGL canvas mid-repaint (MapLibre repaints when a
+   raster layer like satellite gets toggled on) -- this is the actual root
+   cause of BottomCard/RecenterButton/BottomNav intermittently going
+   invisible in Classic+Satellite. The page was never locked against
+   scroll/zoom to begin with (index.html's viewport meta allowed native
+   pinch-zoom; html/body had no overflow/height rules), which is what let
+   that condition arise. MapLibre's own pinch-to-zoom/pan for the map is
+   handled internally via canvas touch events, not browser-level page zoom,
+   so none of this affects normal map interaction.
+
+   position: fixed on body (not just overflow: hidden on html/body) is the
+   deliberate belt-and-suspenders part -- overflow: hidden alone doesn't
+   reliably stop iOS Safari's rubber-band bounce scroll on its own; pinning
+   body itself is the standard fix for that. */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
+  position: fixed;
+  inset: 0;
   margin: 0;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   background: #f8f6f1;
