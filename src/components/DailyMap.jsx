@@ -29,7 +29,8 @@ import './DailyMap.css';
 function IconPause({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M8 5v14M16 5v14" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+      <rect x="7" y="5" width="4" height="14" rx="2" fill="currentColor" />
+      <rect x="13" y="5" width="4" height="14" rx="2" fill="currentColor" />
     </svg>
   );
 }
@@ -37,7 +38,13 @@ function IconPause({ size = 16 }) {
 function IconPlay({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M7 5v14l12-7L7 5Z" fill="currentColor" />
+      <path
+        d="M8.5 6.4v11.2a1 1 0 0 0 1.53.85l8.97-5.6a1 1 0 0 0 0-1.7l-8.97-5.6a1 1 0 0 0-1.53.85Z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -176,10 +183,33 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
 
   return (
     <div style={style} className="eg-daily-map">
-      {/* Top-right stack: layer panel (Satellite only -- Daily forces state
-          borders on at all times via useMapState) with the round timer
-          sitting directly below it. */}
+      {/* Top-right stack: round timer with the layer panel (Satellite only --
+          Daily forces state borders on at all times via useMapState) sitting
+          directly below it. */}
       <div className="dm-top-right-stack">
+        <div className="dm-timer-card">
+          {(roundState === 'READING' || roundState === 'PLACING') && (
+            <button
+              type="button"
+              className="dm-pause-btn"
+              onClick={handlePauseToggle}
+              aria-label={paused ? 'Resume timer' : 'Pause timer'}
+            >
+              {paused ? <IconPlay size={20} /> : <IconPause size={20} />}
+            </button>
+          )}
+          <span className="dm-timer-time" style={{ color: timerColor(timeRemaining) }}>
+            {formatTime(timeRemaining)}
+          </span>
+          <div className="dm-timer-dots" aria-hidden="true">
+            {DAILY.CATEGORIES.map((cat, i) => {
+              const dotState = i < results.length ? 'done' : 'upcoming';
+              const color = CATEGORY_META[cat].color;
+              const dotStyle = dotState === 'done' ? { background: color } : { borderColor: color };
+              return <span key={cat} className={`dm-timer-dot dm-timer-dot--${dotState}`} style={dotStyle} />;
+            })}
+          </div>
+        </div>
         <div className="dm-layer-panel">
           <label className="eg-toggle">
             <input
@@ -197,29 +227,6 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
               Satellite unavailable
             </span>
           )}
-        </div>
-        <div className="dm-timer-card">
-          {(roundState === 'READING' || roundState === 'PLACING') && (
-            <button
-              type="button"
-              className="dm-pause-btn"
-              onClick={handlePauseToggle}
-              aria-label={paused ? 'Resume timer' : 'Pause timer'}
-            >
-              {paused ? <IconPlay /> : <IconPause />}
-            </button>
-          )}
-          <span className="dm-timer-time" style={{ color: timerColor(timeRemaining) }}>
-            {formatTime(timeRemaining)}
-          </span>
-          <div className="dm-timer-dots" aria-hidden="true">
-            {DAILY.CATEGORIES.map((cat, i) => {
-              const dotState = i < results.length ? 'done' : 'upcoming';
-              const color = CATEGORY_META[cat].color;
-              const dotStyle = dotState === 'done' ? { background: color } : { borderColor: color };
-              return <span key={cat} className={`dm-timer-dot dm-timer-dot--${dotState}`} style={dotStyle} />;
-            })}
-          </div>
         </div>
       </div>
 

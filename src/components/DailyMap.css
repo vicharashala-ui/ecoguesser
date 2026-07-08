@@ -12,16 +12,19 @@
   height: 100%;
 }
 
-/* ---- Top-right stack: layer panel + timer pill below it ---------------- */
+/* ---- Top-right stack: timer pill + layer panel below it ---------------- */
 
 .dm-top-right-stack {
   position: absolute;
   /* Pulled down below Header.jsx's title bar (+ safe-area inset) via the
-     shared --eg-header-height var. */
-  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
+     shared --eg-header-height var. 18px (not 10px) because .dm-timer-card is
+     now the top item in the stack, so the pause button's -12px top overhang
+     (see .dm-pause-btn below) needs clearance above the stack itself, not
+     just above the timer card. */
+  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 18px);
   /* 20px, not 10px -- the pause button sits 10px outside .dm-timer-card's own
-     edge (see .dm-pause-btn below), so 10px of stack clearance put it flush
-     with the viewport edge, right where a scrollbar/safe-area can eat it. */
+     right edge (see .dm-pause-btn below), so 10px of stack clearance put it
+     flush with the viewport edge, right where a scrollbar/safe-area can eat it. */
   right: 20px;
   z-index: 10;
   display: flex;
@@ -87,24 +90,29 @@
 
 .dm-pause-btn {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 34px;
-  height: 34px;
+  top: -12px;
+  right: -12px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  background: #1f2937;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.55);
+  background: #3949ab;
+  box-shadow: 0 3px 10px rgba(57, 73, 171, 0.5);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
 }
 
 .dm-pause-btn:hover {
-  background: #374151;
+  background: #2c3a91;
+}
+
+.dm-pause-btn:active {
+  transform: scale(0.94);
 }
 
 /* ---- Paused overlay -- confirms the map isn't accepting clicks --------- */
