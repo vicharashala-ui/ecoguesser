@@ -1,0 +1,395 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.2723,
+          25.833
+        ]
+      },
+      "properties": {
+        "name": "Aravalli Range",
+        "class": "range",
+        "scalerank": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          83.2283,
+          23.0017
+        ]
+      },
+      "properties": {
+        "name": "Chota Nagpur Plateau",
+        "class": "plateau",
+        "scalerank": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.3612,
+          33.2451
+        ]
+      },
+      "properties": {
+        "name": "Vale of Kashmir",
+        "class": "valley",
+        "scalerank": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.4945,
+          22.3081
+        ]
+      },
+      "properties": {
+        "name": "Sundarbans",
+        "class": "wetland",
+        "scalerank": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.258,
+          23.0096
+        ]
+      },
+      "properties": {
+        "name": "Ganges Delta",
+        "class": "delta",
+        "scalerank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.4378,
+          9.3495
+        ]
+      },
+      "properties": {
+        "name": "Malabar Coast",
+        "class": "coast",
+        "scalerank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0495,
+          14.6337
+        ]
+      },
+      "properties": {
+        "name": "Coromandel Coast",
+        "class": "coast",
+        "scalerank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.284,
+          25.5693
+        ]
+      },
+      "properties": {
+        "name": "Naga Hills",
+        "class": "range",
+        "scalerank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.1305,
+          9.5485
+        ]
+      },
+      "properties": {
+        "name": "Southern Ghats",
+        "class": "range",
+        "scalerank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.6271,
+          22.075
+        ]
+      },
+      "properties": {
+        "name": "Satpura Range",
+        "class": "range",
+        "scalerank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.9405,
+          25.8938
+        ]
+      },
+      "properties": {
+        "name": "Khasi Hills",
+        "class": "range",
+        "scalerank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          70.8206,
+          21.7626
+        ]
+      },
+      "properties": {
+        "name": "Kathiawar Peninsula",
+        "class": "peninsula",
+        "scalerank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          95.2194,
+          28.5257
+        ]
+      },
+      "properties": {
+        "name": "Tsangpo Gorge",
+        "class": "gorge",
+        "scalerank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.3853,
+          15.8099
+        ]
+      },
+      "properties": {
+        "name": "Western Ghats",
+        "class": "range",
+        "scalerank": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.343,
+          15.9642
+        ]
+      },
+      "properties": {
+        "name": "Eastern Ghats",
+        "class": "range",
+        "scalerank": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.1838,
+          23.1982
+        ]
+      },
+      "properties": {
+        "name": "Vindhya Range",
+        "class": "range",
+        "scalerank": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.3734,
+          27.651
+        ]
+      },
+      "properties": {
+        "name": "Thar Desert",
+        "class": "desert",
+        "scalerank": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.7258,
+          29.4754
+        ]
+      },
+      "properties": {
+        "name": "Siwalik Hills",
+        "class": "range",
+        "scalerank": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.811,
+          34.4431
+        ]
+      },
+      "properties": {
+        "name": "Karakoram Range",
+        "class": "range",
+        "scalerank": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          83.7978,
+          26.1122
+        ]
+      },
+      "properties": {
+        "name": "Ganges Plain",
+        "class": "plain",
+        "scalerank": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.9649,
+          16.2364
+        ]
+      },
+      "properties": {
+        "name": "Deccan Plateau",
+        "class": "plateau",
+        "scalerank": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.9816,
+          28.1194
+        ]
+      },
+      "properties": {
+        "name": "Himalayas",
+        "class": "range",
+        "scalerank": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.9871,
+          32.4558
+        ]
+      },
+      "properties": {
+        "name": "Tibetan Plateau",
+        "class": "plateau",
+        "scalerank": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.8559,
+          12.5432
+        ]
+      },
+      "properties": {
+        "name": "Andaman Islands",
+        "class": "islands",
+        "scalerank": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.8198,
+          6.9995
+        ]
+      },
+      "properties": {
+        "name": "Nicobar Islands",
+        "class": "islands",
+        "scalerank": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.1838,
+          10.8424
+        ]
+      },
+      "properties": {
+        "name": "Lakshadweep Islands",
+        "class": "islands",
+        "scalerank": 5
+      }
+    }
+  ]
+}

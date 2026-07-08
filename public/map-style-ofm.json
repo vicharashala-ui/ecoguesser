@@ -12,6 +12,10 @@
         "openmaptiles": {
             "type": "vector",
             "url": "https://tiles.openfreemap.org/planet"
+        },
+        "physical-features": {
+            "type": "geojson",
+            "data": "/physical-features.geojson"
         }
     },
     "sprite": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm",
@@ -97,13 +101,12 @@
             "source-layer": "waterway",
             "filter": ["match", ["geometry-type"], ["LineString", "MultiLineString"], true, false],
             "layout": {
-                "symbol-placement": "line",
-                "symbol-spacing": 350,
+                "symbol-placement": "line-center",
                 "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], " ", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
                 "text-font": ["Noto Sans Italic"],
                 "text-letter-spacing": 0.2,
                 "text-max-width": 5,
-                "text-size": 14
+                "text-size": ["interpolate", ["linear"], ["zoom"], 4, 10, 8, 12, 12, 14]
             },
             "paint": {
                 "text-color": "hsl(0,0%,66%)",
@@ -149,6 +152,21 @@
                 "text-color": "#495e91",
                 "text-halo-color": "rgba(255,255,255,0.7)",
                 "text-halo-width": 1.5
+            }
+        },
+        {
+            "id": "physical_feature_label",
+            "type": "symbol",
+            "source": "physical-features",
+            "layout": {
+                "text-field": ["get", "name"],
+                "text-font": ["Noto Sans Italic"],
+                "text-size": ["interpolate", ["linear"], ["zoom"], 4, 10, 10, 15]
+            },
+            "paint": {
+                "text-color": "#7a7458",
+                "text-halo-color": "rgba(255,255,255,0.85)",
+                "text-halo-width": 1.3
             }
         },
         {
