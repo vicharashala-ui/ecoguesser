@@ -148,7 +148,7 @@ const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist, t
               </svg>
               <div className="dr-brand-block">
                 <div className="dr-brand">
-                  <span className="dr-wordmark">EcoGuesser</span>
+                  <span className="dr-wordmark">EcoGuesser<sup className="eg-tm">™</sup></span>
                   <span className="dr-pill">Daily</span>
                 </div>
                 <span className="dr-tagline">

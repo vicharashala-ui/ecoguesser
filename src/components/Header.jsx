@@ -37,7 +37,7 @@ export default function Header({ onMenuClick }) {
           >
             <path fill="#fff" fillRule="evenodd" d={TIGER_MARK_PATH} />
           </svg>
-          <span className="eg-header-title">EcoGuesser</span>
+          <span className="eg-header-title">EcoGuesser<sup className="eg-tm">™</sup></span>
         </div>
         <p className="eg-header-tagline">Explore &bull; Learn &bull; Protect</p>
       </div>

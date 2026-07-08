@@ -130,7 +130,7 @@ export default function App() {
     return (
       <div style={screenStyle}>
         <div style={{ fontSize: '32px', fontWeight: 800, color: '#16a34a', marginBottom: '1rem' }}>
-          EcoGuesser
+          EcoGuesser<sup style={{ fontSize: '0.4em', fontWeight: 700, verticalAlign: 'super', marginLeft: '0.1em' }}>™</sup>
         </div>
         <p style={{ color: '#111827', marginBottom: '0.25rem' }}>Couldn't load game data.</p>
         <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>Check your connection and try again.</p>
@@ -145,7 +145,7 @@ export default function App() {
     return (
       <div style={screenStyle}>
         <div style={{ fontSize: '32px', fontWeight: 800, color: '#16a34a', marginBottom: '0.5rem' }}>
-          EcoGuesser
+          EcoGuesser<sup style={{ fontSize: '0.4em', fontWeight: 700, verticalAlign: 'super', marginLeft: '0.1em' }}>™</sup>
         </div>
         <p style={{ fontSize: '18px', fontWeight: 400, color: '#6b7280', marginBottom: '1.5rem' }}>
           India's Protected Areas

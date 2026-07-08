@@ -77,6 +77,19 @@ body {
   animation: eg-spin 0.8s linear infinite;
 }
 
+/* Trademark mark for the EcoGuesser wordmark -- applied once per screen, on
+   the first/most prominent brand instance (Header, splash/error screens,
+   the Daily Recap share-card wordmark), not on every casual mention in body
+   copy. Sized as a fraction of the surrounding text and superscripted,
+   rather than rendered at full size, per standard ™ usage. */
+.eg-tm {
+  font-size: 0.4em;
+  font-weight: 700;
+  vertical-align: super;
+  margin-left: 0.1em;
+  letter-spacing: normal;
+}
+
 @keyframes eg-spin {
   to { transform: rotate(360deg); }
 }

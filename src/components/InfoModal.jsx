@@ -28,7 +28,7 @@ function HowToPlayContent() {
   return (
     <>
       <p>
-        EcoGuesser drops you somewhere in India's protected-area network --
+        EcoGuesser<sup className="eg-tm">™</sup> drops you somewhere in India's protected-area network --
         national parks, wildlife sanctuaries, tiger reserves, biosphere
         reserves, and Ramsar wetland sites -- and shows you a description of
         the place. Your job is to place a pin on the map where you think it
@@ -82,7 +82,7 @@ function AboutContent() {
   return (
     <>
       <p>
-        EcoGuesser is a geography-and-ecology guessing game built around
+        EcoGuesser<sup className="eg-tm">™</sup> is a geography-and-ecology guessing game built around
         India's protected areas. The site list is curated from publicly
         available records covering national parks, wildlife sanctuaries,
         tiger reserves, biosphere reserves, and Ramsar wetland sites.

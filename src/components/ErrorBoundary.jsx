@@ -17,7 +17,9 @@ export default class ErrorBoundary extends React.Component {
       <div style={{ display:'flex', flexDirection:'column', alignItems:'center',
                     justifyContent:'center', height:'100vh', background:'#f8f6f1',
                     fontFamily:'Nunito, sans-serif', textAlign:'center', padding:'2rem' }}>
-        <div style={{ fontSize:'2.5rem', marginBottom:'1rem' }}>EcoGuesser</div>
+        <div style={{ fontSize:'2.5rem', marginBottom:'1rem' }}>
+          EcoGuesser<sup style={{ fontSize:'0.4em', fontWeight:700, verticalAlign:'super', marginLeft:'0.1em' }}>™</sup>
+        </div>
         <h2 style={{ color:'#111827', fontSize:'1.25rem', marginBottom:'0.5rem' }}>
           Something went wrong
         </h2>
