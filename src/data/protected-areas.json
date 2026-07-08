@@ -259,8 +259,8 @@
       "Madhya Pradesh"
     ],
     "area_km2": 0.9,
-    "centroid_lat": 22.342,
-    "centroid_lng": 74.784,
+    "centroid_lat": 22.3424,
+    "centroid_lng": 74.7763,
     "hasBoundary": true
   },
   {
@@ -367,8 +367,8 @@
       "Himachal Pradesh"
     ],
     "area_km2": 754.4,
-    "centroid_lat": 31.799,
-    "centroid_lng": 77.5514,
+    "centroid_lat": 31.7946,
+    "centroid_lng": 77.7204,
     "hasBoundary": true
   },
   {
@@ -403,8 +403,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 526,
-    "centroid_lat": 9.1271,
-    "centroid_lng": 78.8025,
+    "centroid_lat": 9.2421,
+    "centroid_lng": 79.1977,
     "hasBoundary": true
   },
   {
@@ -655,8 +655,8 @@
       "Madhya Pradesh"
     ],
     "area_km2": 375.2,
-    "centroid_lat": 25.5061,
-    "centroid_lng": 77.7609,
+    "centroid_lat": 25.4955,
+    "centroid_lng": 77.8225,
     "hasBoundary": true
   },
   {
@@ -679,8 +679,8 @@
       "Telangana"
     ],
     "area_km2": 14.6,
-    "centroid_lat": 17.371,
-    "centroid_lng": 78.6096,
+    "centroid_lat": 17.3609,
+    "centroid_lng": 78.624,
     "hasBoundary": true
   },
   {
@@ -703,8 +703,8 @@
       "Gujarat"
     ],
     "area_km2": 162.9,
-    "centroid_lat": 22.4835,
-    "centroid_lng": 69.8215,
+    "centroid_lat": 22.495,
+    "centroid_lng": 69.9247,
     "hasBoundary": true
   },
   {
@@ -787,8 +787,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 78.5,
-    "centroid_lat": 11.3058,
-    "centroid_lng": 76.5258,
+    "centroid_lat": 11.2985,
+    "centroid_lng": 76.5516,
     "hasBoundary": true
   },
   {
@@ -943,8 +943,8 @@
       "Madhya Pradesh"
     ],
     "area_km2": 292.9,
-    "centroid_lat": 21.7064,
-    "centroid_lng": 79.2573,
+    "centroid_lat": 21.7482,
+    "centroid_lng": 79.2701,
     "hasBoundary": true
   },
   {
@@ -1003,8 +1003,8 @@
       "Uttarakhand"
     ],
     "area_km2": 820,
-    "centroid_lat": 30.0714,
-    "centroid_lng": 78.1885,
+    "centroid_lat": 30.0029,
+    "centroid_lng": 78.1109,
     "hasBoundary": true
   },
   {
@@ -1099,8 +1099,8 @@
       "Rajasthan"
     ],
     "area_km2": 273.8,
-    "centroid_lat": 27.2034,
-    "centroid_lng": 76.3655,
+    "centroid_lat": 27.2438,
+    "centroid_lng": 76.3485,
     "hasBoundary": true
   },
   {
@@ -1159,8 +1159,8 @@
       "Himachal Pradesh"
     ],
     "area_km2": 27.9,
-    "centroid_lat": 30.4361,
-    "centroid_lng": 77.5177,
+    "centroid_lat": 30.4339,
+    "centroid_lng": 77.5386,
     "hasBoundary": true
   },
   {
@@ -1255,8 +1255,8 @@
       "Bihar"
     ],
     "area_km2": 335.7,
-    "centroid_lat": 27.3413,
-    "centroid_lng": 83.9931,
+    "centroid_lat": 27.3514,
+    "centroid_lng": 84.0467,
     "hasBoundary": true
   },
   {
@@ -1459,8 +1459,8 @@
       "Karnataka"
     ],
     "area_km2": 2.2,
-    "centroid_lat": 15.0779,
-    "centroid_lng": 75.0421,
+    "centroid_lat": 15.0778,
+    "centroid_lng": 75.0382,
     "hasBoundary": true
   },
   {
@@ -1543,8 +1543,8 @@
       "Gujarat"
     ],
     "area_km2": 542.1,
-    "centroid_lat": 24.2962,
-    "centroid_lng": 72.7745,
+    "centroid_lat": 24.2703,
+    "centroid_lng": 72.8925,
     "hasBoundary": true
   },
   {
@@ -1663,8 +1663,8 @@
       "Assam"
     ],
     "area_km2": 26.2,
-    "centroid_lat": 26.8385,
-    "centroid_lng": 91.8068,
+    "centroid_lat": 26.8844,
+    "centroid_lng": 91.885,
     "hasBoundary": true
   },
   {
@@ -1807,8 +1807,8 @@
       "Maharashtra"
     ],
     "area_km2": 104.4,
-    "centroid_lat": 19.5697,
-    "centroid_lng": 80.7772,
+    "centroid_lat": 19.5466,
+    "centroid_lng": 80.7475,
     "hasBoundary": true
   },
   {
@@ -1819,8 +1819,8 @@
       "Rajasthan"
     ],
     "area_km2": 229.1,
-    "centroid_lat": 24.8812,
-    "centroid_lng": 75.5224,
+    "centroid_lat": 24.8675,
+    "centroid_lng": 75.5034,
     "hasBoundary": true
   },
   {
@@ -1831,8 +1831,8 @@
       "Assam"
     ],
     "area_km2": 7.2,
-    "centroid_lat": 27.4749,
-    "centroid_lng": 95.3597,
+    "centroid_lat": 27.5394,
+    "centroid_lng": 95.3131,
     "hasBoundary": true
   },
   {
@@ -1975,8 +1975,8 @@
       "Punjab"
     ],
     "area_km2": 10.2,
-    "centroid_lat": 30.5027,
-    "centroid_lng": 76.1991,
+    "centroid_lat": 30.511,
+    "centroid_lng": 76.2153,
     "hasBoundary": true
   },
   {
@@ -1999,8 +1999,8 @@
       "Punjab"
     ],
     "area_km2": 5.2,
-    "centroid_lat": 30.4292,
-    "centroid_lng": 76.1468,
+    "centroid_lat": 30.4208,
+    "centroid_lng": 76.139,
     "hasBoundary": true
   },
   {
@@ -2131,8 +2131,8 @@
       "Karnataka"
     ],
     "area_km2": 181.3,
-    "centroid_lat": 12.0196,
-    "centroid_lng": 75.8735,
+    "centroid_lat": 12.0406,
+    "centroid_lng": 75.8179,
     "hasBoundary": true
   },
   {
@@ -2215,8 +2215,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 504.3,
-    "centroid_lat": 12.3538,
-    "centroid_lng": 77.6948,
+    "centroid_lat": 12.3315,
+    "centroid_lng": 77.8022,
     "hasBoundary": true
   },
   {
@@ -2227,8 +2227,8 @@
       "Karnataka"
     ],
     "area_km2": 1027.5,
-    "centroid_lat": 12.2103,
-    "centroid_lng": 77.5358,
+    "centroid_lat": 12.1791,
+    "centroid_lng": 77.6417,
     "hasBoundary": true
   },
   {
@@ -2299,8 +2299,8 @@
       "Andaman & Nicobar Islands"
     ],
     "area_km2": 0.1,
-    "centroid_lat": 13.6622,
-    "centroid_lng": 93.0309,
+    "centroid_lat": 13.6623,
+    "centroid_lng": 93.0306,
     "hasBoundary": true
   },
   {
@@ -2419,8 +2419,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 0.5,
-    "centroid_lat": 9.3365,
-    "centroid_lng": 78.4804,
+    "centroid_lat": 9.3391,
+    "centroid_lng": 78.4842,
     "hasBoundary": true
   },
   {
@@ -2443,8 +2443,8 @@
       "Kerala"
     ],
     "area_km2": 3.4,
-    "centroid_lat": 10.7222,
-    "centroid_lng": 76.4819,
+    "centroid_lat": 10.72,
+    "centroid_lng": 76.4641,
     "hasBoundary": true
   },
   {
@@ -2467,8 +2467,8 @@
       "Andaman & Nicobar Islands"
     ],
     "area_km2": 9.5,
-    "centroid_lat": 11.2916,
-    "centroid_lng": 92.7062,
+    "centroid_lat": 11.2669,
+    "centroid_lng": 92.7004,
     "hasBoundary": true
   },
   {
@@ -2635,8 +2635,8 @@
       "Himachal Pradesh"
     ],
     "area_km2": 171.5,
-    "centroid_lat": 31.4114,
-    "centroid_lng": 77.8283,
+    "centroid_lat": 31.4173,
+    "centroid_lng": 77.9017,
     "hasBoundary": true
   },
   {
@@ -2659,8 +2659,8 @@
       "Karnataka"
     ],
     "area_km2": 82.7,
-    "centroid_lat": 15.3002,
-    "centroid_lng": 76.5733,
+    "centroid_lat": 15.2608,
+    "centroid_lng": 76.5948,
     "hasBoundary": true
   },
   {
@@ -2671,8 +2671,8 @@
       "Rajasthan"
     ],
     "area_km2": 80.8,
-    "centroid_lat": 24.9196,
-    "centroid_lng": 75.8047,
+    "centroid_lat": 24.9129,
+    "centroid_lng": 75.7368,
     "hasBoundary": true
   },
   {
@@ -2779,8 +2779,8 @@
       "Andaman & Nicobar Islands"
     ],
     "area_km2": 0.1,
-    "centroid_lat": 13.0231,
-    "centroid_lng": 92.9479,
+    "centroid_lat": 13.0225,
+    "centroid_lng": 92.9489,
     "hasBoundary": true
   },
   {
@@ -2971,8 +2971,8 @@
       "Gujarat"
     ],
     "area_km2": 3.3,
-    "centroid_lat": 22.1299,
-    "centroid_lng": 69.1697,
+    "centroid_lat": 22.1046,
+    "centroid_lng": 69.1695,
     "hasBoundary": true
   },
   {
@@ -3007,8 +3007,8 @@
       "Himachal Pradesh"
     ],
     "area_km2": 108.4,
-    "centroid_lat": 32.8468,
-    "centroid_lng": 75.9118,
+    "centroid_lat": 32.8522,
+    "centroid_lng": 75.9381,
     "hasBoundary": true
   },
   {
@@ -3067,8 +3067,8 @@
       "Maharashtra"
     ],
     "area_km2": 260.6,
-    "centroid_lat": 20.3345,
-    "centroid_lng": 75.1056,
+    "centroid_lat": 20.35,
+    "centroid_lng": 75.1431,
     "hasBoundary": true
   },
   {
@@ -3091,8 +3091,8 @@
       "Karnataka"
     ],
     "area_km2": 29.8,
-    "centroid_lat": 16.1995,
-    "centroid_lng": 74.717,
+    "centroid_lat": 16.1956,
+    "centroid_lng": 74.7007,
     "hasBoundary": true
   },
   {
@@ -3127,8 +3127,8 @@
       "Gujarat"
     ],
     "area_km2": 1153.4,
-    "centroid_lat": 21.1455,
-    "centroid_lng": 70.7437,
+    "centroid_lat": 21.0973,
+    "centroid_lng": 70.9726,
     "hasBoundary": true
   },
   {
@@ -3175,8 +3175,8 @@
       "Uttarakhand"
     ],
     "area_km2": 485.9,
-    "centroid_lat": 31.1462,
-    "centroid_lng": 78.2516,
+    "centroid_lat": 31.1168,
+    "centroid_lng": 78.4125,
     "hasBoundary": true
   },
   {
@@ -3451,8 +3451,8 @@
       "Maharashtra"
     ],
     "area_km2": 341.1,
-    "centroid_lat": 19.5704,
-    "centroid_lng": 75.1545,
+    "centroid_lat": 19.5412,
+    "centroid_lng": 75.2235,
     "hasBoundary": true
   },
   {
@@ -3463,8 +3463,8 @@
       "Rajasthan"
     ],
     "area_km2": 52,
-    "centroid_lat": 24.3142,
-    "centroid_lng": 73.8605,
+    "centroid_lat": 24.3091,
+    "centroid_lng": 73.8672,
     "hasBoundary": true
   },
   {
@@ -3535,8 +3535,8 @@
       "Gujarat"
     ],
     "area_km2": 180.7,
-    "centroid_lat": 24.4256,
-    "centroid_lng": 72.4873,
+    "centroid_lat": 24.4186,
+    "centroid_lng": 72.5232,
     "hasBoundary": true
   },
   {
@@ -3571,8 +3571,8 @@
       "Karnataka"
     ],
     "area_km2": 100.5,
-    "centroid_lat": 14.1052,
-    "centroid_lng": 76.4002,
+    "centroid_lat": 14.1281,
+    "centroid_lng": 76.4221,
     "hasBoundary": true
   },
   {
@@ -3643,8 +3643,8 @@
       "Uttar Pradesh"
     ],
     "area_km2": 500.7,
-    "centroid_lat": 24.718,
-    "centroid_lng": 83.1587,
+    "centroid_lat": 24.7646,
+    "centroid_lng": 83.7207,
     "hasBoundary": true
   },
   {
@@ -3703,8 +3703,8 @@
       "Karnataka"
     ],
     "area_km2": 78.6,
-    "centroid_lat": 12.8124,
-    "centroid_lng": 78.1592,
+    "centroid_lat": 12.8384,
+    "centroid_lng": 78.094,
     "hasBoundary": true
   },
   {
@@ -3847,8 +3847,8 @@
       "Maharashtra"
     ],
     "area_km2": 18.3,
-    "centroid_lat": 20.4257,
-    "centroid_lng": 77.5324,
+    "centroid_lat": 20.4284,
+    "centroid_lng": 77.5759,
     "hasBoundary": true
   },
   {
@@ -3955,8 +3955,8 @@
       "Andhra Pradesh"
     ],
     "area_km2": 357.6,
-    "centroid_lat": 13.1447,
-    "centroid_lng": 78.7415,
+    "centroid_lat": 13.1484,
+    "centroid_lng": 78.8027,
     "hasBoundary": true
   },
   {
@@ -4003,8 +4003,8 @@
       "Rajasthan"
     ],
     "area_km2": 14.8,
-    "centroid_lat": 25.4217,
-    "centroid_lng": 73.7554,
+    "centroid_lat": 25.412,
+    "centroid_lng": 73.7745,
     "hasBoundary": true
   },
   {
@@ -4063,8 +4063,8 @@
       "Gujarat"
     ],
     "area_km2": 6.1,
-    "centroid_lat": 22.5179,
-    "centroid_lng": 70.1535,
+    "centroid_lat": 22.5255,
+    "centroid_lng": 70.1865,
     "hasBoundary": true
   },
   {
@@ -4099,8 +4099,8 @@
       "Telangana"
     ],
     "area_km2": 635.4,
-    "centroid_lat": 17.8012,
-    "centroid_lng": 80.5851,
+    "centroid_lat": 17.8412,
+    "centroid_lng": 80.6452,
     "hasBoundary": true
   },
   {
@@ -4135,8 +4135,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 609,
-    "centroid_lat": 10.2577,
-    "centroid_lng": 77.4556,
+    "centroid_lat": 10.2716,
+    "centroid_lng": 77.6469,
     "hasBoundary": true
   },
   {
@@ -4171,8 +4171,8 @@
       "Andhra Pradesh"
     ],
     "area_km2": 308.6,
-    "centroid_lat": 16.6513,
-    "centroid_lng": 81.2412,
+    "centroid_lat": 16.654,
+    "centroid_lng": 81.1971,
     "hasBoundary": true
   },
   {
@@ -4183,8 +4183,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 1.3,
-    "centroid_lat": 8.4942,
-    "centroid_lng": 77.761,
+    "centroid_lat": 8.4886,
+    "centroid_lng": 77.7608,
     "hasBoundary": true
   },
   {
@@ -4231,8 +4231,8 @@
       "Andhra Pradesh"
     ],
     "area_km2": 194.8,
-    "centroid_lat": 15.801,
-    "centroid_lng": 80.8457,
+    "centroid_lat": 15.7977,
+    "centroid_lng": 80.9392,
     "hasBoundary": true
   },
   {
@@ -4555,8 +4555,8 @@
       "Jharkhand"
     ],
     "area_km2": 63.3,
-    "centroid_lat": 23.4752,
-    "centroid_lng": 84.0621,
+    "centroid_lat": 23.5278,
+    "centroid_lng": 84.1302,
     "hasBoundary": true
   },
   {
@@ -4663,8 +4663,8 @@
       "Telangana"
     ],
     "area_km2": 20,
-    "centroid_lat": 17.6786,
-    "centroid_lng": 78.0261,
+    "centroid_lat": 17.6971,
+    "centroid_lng": 77.9979,
     "hasBoundary": true
   },
   {
@@ -4675,8 +4675,8 @@
       "Maharashtra"
     ],
     "area_km2": 182.6,
-    "centroid_lat": 21.5108,
-    "centroid_lng": 79.1753,
+    "centroid_lat": 21.4923,
+    "centroid_lng": 79.2522,
     "hasBoundary": true
   },
   {
@@ -4699,8 +4699,8 @@
       "Gujarat"
     ],
     "area_km2": 295,
-    "centroid_lat": 22.4254,
-    "centroid_lng": 69.341,
+    "centroid_lat": 22.3651,
+    "centroid_lng": 69.4366,
     "hasBoundary": true
   },
   {
@@ -4951,8 +4951,8 @@
       "Haryana"
     ],
     "area_km2": 2.1,
-    "centroid_lat": 28.4108,
-    "centroid_lng": 76.4114,
+    "centroid_lat": 28.4082,
+    "centroid_lng": 76.422,
     "hasBoundary": true
   },
   {
@@ -4975,8 +4975,8 @@
       "Maharashtra"
     ],
     "area_km2": 29.9,
-    "centroid_lat": 18.9079,
-    "centroid_lng": 75.5861,
+    "centroid_lat": 18.9057,
+    "centroid_lng": 75.5973,
     "hasBoundary": true
   },
   {
@@ -5023,8 +5023,8 @@
       "Assam"
     ],
     "area_km2": 97.2,
-    "centroid_lat": 26.4266,
-    "centroid_lng": 93.864,
+    "centroid_lat": 26.4198,
+    "centroid_lng": 93.8645,
     "hasBoundary": true
   },
   {
@@ -5035,8 +5035,8 @@
       "Odisha"
     ],
     "area_km2": 14.2,
-    "centroid_lat": 20.4085,
-    "centroid_lng": 85.796,
+    "centroid_lat": 20.4089,
+    "centroid_lng": 85.811,
     "hasBoundary": true
   },
   {
@@ -5119,8 +5119,8 @@
       "Himachal Pradesh"
     ],
     "area_km2": 132.4,
-    "centroid_lat": 31.8848,
-    "centroid_lng": 76.9462,
+    "centroid_lat": 31.9445,
+    "centroid_lng": 76.9688,
     "hasBoundary": true
   },
   {
@@ -5167,8 +5167,8 @@
       "Madhya Pradesh"
     ],
     "area_km2": 435,
-    "centroid_lat": 26.4589,
-    "centroid_lng": 78.0062,
+    "centroid_lat": 26.3627,
+    "centroid_lng": 77.3952,
     "hasBoundary": true
   },
   {
@@ -5239,8 +5239,8 @@
       "Maharashtra"
     ],
     "area_km2": 60.7,
-    "centroid_lat": 20.9926,
-    "centroid_lng": 78.6924,
+    "centroid_lat": 21.0099,
+    "centroid_lng": 78.623,
     "hasBoundary": true
   },
   {
@@ -5287,8 +5287,8 @@
       "Meghalaya"
     ],
     "area_km2": 29,
-    "centroid_lat": 25.8805,
-    "centroid_lng": 91.7755,
+    "centroid_lat": 25.8808,
+    "centroid_lng": 91.7955,
     "hasBoundary": true
   },
   {
@@ -5479,8 +5479,8 @@
       "Assam"
     ],
     "area_km2": 38.8,
-    "centroid_lat": 26.252,
-    "centroid_lng": 92.0162,
+    "centroid_lat": 26.2312,
+    "centroid_lng": 92.0611,
     "hasBoundary": true
   },
   {
@@ -5539,8 +5539,8 @@
       "West Bengal"
     ],
     "area_km2": 14.1,
-    "centroid_lat": 26.7751,
-    "centroid_lng": 88.5658,
+    "centroid_lat": 26.7809,
+    "centroid_lng": 88.5517,
     "hasBoundary": true
   },
   {
@@ -5695,8 +5695,8 @@
       "Andaman & Nicobar Islands"
     ],
     "area_km2": 0.3,
-    "centroid_lat": 12.4237,
-    "centroid_lng": 92.902,
+    "centroid_lat": 12.4238,
+    "centroid_lng": 92.9006,
     "hasBoundary": true
   },
   {
@@ -5707,8 +5707,8 @@
       "Uttar Pradesh"
     ],
     "area_km2": 10.8,
-    "centroid_lat": 26.9467,
-    "centroid_lng": 82.1555,
+    "centroid_lat": 26.9437,
+    "centroid_lng": 82.18,
     "hasBoundary": true
   },
   {
@@ -5827,8 +5827,8 @@
       "Maharashtra"
     ],
     "area_km2": 69.8,
-    "centroid_lat": 18.4159,
-    "centroid_lng": 72.9436,
+    "centroid_lat": 18.4209,
+    "centroid_lng": 72.9464,
     "hasBoundary": true
   },
   {
@@ -5863,8 +5863,8 @@
       "Uttar Pradesh"
     ],
     "area_km2": 602.8,
-    "centroid_lat": 28.5864,
-    "centroid_lng": 80.1129,
+    "centroid_lat": 28.5978,
+    "centroid_lng": 79.962,
     "hasBoundary": true
   },
   {
@@ -5887,8 +5887,8 @@
       "Lakshadweep"
     ],
     "area_km2": 0,
-    "centroid_lat": 10.775,
-    "centroid_lng": 72.5342,
+    "centroid_lat": 10.7751,
+    "centroid_lng": 72.5339,
     "hasBoundary": true
   },
   {
@@ -5899,8 +5899,8 @@
       "Telangana"
     ],
     "area_km2": 129.9,
-    "centroid_lat": 18.1847,
-    "centroid_lng": 78.2488,
+    "centroid_lat": 18.1858,
+    "centroid_lng": 78.2062,
     "hasBoundary": true
   },
   {
@@ -6055,8 +6055,8 @@
       "West Bengal"
     ],
     "area_km2": 1.3,
-    "centroid_lat": 25.6431,
-    "centroid_lng": 88.1221,
+    "centroid_lat": 25.6418,
+    "centroid_lng": 88.1189,
     "hasBoundary": true
   },
   {
@@ -6187,8 +6187,8 @@
       "Karnataka"
     ],
     "area_km2": 0.7,
-    "centroid_lat": 12.424,
-    "centroid_lng": 76.6375,
+    "centroid_lat": 12.428,
+    "centroid_lng": 76.6561,
     "hasBoundary": true
   },
   {
@@ -6427,8 +6427,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 2.3,
-    "centroid_lat": 9.3408,
-    "centroid_lng": 78.8149,
+    "centroid_lat": 9.3475,
+    "centroid_lng": 78.8396,
     "hasBoundary": true
   },
   {
@@ -6475,7 +6475,7 @@
       "Andaman & Nicobar Islands"
     ],
     "area_km2": 1.6,
-    "centroid_lat": 11.8021,
+    "centroid_lat": 11.8017,
     "centroid_lng": 92.545,
     "hasBoundary": true
   },
@@ -6691,8 +6691,8 @@
       "Kerala"
     ],
     "area_km2": 100.3,
-    "centroid_lat": 8.9168,
-    "centroid_lng": 77.1326,
+    "centroid_lat": 8.8866,
+    "centroid_lng": 77.213,
     "hasBoundary": true
   },
   {
@@ -6715,8 +6715,8 @@
       "Karnataka"
     ],
     "area_km2": 395.6,
-    "centroid_lat": 13.8619,
-    "centroid_lng": 75.5325,
+    "centroid_lat": 13.8616,
+    "centroid_lng": 75.4463,
     "hasBoundary": true
   },
   {
@@ -6907,8 +6907,8 @@
       "Andaman & Nicobar Islands"
     ],
     "area_km2": 0,
-    "centroid_lat": 11.6375,
-    "centroid_lng": 92.7548,
+    "centroid_lat": 11.6376,
+    "centroid_lng": 92.7546,
     "hasBoundary": true
   },
   {
@@ -6931,8 +6931,8 @@
       "Uttar Pradesh"
     ],
     "area_km2": 452.5,
-    "centroid_lat": 27.6784,
-    "centroid_lng": 82.4637,
+    "centroid_lat": 27.7168,
+    "centroid_lng": 82.3544,
     "hasBoundary": true
   },
   {
@@ -6955,8 +6955,8 @@
       "Madhya Pradesh"
     ],
     "area_km2": 83.7,
-    "centroid_lat": 24.4373,
-    "centroid_lng": 81.9662,
+    "centroid_lat": 24.3983,
+    "centroid_lng": 81.6607,
     "hasBoundary": true
   },
   {
@@ -6979,8 +6979,8 @@
       "Uttarakhand"
     ],
     "area_km2": 301.2,
-    "centroid_lat": 29.6375,
-    "centroid_lng": 78.7637,
+    "centroid_lat": 29.6453,
+    "centroid_lng": 78.666,
     "hasBoundary": true
   },
   {
@@ -7315,8 +7315,8 @@
       "Maharashtra"
     ],
     "area_km2": 49.6,
-    "centroid_lat": 18.443,
-    "centroid_lng": 73.4256,
+    "centroid_lat": 18.4345,
+    "centroid_lng": 73.4188,
     "hasBoundary": true
   },
   {
@@ -7399,8 +7399,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 0.3,
-    "centroid_lat": 9.4622,
-    "centroid_lng": 78.7709,
+    "centroid_lat": 9.4623,
+    "centroid_lng": 78.7714,
     "hasBoundary": true
   },
   {
@@ -7435,8 +7435,8 @@
       "Andaman & Nicobar Islands"
     ],
     "area_km2": 16.8,
-    "centroid_lat": 8.5045,
-    "centroid_lng": 93.6247,
+    "centroid_lat": 8.5006,
+    "centroid_lng": 93.6303,
     "hasBoundary": true
   },
   {
@@ -7496,7 +7496,7 @@
     ],
     "area_km2": 0,
     "centroid_lat": 13.4328,
-    "centroid_lng": 93.0783,
+    "centroid_lng": 93.0777,
     "hasBoundary": true
   },
   {
@@ -7543,8 +7543,8 @@
       "Andaman & Nicobar Islands"
     ],
     "area_km2": 0.3,
-    "centroid_lat": 12.7035,
-    "centroid_lng": 92.7319,
+    "centroid_lat": 12.7041,
+    "centroid_lng": 92.7313,
     "hasBoundary": true
   },
   {
@@ -7591,8 +7591,8 @@
       "Uttar Pradesh"
     ],
     "area_km2": 7,
-    "centroid_lat": 25.2968,
-    "centroid_lng": 83.0212,
+    "centroid_lat": 25.2942,
+    "centroid_lng": 83.0132,
     "hasBoundary": true
   },
   {
@@ -7627,8 +7627,8 @@
       "Bihar"
     ],
     "area_km2": 8.9,
-    "centroid_lat": 26.7957,
-    "centroid_lng": 84.4346,
+    "centroid_lat": 26.8003,
+    "centroid_lng": 84.4178,
     "hasBoundary": true
   },
   {
@@ -7735,8 +7735,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 0.4,
-    "centroid_lat": 10.1088,
-    "centroid_lng": 78.5144,
+    "centroid_lat": 10.1114,
+    "centroid_lng": 78.5102,
     "hasBoundary": true
   },
   {
@@ -8131,8 +8131,8 @@
       "Karnataka"
     ],
     "area_km2": 1303.8,
-    "centroid_lat": 15.0275,
-    "centroid_lng": 74.4681,
+    "centroid_lat": 15.0106,
+    "centroid_lng": 74.3777,
     "hasBoundary": true
   },
   {
@@ -8191,8 +8191,8 @@
       "Madhya Pradesh"
     ],
     "area_km2": 1751,
-    "centroid_lat": 25.5061,
-    "centroid_lng": 77.7609,
+    "centroid_lat": 25.4955,
+    "centroid_lng": 77.8225,
     "hasBoundary": true
   },
   {
@@ -8299,8 +8299,8 @@
       "Maharashtra"
     ],
     "area_km2": 1894.9,
-    "centroid_lat": 21.2014,
-    "centroid_lng": 80.1023,
+    "centroid_lat": 21.304,
+    "centroid_lng": 80.0427,
     "hasBoundary": true
   },
   {
@@ -8407,8 +8407,8 @@
       "Uttar Pradesh"
     ],
     "area_km2": 602.8,
-    "centroid_lat": 28.5864,
-    "centroid_lng": 80.1129,
+    "centroid_lat": 28.5978,
+    "centroid_lng": 79.962,
     "hasBoundary": true
   },
   {
@@ -8419,8 +8419,8 @@
       "Uttarakhand"
     ],
     "area_km2": 820,
-    "centroid_lat": 30.0714,
-    "centroid_lng": 78.1885,
+    "centroid_lat": 30.0029,
+    "centroid_lng": 78.1109,
     "hasBoundary": true
   },
   {
@@ -8611,8 +8611,8 @@
       "Bihar"
     ],
     "area_km2": 880.8,
-    "centroid_lat": 27.3756,
-    "centroid_lng": 84.136,
+    "centroid_lat": 27.3866,
+    "centroid_lng": 84.0245,
     "hasBoundary": true
   },
   {
@@ -8637,8 +8637,8 @@
       "Karnataka"
     ],
     "area_km2": 5520,
-    "centroid_lat": 11.5,
-    "centroid_lng": 76.5,
+    "centroid_lat": 11.8544,
+    "centroid_lng": 76.2846,
     "hasBoundary": true
   },
   {
@@ -8649,8 +8649,8 @@
       "Uttarakhand"
     ],
     "area_km2": 5861,
-    "centroid_lat": 30.3792,
-    "centroid_lng": 79.6629,
+    "centroid_lat": 30.3987,
+    "centroid_lng": 79.8864,
     "hasBoundary": true
   },
   {
@@ -8661,8 +8661,8 @@
       "Meghalaya"
     ],
     "area_km2": 820,
-    "centroid_lat": 25.47,
-    "centroid_lng": 90.47,
+    "centroid_lat": 25.4744,
+    "centroid_lng": 90.3037,
     "hasBoundary": true
   },
   {
@@ -8685,8 +8685,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 10500,
-    "centroid_lat": 9.17,
-    "centroid_lng": 79.1,
+    "centroid_lat": 9.2421,
+    "centroid_lng": 79.1977,
     "hasBoundary": true
   },
   {
@@ -8709,8 +8709,8 @@
       "West Bengal"
     ],
     "area_km2": 9630,
-    "centroid_lat": 21.9497,
-    "centroid_lng": 88.9139,
+    "centroid_lat": 21.7693,
+    "centroid_lng": 88.947,
     "hasBoundary": true
   },
   {
@@ -8745,8 +8745,8 @@
       "Arunachal Pradesh"
     ],
     "area_km2": 5112,
-    "centroid_lat": 27.983,
-    "centroid_lng": 94.5,
+    "centroid_lat": 28.998,
+    "centroid_lng": 95.5161,
     "hasBoundary": true
   },
   {
@@ -8807,8 +8807,8 @@
       "Gujarat"
     ],
     "area_km2": 12454,
-    "centroid_lat": 23.72,
-    "centroid_lng": 70.2,
+    "centroid_lat": 23.4459,
+    "centroid_lng": 71.2837,
     "hasBoundary": true
   },
   {
@@ -8819,8 +8819,8 @@
       "Himachal Pradesh"
     ],
     "area_km2": 7770,
-    "centroid_lat": 32.2,
-    "centroid_lng": 77.6,
+    "centroid_lat": 32.4321,
+    "centroid_lng": 78.183,
     "hasBoundary": true
   },
   {
@@ -8831,8 +8831,8 @@
       "Andhra Pradesh"
     ],
     "area_km2": 4756,
-    "centroid_lat": 13.62,
-    "centroid_lng": 79.33,
+    "centroid_lat": 16.0115,
+    "centroid_lng": 78.9206,
     "hasBoundary": true
   },
   {
@@ -8861,7 +8861,7 @@
   },
   {
     "id": "rs_anaghasamudra",
-    "name": "Anaghasamudra",
+    "name": "Ankasamudra Bird Conservation Reserve",
     "category": "ramsar",
     "state": [
       "Karnataka"
@@ -8891,8 +8891,8 @@
       "Uttarakhand"
     ],
     "area_km2": 4.4,
-    "centroid_lat": 30.434,
-    "centroid_lng": 77.6841,
+    "centroid_lat": 30.4382,
+    "centroid_lng": 77.6699,
     "hasBoundary": true
   },
   {
@@ -9059,8 +9059,8 @@
       "Bihar"
     ],
     "area_km2": 4.5,
-    "centroid_lat": 25.6475,
-    "centroid_lng": 84.2785,
+    "centroid_lat": 25.6538,
+    "centroid_lng": 84.3286,
     "hasBoundary": true
   },
   {
@@ -9071,8 +9071,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 526.7,
-    "centroid_lat": 9.1489,
-    "centroid_lng": 78.8691,
+    "centroid_lat": 9.1861,
+    "centroid_lng": 78.8919,
     "hasBoundary": true
   },
   {
@@ -9107,8 +9107,8 @@
       "Odisha"
     ],
     "area_km2": 654,
-    "centroid_lat": 21.6824,
-    "centroid_lng": 83.765,
+    "centroid_lat": 21.6397,
+    "centroid_lng": 83.8702,
     "hasBoundary": true
   },
   {
@@ -9149,7 +9149,7 @@
   },
   {
     "id": "rs_kacheopalri",
-    "name": "Kacheopalri",
+    "name": "Khachoedpalri Wetland",
     "category": "ramsar",
     "state": [
       "Sikkim"
@@ -9197,7 +9197,7 @@
   },
   {
     "id": "rs_karaivettai",
-    "name": "Karaivettai",
+    "name": "Karaivetti Bird Sanctuary",
     "category": "ramsar",
     "state": [
       "Tamil Nadu"
@@ -9239,8 +9239,8 @@
       "Punjab"
     ],
     "area_km2": 3.4,
-    "centroid_lat": 32.0929,
-    "centroid_lng": 75.3941,
+    "centroid_lat": 32.0941,
+    "centroid_lng": 75.4052,
     "hasBoundary": true
   },
   {
@@ -9263,8 +9263,8 @@
       "Gujarat"
     ],
     "area_km2": 5.1,
-    "centroid_lat": 22.5224,
-    "centroid_lng": 70.155,
+    "centroid_lat": 22.5263,
+    "centroid_lng": 70.1778,
     "hasBoundary": true
   },
   {
@@ -9287,8 +9287,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 0.7,
-    "centroid_lat": 8.4942,
-    "centroid_lng": 77.7504,
+    "centroid_lat": 8.4985,
+    "centroid_lng": 77.757,
     "hasBoundary": true
   },
   {
@@ -9365,7 +9365,7 @@
   },
   {
     "id": "rs_nagi",
-    "name": "Nagi",
+    "name": "Nagi Bird Sanctuary",
     "category": "ramsar",
     "state": [
       "Bihar"
@@ -9377,7 +9377,7 @@
   },
   {
     "id": "rs_nakti",
-    "name": "Nakti",
+    "name": "Nakti Bird Sanctuary",
     "category": "ramsar",
     "state": [
       "Bihar"
@@ -9431,8 +9431,8 @@
       "Punjab"
     ],
     "area_km2": 1.2,
-    "centroid_lat": 31.3939,
-    "centroid_lng": 76.3715,
+    "centroid_lat": 31.3905,
+    "centroid_lng": 76.3664,
     "hasBoundary": true
   },
   {
@@ -9551,8 +9551,8 @@
       "Karnataka"
     ],
     "area_km2": 5.2,
-    "centroid_lat": 12.4041,
-    "centroid_lng": 76.704,
+    "centroid_lat": 12.4289,
+    "centroid_lng": 76.6579,
     "hasBoundary": true
   },
   {
@@ -9599,8 +9599,8 @@
       "Madhya Pradesh"
     ],
     "area_km2": 2.5,
-    "centroid_lat": 25.4338,
-    "centroid_lng": 77.7055,
+    "centroid_lat": 25.4321,
+    "centroid_lng": 77.709,
     "hasBoundary": true
   },
   {
@@ -9611,8 +9611,8 @@
       "Tamil Nadu"
     ],
     "area_km2": 2.3,
-    "centroid_lat": 9.3395,
-    "centroid_lng": 78.8166,
+    "centroid_lat": 9.3464,
+    "centroid_lng": 78.8413,
     "hasBoundary": true
   },
   {
@@ -9683,8 +9683,8 @@
       "Kerala"
     ],
     "area_km2": 3.7,
-    "centroid_lat": 9.0418,
-    "centroid_lng": 76.6325,
+    "centroid_lat": 9.0435,
+    "centroid_lng": 76.6377,
     "hasBoundary": true
   },
   {
@@ -9827,8 +9827,8 @@
       "Madhya Pradesh"
     ],
     "area_km2": 200.7,
-    "centroid_lat": 22.52,
-    "centroid_lng": 78.0569,
+    "centroid_lat": 22.4458,
+    "centroid_lng": 77.9664,
     "hasBoundary": true
   },
   {
@@ -9845,7 +9845,7 @@
   },
   {
     "id": "rs_theerthangal",
-    "name": "Theerthangal",
+    "name": "Theerthangal Bird Sanctuary",
     "category": "ramsar",
     "state": [
       "Tamil Nadu"
@@ -9911,8 +9911,8 @@
       "Bihar"
     ],
     "area_km2": 3.2,
-    "centroid_lat": 26.7983,
-    "centroid_lng": 84.4375,
+    "centroid_lat": 26.7964,
+    "centroid_lng": 84.4283,
     "hasBoundary": true
   },
   {
@@ -9947,8 +9947,8 @@
       "Uttar Pradesh"
     ],
     "area_km2": 265.9,
-    "centroid_lat": 28.4972,
-    "centroid_lng": 78.2513,
+    "centroid_lat": 28.4752,
+    "centroid_lng": 78.2663,
     "hasBoundary": true
   },
   {
@@ -9995,8 +9995,8 @@
       "Kerala"
     ],
     "area_km2": 1512.5,
-    "centroid_lat": 9.7909,
-    "centroid_lng": 76.3487,
+    "centroid_lat": 9.733,
+    "centroid_lng": 76.3799,
     "hasBoundary": true
   },
   {
