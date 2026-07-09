@@ -7,6 +7,7 @@ import Header from './components/Header.jsx';
 import SideDrawer from './components/SideDrawer.jsx';
 import StatsView from './components/StatsView.jsx';
 import InfoModal from './components/InfoModal.jsx';
+import InstallPrompt from './components/InstallPrompt.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
 import { LS_KEYS } from './config.js';
@@ -212,6 +213,7 @@ export default function App() {
       {activeTab === 'stats' && <StatsView />}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />
       <Header onMenuClick={() => setDrawerOpen(true)} />
+      <InstallPrompt />
       {infoModalVariant && (
         <InfoModal variant={infoModalVariant} onClose={() => setInfoModalVariant(null)} />
       )}

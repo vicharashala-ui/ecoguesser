@@ -220,4 +220,5 @@ export const LS_KEYS = {
   STATS_BLITZ: 'stats_blitz',
   RANK_TODAY:  'ecoguesser_rank_today', // { date, rank } -- rank only valid when date === today
   RECAP_SHOWN: 'ecoguesser_recap_shown', // plain date string -- the day the recap modal last auto-opened
+  INSTALL_PROMPT_SHOWN: 'ecoguesser_install_prompt_shown', // plain date string -- the day the Add-to-Home-Screen toast last auto-opened
 };
