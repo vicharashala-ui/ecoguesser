@@ -89,7 +89,7 @@ export function useMapState(mapRef, mode) {
         if (!map.getLayer(id)) continue;
         map.setPaintProperty(id, 'line-color', toSatellite ? SV.BOUNDARY_CASING_COLOR : BV.BOUNDARY_CASING_COLOR);
         map.setPaintProperty(id, 'line-opacity', toSatellite ? SV.BOUNDARY_CASING_OPACITY : BV.BOUNDARY_CASING_OPACITY);
-        map.setPaintProperty(id, 'line-width', toSatellite ? SV.BOUNDARY_CASING_WIDTH : BV.BOUNDARY_CASING_WIDTH);
+        map.setPaintProperty(id, 'line-width', toSatellite ? SV.BOUNDARY_CASING_WIDTH : BV.BOUNDARY_CASING_WIDTH_EXPR);
       }
       if (map.getLayer(LAYER_IDS.INDIA_BOUNDARY_CASING)) {
         map.setPaintProperty(LAYER_IDS.INDIA_BOUNDARY_CASING, 'line-color', toSatellite ? SV.BOUNDARY_CASING_COLOR : BV.BOUNDARY_CASING_COLOR);
@@ -395,7 +395,7 @@ export function useMapState(mapRef, mode) {
           paint: {
             'line-color':   BASE_VISUAL.BOUNDARY_CASING_COLOR,
             'line-opacity': BASE_VISUAL.BOUNDARY_CASING_OPACITY,
-            'line-width':   BASE_VISUAL.BOUNDARY_CASING_WIDTH,
+            'line-width':   BASE_VISUAL.BOUNDARY_CASING_WIDTH_EXPR,
           },
         }, 'boundary_2');
       }
@@ -406,7 +406,7 @@ export function useMapState(mapRef, mode) {
           paint: {
             'line-color':   BASE_VISUAL.BOUNDARY_CASING_COLOR,
             'line-opacity': BASE_VISUAL.BOUNDARY_CASING_OPACITY,
-            'line-width':   BASE_VISUAL.BOUNDARY_CASING_WIDTH,
+            'line-width':   BASE_VISUAL.BOUNDARY_CASING_WIDTH_EXPR,
           },
         }, 'boundary_disputed');
       }
@@ -426,7 +426,7 @@ export function useMapState(mapRef, mode) {
       });
       map.addLayer({
         id: LAYER_IDS.INDIA_BOUNDARY_LINE, type: 'line', source: 'india-boundary',
-        paint: { 'line-color': BASE_VISUAL.BOUNDARY_COLOR, 'line-width': 1.5 },
+        paint: { 'line-color': BASE_VISUAL.BOUNDARY_COLOR, 'line-width': 2 },
       });
       // Always visible, both modes, both difficulties -- draws the compliance-patched
       // Aksai Chin/PoK border on top of OFM's boundary line. Not user-toggleable.

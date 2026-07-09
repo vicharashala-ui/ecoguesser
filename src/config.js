@@ -84,7 +84,7 @@ export const SATELLITE_VISUAL = {
   BOUNDARY_CASING_COLOR:   '#04101c',
   BOUNDARY_CASING_OPACITY: 0.65,
   BOUNDARY_CASING_WIDTH:   3,      // vs. the flat BOUNDARY_WIDTH:1 used by boundary_2/disputed in satellite
-  INDIA_BOUNDARY_CASING_WIDTH: 3.5, // INDIA_BOUNDARY_LINE's own width is a constant 1.5, unaffected by BOUNDARY_WIDTH
+  INDIA_BOUNDARY_CASING_WIDTH: 3.5, // INDIA_BOUNDARY_LINE's own width is a constant 2, unaffected by BOUNDARY_WIDTH
   // Deliberately its own tone, not BOUNDARY_COLOR -- state lines (the
   // "Borders" toggle) must still read as a distinct gameplay hint overlay
   // from the international border, not a second copy of it, even on
@@ -133,7 +133,7 @@ export const BASE_VISUAL = {
   BACKGROUND:    '#f8f4f0',
   BOUNDARY_COLOR:    '#1c3b28',
   BOUNDARY_OPACITY_EXPR: ['interpolate', ['linear'], ['zoom'], 0, 0.8, 3, 1],
-  BOUNDARY_WIDTH_EXPR:   ['interpolate', ['linear'], ['zoom'], 3, 1.5, 5, 2, 12, 3.5],
+  BOUNDARY_WIDTH_EXPR:   ['interpolate', ['linear'], ['zoom'], 3, 2, 5, 2.5, 12, 4.5],
   // Deliberately NOT tied to BOUNDARY_COLOR (country border) -- state lines are a
   // gameplay hint overlay and must stay muted so they never compete visually with
   // protected-area boundaries. See useMapState.js restyleBordersAndRivers.
@@ -151,9 +151,13 @@ export const BASE_VISUAL = {
   // a casing of the opposite tone guarantees contrast regardless of what's
   // underneath.
   BOUNDARY_CASING_COLOR:   '#fdf8ec',
-  BOUNDARY_CASING_OPACITY: 0.6,
-  BOUNDARY_CASING_WIDTH:   3,
-  INDIA_BOUNDARY_CASING_WIDTH: 3.5,
+  BOUNDARY_CASING_OPACITY: 0.78,
+  // Was a flat 3 -- at zoom 12 the (now-bolder) boundary line itself reaches
+  // 4.5, which would make the casing narrower than the line it's meant to
+  // outline. Interpolated so the casing stays wider than BOUNDARY_WIDTH_EXPR
+  // at every zoom stop, keeping the halo effect intact when zoomed in.
+  BOUNDARY_CASING_WIDTH_EXPR: ['interpolate', ['linear'], ['zoom'], 3, 4, 5, 4.5, 12, 6.5],
+  INDIA_BOUNDARY_CASING_WIDTH: 5,
 };
 
 export const LAYER_IDS = {
