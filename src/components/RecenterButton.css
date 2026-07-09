@@ -47,3 +47,8 @@
 .eg-recenter-btn:active {
   transform: scale(0.94);
 }
+
+.eg-recenter-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

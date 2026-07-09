@@ -240,6 +240,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
       />
       <RecenterButton
         mapRef={mapRef}
+        disabled={paused}
         style={
           roundState === 'REVEALING' && cardHeight
             ? { bottom: `calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + ${cardHeight}px + 12px)` }

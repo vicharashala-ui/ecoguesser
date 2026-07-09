@@ -24,8 +24,14 @@ function IconCrosshair({ size = 20 }) {
   );
 }
 
-export default function RecenterButton({ mapRef, style }) {
+// @param disabled: boolean -- Daily passes `paused` here. The pause effect
+// in DailyMap.jsx only disables MapLibre's own pan/zoom handlers, which
+// doesn't cover this button's direct fitBounds() call (handler-enabled
+// state has no bearing on programmatic camera moves), so this needs its
+// own guard to keep the map frozen while paused.
+export default function RecenterButton({ mapRef, style, disabled = false }) {
   const handleClick = () => {
+    if (disabled) return;
     mapRef.current?.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING });
   };
 
@@ -35,6 +41,7 @@ export default function RecenterButton({ mapRef, style }) {
       className="eg-recenter-btn"
       style={style}
       onClick={handleClick}
+      disabled={disabled}
       aria-label="Reset map view"
       title="Reset map view"
     >
