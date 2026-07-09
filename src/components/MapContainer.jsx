@@ -50,7 +50,21 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
     mapRef.current = new maplibregl.Map({
       container: containerRef.current,
       style: mapStyle,
-      maxParallelImageRequests: 6,
+      // DEM (hillshade + color-relief) and vector tiles are separate
+      // sources fetched independently -- 6 was throttling both below
+      // MapLibre's own default (16), which is why DEM tiles lagged behind
+      // vector tiles on first paint (the ocean-tint flash). Raising this
+      // lets the browser's HTTP/2 connection actually run tiles in
+      // parallel instead of queuing them.
+      maxParallelImageRequests: 16,
+      // Default 300ms cross-fade between tile fade-in states adds a
+      // visible transition frame on every tile load, most noticeable on
+      // the DEM layers. 0 makes tiles paint immediately once decoded.
+      fadeDuration: 0,
+      // Skips the HTTP revalidation round-trip for tiles already in the
+      // browser cache (e.g. re-opening Classic/Daily after Blitz, or a
+      // page refresh) -- pure win since none of these tile sources change.
+      refreshExpiredTiles: false,
       maxBounds: MAP_CONFIG.MAX_BOUNDS,
       minZoom: MAP_CONFIG.MIN_ZOOM,
       maxZoom: MAP_CONFIG.MAX_ZOOM,

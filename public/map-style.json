@@ -55,25 +55,23 @@
           -10,
           "#a8c2ce",
           0,
-          "#e0dcae",
+          "#eef0c9",
           150,
-          "#dcd2a0",
-          300,
-          "#d8c895",
-          600,
-          "#d3bd88",
-          1000,
-          "#cdb17c",
-          1600,
-          "#c9a672",
+          "#e2e6ad",
+          400,
+          "#c3d98a",
+          800,
+          "#96c065",
+          1500,
+          "#6ea34f",
           2200,
-          "#ddd0ab",
+          "#b9c2a0",
           3200,
-          "#e2ceac",
+          "#d9d8cd",
           4800,
-          "#dcc4a3",
+          "#ebe9e3",
           7000,
-          "#f2ead9"
+          "#f7f6f3"
         ]
       }
     },
@@ -99,9 +97,9 @@
           9,
           0.4
         ],
-        "hillshade-shadow-color": "#3e4a34",
-        "hillshade-highlight-color": "#fdf6e8",
-        "hillshade-accent-color": "#a89f88"
+        "hillshade-shadow-color": "#3f4638",
+        "hillshade-highlight-color": "#f6f4ec",
+        "hillshade-accent-color": "#a4a08f"
       }
     },
     {
@@ -132,7 +130,7 @@
         "line-cap": "round"
       },
       "paint": {
-        "line-color": "#8aa5ba",
+        "line-color": "#9ec3d6",
         "line-width": [
           "interpolate",
           [
@@ -181,7 +179,7 @@
         "line-cap": "round"
       },
       "paint": {
-        "line-color": "#8aa5ba",
+        "line-color": "#9ec3d6",
         "line-width": [
           "interpolate",
           [
@@ -204,15 +202,12 @@
       "source": "openmaptiles",
       "source-layer": "water",
       "filter": [
-        "!=",
-        [
-          "get",
-          "brunnel"
-        ],
-        "tunnel"
+        "all",
+        ["!=", ["get", "class"], "ocean"],
+        ["!=", ["get", "brunnel"], "tunnel"]
       ],
       "paint": {
-        "fill-color": "#7f9fb8",
+        "fill-color": "#a3c4d6",
         "fill-opacity": 0.55
       }
     },

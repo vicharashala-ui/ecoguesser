@@ -10,6 +10,23 @@ import { VitePWA } from 'vite-plugin-pwa';
 const THEME_GREEN = '#1c3b28';
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            // maplibre-gl and react/react-dom change far less often than
+            // app code and are the bulk of the 1.4MB main chunk (see the
+            // chunk-size warning at build time) -- isolating them means a
+            // routine app deploy only invalidates the small app chunk;
+            // returning players keep the vendor chunk cached.
+            if (id.includes('maplibre-gl')) return 'vendor-maplibre';
+            if (id.includes('react-dom') || id.includes('/react/')) return 'vendor-react';
+          }
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({

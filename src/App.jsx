@@ -1,12 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { DailyMap } from './components/DailyMap.jsx';
 import BottomNav from './components/BottomNav.jsx';
-import DailySummary from './components/DailySummary.jsx';
-import Leaderboard from './components/Leaderboard.jsx';
 import Header from './components/Header.jsx';
-import SideDrawer from './components/SideDrawer.jsx';
-import StatsView from './components/StatsView.jsx';
-import InfoModal from './components/InfoModal.jsx';
 import InstallPrompt from './components/InstallPrompt.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
@@ -19,6 +14,20 @@ import { LS_KEYS } from './config.js';
 // module fetch to that moment keeps them out of the initial bundle.
 const ClassicMap = lazy(() => import('./components/ClassicMap.jsx'));
 const BlitzMap = lazy(() => import('./components/BlitzMap.jsx'));
+
+// None of these render on first paint either -- DailySummary/Leaderboard
+// only appear after a Daily round completes, StatsView only on the Stats
+// tab, InfoModal only once opened from SideDrawer, and SideDrawer only once
+// the hamburger is tapped. Leaderboard also drags in html-to-image (the
+// recap share-card export) -- deferring it keeps that out of the initial
+// bundle too. InstallPrompt stays eager (imported above): it needs to
+// attach the beforeinstallprompt listener immediately on load to catch and
+// stash the event, so it can't wait on a lazy chunk fetch.
+const DailySummary = lazy(() => import('./components/DailySummary.jsx'));
+const Leaderboard = lazy(() => import('./components/Leaderboard.jsx'));
+const StatsView = lazy(() => import('./components/StatsView.jsx'));
+const InfoModal = lazy(() => import('./components/InfoModal.jsx'));
+const SideDrawer = lazy(() => import('./components/SideDrawer.jsx'));
 
 const screenStyle = {
   display: 'flex',
@@ -54,6 +63,13 @@ export default function App() {
   // StatsView isn't a map.
   const classicEverActivated = useRef(false);
   const blitzEverActivated = useRef(false);
+  // Same deferred-mount pattern as classicEverActivated -- SideDrawer is
+  // lazy-loaded (see top of file), and since it's otherwise unconditionally
+  // in the tree (open={drawerOpen} controls its own CSS state, not
+  // mounting), rendering it eagerly would fetch its chunk on first paint
+  // regardless. This ref keeps that fetch deferred until the hamburger is
+  // actually tapped once.
+  const drawerEverOpened = useRef(false);
   const [activeTab, setActiveTab] = useState('daily');
   const classicMapRef = useRef(null);
   const dailyMapRef = useRef(null);
@@ -194,41 +210,55 @@ export default function App() {
         }}
       />
       {activeTab === 'daily' && dailyPhase === 'summary' && dailySummaryData && (
-        <DailySummary
-          totalPts={dailySummaryData.totalPts}
-          totalDist={dailySummaryData.totalDist}
-          onDone={handleSummaryDone}
-          onPlayClassic={() => switchTab('classic')}
-          onPlayBlitz={() => switchTab('blitz')}
-        />
+        <Suspense fallback={null}>
+          <DailySummary
+            totalPts={dailySummaryData.totalPts}
+            totalDist={dailySummaryData.totalDist}
+            onDone={handleSummaryDone}
+            onPlayClassic={() => switchTab('classic')}
+            onPlayBlitz={() => switchTab('blitz')}
+          />
+        </Suspense>
       )}
       {activeTab === 'daily' && dailyPhase === 'leaderboard' && (
-        <Leaderboard
-          data={dailyLeaderboardData}
-          onPlayClassic={() => switchTab('classic')}
-          onPlayBlitz={() => switchTab('blitz')}
-          allSites={allSites}
-        />
+        <Suspense fallback={null}>
+          <Leaderboard
+            data={dailyLeaderboardData}
+            onPlayClassic={() => switchTab('classic')}
+            onPlayBlitz={() => switchTab('blitz')}
+            allSites={allSites}
+          />
+        </Suspense>
       )}
-      {activeTab === 'stats' && <StatsView />}
+      {activeTab === 'stats' && (
+        <Suspense fallback={null}>
+          <StatsView />
+        </Suspense>
+      )}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />
-      <Header onMenuClick={() => setDrawerOpen(true)} />
+      <Header onMenuClick={() => { drawerEverOpened.current = true; setDrawerOpen(true); }} />
       <InstallPrompt />
       {infoModalVariant && (
-        <InfoModal variant={infoModalVariant} onClose={() => setInfoModalVariant(null)} />
+        <Suspense fallback={null}>
+          <InfoModal variant={infoModalVariant} onClose={() => setInfoModalVariant(null)} />
+        </Suspense>
       )}
-      <SideDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        sites={allSites}
-        filters={classicFilters}
-        onApplyFilters={setClassicFilters}
-        showFilters={activeTab === 'classic' || activeTab === 'blitz'}
-        showDifficulty={activeTab === 'classic'}
-        difficulty={classicDifficulty}
-        onSetDifficulty={setClassicDifficulty}
-        onNavigate={setInfoModalVariant}
-      />
+      {drawerEverOpened.current && (
+        <Suspense fallback={null}>
+          <SideDrawer
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            sites={allSites}
+            filters={classicFilters}
+            onApplyFilters={setClassicFilters}
+            showFilters={activeTab === 'classic' || activeTab === 'blitz'}
+            showDifficulty={activeTab === 'classic'}
+            difficulty={classicDifficulty}
+            onSetDifficulty={setClassicDifficulty}
+            onNavigate={setInfoModalVariant}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
