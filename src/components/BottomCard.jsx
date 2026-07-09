@@ -16,7 +16,7 @@
 // Show Site Boundary renders as a small chip at the right edge of the
 // result row (distance + pts) rather than its own row, to save vertical space.
 
-import { useId, useEffect, useState, forwardRef } from 'react';
+import { useId, forwardRef } from 'react';
 import { CATEGORY_META, SCORING } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import './BottomCard.css';
@@ -156,6 +156,10 @@ function IconSkip({ size = 18 }) {
  * @param {string} [props.nextLabel='Next Site'] - Daily's round 5 uses 'Results'.
  * @param {'classic'|'daily'} props.mode
  * @param {import('../config').RoundResult|null} props.result - set once roundState === 'REVEALING'
+ * @param {boolean} props.collapsed - owned by the parent (not local state)
+ *   so it can drive RecenterButton's position in the same layout pass; see
+ *   ClassicMap.jsx/DailyMap.jsx's cardHeight useLayoutEffect.
+ * @param {(collapsed: boolean) => void} props.onToggleCollapsed
  * @param {React.Ref<HTMLDivElement>} ref - forwarded to `.bottom-card` so
  *   ClassicMap.jsx can measure its real rendered height for fitBounds padding.
  */
@@ -172,6 +176,8 @@ const BottomCard = forwardRef(function BottomCard({
   nextLabel = 'Next Site',
   mode,
   result,
+  collapsed,
+  onToggleCollapsed,
 }, ref) {
   const titleId = useId();
   const isRevealing = roundState === 'REVEALING';
@@ -202,13 +208,12 @@ const BottomCard = forwardRef(function BottomCard({
   }, [markerPlaced]);
 
   // Expanded reveal card's collapse toggle -- collapses down to just
-  // name + state (no logo/category label/description/score/etc.). Reset to
-  // expanded on every NEW result so a collapse from the last round never
-  // carries into the next one's reveal.
-  const [collapsed, setCollapsed] = useState(false);
-  useEffect(() => {
-    setCollapsed(false);
-  }, [result]);
+  // name + state (no logo/category label/description/score/etc.). `collapsed`
+  // and its reset-on-new-result are owned by the parent now, not here (see
+  // props doc above) -- collapsing this card and re-measuring RecenterButton's
+  // offset need to happen in the same layout pass, which requires the parent
+  // to know the instant the toggle is clicked rather than finding out via a
+  // child re-render.
 
   return (
     <>
@@ -281,7 +286,7 @@ const BottomCard = forwardRef(function BottomCard({
           <button
             type="button"
             className={`bc-collapse-toggle ${collapsed ? 'is-collapsed' : ''}`}
-            onClick={() => setCollapsed((c) => !c)}
+            onClick={() => onToggleCollapsed(!collapsed)}
             aria-label={collapsed ? 'Expand details' : 'Collapse details'}
             title={collapsed ? 'Expand details' : 'Collapse details'}
           >

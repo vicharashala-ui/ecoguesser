@@ -400,18 +400,18 @@
           [
             "zoom"
           ],
-          4,
-          10,
+          5.5,
+          13,
           8,
+          14.5,
           12,
-          12,
-          14
+          16
         ]
       },
       "paint": {
-        "text-color": "#74aee9",
-        "text-halo-color": "rgba(255,255,255,0.7)",
-        "text-halo-width": 1.5
+        "text-color": "#2f75c4",
+        "text-halo-color": "rgba(255,255,255,0.85)",
+        "text-halo-width": 2
       },
       "minzoom": 5.5
     },

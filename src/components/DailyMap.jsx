@@ -14,7 +14,7 @@
 // times via useMapState instead), and panning stays enabled during the
 // reveal -- only the pause overlay disables map interaction (Effect 3 below).
 
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
@@ -68,6 +68,10 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
   // Tracks BottomCard's real height during REVEALING, so RecenterButton can
   // be positioned above the expanded card instead of being hidden by it.
   const [cardHeight, setCardHeight] = useState(null);
+  // Lifted out of BottomCard (rather than its own local state) so the
+  // collapse toggle and the cardHeight re-measure below fire in the same
+  // React commit -- see the useLayoutEffect's comment for why that matters.
+  const [collapsed, setCollapsed] = useState(false);
 
   const {
     mapReady,
@@ -104,8 +108,10 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
     if (!map || !mapReady) return;
 
     if (roundState === 'REVEALING' && result) {
+      setCollapsed(false); // a collapse from the last round shouldn't carry into this one
+      // cardHeight itself is kept in sync by the useLayoutEffect below --
+      // this one-off read is only for the map's own fitBounds padding.
       const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 200;
-      setCardHeight(measuredHeight);
       const fitPadding = { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 };
       showResult(map, guess, site, { distanceKmOverride: result.distanceKm, fitPadding });
     } else if (roundState === 'LOADING') {
@@ -131,21 +137,28 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
     else hideHint2(map);
   }, [mapReady, hintLevel, site, roundState, mapRef]);
 
-  // Same fix as ClassicMap.jsx: BottomCard.css's max-height transition
-  // (0.3s, pill->expanded) hasn't finished by the time Effect 1 measures
-  // cardRef's height, so cardHeight can freeze at a too-small, mid-
-  // transition reading. Re-measure once the transition completes.
-  useEffect(() => {
+  // Same fix as ClassicMap.jsx: keeps cardHeight (and so RecenterButton's
+  // `bottom`) in sync with the card's target height on every render that
+  // can change it -- including the collapse/expand toggle, not just the
+  // initial pill -> expanded reveal.
+  //
+  // Uses scrollHeight, not getBoundingClientRect().height: scrollHeight
+  // reports the content's natural height even while BottomCard.css's
+  // max-height is still clipping the box, so it already reads the *target*
+  // height before the 0.3s max-height transition has even started.
+  //
+  // Runs in useLayoutEffect (not useEffect) so setCardHeight is applied
+  // before the browser paints -- committing the new height in the same
+  // paint as the `collapsed`/`roundState` class change means both elements'
+  // CSS transitions (card's max-height, button's bottom -- both 0.3s ease)
+  // start on the same frame and animate in sync, instead of the button
+  // waiting for the card's transitionend to fire (previously visible as a
+  // pause-then-jump).
+  useLayoutEffect(() => {
     const card = cardRef.current;
     if (!card || roundState !== 'REVEALING') return;
-
-    function onTransitionEnd(e) {
-      if (e.target !== card || e.propertyName !== 'max-height') return;
-      setCardHeight(card.getBoundingClientRect().height);
-    }
-    card.addEventListener('transitionend', onTransitionEnd);
-    return () => card.removeEventListener('transitionend', onTransitionEnd);
-  }, [roundState]);
+    setCardHeight(card.scrollHeight);
+  }, [roundState, result, collapsed]);
 
   // Effect 3: pausing freezes the map in place -- disable every pan/zoom/
   // rotate handler on pause, restore them on resume.
@@ -268,6 +281,8 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
           roundState={roundState}
           markerPlaced={markerPlaced}
           hintLevel={hintLevel}
+          collapsed={collapsed}
+          onToggleCollapsed={setCollapsed}
           onHint={handleHint}
           onConfirm={handleConfirm}
           result={result}

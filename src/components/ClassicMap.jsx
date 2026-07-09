@@ -15,7 +15,7 @@
 // updating `guess` on any tap after Confirm, so using it directly could
 // show a reveal line for a guess that was never scored.
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
@@ -70,6 +70,10 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
   // Tracked separately so RecenterButton can sit above the expanded card
   // during REVEALING instead of being hidden behind it.
   const [cardHeight, setCardHeight] = useState(null);
+  // Lifted out of BottomCard (rather than its own local state) so the
+  // collapse toggle and the cardHeight re-measure below fire in the same
+  // React commit -- see the useLayoutEffect's comment for why that matters.
+  const [collapsed, setCollapsed] = useState(false);
 
   // Applies the difficulty prop whenever it changes, including on mount once
   // mapReady flips true. Re-running on mount duplicates useMapState's own
@@ -90,10 +94,12 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     if (!map || !mapReady) return;
 
     if (roundState === 'REVEALING' && result && result.guessLat != null) {
+      setCollapsed(false); // a collapse from the last round shouldn't carry into this one
       // BottomCard has already re-rendered into its expanded layout by the
-      // time this runs, so this reads its real measured height.
+      // time this runs, so this reads its real measured height. (cardHeight
+      // itself is kept in sync by the useLayoutEffect below -- this one-off
+      // read is only for the map's own fitBounds padding.)
       const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 0;
-      setCardHeight(measuredHeight);
       const fitPadding = { ...REVEAL_FIT_SIDES, bottom: measuredHeight + REVEAL_CARD_GAP };
       showResult(map, { lat: result.guessLat, lng: result.guessLng }, result.site, {
         distanceKmOverride: result.distanceKm,
@@ -106,22 +112,28 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     }
   }, [mapRef, mapReady, roundState, result]);
 
-  // BottomCard's max-height transition (pill -> expanded) takes 0.3s. The
-  // reveal effect above measures cardRef's height synchronously when
-  // roundState flips to REVEALING, before that transition finishes, so it
-  // reads a height close to the pill's 64px rather than the expanded card's
-  // real height. Re-measure once the transition completes and correct it.
-  useEffect(() => {
+  // Keeps cardHeight (and so RecenterButton's `bottom`) in sync with the
+  // card's target height on every render that can change it -- including
+  // the collapse/expand toggle, not just the initial pill -> expanded reveal.
+  //
+  // Uses scrollHeight, not getBoundingClientRect().height: scrollHeight
+  // reports the content's natural height even while BottomCard.css's
+  // max-height is still clipping the box, so it already reads the *target*
+  // height before the 0.3s max-height transition has even started.
+  //
+  // Runs in useLayoutEffect (not useEffect) so setCardHeight is applied
+  // before the browser paints. That's what fixes the desync: previously
+  // cardHeight only updated on the card's own transitionend, so the card
+  // visibly finished animating before the button's `bottom` transition even
+  // began. Committing the new height in the same paint as the `collapsed`/
+  // `roundState` class change means both elements' CSS transitions (card's
+  // max-height, button's bottom -- both 0.3s ease) start on the same frame
+  // and animate in sync.
+  useLayoutEffect(() => {
     const card = cardRef.current;
     if (!card || roundState !== 'REVEALING') return;
-
-    function onTransitionEnd(e) {
-      if (e.target !== card || e.propertyName !== 'max-height') return;
-      setCardHeight(card.getBoundingClientRect().height);
-    }
-    card.addEventListener('transitionend', onTransitionEnd);
-    return () => card.removeEventListener('transitionend', onTransitionEnd);
-  }, [roundState]);
+    setCardHeight(card.scrollHeight);
+  }, [roundState, result, collapsed]);
 
   // Hint 2 highlights site.state on the map, but only while the player can
   // still act (READING/PLACING). hintLevel stays 2 through REVEALING (it's
@@ -206,6 +218,8 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           site={site}
           markerPlaced={markerPlaced}
           hintLevel={hintLevel}
+          collapsed={collapsed}
+          onToggleCollapsed={setCollapsed}
           onHint={handleHint}
           onConfirm={handleConfirm}
           onNextSite={handleNextSite}
