@@ -11,7 +11,7 @@
 import { forwardRef, useLayoutEffect, useRef, useState } from 'react';
 import { getDailySites } from '../game/daily.js';
 import { OUTLINE_VIEWBOX, INDIA_OUTLINE_PATH, INDIA_STATE_BORDERS_PATH, projectToOutline } from '../data/indiaOutline.js';
-import { CATEGORY_META, LS_KEYS, formatSiteName } from '../config.js';
+import { APP_URL, CATEGORY_META, LS_KEYS, formatSiteName } from '../config.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath.js';
 import './DailyRecap.css';
 
@@ -175,14 +175,14 @@ const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist, t
             >
               <path
                 d={INDIA_OUTLINE_PATH}
-                fill="#fdf8ec"
-                stroke="#d8c98f"
+                fill="#f2f9fd"
+                stroke="#4f9bc9"
                 strokeWidth="1"
               />
               <path
                 d={INDIA_STATE_BORDERS_PATH}
                 fill="none"
-                stroke="#c9b97a"
+                stroke="#7fb8dd"
                 strokeWidth="0.6"
                 strokeLinejoin="round"
                 opacity="0.75"
@@ -240,6 +240,11 @@ const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist, t
                 )}
               </div>
             )}
+          </div>
+
+          <div className="dr-footer">
+            <span className="dr-footer-text">{APP_URL.replace('https://', '')}</span>
+            <span className="dr-footer-text">Vicharashala</span>
           </div>
         </div>
       </div>

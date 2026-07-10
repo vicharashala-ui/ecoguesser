@@ -137,9 +137,7 @@
      largest share of the overall size reduction. */
   padding: 10px 10px;
   border-radius: 18px;
-  /* Deepened from #fdeeb8/#f8dfa0 -- that pairing read as too faint/washed
-     out against the cream card. */
-  background: linear-gradient(180deg, #fbe192, #f3cd76);
+  background: linear-gradient(180deg, #bfe0f5, #8fc7e8);
 }
 
 .dr-map {
@@ -299,5 +297,25 @@
 .dr-stats-unit {
   font-size: 11px;
   font-weight: 600;
+}
+
+/* Full-bleed ribbon along the card's bottom edge -- negative margins cancel
+   out .dr-card's own padding so it spans edge-to-edge, and the bottom
+   corners match the card's radius (minus the 1px border) so it doesn't
+   overhang the rounded corners. */
+.dr-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 -13px -13px;
+  padding: 8px 16px;
+  border-radius: 0 0 21px 21px;
+  background: #14532d;
+}
+
+.dr-footer-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: #f8f6f1;
 }
 
