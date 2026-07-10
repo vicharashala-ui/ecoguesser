@@ -75,6 +75,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
 
   const {
     mapReady,
+    mapLoadSlow,
     satellite,
     satelliteUnavailable,
     setSatellite,
@@ -260,6 +261,10 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
             : undefined
         }
       />
+
+      {!mapReady && mapLoadSlow && (
+        <div className="dm-loading-pill">Map is taking a while to load — check your connection</div>
+      )}
 
       {!site ? (
         <div className="dm-loading-pill">Loading today's challenge…</div>

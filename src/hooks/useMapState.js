@@ -33,6 +33,7 @@ export function useMapState(mapRef, mode) {
     politicalNames: false,
     satelliteUnavailable: false,
     mapReady: false,
+    mapLoadSlow: false,
   });
 
   // One-time latch: true once 'load' has fired and never goes back to false.
@@ -454,14 +455,25 @@ export function useMapState(mapRef, mode) {
     // Defensive addition beyond the literal spec pseudocode: if 'load' already fired
     // before this effect attached its listener, .once('load', ...) would never call
     // onLoad. Same fragility class as the documented map.once('error') gotcha.
+    let slowLoadTimer = null;
     if (map.loaded()) {
       onLoad();
     } else {
       map.once('load', onLoad);
+      // 'load' has no built-in timeout -- it simply doesn't fire until every
+      // first-render resource (OpenFreeMap vector tiles/sprite/glyphs, AWS
+      // terrain-dem tiles) has downloaded, however long that takes. This
+      // doesn't fix a slow network/CDN, but it stops the map from sitting
+      // there with zero feedback: past this point the UI can tell the
+      // person something's still in progress instead of looking stuck.
+      slowLoadTimer = setTimeout(() => {
+        setState(prev => (prev.mapReady ? prev : { ...prev, mapLoadSlow: true }));
+      }, 8000);
     }
 
     return () => {
       map.off('load', onLoad); // remove only the listener this hook added
+      if (slowLoadTimer) clearTimeout(slowLoadTimer);
       // Do NOT call map.remove() -- owned by MapContainer.
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
