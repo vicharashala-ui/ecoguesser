@@ -150,21 +150,6 @@
   margin: 0 auto;
 }
 
-.dr-outline {
-  fill: #fdf8ec;
-  stroke: #d8c98f;
-  stroke-width: 1;
-}
-
-.dr-state-borders {
-  fill: none;
-  stroke: #c9b97a;
-  stroke-width: 0.6;
-  stroke-linejoin: round;
-  opacity: 0.75;
-  pointer-events: none;
-}
-
 .dr-lower {
   display: flex;
   align-items: stretch;

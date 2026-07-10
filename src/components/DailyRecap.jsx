@@ -173,8 +173,21 @@ const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist, t
               role="img"
               aria-label="Map of today's 5 sites"
             >
-              <path d={INDIA_OUTLINE_PATH} className="dr-outline" />
-              <path d={INDIA_STATE_BORDERS_PATH} className="dr-state-borders" />
+              <path
+                d={INDIA_OUTLINE_PATH}
+                fill="#fdf8ec"
+                stroke="#d8c98f"
+                strokeWidth="1"
+              />
+              <path
+                d={INDIA_STATE_BORDERS_PATH}
+                fill="none"
+                stroke="#c9b97a"
+                strokeWidth="0.6"
+                strokeLinejoin="round"
+                opacity="0.75"
+                pointerEvents="none"
+              />
               {sites.map((site) => {
                 const { x, y } = projectToOutline(site.centroid_lat, site.centroid_lng);
                 return (
