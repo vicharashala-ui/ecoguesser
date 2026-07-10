@@ -25,6 +25,10 @@ export async function shareNodeAsImage(node, { filename, shareTitle, shareText }
   const blob = await toBlob(node, {
     pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
     cacheBust: true,
+    // Without this, the area outside the card's rounded corners is
+    // transparent -- most share sheets/viewers render transparent PNG
+    // regions as black instead of the app's actual page background.
+    backgroundColor: '#f8f6f1',
   });
   if (!blob) return;
 
