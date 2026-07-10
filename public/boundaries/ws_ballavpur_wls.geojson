@@ -1,3 +1,3 @@
 {"type":"FeatureCollection", "features": [
-{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[87.6787251,23.6904039],[87.6674277,23.690114],[87.65465285,23.67988631],[87.6571762,23.6748701],[87.67556802,23.68211922],[87.6787251,23.6904039]]]},"properties":{"id":"ws_ballavpur_wls"}}
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[87.6787,23.6904],[87.6674,23.6901],[87.6547,23.6799],[87.6572,23.6749],[87.6756,23.6821],[87.6787,23.6904]]]},"properties":{"id":"ws_ballavpur_wls"}}
 ]}

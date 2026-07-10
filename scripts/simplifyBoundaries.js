@@ -34,8 +34,12 @@ function fileSizeKB(p) {
 
 async function simplifyFile(filePath) {
   const before = fileSizeKB(filePath);
+  // precision=0.0001 (~11m) truncates coordinate decimals on top of the
+  // point-count reduction above. Well inside the 200m simplify tolerance
+  // already applied, so it costs no visible accuracy at MAX_ZOOM 10 --
+  // measured 18-29% extra size cut (raw) on top of simplify alone.
   await mapshaper.runCommands(
-    `"${fwd(filePath)}" -simplify visvalingam interval=200 keep-shapes -o "${fwd(filePath)}" format=geojson force`
+    `"${fwd(filePath)}" -simplify visvalingam interval=200 keep-shapes -o "${fwd(filePath)}" format=geojson precision=0.0001 force`
   );
   const after = fileSizeKB(filePath);
   return { before, after };

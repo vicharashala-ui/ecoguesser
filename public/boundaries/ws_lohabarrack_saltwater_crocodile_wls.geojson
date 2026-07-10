@@ -1,3 +1,3 @@
 {"type":"FeatureCollection", "features": [
-{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.5946678,11.58931802],[92.59341478,11.59041199],[92.59325424,11.58933995],[92.5946678,11.58931802]]]},"properties":{"id":"ws_lohabarrack_saltwater_crocodile_wls"}}
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.5947,11.5893],[92.5934,11.5904],[92.5933,11.5893],[92.5947,11.5893]]]},"properties":{"id":"ws_lohabarrack_saltwater_crocodile_wls"}}
 ]}

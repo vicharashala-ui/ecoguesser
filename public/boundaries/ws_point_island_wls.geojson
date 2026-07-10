@@ -1,3 +1,3 @@
 {"type":"FeatureCollection", "features": [
-{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.81689452,13.41733513],[92.81336198,13.41935752],[92.81449847,13.4034931],[92.81868148,13.41621348],[92.81689452,13.41733513]]]},"properties":{"id":"ws_point_island_wls"}}
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.8169,13.4173],[92.8134,13.4194],[92.8145,13.4035],[92.8187,13.4162],[92.8169,13.4173]]]},"properties":{"id":"ws_point_island_wls"}}
 ]}

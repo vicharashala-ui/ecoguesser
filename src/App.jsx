@@ -142,6 +142,28 @@ export default function App() {
 
   useEffect(() => { loadSites(); }, []);
 
+  // Idle-prefetch Classic/Blitz's lazy chunks. Daily is the default tab and
+  // already owns the network/CPU budget for its own first paint (MapLibre +
+  // sites JSON), so this waits for a genuinely idle moment before spending
+  // any of it -- by the time a player actually taps Classic or Blitz, the
+  // chunk is usually already cached and mounts with no fetch-and-parse
+  // delay. Safari has no requestIdleCallback, hence the setTimeout fallback
+  // (a fixed 2s guess at "probably idle by now" instead of a real idle
+  // signal). Effect fires once; browser dynamic-import caching means a
+  // later lazy() call for the same chunk is a cache hit, not a re-fetch.
+  useEffect(() => {
+    const prefetch = () => {
+      import('./components/ClassicMap.jsx');
+      import('./components/BlitzMap.jsx');
+    };
+    if (typeof requestIdleCallback === 'function') {
+      const id = requestIdleCallback(prefetch, { timeout: 5000 });
+      return () => cancelIdleCallback(id);
+    }
+    const id = setTimeout(prefetch, 2000);
+    return () => clearTimeout(id);
+  }, []);
+
   if (sitesError) {
     return (
       <div className="eg-app-shell-height" style={screenStyle}>
@@ -157,20 +179,14 @@ export default function App() {
     );
   }
 
-  if (allSites.length === 0) {
-    return (
-      <div className="eg-app-shell-height" style={screenStyle}>
-        <div style={{ fontSize: '32px', fontWeight: 800, color: '#16a34a', marginBottom: '0.5rem' }}>
-          EcoGuesser<sup style={{ fontSize: '0.4em', fontWeight: 700, verticalAlign: 'super', marginLeft: '0.1em' }}>™</sup>
-        </div>
-        <p style={{ fontSize: '18px', fontWeight: 400, color: '#6b7280', marginBottom: '1.5rem' }}>
-          India's Protected Areas
-        </p>
-        <div className="eg-spinner" />
-      </div>
-    );
-  }
-
+  // No `allSites.length === 0` gate here on purpose: DailyMap/ClassicMap/
+  // BlitzMap and their round hooks already tolerate sites=[] (useDailyRound
+  // shows its own "Loading today's challenge..." pill until allSites
+  // arrives). Blocking the whole tree behind the sites fetch was a pure
+  // waterfall -- MapContainer's own tile/sprite/glyph/DEM requests (the
+  // actually slow part) never started until protected-areas.json had been
+  // fetched, parsed, and committed. Mounting immediately lets both fetches
+  // race in parallel instead of running serially.
   return (
     <div className="eg-app-shell-height" style={{ position: 'relative', width: '100vw' }}>
       {/* DailyMap mounts immediately; ClassicMap/BlitzMap only after their

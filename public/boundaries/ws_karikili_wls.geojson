@@ -1,3 +1,3 @@
 {"type":"FeatureCollection", "features": [
-{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[79.84297404,12.59295956],[79.84652498,12.59898586],[79.84268883,12.60355072],[79.835972,12.60181108],[79.84129127,12.60055852],[79.84297404,12.59295956]]]},"properties":{"id":"ws_karikili_wls"}}
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[79.843,12.593],[79.8465,12.599],[79.8427,12.6036],[79.836,12.6018],[79.8413,12.6006],[79.843,12.593]]]},"properties":{"id":"ws_karikili_wls"}}
 ]}

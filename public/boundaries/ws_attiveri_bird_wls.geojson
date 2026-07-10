@@ -1,3 +1,3 @@
 {"type":"FeatureCollection", "features": [
-{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[75.04058477,15.08267446],[75.03417835,15.07906023],[75.04049986,15.07217254],[75.04907589,15.0752764],[75.04122747,15.07656972],[75.04058477,15.08267446]]]},"properties":{"id":"ws_attiveri_bird_wls"}}
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[75.0406,15.0827],[75.0342,15.0791],[75.0405,15.0722],[75.0491,15.0753],[75.0412,15.0766],[75.0406,15.0827]]]},"properties":{"id":"ws_attiveri_bird_wls"}}
 ]}

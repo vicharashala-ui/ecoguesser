@@ -1,3 +1,3 @@
 {"type":"FeatureCollection", "features": [
-{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.72411188,12.7368688],[92.7229203,12.73577821],[92.72796959,12.72691502],[92.72966988,12.72942965],[92.72411188,12.7368688]]]},"properties":{"id":"ws_mask_island_wls"}}
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.7241,12.7369],[92.7229,12.7358],[92.728,12.7269],[92.7297,12.7294],[92.7241,12.7369]]]},"properties":{"id":"ws_mask_island_wls"}}
 ]}
