@@ -175,17 +175,17 @@ const DailyRecap = forwardRef(function DailyRecap({ date, allSites, totalDist, t
             >
               <path
                 d={INDIA_OUTLINE_PATH}
-                fill="#f2f9fd"
-                stroke="#4f9bc9"
+                fill="#14532d"
+                stroke="#0d3b20"
                 strokeWidth="1"
               />
               <path
                 d={INDIA_STATE_BORDERS_PATH}
                 fill="none"
-                stroke="#7fb8dd"
-                strokeWidth="0.6"
+                stroke="#bfe8cf"
+                strokeWidth="0.7"
                 strokeLinejoin="round"
-                opacity="0.75"
+                opacity="0.85"
                 pointerEvents="none"
               />
               {sites.map((site) => {
