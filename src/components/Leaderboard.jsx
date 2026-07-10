@@ -152,7 +152,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
     // produce a blank/partial image.
     if (sharing || recapClosing) return;
     setRecapClosing(true);
-    // Phase 1 (0-180ms): the card fades/shrinks per the existing animation
+    // Phase 1 (0-220ms): the card fades/shrinks per the existing animation
     // in Leaderboard.css, still fixed-positioned on top of the backdrop,
     // which stays fully opaque throughout.
     closeTimerRef.current = setTimeout(() => {
@@ -175,12 +175,12 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
           fadeTimerRef.current = setTimeout(() => {
             setRecapClosing(false);
             setBackdropFading(false);
-          }, 200); // matches the backdrop's own fade-out transition duration
+          }, 220); // matches the backdrop's own fade-out transition duration
         });
         closeRafRef.current.push(raf2);
       });
       closeRafRef.current = [raf1];
-    }, 180);
+    }, 220);
   };
 
   const handleShare = async () => {

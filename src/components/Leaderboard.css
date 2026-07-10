@@ -221,7 +221,7 @@
 .lb-recap-backdrop-fading {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease-in;
+  transition: opacity 0.22s ease-out;
 }
 
 .lb-recap-wrap-open {
@@ -256,15 +256,19 @@
 /* Dedicated closing keyframes (not `reverse` of the open ones) -- direction:
    reverse flips which keyframe is start/end but keeps the same ease-out
    timing curve, which plays backwards as a fast snap then a slow crawl.
-   ease-in on a forward fade/pop-out is the correct mirror and reads smooth.
-   forwards-filled so the card stays faded/shrunk for the rest of the 0.18s
-   setTimeout window in Leaderboard.jsx instead of snapping back early. */
+   A smooth accelerate curve on a forward fade/pop-out is the correct
+   mirror and reads graceful rather than abrupt. Duration matches the
+   opening pop-in (0.22s) rather than the faster 0.18s used previously --
+   closing was noticeably snappier than opening, which read as an abrupt
+   cutoff rather than a graceful close. forwards-filled so the card stays
+   faded/shrunk for the rest of the setTimeout window in Leaderboard.jsx
+   (kept in sync with this duration) instead of snapping back early. */
 .lb-recap-wrap-open.lb-recap-wrap-closing {
-  animation: lb-recap-fade-out 0.18s ease-in forwards;
+  animation: lb-recap-fade-out 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 .lb-recap-wrap-open.lb-recap-wrap-closing .lb-recap-inner {
-  animation: lb-recap-pop-out 0.18s ease-in forwards;
+  animation: lb-recap-pop-out 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 /* DailyRecap.css gives .dr-outer a 16px top margin for its normal in-flow
