@@ -72,6 +72,31 @@ export default defineConfig({
         // below instead, so each file gets cached lazily the first time a
         // round actually needs it.
         globPatterns: ['**/*.{js,css,html,woff2,ico}'],
+        // The glob above still matches every chunk in dist/, including the
+        // seven components App.jsx deliberately code-splits via lazy() --
+        // ClassicMap/BlitzMap (only mount once their tab is opened),
+        // DailySummary/Leaderboard (only after a Daily round completes),
+        // StatsView (Stats tab only), InfoModal/SideDrawer (only once
+        // opened). Precaching them anyway forces every one of those
+        // fetches into the SW install step on first visit, which defeats
+        // the point of code-splitting them out of the initial bundle in
+        // the first place and burns bandwidth a player may never need
+        // (e.g. someone who only ever plays Daily never needs Blitz's
+        // chunk). globIgnores drops them from the eager manifest; the
+        // runtimeCaching rule below still caches each one, just lazily,
+        // the first time its tab/action is actually used. Vite names each
+        // chunk after its source component by default (verified via
+        // `npm run build`: ClassicMap-*.js, BlitzMap-*.js, etc.), so these
+        // patterns need updating only if a component here is renamed.
+        globIgnores: [
+          '**/ClassicMap-*',
+          '**/BlitzMap-*',
+          '**/DailySummary-*',
+          '**/Leaderboard-*',
+          '**/StatsView-*',
+          '**/InfoModal-*',
+          '**/SideDrawer-*',
+        ],
         // Never precache/cache the leaderboard API or the ArcGIS tile proxy:
         // scores and Daily's date-keyed selection must always hit the
         // network, and satellite tiles already have their own server-side
@@ -97,6 +122,23 @@ export default defineConfig({
             options: {
               cacheName: 'eg-static-data',
               expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          // Covers the lazy route chunks excluded from the eager precache
+          // above (ClassicMap/BlitzMap/DailySummary/Leaderboard/StatsView/
+          // InfoModal/SideDrawer). CacheFirst -- not StaleWhileRevalidate --
+          // is safe here specifically because every JS/CSS asset Vite
+          // emits is content-hashed: the filename itself changes on any
+          // code change, so a cached response can never go stale under a
+          // given URL and there's no need to ever re-check the network.
+          // First tab open / action after a deploy fetches from network
+          // and caches; every visit after that (same deploy) is instant.
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'eg-lazy-chunks',
+              expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
         ],

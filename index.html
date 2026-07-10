@@ -5,6 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>EcoGuesser</title>
 
+    <!-- Preconnect to the two third-party origins MapLibre fetches from on
+         first paint: tiles.openfreemap.org (vector tiles, sprite, glyphs --
+         public/map-style.json) and the AWS elevation-tiles-prod bucket
+         (terrain-dem source, used by the always-on hillshade/hypsometric
+         tint, independent of the separate HILLSHADE_ENABLED flag). Without
+         this the browser doesn't start DNS/TCP/TLS setup for either until
+         MapLibre's own JS has downloaded, parsed, and run -- these hints let
+         that handshake happen in parallel with the JS fetch instead of
+         after it. crossorigin is required on the preconnect even though
+         these aren't fetched with credentials, since font/tile CORS
+         requests are treated as a distinct connection from a plain one.
+         dns-prefetch is a same-line fallback for browsers that don't
+         support preconnect. The /tiles/ ArcGIS proxy is same-origin
+         (Cloudflare Pages Function) and needs no hint. -->
+    <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
+    <link rel="dns-prefetch" href="https://tiles.openfreemap.org" />
+    <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin />
+    <link rel="dns-prefetch" href="https://s3.amazonaws.com" />
+
     <!-- Favicon: multi-res .ico covers old browsers; PNG/SVG variants below
          are what modern Chrome/Firefox tab bars and bookmarks actually
          prefer. All are white tiger-head-on-#1c3b28 (see

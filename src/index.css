@@ -1,6 +1,13 @@
-@import '@fontsource/nunito/400.css';
-@import '@fontsource/nunito/700.css';
-@import '@fontsource/nunito/800.css';
+/* Latin-only subsets, not the general 400/700/800.css files: those pull in
+   @font-face declarations (and their own woff2 files) for cyrillic,
+   cyrillic-ext, and vietnamese unicode ranges too. Every park/site name and
+   all UI copy in this app is English/Latin script, so those extra ranges
+   are dead weight -- ~144KB across the three weights that the service
+   worker's precache glob for woff2 files was fetching unconditionally on
+   every first visit. Revisit if the app ever adds a non-Latin locale. */
+@import '@fontsource/nunito/latin-400.css';
+@import '@fontsource/nunito/latin-700.css';
+@import '@fontsource/nunito/latin-800.css';
 
 :root {
   /* Real source of truth for BottomNav's height -- BottomCard.css and

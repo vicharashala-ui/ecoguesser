@@ -1,0 +1,64 @@
+# Cloudflare Pages' default for every static asset is
+# `Cache-Control: public, max-age=0, must-revalidate` -- the browser caches
+# the body but re-checks with the origin (via ETag/If-None-Match) on every
+# single request. That still saves bytes on a 304, but not the round-trip
+# latency, which is what costs a returning player real time on a slow
+# connection. Rules below add real cache lifetime, split into two risk
+# tiers depending on whether a file's URL changes when its content does.
+#
+# NOTE: Pages Functions (/api/*, /tiles/*) ignore this file entirely --
+# Cloudflare does not apply _headers rules to Function-generated responses,
+# so nothing here can accidentally cache the leaderboard API or the
+# satellite tile proxy (both already NetworkOnly at the service-worker
+# layer in vite.config.js).
+
+# --- Tier 1: content-hashed, safe to cache forever -------------------------
+# Vite bakes a hash of each file's own contents into its filename, so any
+# code or dependency change produces a brand-new URL. There's no such thing
+# as a stale hit here -- `immutable` additionally skips revalidation even on
+# a manual page reload, which plain max-age does not.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# --- Tier 2: unhashed files that rarely change -----------------------------
+# Brand/icon assets only change during a deliberate icon-regeneration pass
+# (a full redeploy each time). A day-long cache keeps repeat app opens
+# instant without risking a long-lived stale icon if one is ever swapped.
+/icons/*
+  Cache-Control: public, max-age=86400
+
+/favicon.ico
+  Cache-Control: public, max-age=86400
+
+# --- Tier 3: unhashed files that DO change on ordinary content passes ------
+# Site/state/boundary GeoJSON and the MapLibre style JSON are the two
+# things this repo actually regenerates during normal work (this session's
+# boundary-simplification pass being a direct example). max-age keeps
+# same-day repeat plays instant; stale-while-revalidate bounds the worst
+# case to "serve the slightly-stale copy once more while fetching the new
+# one in the background" rather than "pinned to the old file for a full
+# day" -- a returning player self-heals on their very next visit after a
+# redeploy, no manual cache purge required.
+/india-states.geojson
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/india-boundary.geojson
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/india-state-labels.geojson
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/physical-features.geojson
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/map-style.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/map-style-ofm.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+# Per-site boundary polygons (BottomCard's "Site Boundary" toggle) -- same
+# tier as above, same reasoning, just a directory of 837 files instead of
+# a handful of named ones.
+/boundaries/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
