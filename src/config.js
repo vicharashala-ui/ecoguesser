@@ -25,7 +25,15 @@ export const MAP_CONFIG = {
   // Uneven top/bottom padding biases where that slack goes -- less above
   // (Central Asia) and more below (ocean) -- instead of the flat `20` every
   // fitBounds(MAP_CONFIG.INDIA_BOUNDS, ...) call used to share.
-  FIT_PADDING: { top: 10, bottom: 260, left: 24, right: 24 },
+  // top: fitBounds centers INDIA_BOUNDS within the (top, height-bottom) box,
+  // so raising top shifts that box's center down, pushing J&K further from
+  // the header. 100 ~= header height (72) + layer-panel's top offset (10) +
+  // panel's own top padding (10) + half a toggle row -- lines J&K up level
+  // with the layer panel's first toggle ("Borders" in Classic) instead of
+  // sitting up under the header. Shared by every fitBounds(INDIA_BOUNDS, ...)
+  // call site (Classic/Daily/Blitz initial load + reset, RecenterButton), so
+  // this one value keeps the framing consistent across all three modes.
+  FIT_PADDING: { top: 100, bottom: 260, left: 24, right: 24 },
 };
 // Do NOT pass INDIA_CENTER/INDIA_ZOOM to MapLibre constructor.
 
