@@ -18,14 +18,12 @@
 import { LAYER_IDS } from '../config.js';
 
 const STATE_SOURCE_ID = 'india-states';
-// Boundary polygon color -- deliberately NOT CATEGORY_META[site.category].color.
-// That color clashes with the correct/wrong highlight palette for several
-// categories: Tiger Reserve's accent (#dc2626) is the exact same red as a
-// 'wrong' state, and National Park/Wildlife Sanctuary's greens sit close
-// enough to 'correct' green (#22c55e) to be hard to tell apart. This blue
-// matches useMapState.js's BLITZ_COLOR 'selected' entry -- already part of
-// this feature's palette, and unused by the time REVEALING draws the
-// boundary (selection only shows pre-Confirm), so it never collides.
+// Boundary polygon color -- deliberately NOT CATEGORY_META[site.category].color,
+// to avoid clashing with the correct/wrong highlight palette regardless of
+// which category is active. This blue matches useMapState.js's BLITZ_COLOR
+// 'selected' entry -- already part of this feature's palette, and unused by
+// the time REVEALING draws the boundary (selection only shows pre-Confirm),
+// so it never collides.
 const BOUNDARY_COLOR = '#3b82f6';
 // Fallback only -- BlitzMap.jsx now passes zoomToBoundary() a fitPadding
 // built from BlitzCard's real measured height (same pattern as
