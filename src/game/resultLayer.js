@@ -192,15 +192,37 @@ export async function showResult(map, guess, site, opts = {}) {
   });
 
   map.addLayer({
+    id: LAYER_IDS.CORRECT_PIN_HALO,
+    type: 'circle',
+    source: LAYER_IDS.RESULT_DATA,
+    filter: ['==', ['get', 'kind'], 'pin'],
+    paint: {
+      'circle-radius': 17,
+      'circle-color': color,
+      'circle-opacity': 0.18,
+    },
+  });
+
+  map.addLayer({
     id: LAYER_IDS.CORRECT_PIN,
     type: 'circle',
     source: LAYER_IDS.RESULT_DATA,
     filter: ['==', ['get', 'kind'], 'pin'],
     paint: {
-      'circle-radius': 7,
+      'circle-radius': 8,
       'circle-color': color,
-      'circle-stroke-color': '#ffffff',
-      'circle-stroke-width': 2,
+    },
+  });
+
+  map.addLayer({
+    id: LAYER_IDS.GUESS_PIN_HALO,
+    type: 'circle',
+    source: LAYER_IDS.RESULT_DATA,
+    filter: ['==', ['get', 'kind'], 'guess'],
+    paint: {
+      'circle-radius': 17,
+      'circle-color': '#EA4335',
+      'circle-opacity': 0.18,
     },
   });
 
@@ -210,10 +232,8 @@ export async function showResult(map, guess, site, opts = {}) {
     source: LAYER_IDS.RESULT_DATA,
     filter: ['==', ['get', 'kind'], 'guess'],
     paint: {
-      'circle-radius': 7,
+      'circle-radius': 8,
       'circle-color': '#EA4335',
-      'circle-stroke-color': '#ffffff',
-      'circle-stroke-width': 2,
     },
   });
 
@@ -333,7 +353,9 @@ export function clearResult(map) {
     LAYER_IDS.RESULT_LABEL,
     `${LAYER_IDS.RESULT_BOUNDARY}-fill`,
     `${LAYER_IDS.RESULT_BOUNDARY}-outline`,
+    LAYER_IDS.CORRECT_PIN_HALO,
     LAYER_IDS.CORRECT_PIN,
+    LAYER_IDS.GUESS_PIN_HALO,
     LAYER_IDS.GUESS_PIN,
   ]) {
     if (map.getLayer(id)) map.removeLayer(id);
