@@ -202,8 +202,22 @@
       "source-layer": "water",
       "filter": [
         "all",
-        ["!=", ["get", "class"], "ocean"],
-        ["!=", ["get", "brunnel"], "tunnel"]
+        [
+          "!=",
+          [
+            "get",
+            "class"
+          ],
+          "ocean"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "brunnel"
+          ],
+          "tunnel"
+        ]
       ],
       "paint": {
         "fill-color": "#a3c4d6",
@@ -407,7 +421,7 @@
         "text-halo-color": "rgba(255,255,255,0.85)",
         "text-halo-width": 2
       },
-      "minzoom": 4.5
+      "minzoom": 3.5
     },
     {
       "id": "water_name_point_label",
@@ -481,7 +495,7 @@
         "text-halo-color": "rgba(255,255,255,0.7)",
         "text-halo-width": 1.5
       },
-      "minzoom": 4.5
+      "minzoom": 3.5
     },
     {
       "id": "water_name_line_label",
@@ -545,13 +559,13 @@
         "text-halo-color": "rgba(255,255,255,0.7)",
         "text-halo-width": 1.5
       },
-      "minzoom": 4.5
+      "minzoom": 3.5
     },
     {
       "id": "physical_feature_label",
       "type": "symbol",
       "source": "physical-features",
-      "minzoom": 4.5,
+      "minzoom": 3.5,
       "layout": {
         "text-field": [
           "get",
@@ -656,7 +670,7 @@
         "text-halo-color": "rgba(255,255,255,0.8)",
         "text-halo-width": 1.2
       },
-      "minzoom": 4.5
+      "minzoom": 3.5
     },
     {
       "id": "place_city_marker",
@@ -684,7 +698,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 5,
+      "minzoom": 4,
       "filter": [
         "==",
         [
@@ -779,7 +793,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 7,
+      "minzoom": 6,
       "filter": [
         "==",
         [
@@ -874,7 +888,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 9,
+      "minzoom": 8,
       "filter": [
         "==",
         [
@@ -948,7 +962,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 10,
+      "minzoom": 9,
       "filter": [
         "==",
         [
