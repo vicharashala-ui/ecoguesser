@@ -19,6 +19,7 @@
 import { useId, useEffect, forwardRef } from 'react';
 import { CATEGORY_META, SCORING } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
+import ConfettiBurst from './ConfettiBurst.jsx';
 import './BottomCard.css';
 
 // "Zoom in and tap to place pin" -- shown above the pill until the player's
@@ -220,6 +221,13 @@ const BottomCard = forwardRef(function BottomCard({
       {showPinTip && (
         <div className="bc-pin-tip" aria-hidden="true">Zoom in and tap to place pin</div>
       )}
+      {/* Screen-wide corner-to-center confetti burst on a perfect (boundary
+          hit) guess. Rendered as a sibling of .bottom-card, not a descendant
+          -- .bottom-card has overflow:hidden, which would clip a full-screen
+          effect. Keyed on site.id so a new round always remounts it and
+          therefore always gets a fresh single play-through, matching
+          .bc-celebrate's key below. */}
+      {isPerfect && <ConfettiBurst key={site.id} />}
       <div
         ref={ref}
         className={`bottom-card ${isRevealing ? `is-expanded ${collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}

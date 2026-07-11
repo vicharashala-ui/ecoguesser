@@ -1,0 +1,60 @@
+/* src/components/ConfettiBurst.css */
+/* See ConfettiBurst.jsx's header comment for why this is `position:
+   absolute; inset: 0` rather than `fixed`, and for the two-cannon layout. */
+
+.eg-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Above BottomNav's z-index: 40 (so the burst reads across the whole
+     screen, nav bar included) but below the modal layer -- InstallPrompt
+     (55), NamePromptModal (60), InfoModal (65), SideDrawer (80) -- so a
+     perfect guess landing right as a modal opens never visually competes
+     with it. */
+  z-index: 45;
+}
+
+.eg-confetti-piece {
+  position: absolute;
+  opacity: 0;
+  animation-timing-function: cubic-bezier(0.15, 0.65, 0.3, 1);
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+}
+
+.eg-confetti-piece-l {
+  animation-name: eg-confetti-fly-l;
+}
+
+.eg-confetti-piece-r {
+  animation-name: eg-confetti-fly-r;
+}
+
+/* Bottom-left cannon -> screen center: +x (right), -y (up), plus the
+   per-piece --dx/--dy scatter set inline so pieces don't all land on the
+   exact same point. */
+@keyframes eg-confetti-fly-l {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(0.5); }
+  65%  { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: translate(calc(50vw + var(--dx)), calc(-50vh + var(--dy))) rotate(var(--rot)) scale(1);
+  }
+}
+
+/* Bottom-right cannon -> screen center: mirror of the above, -x (left). */
+@keyframes eg-confetti-fly-r {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(0.5); }
+  65%  { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50vw + var(--dx)), calc(-50vh + var(--dy))) rotate(var(--rot)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eg-confetti {
+    display: none;
+  }
+}
