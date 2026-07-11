@@ -141,6 +141,15 @@ async function main() {
   }
   const style = await res.json();
 
+  // Liberty's upstream sprite covers the full planet style (POI/shop/transit
+  // icons etc.) -- none of EcoGuesser's surviving layers use icon-image or
+  // *-pattern, so it's pure dead weight. Worse, MapLibre fetches sprite
+  // JSON+PNG unconditionally as part of style load, regardless of camera
+  // position, so it sits on the critical path to the map's 'load' event
+  // (and therefore useMapState's mapReady) for zero visual benefit. Drop it
+  // here so re-running this script against upstream OFM can't reintroduce it.
+  delete style.sprite;
+
   const before = style.layers.length;
   style.layers = filterLayers(style.layers);
   style.layers.push(buildCityLabelLayer());

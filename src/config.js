@@ -208,8 +208,8 @@ export const DIFFICULTY_DEFAULTS = {
 };
 
 export const CATEGORY_META = {
-  np:     { label:'National Park',      color:'#16a34a' },
-  wls:    { label:'Wildlife Sanctuary', color:'#059669' },
+  np:     { label:'National Park',      color:'#ea580c' },
+  wls:    { label:'Wildlife Sanctuary', color:'#db2777' },
   tr:     { label:'Tiger Reserve',      color:'#dc2626' },
   br:     { label:'Biosphere Reserve',  color:'#7c3aed' },
   ramsar: { label:'Ramsar Site',        color:'#0284c7' },

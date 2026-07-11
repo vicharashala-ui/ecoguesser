@@ -18,7 +18,6 @@
             "data": "/physical-features.geojson"
         }
     },
-    "sprite": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm",
     "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
     "layers": [
         {
