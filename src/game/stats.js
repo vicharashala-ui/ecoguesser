@@ -118,7 +118,7 @@ export function recordClassicResult(result) {
 
   stats.rounds += 1;
   stats.bestDist = Math.min(stats.bestDist, dist);
-  stats.history.push({ dist, score: result.finalScore, ts: Date.now() });
+  stats.history.push({ dist, score: result.finalScore, cat: result.site.category, ts: Date.now() });
   if (stats.history.length > 200) stats.history.shift();
 
   localStorage.setItem(LS_KEYS.STATS_NORM, JSON.stringify(stats));
@@ -254,12 +254,18 @@ export function computeDailyStats(stats) {
  * @param {ReturnType<typeof loadNormalStats>} stats
  * @returns {{
  *   rounds: number, avgDist: number|null, avgScore: number|null,
- *   bestGuess: number|null, trend: number[],  // last 20 history[].score
+ *   bestGuess: number|null,
+ *   byCategory: Record<string, number|null>,  // avg dist (km) per category
  * }}
  */
 export function computeClassicStats(stats) {
   if (stats.rounds === 0 || stats.history.length === 0) {
-    return { rounds: stats.rounds, avgDist: null, avgScore: null, bestGuess: null, trend: [] };
+    const emptyByCategory = {};
+    for (const cat of DAILY.CATEGORIES) emptyByCategory[cat] = null;
+    return {
+      rounds: stats.rounds, avgDist: null, avgScore: null, bestGuess: null,
+      byCategory: emptyByCategory,
+    };
   }
 
   const avgDist = Math.round(
@@ -271,9 +277,19 @@ export function computeClassicStats(stats) {
   // bestDist, NOT min(history) -- history is capped at 200 entries, so an
   // early great guess could have already scrolled out of it.
   const bestGuess = stats.bestDist === 999999 ? null : Math.round(stats.bestDist);
-  const trend = stats.history.slice(-20).map((h) => h.score);
 
-  return { rounds: stats.rounds, avgDist, avgScore, bestGuess, trend };
+  // History entries recorded before category tracking was added have no
+  // `cat` field -- h.cat === cat never matches undefined, so they're
+  // silently excluded from every category's average rather than skewing one.
+  const byCategory = {};
+  for (const cat of DAILY.CATEGORIES) {
+    const catDists = stats.history.filter((h) => h.cat === cat).map((h) => h.dist);
+    byCategory[cat] = catDists.length
+      ? Math.round(catDists.reduce((a, d) => a + d, 0) / catDists.length)
+      : null;
+  }
+
+  return { rounds: stats.rounds, avgDist, avgScore, bestGuess, byCategory };
 }
 
 /**

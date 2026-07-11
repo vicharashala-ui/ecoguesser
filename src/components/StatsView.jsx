@@ -8,7 +8,7 @@
 // of rendering, and no localStorage read/derivation logic is duplicated here.
 
 import { useState, useMemo, useEffect } from 'react';
-import { CATEGORY_META } from '../config.js';
+import { CATEGORY_META, DAILY } from '../config.js';
 import {
   loadDailyStats,
   loadNormalStats,
@@ -27,7 +27,7 @@ const BUCKET_LABELS = ['0-5k', '5-10k', '10-15k', '15-20k', '20-25k'];
 // flipped to its real value a frame later so the CSS `transition: height`
 // in StatsView.css actually has something to animate between, instead of
 // the final height just appearing instantly on first paint.
-function ScoreHistogram({ distribution, labels }) {
+function ScoreHistogram({ distribution, labels, format = (v) => v, ariaLabel = 'Score distribution histogram' }) {
   const [grown, setGrown] = useState(false);
 
   useEffect(() => {
@@ -35,48 +35,25 @@ function ScoreHistogram({ distribution, labels }) {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  const max = Math.max(...distribution, 1);
+  const max = Math.max(...distribution.map((v) => v ?? 0), 1);
 
   return (
-    <div className="sv-hist" role="img" aria-label="Score distribution histogram">
-      {distribution.map((count, i) => (
+    <div className="sv-hist" role="img" aria-label={ariaLabel}>
+      {distribution.map((value, i) => (
         <div className="sv-hist-col" key={labels[i]}>
-          <span className={`sv-hist-count${count === 0 ? ' sv-hist-count-zero' : ''}`}>
-            {count}
+          <span className={`sv-hist-count${!value ? ' sv-hist-count-zero' : ''}`}>
+            {value == null ? '--' : format(value)}
           </span>
           <div className="sv-hist-bar-track">
             <div
               className="sv-hist-bar"
-              style={{ height: grown ? `${(count / max) * 100}%` : '0%' }}
+              style={{ height: grown ? `${((value ?? 0) / max) * 100}%` : '0%' }}
             />
           </div>
           <span className="sv-hist-label">{labels[i]}</span>
         </div>
       ))}
     </div>
-  );
-}
-
-function Sparkline({ values }) {
-  if (values.length === 0) return null;
-  const w = 280;
-  const h = 48;
-  const max = Math.max(...values, 1);
-  const min = Math.min(...values, 0);
-  const range = Math.max(1, max - min);
-  const step = values.length > 1 ? w / (values.length - 1) : 0;
-  const points = values
-    .map((v, i) => {
-      const x = values.length > 1 ? i * step : w / 2;
-      const y = h - ((v - min) / range) * (h - 6) - 3;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(' ');
-
-  return (
-    <svg className="sv-sparkline" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden="true">
-      <polyline points={points} fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-    </svg>
   );
 }
 
@@ -200,8 +177,13 @@ function ClassicSection() {
         </div>
       </div>
 
-      <p className="sv-heading">Score trend (last {stats.trend.length})</p>
-      <Sparkline values={stats.trend} />
+      <p className="sv-heading">Avg distance by category</p>
+      <ScoreHistogram
+        distribution={DAILY.CATEGORIES.map((cat) => stats.byCategory[cat])}
+        labels={DAILY.CATEGORIES.map((cat) => CATEGORY_META[cat].label)}
+        format={(km) => `${km} km`}
+        ariaLabel="Average distance by category histogram"
+      />
     </>
   );
 }

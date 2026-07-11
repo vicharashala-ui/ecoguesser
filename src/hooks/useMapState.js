@@ -1,9 +1,32 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { feature as topoFeature } from 'topojson-client';
 import {
   MAP_CONFIG, LAYER_IDS, SATELLITE_TILES, SATELLITE_ATTRIBUTION,
   SATELLITE_VISUAL, BASE_VISUAL, TERRAIN_TILES, TERRAIN_ENCODING,
   DIFFICULTY_DEFAULTS, LS_KEYS,
 } from '../config.js';
+
+const EMPTY_FEATURE_COLLECTION = { type: 'FeatureCollection', features: [] };
+
+// india-states.geojson (340KB gzip -- every shared border between two
+// adjacent states was stored twice, once per state) is generated into
+// india-states.topojson by scripts/convertStatesTopo.js (209KB gzip, shared
+// borders stored once; verified byte-for-byte equivalent geometry -- see
+// that script's comments). This fetches + expands it back into a regular
+// GeoJSON FeatureCollection and pushes it into the already-created
+// 'india-states' source below via setData(). Deliberately fire-and-forget:
+// callers don't await this, so a slow/failed fetch delays or loses the
+// state border lines and labels, never mapReady or pin placement further
+// down in onLoad.
+function loadIndiaStatesTopology(map) {
+  fetch('/india-states.topojson')
+    .then((r) => r.json())
+    .then((topology) => {
+      const geojson = topoFeature(topology, topology.objects['india-states']);
+      map.getSource('india-states')?.setData(geojson);
+    })
+    .catch(() => {}); // Borders/labels just don't appear; nothing else depends on this.
+}
 
 // Scope querySelector to map container -- supports two simultaneous map instances.
 function appendAttribution(mapInstance, text) {
@@ -278,9 +301,15 @@ export function useMapState(mapRef, mode) {
     function onLoad() {
       map.addSource('india-states', {
         type: 'geojson',
-        data: '/india-states.geojson',
+        // Real data streams in a moment later, via loadIndiaStatesTopology()
+        // below -- see its comment. All the layers referencing this source
+        // (STATE_LINES here, BLITZ_FILL/BLITZ_OUTLINE further down) are
+        // still created synchronously, in the same order as before, so
+        // nothing about layer ordering/z-index changes.
+        data: EMPTY_FEATURE_COLLECTION,
         promoteId: 'st_nm', // lets blitzHighlight.js key setFeatureState off each state's own name
       });
+      loadIndiaStatesTopology(map);
 
       map.addLayer({
         id: LAYER_IDS.STATE_LINES, type: 'line', source: 'india-states',
