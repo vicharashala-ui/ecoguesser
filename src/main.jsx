@@ -37,3 +37,29 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </ErrorBoundary>
   </React.StrictMode>
 );
+
+// index.html's #eg-splash paints before any of this file has even finished
+// downloading, let alone executed -- it's not waiting on React. This just
+// fades it back out once the real app has had its first paint underneath
+// it, with a floor (MIN_SPLASH_MS) so the brand moment doesn't just flash
+// by on a fast machine/cached load. That floor is the only "delay" this
+// adds, and it's free: App/DailyMap/MapContainer above have already
+// mounted and kicked off their own fetches (map style, sites JSON, tiles)
+// by this point, so the game keeps loading at full speed behind the
+// splash the entire time -- nothing here gates or slows that down.
+const MIN_SPLASH_MS = 500;
+const splashShownAt = performance.now();
+requestAnimationFrame(() => {
+  const splash = document.getElementById('eg-splash');
+  if (!splash) return;
+  const remaining = MIN_SPLASH_MS - (performance.now() - splashShownAt);
+  setTimeout(() => {
+    splash.classList.add('eg-splash-hide');
+    // Belt-and-suspenders: transitionend can fail to fire (e.g. the tab
+    // was backgrounded mid-fade), which would leave a display:none-free but
+    // opacity:0/pointer-events:none div sitting in the DOM harmlessly --
+    // fine visually, but this removes it outright so it can't linger.
+    splash.addEventListener('transitionend', () => splash.remove(), { once: true });
+    setTimeout(() => splash.remove(), 500);
+  }, Math.max(0, remaining));
+});

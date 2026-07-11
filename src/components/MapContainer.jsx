@@ -71,7 +71,20 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
       attributionControl: { compact: true },
       dragRotate: false, // no rotate-via-right-click-drag/two-finger-drag
       touchPitch: false, // paired with dragRotate: false -- no drag-up/down pitch either
-      // Do NOT pass center/zoom here -- fitBounds handles it in the load event below.
+      // bounds + fitBoundsOptions (not center/zoom) -- MapLibre's
+      // constructor resolves these into a camera position synchronously,
+      // using the container's already-laid-out CSS size, before the style
+      // has been fetched or the first frame painted. That's what was
+      // missing before: with no center/zoom/bounds at all, the map fell
+      // back to its hardcoded default (center [0,0], zoom 0) for every
+      // frame between construction and the 'load' event that used to run
+      // fitBounds -- a whole-world view with India off to the right that
+      // then visibly snapped to center once the style finished loading
+      // (sprite/glyphs/first tiles), which on a slow connection could take
+      // a second or more. Setting bounds here means the very first frame
+      // already shows India in place -- nothing to snap to later.
+      bounds: MAP_CONFIG.INDIA_BOUNDS,
+      fitBoundsOptions: { padding: MAP_CONFIG.FIT_PADDING, animate: false },
     });
 
     // dragRotate: false above only covers the drag gesture. Touch-pinch
@@ -83,10 +96,6 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
     // a pause/resume cycle re-enables the rest of the handler.
     mapRef.current.touchZoomRotate.disableRotation();
     mapRef.current.keyboard.disableRotation();
-
-    mapRef.current.once('load', () => {
-      mapRef.current.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, animate: false });
-    });
 
     mapRef.current.on('click', (e) => {
       onMapClickRef.current?.(e.lngLat.lat, e.lngLat.lng);

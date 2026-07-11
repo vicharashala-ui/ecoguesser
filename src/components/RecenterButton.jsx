@@ -1,9 +1,10 @@
 // src/components/RecenterButton.jsx
 //
-// Resets the map to its default India-wide view -- the same fitBounds call
-// MapContainer.jsx makes on initial load (MAP_CONFIG.INDIA_BOUNDS). Shared
-// by ClassicMap.jsx and DailyMap.jsx rather than duplicated, since both
-// already hold the same mapRef contract.
+// Resets the map to its default India-wide view -- the same
+// MAP_CONFIG.INDIA_BOUNDS/FIT_PADDING framing MapContainer.jsx sets up front
+// (via the constructor's bounds/fitBoundsOptions, so it's already in place
+// on the very first frame). Shared by ClassicMap.jsx and DailyMap.jsx rather
+// than duplicated, since both already hold the same mapRef contract.
 //
 // Stays visible through REVEALING -- the caller passes a `style` override
 // with a `bottom` computed from BottomCard's real measured height during

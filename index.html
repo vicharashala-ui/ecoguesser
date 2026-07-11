@@ -49,8 +49,52 @@
     <!-- manifest.webmanifest itself is generated + injected by
          vite-plugin-pwa at build time; no manual <link rel="manifest">
          needed here. -->
+
+    <!-- Splash overlay (#eg-splash below): preloaded so the icon request
+         starts at the same priority as the document itself, instead of
+         waiting to be discovered when the browser parses the <img> tag
+         further down in <body>. -->
+    <link rel="preload" as="image" href="/icons/icon-192.png" />
+
+    <!-- Inlined, not in index.css: this has to paint before any stylesheet
+         (even a small one) has had a chance to load, since its entire job
+         is covering the gap between "HTML parsed" and "React has mounted
+         the real app underneath it". Anything that makes it depend on a
+         network round-trip defeats the point. -->
+    <style>
+      #eg-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #1c3b28;
+        opacity: 1;
+        transition: opacity 320ms ease;
+      }
+      #eg-splash img {
+        width: 25vw;
+        max-width: 112px;
+        min-width: 72px;
+        height: auto;
+      }
+      #eg-splash.eg-splash-hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
   </head>
   <body>
+    <!-- Purely decorative, static markup+CSS -- it paints the instant the
+         HTML parser reaches this point, with zero dependency on the JS
+         bundle, index.css, or React. It sits *on top of* #root while the
+         real app mounts and starts fetching underneath it (map tiles,
+         sites JSON, etc.) at full speed the whole time, so it costs the
+         game itself nothing -- see main.jsx for how/when it's removed. -->
+    <div id="eg-splash">
+      <img src="/icons/icon-192.png" width="192" height="192" alt="" />
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
