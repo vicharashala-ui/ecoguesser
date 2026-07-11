@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import '../styles/maplibre-gl-trimmed.css';
 import { MAP_STYLE, MAP_CONFIG } from '../config.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_PATH } from './tigerMarkPath';
 import './MapContainer.css';

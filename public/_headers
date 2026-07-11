@@ -39,8 +39,21 @@
 # one in the background" rather than "pinned to the old file for a full
 # day" -- a returning player self-heals on their very next visit after a
 # redeploy, no manual cache purge required.
+#
+# Content-Type is set explicitly here (not just Cache-Control) because
+# Cloudflare only auto-compresses (gzip/brotli) a fixed allowlist of
+# response content types, and .geojson/.topojson are non-standard
+# extensions that its default static-asset MIME lookup does not reliably
+# map into that allowlist -- confirmed via a throttled-network capture
+# where these files transferred at their full raw size (e.g. 423 KB for
+# india-boundary.geojson) instead of their ~128 KB gzip size. Explicitly
+# setting a compressible Content-Type (application/geo+json is on
+# Cloudflare's compression allowlist; .topojson has no registered MIME
+# type of its own, so application/json is the correct compressible
+# fallback) fixes this regardless of what the default guess was.
 /india-states.geojson
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Content-Type: application/geo+json; charset=utf-8
 
 # The client fetches india-states.topojson now (see useMapState.js +
 # scripts/convertStatesTopo.js) -- india-states.geojson above is kept only
@@ -49,15 +62,19 @@
 # way, and it's one less thing to remember to re-add if that ever changes).
 /india-states.topojson
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Content-Type: application/json; charset=utf-8
 
 /india-boundary.geojson
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Content-Type: application/geo+json; charset=utf-8
 
 /india-state-labels.geojson
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Content-Type: application/geo+json; charset=utf-8
 
 /physical-features.geojson
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Content-Type: application/geo+json; charset=utf-8
 
 /map-style.json
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
@@ -67,6 +84,8 @@
 
 # Per-site boundary polygons (BottomCard's "Site Boundary" toggle) -- same
 # tier as above, same reasoning, just a directory of 837 files instead of
-# a handful of named ones.
+# a handful of named ones. Individually small enough that compression
+# matters less per-file, but it's free and correct to set regardless.
 /boundaries/*
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Content-Type: application/geo+json; charset=utf-8
