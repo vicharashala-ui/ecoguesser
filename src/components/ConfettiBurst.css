@@ -32,10 +32,9 @@
   animation-iteration-count: 1;
 }
 
-/* Quick pop-overshoot (0% -> 12%) then a short, powerful travel out to the
-   randomized --tx/--ty target and a fade -- reads as one sharp hit rather
-   than a slow float. --tx/--ty already carry the correct sign/direction
-   per piece (set in JS), so a single keyframe covers both cannons. */
+/* Quick pop-overshoot (0% -> 12%) then a slower, longer travel out to the
+   randomized --tx/--ty target and a fade. --tx/--ty already carry the correct
+   sign/direction per piece (set in JS), so a single keyframe covers both cannons. */
 @keyframes eg-star-burst {
   0% {
     opacity: 0;

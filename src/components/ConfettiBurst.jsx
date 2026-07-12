@@ -23,9 +23,9 @@
 // against the map. This version fires each piece to its own randomized
 // point spread across most of the screen's width/height -- so the burst
 // visibly fills the screen rather than clumping in the middle -- and uses
-// bigger, glowing star shapes with a quick pop-overshoot instead of a
-// slow float, so it reads as one short, punchy hit rather than a lingering
-// effect. Piece geometry (start offset, target point, rotation, color,
+// bigger, glowing star shapes with a pop-overshoot into a slower, longer
+// travel out to the target -- reads as a bigger, more lingering hit rather
+// than a tight, instant clump. Piece geometry (start offset, target point, rotation, color,
 // timing) is randomized once per mount via useMemo(..., []) -- re-renders
 // during the burst (e.g. toggling the result card's collapsed state) must
 // not reshuffle mid-flight values. The parent keys this component on
@@ -61,8 +61,8 @@ function makePieces(side) {
     const jitterY = Math.round(rand(-24, 24));
     const rotate = Math.round((Math.random() > 0.5 ? 1 : -1) * rand(200, 760));
     const delay = Math.round(rand(0, 40)); // near-simultaneous launch -- reads as one hit
-    const duration = Math.round(rand(520, 720)); // short + powerful, not a slow float
-    const size = Math.round(rand(10, 18));
+    const duration = Math.round(rand(1100, 1500)); // slower, longer-hanging burst
+    const size = Math.round(rand(22, 38));
     const color = COLORS[(i + (side === 'r' ? 3 : 0)) % COLORS.length];
     return {
       id: `${side}${i}`,
