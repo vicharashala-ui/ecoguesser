@@ -45,7 +45,7 @@
     transform: translate(calc(var(--tx) * 0.18), calc(var(--ty) * 0.18))
       rotate(calc(var(--rot) * 0.2)) scale(1.3);
   }
-  60% {
+  75% {
     opacity: 1;
   }
   100% {

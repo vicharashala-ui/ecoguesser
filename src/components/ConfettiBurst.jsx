@@ -61,7 +61,7 @@ function makePieces(side) {
     const jitterY = Math.round(rand(-24, 24));
     const rotate = Math.round((Math.random() > 0.5 ? 1 : -1) * rand(200, 760));
     const delay = Math.round(rand(0, 40)); // near-simultaneous launch -- reads as one hit
-    const duration = Math.round(rand(1100, 1500)); // slower, longer-hanging burst
+    const duration = Math.round(rand(2000, 2600)); // slower, longer-hanging burst
     const size = Math.round(rand(22, 38));
     const color = COLORS[(i + (side === 'r' ? 3 : 0)) % COLORS.length];
     return {
