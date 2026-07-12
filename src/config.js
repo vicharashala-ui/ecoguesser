@@ -18,8 +18,12 @@ export const MAP_CONFIG = {
   // Daily AND Classic both use this now -- state names stay hidden until
   // zoomed in this far, with no manual toggle in either mode. Blitz is
   // unaffected (its own "State Names" toggle shows/hides immediately,
-  // independent of zoom).
-  STATE_LABEL_MIN_ZOOM: 5,
+  // independent of zoom). Set to MIN_ZOOM (the map's own zoom floor) so
+  // state labels -- the coarsest place unit on the map -- render before
+  // every place_* label layer in map-style.json/map-style-ofm.json rather
+  // than after them (was 5, tied with place_city_marker and a full level
+  // behind place_city_label at 4).
+  STATE_LABEL_MIN_ZOOM: 3,
   // Portrait viewports are much taller than INDIA_BOUNDS' aspect ratio, so
   // fitBounds always has vertical slack left over after the width fits.
   // Uneven top/bottom padding biases where that slack goes -- less above

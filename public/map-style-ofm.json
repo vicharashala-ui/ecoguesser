@@ -25,7 +25,7 @@
       "layout": { "line-cap": "round" },
       "paint": {
         "line-color": "#a0c8f0",
-        "line-width": ["interpolate", ["exponential", 1.2], ["zoom"], 4, 0.8, 8, 1.2, 11, 1.6, 20, 6]
+        "line-width": ["interpolate", ["exponential", 1.2], ["zoom"], 3, 1.2, 8, 1.2, 11, 1.6, 20, 6]
       }
     },
     {

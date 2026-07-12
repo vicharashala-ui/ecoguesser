@@ -9,7 +9,7 @@
 // HashRouter would drop in around this without touching the content below.
 //
 // Privacy Policy content describes this app's actual data handling (the
-// three fetch destinations below are the only ones anywhere in src/ or
+// fetch destinations named below are the only ones anywhere in src/ or
 // public/map-style.json) rather than boilerplate legal text. It's a
 // starting draft, flagged as such in-page; swap in real legal review
 // before treating it as a binding policy.
@@ -42,37 +42,47 @@ function HowToPlayContent() {
         Play as many rounds as you like, back to back.
       </p>
       <p>
-        <strong>Daily Challenge</strong> is five fixed sites, the same ones
-        for everyone that day, one attempt each. It's timed, and your
-        combined score goes on that day's leaderboard.
+        <strong>Daily Challenge</strong> picks five fixed sites for the day
+        -- one from each category (national park, wildlife sanctuary, tiger
+        reserve, biosphere reserve, Ramsar site) -- the same five for
+        everyone, one attempt each. Each site gives you 120 seconds to place
+        your pin, and your combined score across all five goes on that day's
+        leaderboard.
       </p>
       <p>
         <strong>Blitz</strong> shows you a protected area and asks which
         state it's in. Tap a state, then confirm -- get it right and the
         state turns green, get it wrong and you'll see your guess in red
         next to the correct answer in green. No pins, no distance, just
-        geography. Play as many rounds as you like.
+        geography. Correct answers build a streak, shown alongside your best
+        streak for the session. Play as many rounds as you like.
       </p>
 
       <h3>Scoring</h3>
       <p>
-        Score starts at 5,000 and decays with distance from the real
-        location -- the closer your pin, the higher the score. Using a hint
-        costs 500 points off that round's score.
+        In Classic and Daily, score starts at 5,000 and decays with distance
+        from the real location -- the closer your pin, the higher the score.
+        Blitz doesn't use points; it tracks a correct-answer streak instead.
       </p>
 
       <h3>Hints</h3>
       <p>
-        Two hints are available per round: the first narrows down the
-        category, the second highlights the state the site is in on the
-        map.
+        Classic and Daily each give you two hints per round (Blitz has
+        none). The first reveals the site's state; the second highlights
+        that state on the map. In Classic, hints are free. In Daily
+        Challenge, each hint used costs 500 points off that round's score,
+        so using both costs 1,000.
       </p>
 
       <h3>Difficulty (Classic only)</h3>
       <p>
-        <strong>Easy</strong> and <strong>Normal</strong> show state borders
-        (state names appear once you zoom in). <strong>Hard</strong> hides
-        borders entirely, so you're working from geography alone.
+        Difficulty sets the starting position of the Borders toggle, not a
+        locked mode: <strong>Easy</strong> and <strong>Normal</strong> start
+        with state borders visible, <strong>Hard</strong> starts with them
+        hidden. You can flip Borders back on or off yourself at any time
+        from the layer panel, whatever difficulty you're on -- and state
+        name labels appear at any difficulty once you're zoomed in far
+        enough, so Hard isn't a strictly label-free mode.
       </p>
     </>
   );
@@ -87,6 +97,21 @@ function AboutContent() {
         available records covering national parks, wildlife sanctuaries,
         tiger reserves, biosphere reserves, and Ramsar wetland sites.
       </p>
+
+      <h3>Vicharashala</h3>
+      <p>
+        Vicharashala (विचारशाला) is an educational technology company with a
+        single driving belief: learning should never feel like a chore. The
+        name -- a Sanskrit-rooted word meaning "a place for thought" --
+        reflects our vision of creating spaces where curiosity thrives.
+      </p>
+      <p>
+        We build games and interactive experiences that make serious
+        subjects -- law, civics, history, language -- genuinely enjoyable to
+        explore. Our philosophy is that the best learning happens when
+        you're having too much fun to notice you're learning.
+      </p>
+
       <p>
         The map is built on{' '}
         <a href="https://www.maplibre.org/" target="_blank" rel="noreferrer">
@@ -95,16 +120,21 @@ function AboutContent() {
         , with base map tiles from{' '}
         <a href="https://openfreemap.org/" target="_blank" rel="noreferrer">
           OpenFreeMap
-        </a>{' '}
-        and satellite imagery from{' '}
+        </a>
+        , satellite imagery from{' '}
         <a href="https://www.esri.com/en-us/arcgis/products/arcgis-world-imagery" target="_blank" rel="noreferrer">
           Esri World Imagery
         </a>
-        , both built on open data.
+        , and terrain elevation data from the public{' '}
+        <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noreferrer">
+          AWS Terrain Tiles
+        </a>{' '}
+        dataset, used for the hillshade look in Classic and Daily.
       </p>
       <p>
-        Found a site that's mislabeled, misplaced, or missing? Use the
-        feedback button (bottom-right) to let us know.
+        Found a site that's mislabeled, misplaced, or missing? Open the menu
+        (hamburger icon, top-left) and use the feedback form there to let us
+        know.
       </p>
       <p className="im-muted">{APP_URL}</p>
     </>
@@ -139,16 +169,18 @@ function PrivacyContent() {
         </li>
         <li>
           <strong>Feedback messages.</strong> Text you submit through the
-          feedback button is sent to a Google Form. Google's own privacy
-          policy governs how that submission is handled on their end.
+          feedback form (in the side drawer, opened from the hamburger
+          icon) is sent to a Google Form. Google's own privacy policy
+          governs how that submission is handled on their end.
         </li>
         <li>
           <strong>Map tiles.</strong> Loading the map requests tiles, fonts,
-          and imagery from OpenFreeMap and Esri (ArcGIS World Imagery, via
-          this app's own proxy). Like any web request, those
-          providers' servers may log standard request metadata (e.g. IP
-          address) per their own policies -- this app doesn't control or see
-          that logging.
+          and imagery from OpenFreeMap, Esri (ArcGIS World Imagery, via
+          this app's own proxy), and AWS's public Terrain Tiles dataset
+          (elevation data used for the hillshade look in Classic and
+          Daily). Like any web request, those providers' servers may log
+          standard request metadata (e.g. IP address) per their own
+          policies -- this app doesn't control or see that logging.
         </li>
       </ul>
 
