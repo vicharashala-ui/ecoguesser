@@ -47,6 +47,8 @@ export async function handleTileProxy(request, pathParams, waitUntil) {
     headers: {
       'Content-Type': upstream.headers.get('Content-Type') ?? 'image/jpeg',
       'Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}, immutable`,
+      'X-Content-Type-Options': 'nosniff',
+      'Cross-Origin-Resource-Policy': 'same-origin',
     },
   });
 

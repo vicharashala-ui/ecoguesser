@@ -17,7 +17,13 @@
 export async function postScore({ uuid, playerName, date, totalPts, totalDist }) {
   const res = await fetch('/api/score', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    // X-Requested-With forces the browser into a CORS preflight for any
+    // cross-origin caller. This app never sends Access-Control-Allow-Origin
+    // for any other origin, so that preflight always fails -- a plain HTML
+    // <form> (which can't set custom headers at all) or a fetch() from some
+    // other site can no longer reach this endpoint using a visitor's own
+    // browser/IP. Checked server-side in handleScore.
+    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'ecoguesser' },
     body: JSON.stringify({
       uuid,
       player_name: playerName,

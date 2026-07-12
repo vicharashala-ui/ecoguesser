@@ -22,10 +22,33 @@ function isRateLimited(ip) {
   return false;
 }
 
+// public/_headers' security-header block doesn't reach Pages Functions (see
+// that file's header comment) -- these are the same headers, scoped to what
+// a JSON response actually needs. default-src 'none' is correct here (not
+// the app-wide CSP from _headers): a JSON body never loads scripts/styles/
+// images of its own, so there's nothing else to allow. Cross-Origin-
+// Resource-Policy: same-origin stops another site from hotlinking these
+// endpoints (e.g. an <img>/<script> tag pointed at /api/leaderboard) --
+// this app never needs to be fetched cross-origin, so there's no reason to
+// allow it.
+const API_SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'Content-Security-Policy': "default-src 'none'",
+  'Cross-Origin-Resource-Policy': 'same-origin',
+};
+
+// Strips control characters and Unicode bidi-override marks (e.g. U+202E
+// RIGHT-TO-LEFT OVERRIDE) from a display name before it's stored -- a
+// public leaderboard renders player_name verbatim, so this closes the
+// classic invisible/reversed-text spoofing trick. Doesn't touch actual
+// RTL-script letters (Arabic/Hebrew etc.), which render correctly on their
+// own via the browser's normal bidi algorithm.
+const CONTROL_AND_BIDI = /[\u0000-\u001F\u007F\u200B-\u200F\u202A-\u202E\u2066-\u2069]/g;
+
 function jsonResp(body, status) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...API_SECURITY_HEADERS },
   });
 }
 
@@ -42,6 +65,14 @@ function todayIST() {
  * return top10 for it so the client always gets a leaderboard back.
  */
 export async function handleScore(request, env) {
+  // See api.js's postScore -- any real cross-origin caller fails the CORS
+  // preflight this header forces, and a plain <form> can't set custom
+  // headers at all, so this only ever legitimately arrives from this app's
+  // own JS running on this app's own origin.
+  if (request.headers.get('X-Requested-With') !== 'ecoguesser') {
+    return jsonResp({ error: 'invalid_request' }, 400);
+  }
+
   let body;
   try {
     body = await request.json();
@@ -56,7 +87,8 @@ export async function handleScore(request, env) {
   if (!uuid || typeof uuid !== 'string') {
     return jsonResp({ error: 'invalid_uuid' }, 400);
   }
-  if (!player_name?.trim() || player_name.trim().length > 30) {
+  const cleanName = typeof player_name === 'string' ? player_name.replace(CONTROL_AND_BIDI, '').trim() : '';
+  if (!cleanName || cleanName.length > 30) {
     return jsonResp({ error: 'invalid_name' }, 400);
   }
   if (date !== todayIST()) {
@@ -76,7 +108,7 @@ export async function handleScore(request, env) {
       await env.DB.prepare(
         'INSERT INTO scores (uuid, player_name, date, total_pts, total_dist) VALUES (?,?,?,?,?)'
       )
-        .bind(uuid, player_name.trim(), date, total_pts, total_dist)
+        .bind(uuid, cleanName, date, total_pts, total_dist)
         .run();
     } catch (err) {
       // UNIQUE(uuid, date) -- this player already submitted today.
@@ -111,7 +143,7 @@ function buildLeaderboardResponse(body, isToday) {
     : 'public, max-age=86400';
   return new Response(body, {
     status: 200,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': cacheControl },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': cacheControl, ...API_SECURITY_HEADERS },
   });
 }
 

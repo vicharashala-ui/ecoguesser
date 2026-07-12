@@ -1,3 +1,35 @@
+# =============================================================================
+# Security headers -- apply to every response this file governs (the SPA
+# shell + all static assets below). Kept as one /* block so there's a single
+# source of truth; the tiered Cache-Control rules further down only ever set
+# Cache-Control/Content-Type, so there's no header-name collision with this
+# block regardless of Cloudflare's more-specific-path-wins merge order.
+#
+# NOT covered by this file: Pages Functions (/api/*, /tiles/*) -- Cloudflare
+# does not apply _headers rules to Function-generated responses (same caveat
+# already noted below for Cache-Control). Their equivalent security headers
+# are set directly in functions/_shared/handlers.js and tileProxy.js instead.
+#
+# CSP ships as Report-Only for now, not enforced -- this app is a WebGL map
+# (MapLibre GL) pulling vector tiles/glyphs from OpenFreeMap, elevation
+# tiles from an S3 bucket, and POSTing feedback to a Google Form, and a
+# static _headers file has no fast rollback if a directive is wrong. Report-
+# Only logs violations to the browser console without blocking anything, so
+# the fix is: open the deployed site, play a full round in each of Classic/
+# Blitz/Daily (including satellite view), submit a Daily score, share a
+# leaderboard image, and submit the feedback form -- with DevTools' Console
+# open the whole time. Zero "Content-Security-Policy" violation lines means
+# it's safe to rename the header below to plain `Content-Security-Policy`
+# (enforcing). Any violation line names the exact directive to widen.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openfreemap.org https://s3.amazonaws.com; connect-src 'self' https://tiles.openfreemap.org https://s3.amazonaws.com https://docs.google.com; worker-src 'self' blob:; font-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'
+
 # Cloudflare Pages' default for every static asset is
 # `Cache-Control: public, max-age=0, must-revalidate` -- the browser caches
 # the body but re-checks with the origin (via ETag/If-None-Match) on every
