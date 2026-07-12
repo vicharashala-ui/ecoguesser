@@ -1,6 +1,7 @@
 /* src/components/ConfettiBurst.css */
 /* See ConfettiBurst.jsx's header comment for why this is `position:
-   absolute; inset: 0` rather than `fixed`, and for the two-cannon layout. */
+   absolute; inset: 0` rather than `fixed`, and for the two-cannon,
+   wide-spread star burst layout. */
 
 .eg-confetti {
   position: absolute;
@@ -15,41 +16,42 @@
   z-index: 45;
 }
 
-.eg-confetti-piece {
+/* 5-point star, drawn with clip-path rather than an SVG/icon asset so size
+   and color can stay fully data-driven per piece (see Piece's inline
+   style in ConfettiBurst.jsx). */
+.eg-star-piece {
   position: absolute;
   opacity: 0;
-  animation-timing-function: cubic-bezier(0.15, 0.65, 0.3, 1);
+  clip-path: polygon(
+    50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%,
+    50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
+  );
+  animation-name: eg-star-burst;
+  animation-timing-function: cubic-bezier(0.15, 0.7, 0.25, 1);
   animation-fill-mode: forwards;
   animation-iteration-count: 1;
 }
 
-.eg-confetti-piece-l {
-  animation-name: eg-confetti-fly-l;
-}
-
-.eg-confetti-piece-r {
-  animation-name: eg-confetti-fly-r;
-}
-
-/* Bottom-left cannon -> screen center: +x (right), -y (up), plus the
-   per-piece --dx/--dy scatter set inline so pieces don't all land on the
-   exact same point. */
-@keyframes eg-confetti-fly-l {
-  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(0.5); }
-  65%  { opacity: 1; }
-  100% {
+/* Quick pop-overshoot (0% -> 12%) then a short, powerful travel out to the
+   randomized --tx/--ty target and a fade -- reads as one sharp hit rather
+   than a slow float. --tx/--ty already carry the correct sign/direction
+   per piece (set in JS), so a single keyframe covers both cannons. */
+@keyframes eg-star-burst {
+  0% {
     opacity: 0;
-    transform: translate(calc(50vw + var(--dx)), calc(-50vh + var(--dy))) rotate(var(--rot)) scale(1);
+    transform: translate(0, 0) rotate(0deg) scale(0.25);
   }
-}
-
-/* Bottom-right cannon -> screen center: mirror of the above, -x (left). */
-@keyframes eg-confetti-fly-r {
-  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(0.5); }
-  65%  { opacity: 1; }
+  12% {
+    opacity: 1;
+    transform: translate(calc(var(--tx) * 0.18), calc(var(--ty) * 0.18))
+      rotate(calc(var(--rot) * 0.2)) scale(1.3);
+  }
+  60% {
+    opacity: 1;
+  }
   100% {
     opacity: 0;
-    transform: translate(calc(-50vw + var(--dx)), calc(-50vh + var(--dy))) rotate(var(--rot)) scale(1);
+    transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.75);
   }
 }
 

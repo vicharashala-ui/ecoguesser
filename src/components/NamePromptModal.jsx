@@ -2,8 +2,9 @@
 // "Name your score" modal -- shown once, on first-ever DAILY_SUMMARY entry
 // (LS_KEYS.NAME empty). Two exits only, both terminal: Save & Submit
 // (persists the name; it flows into the POST) or Skip (POST goes out as
-// 'Player', nothing written to localStorage) -- no backdrop or Escape
-// dismiss, since neither exit is "cancel and stay."
+// a UUID-derived 'Player-XXXX' name, see game/playerName.js; nothing
+// written to localStorage) -- no backdrop or Escape dismiss, since
+// neither exit is "cancel and stay."
 
 import { useState, useId } from 'react';
 import './NamePromptModal.css';

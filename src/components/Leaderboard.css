@@ -118,16 +118,11 @@
   color: #6b7280;
 }
 
-.lb-you {
-  margin-left: 6px;
-  padding: 1px 6px;
-  border-radius: 999px;
-  background: #16a34a;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  vertical-align: middle;
+.lb-row-you {
+  border-radius: 8px;
+  outline: 2px solid #16a34a;
+  outline-offset: -1px;
+  background: rgba(22, 163, 74, 0.06);
 }
 
 .lb-actions {

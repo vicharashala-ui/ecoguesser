@@ -23,6 +23,7 @@ import NamePromptModal from './NamePromptModal.jsx';
 import { LS_KEYS, SCORING, DAILY } from '../config.js';
 import { getTodayString } from '../game/daily.js';
 import { postScore, getLeaderboard } from '../game/api.js';
+import { getSkipPlayerName } from '../game/playerName.js';
 import './DailySummary.css';
 
 const DAILY_MAX_TOTAL = SCORING.MAX_SCORE * DAILY.CATEGORIES.length; // 25,000 -- same derivation as BottomCard.jsx
@@ -81,7 +82,7 @@ export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassi
     submit(name);
   };
 
-  const handleSkip = () => submit('Player');
+  const handleSkip = () => submit(getSkipPlayerName(localStorage.getItem(LS_KEYS.UUID)));
 
   return (
     <div className="ds-screen">

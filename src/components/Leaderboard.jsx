@@ -236,19 +236,19 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
             <div className="lb-row lb-row-head">
               <span>#</span><span>Name</span><span>Score</span><span>Dist</span>
             </div>
-            {ranked.map((row, i) => (
-              <div className="lb-row" key={i}>
-                <span>{row.tableRank}</span>
-                <span className="lb-name">
-                  {row.player_name}
-                  {rank != null && row.tableRank === rank && (
-                    <span className="lb-you">You</span>
-                  )}
-                </span>
-                <span>{row.total_pts.toLocaleString()}</span>
-                <span>{Math.round(row.total_dist).toLocaleString()} km</span>
-              </div>
-            ))}
+            {ranked.map((row, i) => {
+              const isYou = rank != null && row.tableRank === rank;
+              return (
+                <div className={`lb-row${isYou ? ' lb-row-you' : ''}`} key={i}>
+                  <span>{row.tableRank}</span>
+                  <span className="lb-name">
+                    {row.player_name}
+                  </span>
+                  <span>{row.total_pts.toLocaleString()}</span>
+                  <span>{Math.round(row.total_dist).toLocaleString()} km</span>
+                </div>
+              );
+            })}
             {ranked.length === 0 && <p className="lb-empty">No scores yet today.</p>}
           </div>
 

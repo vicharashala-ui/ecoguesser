@@ -3,7 +3,8 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "https://tiles.openfreemap.org/planet"
+      "url": "https://tiles.openfreemap.org/planet",
+      "maxzoom": 10
     }
   },
   "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
@@ -84,7 +85,7 @@
       "minzoom": 3.5,
       "layout": {
         "symbol-placement": "line-center",
-        "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], " ", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
         "text-font": ["Noto Sans Italic"],
         "text-letter-spacing": 0.2,
         "text-max-width": 5,
@@ -104,7 +105,7 @@
       "filter": ["match", ["geometry-type"], ["MultiPoint", "Point"], true, false],
       "minzoom": 3.5,
       "layout": {
-        "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], "\n", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
         "text-font": ["Noto Sans Italic"],
         "text-letter-spacing": 0.2,
         "text-max-width": 5,
@@ -126,7 +127,7 @@
       "layout": {
         "symbol-placement": "line",
         "symbol-spacing": 350,
-        "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], " ", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
         "text-font": ["Noto Sans Italic"],
         "text-letter-spacing": 0.2,
         "text-max-width": 5,
@@ -146,7 +147,7 @@
       "filter": ["match", ["get", "class"], ["peak", "volcano"], true, false],
       "minzoom": 3.5,
       "layout": {
-        "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], "\n", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
         "text-font": ["Noto Sans Italic"],
         "text-anchor": "bottom",
         "text-offset": [0, -0.3],
@@ -180,7 +181,7 @@
       "minzoom": 4,
       "filter": ["==", ["get", "class"], "city"],
       "layout": {
-        "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], "\n", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
         "text-font": ["Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 4, 10, 8, 15],
         "text-offset": [0, 0.8],
@@ -215,7 +216,7 @@
       "minzoom": 6,
       "filter": ["==", ["get", "class"], "town"],
       "layout": {
-        "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], "\n", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
         "text-font": ["Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 7, 9, 10, 13],
         "text-offset": [0, 0.8],
@@ -250,7 +251,7 @@
       "minzoom": 8,
       "filter": ["==", ["get", "class"], "village"],
       "layout": {
-        "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], "\n", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
         "text-font": ["Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 9, 8, 11, 11],
         "text-offset": [0, 0.8],
@@ -271,7 +272,7 @@
       "minzoom": 9,
       "filter": ["==", ["get", "class"], "hamlet"],
       "layout": {
-        "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], "\n", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
         "text-font": ["Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 9, 7, 11, 10],
         "text-offset": [0, 0.8],
@@ -292,7 +293,7 @@
       "minzoom": 2,
       "filter": ["==", ["get", "class"], "country"],
       "layout": {
-        "text-field": ["case", ["has", "name:nonlatin"], ["concat", ["get", "name:latin"], "\n", ["get", "name:nonlatin"]], ["coalesce", ["get", "name_en"], ["get", "name"]]],
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
         "text-font": ["Noto Sans Bold"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 11, 6, 17]
       },
