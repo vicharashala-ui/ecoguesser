@@ -33,14 +33,26 @@
   right: 0;
   bottom: 0;
   z-index: 40;
-  height: var(--eg-nav-height, 64px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  display: flex;
-  background: #f8f6f1;
   isolation: isolate;
   transform: translateZ(0);
-  border-top: 1px solid rgba(17, 24, 39, 0.08);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
+  /* Outer container owns the safe-area strip (the home-indicator/gesture
+     area below the actual tab row) and keeps it solid black -- previously
+     this shared .eg-nav-tabs' cream background via padding-bottom, which
+     read as the tab bar oddly "extending" into that area instead of a
+     neutral black strip like native apps use. Total height (tab row +
+     safe area) is unchanged, so every other component's
+     `var(--eg-nav-height) + env(safe-area-inset-bottom)` bottom-offset
+     calc still lines up correctly against this container. */
+  background: #000000;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.eg-nav-tabs {
+  height: var(--eg-nav-height, 64px);
+  display: flex;
+  background: #f8f6f1;
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
 }
 
 .eg-nav-tab {

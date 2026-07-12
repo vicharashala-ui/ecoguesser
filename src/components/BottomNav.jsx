@@ -62,21 +62,23 @@ const TABS = [
 export default function BottomNav({ activeTab, onTabChange }) {
   return (
     <nav className="eg-bottom-nav" aria-label="Game mode">
-      {TABS.map(({ id, label, Icon }) => {
-        const active = activeTab === id;
-        return (
-          <button
-            key={id}
-            type="button"
-            className={`eg-nav-tab${active ? ' eg-nav-tab-active' : ''}`}
-            aria-current={active ? 'page' : undefined}
-            onClick={() => onTabChange(id)}
-          >
-            <Icon size={active ? 24 : 22} />
-            <span>{label}</span>
-          </button>
-        );
-      })}
+      <div className="eg-nav-tabs">
+        {TABS.map(({ id, label, Icon }) => {
+          const active = activeTab === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              className={`eg-nav-tab${active ? ' eg-nav-tab-active' : ''}`}
+              aria-current={active ? 'page' : undefined}
+              onClick={() => onTabChange(id)}
+            >
+              <Icon size={active ? 24 : 22} />
+              <span>{label}</span>
+            </button>
+          );
+        })}
+      </div>
     </nav>
   );
 }
