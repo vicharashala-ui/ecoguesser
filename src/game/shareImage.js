@@ -29,6 +29,18 @@ export async function shareNodeAsImage(node, { filename, shareTitle, shareText }
     // transparent -- most share sheets/viewers render transparent PNG
     // regions as black instead of the app's actual page background.
     backgroundColor: '#f8f6f1',
+    // The live card is visually scaled down via CSS `transform: scale()` to
+    // fit narrow phone screens (DailyRecap.jsx's useCardScale), but html-to-
+    // image sizes the capture canvas off the node's untransformed
+    // clientWidth/clientHeight -- always the full CARD_DESIGN_WIDTH box,
+    // regardless of the live scale. Left as-is, the shrunk content only
+    // fills the top-left corner of that full-size box, leaving the
+    // scaled-away area as blank canvas (filled with backgroundColor above).
+    // Overriding `transform` on the CLONE (this only touches html-to-image's
+    // internal copy, never the live on-screen node) removes the shrink, so
+    // the capture always renders the card at its full native size -- also
+    // sharper than exporting the shrunk-down version would have been.
+    style: { transform: 'none' },
   });
   if (!blob) return;
 
