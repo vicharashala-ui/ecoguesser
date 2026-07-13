@@ -49,10 +49,27 @@
 }
 
 .eg-nav-tabs {
+  position: relative; /* anchors .eg-nav-indicator */
   height: var(--eg-nav-height, 64px);
   display: flex;
   background: #f8f6f1;
   border-top: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+/* Slides between tabs on switch. Bouncy overshoot easing matches
+   MapContainer.css's pin-drop -- reusing the app's one established "juicy"
+   motion signature rather than inventing a new curve. width/transform are
+   set inline per-render (see BottomNav.jsx) since they depend on tab count
+   and index; only the static visual properties live here. */
+.eg-nav-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: #f59e0b;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .eg-nav-tab {
@@ -79,4 +96,18 @@
 .eg-nav-tab-active {
   color: #f59e0b;
   transform: translateY(-1px);
+}
+
+/* Tap feedback on any tab (including the already-active one) -- overrides
+   .eg-nav-tab-active's translateY for the instant of the press, then
+   releases back to it (or to the plain resting state) automatically. */
+.eg-nav-tab:active {
+  transform: scale(0.92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eg-nav-tab,
+  .eg-nav-indicator {
+    transition: none;
+  }
 }

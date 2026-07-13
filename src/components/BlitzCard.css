@@ -19,11 +19,23 @@
 }
 
 .bz-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 4px;
   padding: 8px 12px;
   border-radius: 10px;
   font-weight: 700;
   font-size: 14px;
+  /* Same overshoot-bounce easing as MapContainer.css's pin-drop and
+     BottomNav.css's tab indicator -- this app's established "juicy" motion
+     signature. Plays on mount, which happens fresh every round (BlitzCard.jsx
+     keys this element on site.id), not just the first reveal. */
+  animation: bz-badge-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bz-badge svg {
+  flex-shrink: 0;
 }
 
 .bz-badge-correct {
@@ -34,4 +46,16 @@
 .bz-badge-wrong {
   background: rgba(220, 38, 38, 0.1);
   color: #dc2626;
+}
+
+@keyframes bz-badge-pop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  60%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bz-badge {
+    animation: none;
+  }
 }

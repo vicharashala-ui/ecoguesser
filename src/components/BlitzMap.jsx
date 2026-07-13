@@ -26,6 +26,20 @@ import { LAYER_IDS, MAP_CONFIG, BARE_VISUAL } from '../config.js';
 import { TERRAIN_PLACE_LABEL_IDS } from '../hooks/useMapState.js';
 import './BlitzMap.css';
 
+// Same flame glyph as BottomNav.jsx's Daily-tab icon -- duplicated rather
+// than imported, per this codebase's no-shared-icon-module convention (each
+// component file owns its own small inline SVGs).
+function IconFlame({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 21c-3.5 0-6-2.2-6-5.6 0-2 1-3.6 1-3.6s.4 1.4 1.4 2c-.3-2.6.6-5.4 3-7.3.4 1.8 1.3 2.8 2.3 3.7 1.7 1.5 2.3 3.1 2.3 5.2 0 3.4-2.5 5.6-4 5.6Z"
+        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 // Derives Blitz's flat look from the same map-style.json Classic/Daily
 // use, applied to the fetched style JSON before MapContainer.jsx
 // constructs the map from it -- see MapContainer's styleTransform doc
@@ -101,7 +115,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   );
 
   const {
-    roundState, site, selectedState, result, streak,
+    roundState, site, selectedState, result, streak, bestStreak,
     handleStateClick, handleConfirm, handleNextSite, handleSkip,
   } = useBlitzRound(sitePool);
 
@@ -114,6 +128,24 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // Tracked during REVEALING so RecenterButton can sit above the expanded
   // card instead of being hidden by it.
   const [cardHeight, setCardHeight] = useState(null);
+
+  // Drives the streak card's feedback animation: 'up' on a correct guess
+  // (streak increases), 'break' when a guess resets a live streak back to
+  // 0. Compared against the previous streak value via a ref rather than
+  // derived from `result.isCorrect` directly, since that would also fire
+  // on a wrong guess made with no streak yet to break (0 -> 0, nothing
+  // worth animating). Read by the streak-value <span> below, which is
+  // additionally keyed on `streak` so each change gets a fresh element and
+  // therefore always replays its animation, even if the same class name
+  // repeats on two consecutive changes.
+  const [streakAnim, setStreakAnim] = useState(null); // 'up' | 'break' | null
+  const prevStreakRef = useRef(streak);
+  useEffect(() => {
+    const prev = prevStreakRef.current;
+    if (streak > prev) setStreakAnim('up');
+    else if (streak === 0 && prev > 0) setStreakAnim('break');
+    prevStreakRef.current = streak;
+  }, [streak]);
 
   function handleMapClick(lat, lng) {
     const map = mapRef.current;
@@ -285,18 +317,39 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
 
   return (
     <div style={style}>
-      <div className="bz-layer-panel">
-        <label className="eg-toggle">
-          <input
-            type="checkbox"
-            className="eg-toggle-input"
-            checked={politicalNames}
-            disabled={!mapReady}
-            onChange={() => setPoliticalNames(!politicalNames)}
-          />
-          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-          State Names
-        </label>
+      <div className="bz-top-right-stack">
+        {/* Session streak -- tracked by useBlitzRound.js the whole time but
+            previously never surfaced in the UI. Always mounted (not gated
+            on streak > 0) so its position never jumps mid-session; the
+            flame icon itself communicates "no streak yet" via its own
+            gray-vs-lit color transition. */}
+        <div className="bz-streak-card" aria-live="polite">
+          <div className="bz-streak-main">
+            <span className={`bz-streak-flame${streak > 0 ? ' bz-flame-active' : ''}`}>
+              <IconFlame />
+            </span>
+            <span
+              key={streak}
+              className={`bz-streak-value${streakAnim === 'up' ? ' bz-streak-pop' : streakAnim === 'break' ? ' bz-streak-break' : ''}`}
+            >
+              {streak}
+            </span>
+          </div>
+          {bestStreak > 0 && <span className="bz-streak-best">Best {bestStreak}</span>}
+        </div>
+        <div className="bz-layer-panel">
+          <label className="eg-toggle">
+            <input
+              type="checkbox"
+              className="eg-toggle-input"
+              checked={politicalNames}
+              disabled={!mapReady}
+              onChange={() => setPoliticalNames(!politicalNames)}
+            />
+            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
+            State Names
+          </label>
+        </div>
       </div>
 
       {sitePool.length === 0 && (

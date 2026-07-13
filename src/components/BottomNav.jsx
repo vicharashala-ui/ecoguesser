@@ -60,9 +60,21 @@ const TABS = [
 ];
 
 export default function BottomNav({ activeTab, onTabChange }) {
+  const activeIndex = Math.max(0, TABS.findIndex((t) => t.id === activeTab));
+
   return (
     <nav className="eg-bottom-nav" aria-label="Game mode">
       <div className="eg-nav-tabs">
+        {/* Sliding active-tab indicator -- width is 100%/tab-count (computed
+            here, not hardcoded, so it stays correct if TABS ever gains/loses
+            an entry) and transform: translateX moves it to the active tab's
+            slot. Purely visual (aria-hidden, pointer-events:none in CSS) --
+            the buttons below remain the real tab controls. */}
+        <span
+          className="eg-nav-indicator"
+          aria-hidden="true"
+          style={{ width: `${100 / TABS.length}%`, transform: `translateX(${activeIndex * 100}%)` }}
+        />
         {TABS.map(({ id, label, Icon }) => {
           const active = activeTab === id;
           return (

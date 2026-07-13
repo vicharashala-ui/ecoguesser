@@ -11,11 +11,11 @@
 // showHintRegion), never the state name itself, so `site.state`/
 // `correctStates` text may only appear once roundState === 'REVEALING'.
 //
-// Expanded card is deliberately compact: no Streak line/divider (Blitz's
-// in-session streak is still tracked by useBlitzRound.js, just not
-// surfaced here), and the state name is only shown once -- skipped in the
-// meta row on a wrong guess since the badge below already names it
-// ("Wrong -- it's in ...").
+// Expanded card is deliberately compact: no Streak line/divider (the
+// session streak lives in BlitzMap.jsx's persistent top-right streak card
+// instead, visible across the whole round rather than just the reveal), and
+// the state name is only shown once -- skipped in the meta row on a wrong
+// guess since the badge below already names it ("Wrong -- it's in ...").
 
 import { useId, forwardRef } from 'react';
 import { CATEGORY_META } from '../config.js';
@@ -67,6 +67,24 @@ function IconSkip({ size = 18 }) {
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M4.5 6l7 6-7 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M13 6l7 6-7 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// Badge icons -- correct/wrong prefix glyphs, same inline-SVG convention as
+// every icon above.
+function IconCheck({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconCross({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -182,8 +200,14 @@ const BlitzCard = forwardRef(function BlitzCard({
             </div>
           )}
 
-          <div className={`bz-badge ${result.isCorrect ? 'bz-badge-correct' : 'bz-badge-wrong'}`}>
-            {result.isCorrect ? 'Correct!' : `Wrong — it's in ${result.correctStates.join(', ')}`}
+          {/* Keyed on site.id so a new round always remounts it -- same
+              fresh-play-on-every-round convention as ConfettiBurst.jsx and
+              BottomCard.jsx's .bc-celebrate -- ensuring the pop-in below
+              replays even if two consecutive rounds land on the same
+              correct/wrong outcome. */}
+          <div key={site.id} className={`bz-badge ${result.isCorrect ? 'bz-badge-correct' : 'bz-badge-wrong'}`}>
+            {result.isCorrect ? <IconCheck /> : <IconCross />}
+            <span>{result.isCorrect ? 'Correct!' : `Wrong — it's in ${result.correctStates.join(', ')}`}</span>
           </div>
 
           <div className="bc-actions">
