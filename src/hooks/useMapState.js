@@ -91,6 +91,29 @@ function applyTerrainVisual(map, on, originalPaint) {
 
 const EMPTY_FEATURE_COLLECTION = { type: 'FeatureCollection', features: [] };
 
+// Classic/Daily/Blitz are three separate MapLibre instances (kept mounted
+// via display:none, never torn down -- see App.jsx), and each one's onLoad
+// independently needs india-states.topojson, india-boundary.geojson, and
+// india-state-labels.geojson. Without this cache, opening all three tabs in
+// one session re-fetches AND re-parses (JSON.parse + topoFeature's arc
+// expansion for the states file) all ~345KB gzip of shared static data up
+// to 3 times over -- real main-thread work on every tab switch, not just
+// wasted bytes (HTTP cache already dedupes the network fetch itself, but
+// does nothing for the JS-side parse). Keyed by URL, caches the resolved
+// (already-parsed) value so every map instance after the first gets it
+// synchronously-ish, with no repeat fetch or parse. A rejected fetch is
+// evicted rather than cached, so a later mount can retry instead of being
+// stuck with a permanent failure from, say, one flaky first load.
+const sharedGeoJsonCache = new Map();
+function loadSharedGeoJsonOnce(url, parse) {
+  if (!sharedGeoJsonCache.has(url)) {
+    const promise = fetch(url).then((r) => r.json()).then(parse);
+    promise.catch(() => sharedGeoJsonCache.delete(url));
+    sharedGeoJsonCache.set(url, promise);
+  }
+  return sharedGeoJsonCache.get(url);
+}
+
 // india-states.geojson (340KB gzip -- every shared border between two
 // adjacent states was stored twice, once per state) is generated into
 // india-states.topojson by scripts/convertStatesTopo.js (209KB gzip, shared
@@ -102,12 +125,10 @@ const EMPTY_FEATURE_COLLECTION = { type: 'FeatureCollection', features: [] };
 // state border lines and labels, never mapReady or pin placement further
 // down in onLoad.
 function loadIndiaStatesTopology(map) {
-  fetch('/india-states.topojson')
-    .then((r) => r.json())
-    .then((topology) => {
-      const geojson = topoFeature(topology, topology.objects['india-states']);
-      map.getSource('india-states')?.setData(geojson);
-    })
+  loadSharedGeoJsonOnce('/india-states.topojson', (topology) =>
+    topoFeature(topology, topology.objects['india-states'])
+  )
+    .then((geojson) => map.getSource('india-states')?.setData(geojson))
     .catch(() => {}); // Borders/labels just don't appear; nothing else depends on this.
 }
 
@@ -483,8 +504,14 @@ export function useMapState(mapRef, mode) {
       // state's main landmass rather than an offshore island or the sea.
       map.addSource('india-state-labels', {
         type: 'geojson',
-        data: '/india-state-labels.geojson',
+        // Real data streams in a moment later, same fetch-once-share-across-
+        // instances pattern as india-states above (this file is small, but
+        // there's no reason to special-case it out of the shared cache).
+        data: EMPTY_FEATURE_COLLECTION,
       });
+      loadSharedGeoJsonOnce('/india-state-labels.geojson', (geojson) => geojson)
+        .then((geojson) => map.getSource('india-state-labels')?.setData(geojson))
+        .catch(() => {});
 
       map.addLayer({
         id: LAYER_IDS.STATE_LABELS, type: 'symbol', source: 'india-state-labels',
@@ -587,7 +614,13 @@ export function useMapState(mapRef, mode) {
         }, 'boundary_disputed');
       }
 
-      map.addSource('india-boundary', { type: 'geojson', data: '/india-boundary.geojson' });
+      // Data streams in via the shared cache below, same reasoning as
+      // india-states/india-state-labels above -- a raw URL here would let
+      // MapLibre fetch it itself, once per map instance, with no dedup.
+      map.addSource('india-boundary', { type: 'geojson', data: EMPTY_FEATURE_COLLECTION });
+      loadSharedGeoJsonOnce('/india-boundary.geojson', (geojson) => geojson)
+        .then((geojson) => map.getSource('india-boundary')?.setData(geojson))
+        .catch(() => {});
 
       // Casing added immediately before INDIA_BOUNDARY_LINE (both appended in
       // order below, nothing else renders between them) so it sits directly
