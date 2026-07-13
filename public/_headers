@@ -111,9 +111,6 @@
 /map-style.json
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
-/map-style-ofm.json
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
 # Per-site boundary polygons (BottomCard's "Site Boundary" toggle) -- same
 # tier as above, same reasoning, just a directory of 837 files instead of
 # a handful of named ones. Individually small enough that compression

@@ -32,6 +32,9 @@
       "id": "hypsometric-tint",
       "type": "color-relief",
       "source": "terrain-dem",
+      "layout": {
+        "visibility": "none"
+      },
       "paint": {
         "color-relief-color": [
           "interpolate",
@@ -78,6 +81,9 @@
       "id": "base-hillshade",
       "type": "hillshade",
       "source": "terrain-dem",
+      "layout": {
+        "visibility": "none"
+      },
       "paint": {
         "hillshade-illumination-direction": 335,
         "hillshade-illumination-anchor": "viewport",

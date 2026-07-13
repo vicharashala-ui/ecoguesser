@@ -2,11 +2,13 @@ export const FEEDBACK_FORM_URL = import.meta.env.VITE_FEEDBACK_FORM_URL;
 export const FEEDBACK_ENTRY_ID = import.meta.env.VITE_FEEDBACK_ENTRY_ID;
 export const APP_URL   = 'https://ecoguesser.pages.dev';
 export const MAP_STYLE = '/map-style.json';
-// Blitz keeps the pre-terrain plain OFM style since state-fill/outline
-// highlighting reads worse over the terrain/hillshade look (Classic/Daily
-// keep MAP_STYLE). Static file, not derived from MAP_STYLE at runtime, so
-// it can't drift if map-style.json changes later.
-export const MAP_STYLE_BLITZ = '/map-style-ofm.json';
+// Blitz used to load a second, hand-maintained static style file
+// (map-style-ofm.json) since state-fill/outline highlighting reads worse
+// over the terrain/hillshade look. That file had quietly drifted stale
+// (missing bilingual name:nonlatin label support added to map-style.json
+// later) without anything surfacing it. Retired in favor of BlitzMap.jsx's
+// blitzStyleTransform, which derives the same flat look from MAP_STYLE at
+// runtime -- one source of truth, can't drift silently again.
 
 export const MAP_CONFIG = {
   INDIA_BOUNDS:       [[68.1,6.4],[97.4,37.1]],
@@ -18,12 +20,8 @@ export const MAP_CONFIG = {
   // Daily AND Classic both use this now -- state names stay hidden until
   // zoomed in this far, with no manual toggle in either mode. Blitz is
   // unaffected (its own "State Names" toggle shows/hides immediately,
-  // independent of zoom). Set to MIN_ZOOM (the map's own zoom floor) so
-  // state labels -- the coarsest place unit on the map -- render before
-  // every place_* label layer in map-style.json/map-style-ofm.json rather
-  // than after them (was 5, tied with place_city_marker and a full level
-  // behind place_city_label at 4).
-  STATE_LABEL_MIN_ZOOM: 3,
+  // independent of zoom).
+  STATE_LABEL_MIN_ZOOM: 5,
   // Portrait viewports are much taller than INDIA_BOUNDS' aspect ratio, so
   // fitBounds always has vertical slack left over after the width fits.
   // Uneven top/bottom padding biases where that slack goes -- less above
@@ -170,6 +168,39 @@ export const BASE_VISUAL = {
   // at every zoom stop, keeping the halo effect intact when zoomed in.
   BOUNDARY_CASING_WIDTH_EXPR: ['interpolate', ['linear'], ['zoom'], 3, 4, 5, 4.5, 12, 6.5],
   INDIA_BOUNDARY_CASING_WIDTH: 5,
+};
+
+// "Terrain off" palette -- Classic/Daily's Terrain toggle switches to this,
+// and BlitzMap.jsx's blitzStyleTransform bakes it in permanently (Blitz has
+// no Terrain toggle). Originally hand-copied from a second static style
+// file (map-style-ofm.json) that Blitz used to load on its own; that file
+// had quietly gone stale -- missing buildMapStyle.js's later bilingual
+// (name:nonlatin) text-field support -- so it was retired in favor of this
+// single constant applied at runtime. See useMapState.js's
+// applyTerrainVisual for how "terrain on" restores (a mix of BASE_VISUAL
+// and the live style's own captured original paint) and BlitzMap.jsx for
+// how Blitz applies this same object before the map is even constructed.
+export const BARE_VISUAL = {
+  BACKGROUND: '#ffffff',
+  WATER_COLOR: 'rgb(158,189,255)',
+  WATER_OPACITY: 0.6,
+  // The bare/Blitz look has no ocean exclusion -- with hypsometric-tint
+  // hidden there's no bathymetry gradient to show through underneath, so
+  // the ocean needs to render as flat water like every other body of water.
+  WATER_FILTER: ['!=', ['get', 'brunnel'], 'tunnel'],
+  BOUNDARY_COLOR: 'hsl(248,1%,41%)',
+  BOUNDARY_OPACITY_EXPR: ['interpolate', ['linear'], ['zoom'], 0, 0.4, 4, 1],
+  BOUNDARY_WIDTH_EXPR:   ['interpolate', ['linear'], ['zoom'], 3, 1, 5, 1.2, 12, 3],
+  RIVER_COLOR: '#a0c8f0',
+  // place_city/town/village/hamlet_label all share this exact paint object
+  // -- dark text/light halo, inverse of Classic/Daily's white-text/
+  // dark-halo (buildMapStyle.js's PLACE_TEXT_PAINT).
+  PLACE_LABEL_PAINT: {
+    'text-color': '#1f2937',
+    'text-halo-color': 'rgba(255,255,255,0.85)',
+    'text-halo-width': 1.3,
+    'text-halo-blur': 0.4,
+  },
 };
 
 export const LAYER_IDS = {

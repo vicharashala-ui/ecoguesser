@@ -22,8 +22,64 @@ import {
 } from '../game/blitzHighlight.js';
 import { siteMatchesFilter, DEFAULT_FILTERS, getRegionHintStates } from '../utils/filters.js';
 import { recordBlitzResult } from '../game/stats.js';
-import { LAYER_IDS, MAP_CONFIG, MAP_STYLE_BLITZ } from '../config.js';
+import { LAYER_IDS, MAP_CONFIG, BARE_VISUAL } from '../config.js';
+import { TERRAIN_PLACE_LABEL_IDS } from '../hooks/useMapState.js';
 import './BlitzMap.css';
+
+// Derives Blitz's flat look from the same map-style.json Classic/Daily
+// use, applied to the fetched style JSON before MapContainer.jsx
+// constructs the map from it -- see MapContainer's styleTransform doc
+// comment for why this has to happen pre-construction rather than via
+// setPaintProperty in onLoad (the maxzoom cap specifically, since a vector
+// source's maxzoom has no runtime setter; the paint overrides could
+// technically happen post-load too, but doing them here avoids a one-frame
+// flash of the earthy Classic/Daily palette before switching to bare).
+// Used to be a second, hand-maintained static file (map-style-ofm.json) --
+// see config.js's MAP_STYLE comment for why that was retired.
+function blitzStyleTransform(styleJson) {
+  const style = JSON.parse(JSON.stringify(styleJson)); // plain data, safe to round-trip
+
+  // Blitz is a broad country/state view -- no need for street-level tile
+  // detail. Immutable after construction (MapLibre has no runtime setter
+  // for a vector source's maxzoom), so this has to happen here.
+  if (style.sources.openmaptiles) style.sources.openmaptiles.maxzoom = 10;
+
+  // Dropped entirely, not just hidden -- MapLibre fetches a geojson
+  // source's full data as soon as it's registered regardless of layer
+  // visibility, so removing physical-features here is what actually saves
+  // that request for a mode that never renders it. terrain-dem's tiles are
+  // already skipped by hypsometric-tint/base-hillshade's visibility:none
+  // default in map-style.json, but there's no reason to carry the unused
+  // source either.
+  const dropLayerIds = new Set(['hypsometric-tint', 'base-hillshade', 'physical_feature_label']);
+  style.layers = style.layers.filter((l) => !dropLayerIds.has(l.id));
+  delete style.sources['terrain-dem'];
+  delete style.sources['physical-features'];
+
+  // Same flat palette Classic/Daily's Terrain toggle switches to when off
+  // -- see BARE_VISUAL in config.js for why these values live there and
+  // aren't duplicated here.
+  const paintOverrides = {
+    background: { 'background-color': BARE_VISUAL.BACKGROUND },
+    water: { 'fill-color': BARE_VISUAL.WATER_COLOR, 'fill-opacity': BARE_VISUAL.WATER_OPACITY },
+    boundary_2: {
+      'line-color': BARE_VISUAL.BOUNDARY_COLOR,
+      'line-opacity': BARE_VISUAL.BOUNDARY_OPACITY_EXPR,
+      'line-width': BARE_VISUAL.BOUNDARY_WIDTH_EXPR,
+    },
+    boundary_disputed: { 'line-color': BARE_VISUAL.BOUNDARY_COLOR, 'line-width': BARE_VISUAL.BOUNDARY_WIDTH_EXPR },
+    waterway_river: { 'line-color': BARE_VISUAL.RIVER_COLOR },
+    waterway_other: { 'line-color': BARE_VISUAL.RIVER_COLOR },
+  };
+  for (const id of TERRAIN_PLACE_LABEL_IDS) paintOverrides[id] = { ...BARE_VISUAL.PLACE_LABEL_PAINT };
+
+  for (const layer of style.layers) {
+    if (paintOverrides[layer.id]) layer.paint = { ...layer.paint, ...paintOverrides[layer.id] };
+    if (layer.id === 'water') layer.filter = BARE_VISUAL.WATER_FILTER;
+  }
+
+  return style;
+}
 
 // fitPadding for zoomToBoundary() once "Show Boundary" is pressed; `bottom`
 // is computed per round from cardRef's measured height, same constants
@@ -247,7 +303,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
         <div className="bz-empty-pool">No sites match these filters.</div>
       )}
 
-      <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={null} mapStyle={MAP_STYLE_BLITZ} />
+      <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={null} styleTransform={blitzStyleTransform} />
       <RecenterButton
         mapRef={mapRef}
         style={

@@ -78,7 +78,9 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
     mapLoadSlow,
     satellite,
     satelliteUnavailable,
+    terrain,
     setSatellite,
+    setTerrain,
   } = useMapState(mapRef, 'daily');
 
   const {
@@ -197,9 +199,9 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
 
   return (
     <div style={style} className="eg-daily-map">
-      {/* Top-right stack: round timer with the layer panel (Satellite only --
-          Daily forces state borders on at all times via useMapState) sitting
-          directly below it. */}
+      {/* Top-right stack: round timer with the layer panel (Terrain +
+          Satellite -- Daily forces state borders on at all times via
+          useMapState) sitting directly below it. */}
       <div className="dm-top-right-stack">
         <div className="dm-timer-card">
           {(roundState === 'READING' || roundState === 'PLACING') && (
@@ -225,6 +227,19 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
           </div>
         </div>
         <div className="dm-layer-panel">
+          <label className="eg-toggle">
+            {/* Clickable but inert while satellite is on -- same rationale
+                as ClassicMap.jsx's Terrain toggle. */}
+            <input
+              type="checkbox"
+              className="eg-toggle-input"
+              checked={terrain}
+              disabled={!mapReady}
+              onChange={() => setTerrain(!terrain)}
+            />
+            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
+            Terrain
+          </label>
           <label className="eg-toggle">
             <input
               type="checkbox"

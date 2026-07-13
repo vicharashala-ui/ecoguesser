@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>EcoGuesser</title>
 
     <!-- Preconnect to the two third-party origins MapLibre fetches from on
@@ -23,6 +23,21 @@
     <link rel="dns-prefetch" href="https://tiles.openfreemap.org" />
     <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin />
     <link rel="dns-prefetch" href="https://s3.amazonaws.com" />
+
+    <!-- map-style.json itself, not just the origins above: MapContainer.jsx
+         fetches this in application code now (style is fetched-then-patched
+         via styleTransform before the map is constructed, rather than handed
+         to MapLibre as a URL), so the request only starts once React has
+         mounted and that effect has run -- later than it needs to.
+         crossorigin="anonymous" is required even though this is same-origin:
+         per spec, a preload's credentials mode is "omit" unless crossorigin
+         is present (any value), while a plain fetch() defaults to
+         "same-origin" credentials -- omitting it here caused Chrome to treat
+         this as a mode mismatch and issue the request twice (confirmed via
+         a real preload-vs-fetch console warning during verification), the
+         opposite of the intended effect. fetchpriority nudges it ahead of
+         same-priority-class requests it'd otherwise queue behind. -->
+    <link rel="preload" href="/map-style.json" as="fetch" crossorigin="anonymous" fetchpriority="high" />
 
     <!-- Favicon: multi-res .ico covers old browsers; PNG/SVG variants below
          are what modern Chrome/Firefox tab bars and bookmarks actually

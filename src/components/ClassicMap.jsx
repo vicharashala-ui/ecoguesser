@@ -62,8 +62,8 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
   } = useClassicRound(sitePool);
 
   const {
-    political, satellite, satelliteUnavailable, mapReady,
-    setPolitical, setSatellite, setDifficulty,
+    political, satellite, satelliteUnavailable, mapReady, terrain,
+    setPolitical, setSatellite, setDifficulty, setTerrain,
   } = useMapState(mapRef, 'classic');
 
   const cardRef = useRef(null); // measures BottomCard's height for reveal fitBounds padding
@@ -198,6 +198,15 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
           <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
           Borders
+        </label>
+        <label className="eg-toggle">
+          {/* Not disabled while satellite is on -- it's clickable but inert
+              then (satellite already overrides the same layers Terrain
+              controls), so the preference is ready the instant satellite
+              turns back off instead of needing to be re-set. */}
+          <input type="checkbox" className="eg-toggle-input" checked={terrain} disabled={!mapReady} onChange={(e) => setTerrain(e.target.checked)} />
+          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
+          Terrain
         </label>
         <label className="eg-toggle">
           <input type="checkbox" className="eg-toggle-input" checked={satellite} disabled={!mapReady} onChange={(e) => setSatellite(e.target.checked)} />

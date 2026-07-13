@@ -2,9 +2,92 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { feature as topoFeature } from 'topojson-client';
 import {
   MAP_CONFIG, LAYER_IDS, SATELLITE_TILES, SATELLITE_ATTRIBUTION,
-  SATELLITE_VISUAL, BASE_VISUAL, TERRAIN_TILES, TERRAIN_ENCODING,
+  SATELLITE_VISUAL, BASE_VISUAL, BARE_VISUAL, TERRAIN_TILES, TERRAIN_ENCODING,
   DIFFICULTY_DEFAULTS, LS_KEYS,
 } from '../config.js';
+
+// The 4 place-label layers that switch paint (not visibility) between
+// BASE_VISUAL's white-text/dark-halo and BARE_VISUAL's dark-text/light-halo
+// treatment when the Terrain toggle flips -- see applyTerrainVisual below.
+export const TERRAIN_PLACE_LABEL_IDS = ['place_city_label', 'place_town_label', 'place_village_label', 'place_hamlet_label'];
+export const TERRAIN_PLACE_LABEL_PROPS = ['text-color', 'text-halo-color', 'text-halo-width', 'text-halo-blur'];
+
+// One-time capture of the live style's own baked-in paint for the layers
+// applyTerrainVisual doesn't have a BASE_VISUAL equivalent for (water's
+// fill-color/opacity/filter and the 4 place-label layers -- boundary_2/
+// boundary_disputed/waterway_river/waterway_other/background all already
+// have an active BASE_VISUAL restore path via restyleBordersAndRivers, so
+// don't need capturing here). Reading it straight from the loaded style
+// instead of hand-transcribing into config.js means this can never drift
+// out of sync with public/map-style.json.
+function captureOriginalPaint(map) {
+  const out = {};
+  if (map.getLayer('water')) {
+    out.water = {
+      'fill-color':   map.getPaintProperty('water', 'fill-color'),
+      'fill-opacity': map.getPaintProperty('water', 'fill-opacity'),
+      filter: map.getFilter('water'),
+    };
+  }
+  for (const id of TERRAIN_PLACE_LABEL_IDS) {
+    if (!map.getLayer(id)) continue;
+    out[id] = {};
+    for (const prop of TERRAIN_PLACE_LABEL_PROPS) out[id][prop] = map.getPaintProperty(id, prop);
+  }
+  return out;
+}
+
+// Swaps hypsometric-tint/base-hillshade visibility plus the handful of
+// shared-layer paint properties that define "the Blitz look" (background,
+// water, boundary_2/disputed, waterway rivers, place labels) between their
+// terrain-on and BARE_VISUAL terrain-off values. Boundary/waterway/
+// background terrain-on values reuse BASE_VISUAL -- the same constants
+// restyleBordersAndRivers already restores them to on satellite-off, so
+// calling this after that function is a harmless redundant write when
+// terrain is on, and the deciding write when terrain is off. Water and
+// place labels have no such existing restore path, so their terrain-on
+// values come from originalPaint (captureOriginalPaint's snapshot) instead.
+// Callers must only invoke this while satellite is off -- these same
+// layers are under SATELLITE_VISUAL's control while it's on.
+function applyTerrainVisual(map, on, originalPaint) {
+  const orig = originalPaint || {};
+
+  for (const id of ['hypsometric-tint', 'base-hillshade']) {
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
+  }
+
+  if (map.getLayer('background')) {
+    map.setPaintProperty('background', 'background-color', on ? BASE_VISUAL.BACKGROUND : BARE_VISUAL.BACKGROUND);
+  }
+
+  if (map.getLayer('water')) {
+    map.setPaintProperty('water', 'fill-color', on ? orig.water?.['fill-color'] : BARE_VISUAL.WATER_COLOR);
+    map.setPaintProperty('water', 'fill-opacity', on ? orig.water?.['fill-opacity'] : BARE_VISUAL.WATER_OPACITY);
+    map.setFilter('water', on ? orig.water?.filter : BARE_VISUAL.WATER_FILTER);
+  }
+
+  for (const id of ['boundary_2', 'boundary_disputed']) {
+    if (!map.getLayer(id)) continue;
+    map.setPaintProperty(id, 'line-color', on ? BASE_VISUAL.BOUNDARY_COLOR : BARE_VISUAL.BOUNDARY_COLOR);
+    map.setPaintProperty(id, 'line-width', on ? BASE_VISUAL.BOUNDARY_WIDTH_EXPR : BARE_VISUAL.BOUNDARY_WIDTH_EXPR);
+  }
+  // Only boundary_2 defines line-opacity -- boundary_disputed uses dasharray instead.
+  if (map.getLayer('boundary_2')) {
+    map.setPaintProperty('boundary_2', 'line-opacity', on ? BASE_VISUAL.BOUNDARY_OPACITY_EXPR : BARE_VISUAL.BOUNDARY_OPACITY_EXPR);
+  }
+
+  for (const id of ['waterway_river', 'waterway_other']) {
+    if (!map.getLayer(id)) continue;
+    map.setPaintProperty(id, 'line-color', on ? BASE_VISUAL.RIVER_COLOR : BARE_VISUAL.RIVER_COLOR);
+  }
+
+  for (const id of TERRAIN_PLACE_LABEL_IDS) {
+    if (!map.getLayer(id)) continue;
+    for (const prop of TERRAIN_PLACE_LABEL_PROPS) {
+      map.setPaintProperty(id, prop, on ? orig[id]?.[prop] : BARE_VISUAL.PLACE_LABEL_PAINT[prop]);
+    }
+  }
+}
 
 const EMPTY_FEATURE_COLLECTION = { type: 'FeatureCollection', features: [] };
 
@@ -57,6 +140,12 @@ export function useMapState(mapRef, mode) {
     satelliteUnavailable: false,
     mapReady: false,
     mapLoadSlow: false,
+    // Terrain (hypsometric-tint + base-hillshade + the BASE_VISUAL/
+    // BARE_VISUAL palette swap) defaults ON, matching the map's baked-in
+    // static style -- Classic/Daily's default look is unchanged from
+    // before this toggle existed. Not persisted -- resets to ON each
+    // session, same as Satellite.
+    terrain: true,
   });
 
   // One-time latch: true once 'load' has fired and never goes back to false.
@@ -69,9 +158,38 @@ export function useMapState(mapRef, mode) {
   // "has initial load happened", which is what this ref captures once.
   const mapReadyRef = useRef(false);
 
-  // Two refs mirror state for stale-closure safety -- both required.
+  // Refs mirror state for stale-closure safety -- all required.
   const politicalRef      = useRef(false); // mirrors state.political
   const politicalNamesRef = useRef(false); // mirrors state.politicalNames
+  const terrainRef        = useRef(true);  // mirrors state.terrain
+  const satelliteRef      = useRef(false); // mirrors state.satellite -- lets setTerrain know whether to touch the map or stay inert
+  // captureOriginalPaint's snapshot, taken once in onLoad -- see its comment.
+  const originalPaintRef  = useRef({});
+
+  // MapContainer.jsx now fetches+patches the style JSON before constructing
+  // the map, so mapRef.current is set asynchronously (inside a .then(),
+  // after this hook has already mounted) rather than synchronously during
+  // MapContainer's own mount. Writing to a ref doesn't trigger React to
+  // re-check the effect below's [mapRef.current, mode] dependency -- that
+  // trick only ever worked because *something else* caused a re-render
+  // shortly after mapRef.current was set synchronously in the old
+  // architecture. This tiny poll (bounded by mapRef.current itself, so it
+  // stops within a frame or two of MapContainer finishing) replaces that
+  // implicit reliance with an explicit one.
+  const [, forceRecheck] = useState(0);
+  useEffect(() => {
+    if (mapRef.current) return;
+    let rafId;
+    const check = () => {
+      if (mapRef.current) {
+        forceRecheck((n) => n + 1);
+      } else {
+        rafId = requestAnimationFrame(check);
+      }
+    };
+    rafId = requestAnimationFrame(check);
+    return () => cancelAnimationFrame(rafId);
+  }, [mapRef, mode]);
 
   // Stabilises the satellite error listener so it can be targeted by .off() --
   // .once('error', ...) would be consumed by ANY map error, not just an ArcGIS-specific one.
@@ -227,13 +345,17 @@ export function useMapState(mapRef, mode) {
           setBaseLayersVisible(true);
           restyleBordersAndRivers(false);
           map.setPaintProperty('background', 'background-color', BV.BACKGROUND);
+          satelliteRef.current = false;
+          applyTerrainVisual(map, terrainRef.current, originalPaintRef.current);
           removeAttribution(map, SATELLITE_ATTRIBUTION);
           setState(prev => ({ ...prev, satellite: false, satelliteUnavailable: true }));
         };
         map.on('error', onSatelliteErrorRef.current);
 
+        satelliteRef.current = true;
         setState(prev => ({ ...prev, satellite: true }));
       } catch {
+        satelliteRef.current = false;
         setState(prev => ({ ...prev, satellite: false, satelliteUnavailable: true }));
       }
     } else {
@@ -249,10 +371,34 @@ export function useMapState(mapRef, mode) {
       setBaseLayersVisible(true);
       restyleBordersAndRivers(false);
       map.setPaintProperty('background', 'background-color', BV.BACKGROUND);
+      satelliteRef.current = false;
+      applyTerrainVisual(map, terrainRef.current, originalPaintRef.current);
       removeAttribution(map, SATELLITE_ATTRIBUTION);
       setState(prev => ({ ...prev, satellite: false }));
     }
   }, [mapRef]);
+
+  // Toggles hypsometric-tint/base-hillshade + the shared-layer palette
+  // between the terrain-on and BARE_VISUAL looks -- see applyTerrainVisual's
+  // comment for the full mechanism. No-op for Blitz, which has no Terrain
+  // toggle (its look is permanently BARE_VISUAL, baked in at construction
+  // by blitzStyleTransform).
+  const setTerrain = useCallback((on) => {
+    if (mode === 'blitz') return;
+    const map = mapRef.current;
+    if (!map || !mapReadyRef.current) return;
+
+    terrainRef.current = on; // sync ref BEFORE setState
+    setState(prev => ({ ...prev, terrain: on }));
+
+    // Inert while satellite is on -- background/boundary/water are under
+    // SATELLITE_VISUAL's control there. The preference is still recorded
+    // (terrainRef above), so setSatellite's off-path applies the right
+    // look the moment satellite turns back off, with no flash in between.
+    if (satelliteRef.current) return;
+
+    applyTerrainVisual(map, on, originalPaintRef.current);
+  }, [mapRef, mode]);
 
   const setPolitical = useCallback((on) => {
     const map = mapRef.current;
@@ -466,6 +612,27 @@ export function useMapState(mapRef, mode) {
       mapReadyRef.current = true;
       setState(prev => ({ ...prev, mapReady: true }));
 
+      // Blitz never shows hypsometric-tint/base-hillshade (permanently
+      // hidden by map-style.json's own default, plus blitzStyleTransform
+      // already bakes BARE_VISUAL straight into its style object before
+      // construction) and has no Terrain toggle, so it has nothing to
+      // capture or reveal here.
+      if (mode !== 'blitz') {
+        originalPaintRef.current = captureOriginalPaint(map);
+        // hypsometric-tint/base-hillshade default to hidden in
+        // map-style.json now (see that file's comment) specifically so
+        // 'load' doesn't wait on their DEM tiles -- reveal them right
+        // after the map settles instead of blocking first paint on them.
+        // Guarded on satellite: if the person toggles Satellite on inside
+        // this brief window, applyTerrainVisual must not fight
+        // SATELLITE_VISUAL's colors -- setSatellite's own off-path calls
+        // this same function once satellite is turned back off instead.
+        map.once('idle', () => {
+          if (satelliteRef.current) return;
+          applyTerrainVisual(map, terrainRef.current, originalPaintRef.current);
+        });
+      }
+
       if (mode === 'daily') {
         setPolitical(true); // mandatory, non-togglable -- Daily always shows state borders now
         setPoliticalNames(true); // labels themselves gated by the layer's minzoom above, not this toggle
@@ -490,8 +657,11 @@ export function useMapState(mapRef, mode) {
     } else {
       map.once('load', onLoad);
       // 'load' has no built-in timeout -- it simply doesn't fire until every
-      // first-render resource (OpenFreeMap vector tiles/sprite/glyphs, AWS
-      // terrain-dem tiles) has downloaded, however long that takes. This
+      // first-render resource (OpenFreeMap vector tiles/sprite/glyphs) has
+      // downloaded, however long that takes. AWS terrain-dem tiles are NOT
+      // among these -- hypsometric-tint/base-hillshade default to hidden in
+      // map-style.json, so their tiles are deferred to the idle-triggered
+      // reveal above instead of gating 'load' itself. This
       // doesn't fix a slow network/CDN, but it stops the map from sitting
       // there with zero feedback: past this point the UI can tell the
       // person something's still in progress instead of looking stuck.
@@ -514,5 +684,6 @@ export function useMapState(mapRef, mode) {
     setPolitical,
     setPoliticalNames,
     setDifficulty,
+    setTerrain,
   };
 }
