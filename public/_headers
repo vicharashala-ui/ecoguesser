@@ -108,6 +108,16 @@
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
   Content-Type: application/geo+json; charset=utf-8
 
+# Site metadata (name/category/state/centroid per protected area) -- fetched
+# by App.jsx at runtime, not bundled as a JS module (see that file's
+# loadSites() comment: native JSON.parse on a plain fetch response beats
+# parsing the same data through the general JS grammar as an import()'d
+# module). Same regenerate-on-a-content-pass profile as the GeoJSON files
+# above, so it gets the same cache tier.
+/protected-areas.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Content-Type: application/json; charset=utf-8
+
 /map-style.json
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 

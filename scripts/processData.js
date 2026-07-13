@@ -1,7 +1,8 @@
 // scripts/processData.js
 // Processes all raw protected-area GeoJSON sources into:
 //   public/boundaries/<id>.geojson  — one Feature per site
-//   src/data/protected-areas.json   — metadata array
+//   public/protected-areas.json     — metadata array (fetched at runtime,
+//                                      not imported -- see src/App.jsx)
 //
 // Run AFTER patchTigerReserves.js, BEFORE simplifyBoundaries.js.
 // No npm packages required — Node.js built-ins only.
@@ -11,7 +12,7 @@ const path = require('path');
 
 const RAW    = path.join(__dirname, '../data/raw');
 const BOUNDS = path.join(__dirname, '../public/boundaries');
-const OUT    = path.join(__dirname, '../src/data');
+const OUT    = path.join(__dirname, '../public');
 
 fs.mkdirSync(BOUNDS, { recursive: true });
 fs.mkdirSync(OUT,    { recursive: true });
@@ -334,7 +335,7 @@ if (!usedIds.has(JPN_BIRD_SANCTUARY_ID)) {
 // ---------------------------------------------------------------------------
 fs.writeFileSync(
   path.join(OUT, 'protected-areas.json'),
-  JSON.stringify(metadata, null, 2),
+  JSON.stringify(metadata),
   'utf8'
 );
 
@@ -353,7 +354,7 @@ if (errors.length > 0) {
 const div   = '─'.repeat(60);
 const total = Object.values(stats).reduce((s, n) => s + n, 0);
 console.log('\n' + div);
-console.log('protected-areas.json  →  src/data/');
+console.log('protected-areas.json  →  public/');
 console.log('boundaries/           →  public/boundaries/');
 console.log(div);
 Object.entries(stats).forEach(([cat, n]) =>

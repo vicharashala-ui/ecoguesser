@@ -114,11 +114,13 @@ export default defineConfig({
             handler: 'NetworkOnly',
           },
           // Site/boundary GeoJSON (+ india-states.topojson -- see
-          // scripts/convertStatesTopo.js) and app icons: rarely change
+          // scripts/convertStatesTopo.js -- and protected-areas.json, the
+          // site metadata App.jsx now fetches instead of import()'ing, see
+          // src/App.jsx's loadSites()) and app icons: rarely change
           // between visits, safe to serve from cache first and refresh in
           // the background so repeat rounds don't re-download the same data.
           {
-            urlPattern: /\.(?:geojson|topojson|png|jpg|jpeg|svg)$/,
+            urlPattern: /\.(?:geojson|topojson|json|png|jpg|jpeg|svg)$/,
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'eg-static-data',

@@ -135,8 +135,18 @@ export default function App() {
   }
 
   function loadSites() {
-    import('./data/protected-areas.json')
-      .then(m => setAllSites(m.default))
+    // Fetched, not import()'d -- this used to be bundled as a JS module
+    // (`import('./data/protected-areas.json')`), which forces V8 to parse
+    // 837 sites' worth of object-literal syntax through the general JS
+    // parser. Native JSON.parse (what fetch().json() uses under the hood)
+    // is a simpler, faster grammar for the same data -- real savings on a
+    // payload this size, particularly on mid-range mobile CPUs. Moving the
+    // file to public/ (see scripts/processData.js) also lets it be
+    // regenerated/redeployed without a JS rebuild, same as the other
+    // site/state GeoJSON files there.
+    fetch('/protected-areas.json')
+      .then((r) => r.json())
+      .then(setAllSites)
       .catch(() => setSitesError(true));
   }
 
