@@ -26,9 +26,15 @@ import { MAP_CONFIG, DAILY, CATEGORY_META } from '../config.js';
 import './DailyMap.css';
 
 // Icons -- same inline-SVG, currentColor convention as BottomCard.jsx's IconSkip etc.
+// className lives on the <svg> itself (not a wrapping span) because IconPause
+// and IconPlay are swapped via a ternary at the same JSX position -- React
+// unmounts/remounts the whole subtree on toggle, so putting the animation
+// class directly on the node that's actually fresh each time is what makes
+// it replay on every pause/resume tap instead of firing once and going
+// stale on a persistent wrapper.
 function IconPause({ size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg className="dm-pause-icon" width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <rect x="7" y="5" width="4" height="14" rx="2" fill="currentColor" />
       <rect x="13" y="5" width="4" height="14" rx="2" fill="currentColor" />
     </svg>
@@ -37,7 +43,7 @@ function IconPause({ size = 16 }) {
 
 function IconPlay({ size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg className="dm-pause-icon" width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
         d="M8.5 6.4v11.2a1 1 0 0 0 1.53.85l8.97-5.6a1 1 0 0 0 0-1.7l-8.97-5.6a1 1 0 0 0-1.53.85Z"
         fill="currentColor"
@@ -214,7 +220,18 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
               {paused ? <IconPlay size={20} /> : <IconPause size={20} />}
             </button>
           )}
-          <span className="dm-timer-time" style={{ color: timerColor(timeRemaining) }}>
+          {/* Gated to READING/PLACING and !paused -- timer.pause() on
+              REVEALING freezes timeRemaining at whatever it was, so without
+              this gate a low-time confirm would leave the digits pulsing
+              red through the whole reveal for no reason. */}
+          <span
+            className={`dm-timer-time${
+              (roundState === 'READING' || roundState === 'PLACING') && !paused && timeRemaining > 0 && timeRemaining < 10
+                ? ' dm-timer-urgent'
+                : ''
+            }`}
+            style={{ color: timerColor(timeRemaining) }}
+          >
             {formatTime(timeRemaining)}
           </span>
           <div className="dm-timer-dots" aria-hidden="true">

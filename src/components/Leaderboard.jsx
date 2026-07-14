@@ -239,7 +239,11 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
             {ranked.map((row, i) => {
               const isYou = rank != null && row.tableRank === rank;
               return (
-                <div className={`lb-row${isYou ? ' lb-row-you' : ''}`} key={i}>
+                <div
+                  className={`lb-row${isYou ? ' lb-row-you' : ''}`}
+                  key={i}
+                  style={{ animationDelay: `${Math.min(i, 10) * 40}ms` }}
+                >
                   <span>{row.tableRank}</span>
                   <span className="lb-name">
                     {row.player_name}

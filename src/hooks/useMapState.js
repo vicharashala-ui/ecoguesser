@@ -34,8 +34,25 @@ function captureOriginalPaint(map) {
     out[id] = {};
     for (const prop of TERRAIN_PLACE_LABEL_PROPS) out[id][prop] = map.getPaintProperty(id, prop);
   }
+  if (map.getLayer('base-hillshade')) {
+    out['base-hillshade'] = {};
+    for (const prop of Object.keys(HILLSHADE_TRANSPARENT)) {
+      out['base-hillshade'][prop] = map.getPaintProperty('base-hillshade', prop);
+    }
+  }
   return out;
 }
+
+// Alpha-0 versions of base-hillshade's own paint colors (map-style.json) --
+// interpolating alpha-only (same RGB, 1 -> 0) instead of toward an unrelated
+// transparent color keeps the fade a clean dim-out with no hue shift partway
+// through. Keep in sync with base-hillshade's paint block: #3f4638,
+// #f6f4ec, #a4a08f.
+const HILLSHADE_TRANSPARENT = {
+  'hillshade-shadow-color':    'rgba(63,70,56,0)',
+  'hillshade-highlight-color': 'rgba(246,244,236,0)',
+  'hillshade-accent-color':    'rgba(164,160,143,0)',
+};
 
 // Swaps hypsometric-tint/base-hillshade visibility plus the handful of
 // shared-layer paint properties that define "the Blitz look" (background,
@@ -49,11 +66,74 @@ function captureOriginalPaint(map) {
 // values come from originalPaint (captureOriginalPaint's snapshot) instead.
 // Callers must only invoke this while satellite is off -- these same
 // layers are under SATELLITE_VISUAL's control while it's on.
-function applyTerrainVisual(map, on, originalPaint) {
+//
+// hypsometric-tint/base-hillshade fade rather than snap, unlike everything
+// else this function touches -- those ride map-style.json's root-level
+// "transition" for free since they're ordinary paint properties, but
+// MapLibre's hillshade layer type has no opacity paint property, and
+// 'visibility' (a layout property) never animates regardless of type. So
+// hypsometric-tint fades via color-relief-opacity (a real paint property)
+// and base-hillshade via alpha-only color transitions (HILLSHADE_TRANSPARENT
+// above) instead. 'visibility' still gates whether terrain-dem tiles get
+// fetched at all, though -- flipping these to permanently 'visible' would
+// mean the DEM source keeps downloading tiles for wherever the map pans/
+// zooms to even while Terrain is toggled off, exactly the bandwidth this
+// toggle exists to save. So visibility only flips to 'none' after a fade-out
+// finishes (hideTimerRef, cleared/rescheduled on every call so rapid
+// re-toggling can't leave a stale timer fighting a newer one) and to
+// 'visible' right before a fade-in starts (revealRafRef, same cancel-and-
+// reschedule treatment) -- tiles were already deferred up to that point, and
+// starting the opacity transition doesn't need to wait for them; individual
+// tiles still pop in as they decode, same as always, via fadeDuration:0 on
+// the map itself.
+function applyTerrainVisual(map, on, originalPaint, hideTimerRef, revealRafRef) {
   const orig = originalPaint || {};
 
-  for (const id of ['hypsometric-tint', 'base-hillshade']) {
-    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
+  if (hideTimerRef.current) { clearTimeout(hideTimerRef.current); hideTimerRef.current = null; }
+  if (revealRafRef.current) { cancelAnimationFrame(revealRafRef.current); revealRafRef.current = null; }
+
+  const hypso = map.getLayer('hypsometric-tint');
+  const hillshade = map.getLayer('base-hillshade');
+  const currentlyOn = !!hypso
+    && map.getLayoutProperty('hypsometric-tint', 'visibility') !== 'none'
+    && map.getPaintProperty('hypsometric-tint', 'color-relief-opacity') === 1;
+
+  if (on && !currentlyOn) {
+    if (hypso) {
+      map.setLayoutProperty('hypsometric-tint', 'visibility', 'visible');
+      map.setPaintProperty('hypsometric-tint', 'color-relief-opacity', 0);
+    }
+    if (hillshade) {
+      map.setLayoutProperty('base-hillshade', 'visibility', 'visible');
+      for (const prop of Object.keys(HILLSHADE_TRANSPARENT)) {
+        map.setPaintProperty('base-hillshade', prop, HILLSHADE_TRANSPARENT[prop]);
+      }
+    }
+    // Paint property changes made in the same tick as the 'visible' flip
+    // above would have nothing to transition FROM (the layer's first-ever
+    // paint value just appears, it doesn't animate in) -- deferring the
+    // "on" values one frame gives them a real 0 -> 1 change to animate.
+    revealRafRef.current = requestAnimationFrame(() => {
+      revealRafRef.current = null;
+      if (map.getLayer('hypsometric-tint')) map.setPaintProperty('hypsometric-tint', 'color-relief-opacity', 1);
+      if (map.getLayer('base-hillshade')) {
+        for (const prop of Object.keys(HILLSHADE_TRANSPARENT)) {
+          map.setPaintProperty('base-hillshade', prop, orig['base-hillshade']?.[prop]);
+        }
+      }
+    });
+  } else if (!on && currentlyOn) {
+    if (hypso) map.setPaintProperty('hypsometric-tint', 'color-relief-opacity', 0);
+    if (hillshade) {
+      for (const prop of Object.keys(HILLSHADE_TRANSPARENT)) {
+        map.setPaintProperty('base-hillshade', prop, HILLSHADE_TRANSPARENT[prop]);
+      }
+    }
+    hideTimerRef.current = setTimeout(() => {
+      hideTimerRef.current = null;
+      if (map.getLayer('hypsometric-tint')) map.setLayoutProperty('hypsometric-tint', 'visibility', 'none');
+      if (map.getLayer('base-hillshade')) map.setLayoutProperty('base-hillshade', 'visibility', 'none');
+    }, MAP_CONFIG.TRANSITION_MS);
   }
 
   if (map.getLayer('background')) {
@@ -186,6 +266,13 @@ export function useMapState(mapRef, mode) {
   const satelliteRef      = useRef(false); // mirrors state.satellite -- lets setTerrain know whether to touch the map or stay inert
   // captureOriginalPaint's snapshot, taken once in onLoad -- see its comment.
   const originalPaintRef  = useRef({});
+  // applyTerrainVisual's pending hide-after-fade timer / reveal rAF -- see
+  // that function's comment. Live here (not inside applyTerrainVisual
+  // itself) so a call from one call site can cancel a timer/rAF left
+  // pending by a different call site (e.g. Satellite turning off and
+  // restoring terrain before an earlier Terrain-toggle fade-out finished).
+  const terrainHideTimerRef = useRef(null);
+  const terrainRevealRafRef = useRef(null);
 
   // MapContainer.jsx now fetches+patches the style JSON before constructing
   // the map, so mapRef.current is set asynchronously (inside a .then(),
@@ -215,6 +302,16 @@ export function useMapState(mapRef, mode) {
   // Stabilises the satellite error listener so it can be targeted by .off() --
   // .once('error', ...) would be consumed by ANY map error, not just an ArcGIS-specific one.
   const onSatelliteErrorRef = useRef(null);
+  // Satellite ON->OFF is a crossfade, not an instant swap -- see setSatellite's
+  // comment. satelliteFadeInRafRef defers the raster's opacity 0->1 write one
+  // frame (same reason applyTerrainVisual's revealRafRef does); satelliteHideBaseTimerRef
+  // delays hiding the base layers underneath until the satellite fade-in has
+  // actually finished covering them; satelliteCleanupTimerRef delays the real
+  // removeLayer/removeSource teardown until the fade-out has finished, so a
+  // quick re-toggle can cancel it and fade back in instead of re-adding from scratch.
+  const satelliteFadeInRafRef    = useRef(null);
+  const satelliteHideBaseTimerRef = useRef(null);
+  const satelliteCleanupTimerRef  = useRef(null);
 
   // Applies/reverts the full satellite visual spec: ArcGIS raster color
   // grading, navy water tint, and a recolored border/river set shared with
@@ -289,13 +386,57 @@ export function useMapState(mapRef, mode) {
       }
     }
 
+    // Crossfades base map <-> satellite instead of swapping instantly: the
+    // satellite raster fades in ON TOP of the still-visible base layers
+    // (firstNonBgId keeps it above them in z-order), which only get hidden
+    // once that fade has actually finished covering them -- and symmetrically
+    // on the way out, base layers reappear underneath *before* satellite
+    // starts fading, so there's never a frame where neither is showing.
+    // restyleBordersAndRivers/the background-color write below aren't special-
+    // cased for this -- they're ordinary paint properties, so they already
+    // ride map-style.json's root-level "transition" for free.
     if (on) {
-      if (map.getSource('satellite-raster')) return; // already on, no-op
+      if (satelliteCleanupTimerRef.current) {
+        // A very recent OFF's fade-out hadn't finished tearing things down
+        // yet -- cancel that and fade back in instead of re-adding from scratch.
+        clearTimeout(satelliteCleanupTimerRef.current);
+        satelliteCleanupTimerRef.current = null;
+      }
+      if (satelliteHideBaseTimerRef.current) {
+        clearTimeout(satelliteHideBaseTimerRef.current);
+        satelliteHideBaseTimerRef.current = null;
+      }
+      if (map.getSource('satellite-raster')) {
+        // Already exists (fully on, or was mid-fade-out and got cancelled
+        // above) -- just make sure it's heading toward fully opaque, and
+        // (re)schedule hiding the base layers once it gets there. Without
+        // this, cancelling a fade-out partway through would leave the base
+        // layers -- hypsometric-tint/base-hillshade included -- visible
+        // forever underneath the now-opaque satellite raster, silently
+        // fetching DEM tiles for every future pan/zoom for no visible reason.
+        if (satelliteFadeInRafRef.current) {
+          cancelAnimationFrame(satelliteFadeInRafRef.current);
+          satelliteFadeInRafRef.current = null;
+        }
+        if (map.getLayer(LAYER_IDS.SATELLITE)) map.setPaintProperty(LAYER_IDS.SATELLITE, 'raster-opacity', 1);
+        satelliteHideBaseTimerRef.current = setTimeout(() => {
+          satelliteHideBaseTimerRef.current = null;
+          setBaseLayersVisible(false);
+        }, MAP_CONFIG.TRANSITION_MS);
+        satelliteRef.current = true;
+        setState(prev => ({ ...prev, satellite: true }));
+        return;
+      }
       try {
         const firstNonBgId = map.getStyle().layers.find(l => l.type !== 'background')?.id;
 
         // 1. ArcGIS satellite raster (via our tile-caching proxy), with the
-        //    color-grading paint properties from config.js.
+        //    color-grading paint properties from config.js. Starts fully
+        //    transparent and fades to raster-opacity 1 a frame below -- a
+        //    freshly-added layer's first paint value has nothing to
+        //    transition FROM, so starting at the target opacity would just
+        //    pop in instantly instead of fading (same reasoning as
+        //    applyTerrainVisual's revealRafRef).
         map.addSource('satellite-raster', {
           type: 'raster', tiles: [SATELLITE_TILES], tileSize: 256,
           maxzoom: MAP_CONFIG.SATELLITE_MAX_ZOOM,
@@ -303,7 +444,8 @@ export function useMapState(mapRef, mode) {
         map.addLayer({
           id: LAYER_IDS.SATELLITE, type: 'raster', source: 'satellite-raster',
           paint: {
-            'raster-opacity':        1.0,
+            'raster-opacity':            0,
+            'raster-opacity-transition': { duration: MAP_CONFIG.TRANSITION_MS, delay: 0 },
             'raster-saturation':     SV.RASTER_PAINT.saturation,
             'raster-contrast':       SV.RASTER_PAINT.contrast,
             'raster-brightness-min': SV.RASTER_PAINT.brightnessMin,
@@ -349,15 +491,29 @@ export function useMapState(mapRef, mode) {
           },
         }, firstNonBgId);
 
-        setBaseLayersVisible(false);
         restyleBordersAndRivers(true);
         map.setPaintProperty('background', 'background-color', SV.BACKGROUND);
         appendAttribution(map, SATELLITE_ATTRIBUTION);
+
+        satelliteFadeInRafRef.current = requestAnimationFrame(() => {
+          satelliteFadeInRafRef.current = null;
+          if (map.getLayer(LAYER_IDS.SATELLITE)) map.setPaintProperty(LAYER_IDS.SATELLITE, 'raster-opacity', 1);
+        });
+        // Base layers stay visible (rendering underneath the satellite raster,
+        // which sits above them via firstNonBgId) until the fade-in has
+        // actually finished, so hiding them here is invisible rather than a cut.
+        satelliteHideBaseTimerRef.current = setTimeout(() => {
+          satelliteHideBaseTimerRef.current = null;
+          setBaseLayersVisible(false);
+        }, MAP_CONFIG.TRANSITION_MS);
 
         onSatelliteErrorRef.current = (e) => {
           if (e.sourceId !== 'satellite-raster') return;
           map.off('error', onSatelliteErrorRef.current);
           onSatelliteErrorRef.current = null;
+          if (satelliteFadeInRafRef.current) { cancelAnimationFrame(satelliteFadeInRafRef.current); satelliteFadeInRafRef.current = null; }
+          if (satelliteHideBaseTimerRef.current) { clearTimeout(satelliteHideBaseTimerRef.current); satelliteHideBaseTimerRef.current = null; }
+          if (satelliteCleanupTimerRef.current) { clearTimeout(satelliteCleanupTimerRef.current); satelliteCleanupTimerRef.current = null; }
           if (map.getLayer(LAYER_IDS.SATELLITE)) map.removeLayer(LAYER_IDS.SATELLITE);
           if (map.getSource('satellite-raster')) map.removeSource('satellite-raster');
           if (map.getLayer('satellite-hillshade')) map.removeLayer('satellite-hillshade');
@@ -367,7 +523,7 @@ export function useMapState(mapRef, mode) {
           restyleBordersAndRivers(false);
           map.setPaintProperty('background', 'background-color', BV.BACKGROUND);
           satelliteRef.current = false;
-          applyTerrainVisual(map, terrainRef.current, originalPaintRef.current);
+          applyTerrainVisual(map, terrainRef.current, originalPaintRef.current, terrainHideTimerRef, terrainRevealRafRef);
           removeAttribution(map, SATELLITE_ATTRIBUTION);
           setState(prev => ({ ...prev, satellite: false, satelliteUnavailable: true }));
         };
@@ -384,18 +540,30 @@ export function useMapState(mapRef, mode) {
         map.off('error', onSatelliteErrorRef.current);
         onSatelliteErrorRef.current = null;
       }
-      if (map.getLayer(LAYER_IDS.SATELLITE)) map.removeLayer(LAYER_IDS.SATELLITE);
-      if (map.getSource('satellite-raster')) map.removeSource('satellite-raster');
-      if (map.getLayer('satellite-hillshade')) map.removeLayer('satellite-hillshade');
-      if (map.getSource('terrarium-dem')) map.removeSource('terrarium-dem');
-      if (map.getLayer('satellite-water-tint')) map.removeLayer('satellite-water-tint');
+      if (satelliteFadeInRafRef.current) { cancelAnimationFrame(satelliteFadeInRafRef.current); satelliteFadeInRafRef.current = null; }
+      if (satelliteHideBaseTimerRef.current) { clearTimeout(satelliteHideBaseTimerRef.current); satelliteHideBaseTimerRef.current = null; }
+
+      // Base layers reappear now, underneath the satellite raster (still
+      // fully opaque for one more instant below), so they're already there
+      // by the time it finishes fading out -- same crossfade, opposite direction.
       setBaseLayersVisible(true);
       restyleBordersAndRivers(false);
       map.setPaintProperty('background', 'background-color', BV.BACKGROUND);
       satelliteRef.current = false;
-      applyTerrainVisual(map, terrainRef.current, originalPaintRef.current);
+      applyTerrainVisual(map, terrainRef.current, originalPaintRef.current, terrainHideTimerRef, terrainRevealRafRef);
+      if (map.getLayer(LAYER_IDS.SATELLITE)) map.setPaintProperty(LAYER_IDS.SATELLITE, 'raster-opacity', 0);
       removeAttribution(map, SATELLITE_ATTRIBUTION);
       setState(prev => ({ ...prev, satellite: false }));
+
+      if (satelliteCleanupTimerRef.current) clearTimeout(satelliteCleanupTimerRef.current);
+      satelliteCleanupTimerRef.current = setTimeout(() => {
+        satelliteCleanupTimerRef.current = null;
+        if (map.getLayer(LAYER_IDS.SATELLITE)) map.removeLayer(LAYER_IDS.SATELLITE);
+        if (map.getSource('satellite-raster')) map.removeSource('satellite-raster');
+        if (map.getLayer('satellite-hillshade')) map.removeLayer('satellite-hillshade');
+        if (map.getSource('terrarium-dem')) map.removeSource('terrarium-dem');
+        if (map.getLayer('satellite-water-tint')) map.removeLayer('satellite-water-tint');
+      }, MAP_CONFIG.TRANSITION_MS);
     }
   }, [mapRef]);
 
@@ -418,7 +586,7 @@ export function useMapState(mapRef, mode) {
     // look the moment satellite turns back off, with no flash in between.
     if (satelliteRef.current) return;
 
-    applyTerrainVisual(map, on, originalPaintRef.current);
+    applyTerrainVisual(map, on, originalPaintRef.current, terrainHideTimerRef, terrainRevealRafRef);
   }, [mapRef, mode]);
 
   const setPolitical = useCallback((on) => {
@@ -662,7 +830,7 @@ export function useMapState(mapRef, mode) {
         // this same function once satellite is turned back off instead.
         map.once('idle', () => {
           if (satelliteRef.current) return;
-          applyTerrainVisual(map, terrainRef.current, originalPaintRef.current);
+          applyTerrainVisual(map, terrainRef.current, originalPaintRef.current, terrainHideTimerRef, terrainRevealRafRef);
         });
       }
 

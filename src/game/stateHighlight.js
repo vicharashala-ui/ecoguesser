@@ -65,7 +65,16 @@ export function showHint2(map, site) {
       type: 'line',
       source: STATE_SOURCE_ID,
       filter,
-      paint: { 'line-color': '#8b5cf6', 'line-width': 1.5, 'line-opacity': 1 },
+      paint: {
+        'line-color': '#8b5cf6', 'line-width': 1.5, 'line-opacity': 1,
+        // startPulse below drives line-opacity itself every frame -- map-style.json's
+        // root-level "transition" would otherwise turn each of those 60/sec writes
+        // into its own 300ms animation, and since a new one starts before the last
+        // finishes, the rendered result is a heavily damped, near-flat opacity
+        // instead of the intended sine pulse. duration:0 opts this one property
+        // back out to instant, same as before that root transition existed.
+        'line-opacity-transition': { duration: 0, delay: 0 },
+      },
     });
     startPulse(map);
   }

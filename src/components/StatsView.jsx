@@ -21,12 +21,14 @@ import './StatsView.css';
 
 const BUCKET_LABELS = ['0-5k', '5-10k', '10-15k', '15-20k', '20-25k'];
 
-// Vertical bar chart for Daily's score distribution (replaces the old
-// horizontal bar-row layout). Bars grow in on mount via a one-shot
-// rAF-delayed height change -- the height is set to 0 on first render, then
-// flipped to its real value a frame later so the CSS `transition: height`
-// in StatsView.css actually has something to animate between, instead of
-// the final height just appearing instantly on first paint.
+// Vertical bar chart shared by Daily's score distribution and by Classic's
+// and Blitz's "by category" breakdowns -- all three use the same shared
+// green fill (StatsView.css .sv-hist-bar). Bars grow in on mount via a
+// one-shot rAF-delayed height change -- the height is set to 0 on first
+// render, then flipped to its real value a frame later so the CSS
+// `transition: height` in StatsView.css actually has something to animate
+// between, instead of the final height just appearing instantly on first
+// paint.
 function ScoreHistogram({ distribution, labels, format = (v) => v, ariaLabel = 'Score distribution histogram' }) {
   const [grown, setGrown] = useState(false);
 
@@ -50,6 +52,19 @@ function ScoreHistogram({ distribution, labels, format = (v) => v, ariaLabel = '
               style={{ height: grown ? `${((value ?? 0) / max) * 100}%` : '0%' }}
             />
           </div>
+          {/* Category labels vary in length ("Ramsar Site" vs "Wildlife
+              Sanctuary"), so without a fixed reservation the shorter ones
+              wrap to a single line while longer ones wrap to two, leaving
+              less label height above them and shifting that bar's track
+              (and so its visible bottom edge) relative to its neighbors.
+              StatsView.css reserves 2 lines' worth of height on every
+              .sv-hist-label unconditionally -- Daily's score-bucket labels
+              are always short/one-line, so the extra reserved space is a
+              no-op for that chart, but it keeps Classic/Blitz's
+              category-label bars level regardless of which labels happen
+              to wrap. This lives on the base class (not a prop-gated
+              modifier) so it can't silently break if some other prop
+              (e.g. a color feature) it used to be tied to is ever removed. */}
           <span className="sv-hist-label">{labels[i]}</span>
         </div>
       ))}
@@ -218,15 +233,12 @@ function BlitzSection() {
       </div>
 
       <p className="sv-heading">By category</p>
-      <div className="sv-cat-grid">
-        {Object.entries(stats.byCategory).map(([cat, accuracy]) => (
-          <div className="sv-cat-item" key={cat}>
-            <span className="sv-cat-dot" style={{ background: CATEGORY_META[cat].color }} />
-            <span className="sv-cat-label">{CATEGORY_META[cat].label}</span>
-            <span className="sv-cat-score">{accuracy != null ? `${accuracy}%` : '--'}</span>
-          </div>
-        ))}
-      </div>
+      <ScoreHistogram
+        distribution={DAILY.CATEGORIES.map((cat) => stats.byCategory[cat])}
+        labels={DAILY.CATEGORIES.map((cat) => CATEGORY_META[cat].label)}
+        format={(pct) => `${pct}%`}
+        ariaLabel="Accuracy by category histogram"
+      />
     </>
   );
 }

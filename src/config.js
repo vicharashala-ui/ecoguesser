@@ -36,6 +36,14 @@ export const MAP_CONFIG = {
   // call site (Classic/Daily/Blitz initial load + reset, RecenterButton), so
   // this one value keeps the framing consistent across all three modes.
   FIT_PADDING: { top: 100, bottom: 260, left: 24, right: 24 },
+  // Terrain/Satellite layer-toggle fade duration. Two things must agree with
+  // this number: map-style.json's root-level "transition" (every paint
+  // property in the style animates over this long by default -- background/
+  // water/boundary/waterway/place-label colors all ride it for free) and the
+  // setTimeout delays in useMapState.js that wait for a fade-out to finish
+  // before actually hiding a layer (stops fetching its tiles) or tearing
+  // down the satellite source. If you change one, change all three.
+  TRANSITION_MS: 300,
 };
 // Do NOT pass INDIA_CENTER/INDIA_ZOOM to MapLibre constructor.
 

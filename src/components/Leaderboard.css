@@ -77,6 +77,18 @@
   font-size: 14px;
   color: #111827;
   border-bottom: 1px solid #e5e7eb;
+  /* backwards fill so each row stays at the 0% keyframe (invisible) during
+     its own animation-delay instead of flashing full-opacity content before
+     its turn -- delay itself is set inline per-row in Leaderboard.jsx
+     (Math.min(i, 10) * 40ms), capped since top10 is never longer than 10
+     rows anyway. Transform/opacity only -- cheap even with the max ~11
+     rows (10 + header) all animating at once. */
+  animation: lb-row-in 0.3s ease-out backwards;
+}
+
+@keyframes lb-row-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .lb-row-head {
@@ -123,6 +135,29 @@
   outline: 2px solid #16a34a;
   outline-offset: -1px;
   background: rgba(22, 163, 74, 0.06);
+  /* Overrides only animation-name/duration -- timing-function (ease-out)
+     and fill-mode (backwards) still come from .lb-row above, since this
+     rule doesn't redeclare them. Same inline animation-delay from
+     Leaderboard.jsx still applies, so this row still lands in its correct
+     rank order, just with an extra highlight sweep as it settles in
+     instead of the plain fade every other row gets -- background-color is
+     a paint-only cost on a single small row, once, not a continuous or
+     compositor-heavy effect. */
+  animation-name: lb-row-you-in;
+  animation-duration: 0.7s;
+}
+
+@keyframes lb-row-you-in {
+  0%   { opacity: 0; transform: translateY(6px); background-color: rgba(22, 163, 74, 0.06); }
+  35%  { opacity: 1; transform: translateY(0); }
+  55%  { background-color: rgba(22, 163, 74, 0.32); }
+  100% { background-color: rgba(22, 163, 74, 0.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lb-row {
+    animation: none;
+  }
 }
 
 .lb-actions {

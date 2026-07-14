@@ -63,6 +63,18 @@
   line-height: 1;
 }
 
+/* Under-10s cue -- transform-only (GPU) and bounded to at most 9 real
+   seconds of an active, unpaused round (see the gate in DailyMap.jsx), so
+   the "infinite" iteration-count never actually runs long or continuously. */
+.dm-timer-time.dm-timer-urgent {
+  animation: dm-timer-urgent 1s ease-in-out infinite;
+}
+
+@keyframes dm-timer-urgent {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.12); }
+}
+
 /* ---- Round-progress dots -- one per Daily round, filled as they complete */
 
 .dm-timer-dots {
@@ -79,6 +91,17 @@
 
 .dm-timer-dot--done {
   background: #22c55e;
+  /* Plays once, the moment a dot's class flips upcoming -> done -- CSS only
+     restarts an animation when its computed animation-name value changes,
+     and a dot never goes back to upcoming, so this never replays on
+     unrelated re-renders (e.g. the timer ticking every second). */
+  animation: dm-dot-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes dm-dot-pop {
+  0%   { transform: scale(0.4); }
+  60%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
 }
 
 .dm-timer-dot--upcoming {
@@ -115,6 +138,19 @@
   transform: scale(0.94);
 }
 
+/* The icon swap itself (IconPause <-> IconPlay) is a full unmount/remount
+   at the same JSX position, not a class change on a persistent node -- see
+   the comment on those two functions in DailyMap.jsx -- so this plays fresh
+   on every pause/resume tap. */
+.dm-pause-icon {
+  animation: dm-icon-pop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes dm-icon-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* ---- Paused overlay -- confirms the map isn't accepting clicks --------- */
 
 .dm-paused-overlay {
@@ -135,6 +171,21 @@
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  animation: dm-paused-fade-in 0.2s ease-out;
+}
+
+@keyframes dm-paused-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dm-timer-time.dm-timer-urgent,
+  .dm-timer-dot--done,
+  .dm-paused-overlay,
+  .dm-pause-icon {
+    animation: none;
+  }
 }
 
 /* ---- Layer panel -- matches .dm-timer-card's glass treatment below it --- */

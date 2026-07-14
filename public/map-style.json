@@ -20,6 +20,10 @@
     }
   },
   "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+  "transition": {
+    "duration": 300,
+    "delay": 0
+  },
   "layers": [
     {
       "id": "background",
