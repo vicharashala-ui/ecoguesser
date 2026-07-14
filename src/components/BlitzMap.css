@@ -4,9 +4,8 @@
    borders on and has no satellite mode. */
 
 /* Top-right stack: streak card + layer panel below it -- same positioning
-   role as DailyMap.css's .dm-top-right-stack (timer card + layer panel),
-   moved here from .bz-layer-panel now that there are two items to stack
-   instead of one. */
+   role as DailyMap.css's .dm-top-right-stack, moved here from
+   .bz-layer-panel now that there are two items to stack instead of one. */
 .bz-top-right-stack {
   position: absolute;
   /* Pulled down below Header.jsx's title bar (+ safe-area inset) -- used to
@@ -18,50 +17,6 @@
   flex-direction: column;
   align-items: stretch;
   gap: 10px;
-}
-
-/* Round countdown -- same glass card treatment as .bz-streak-card just
-   below it (and DailyMap.css's .dm-timer-card), stripped of the pause
-   button/round-dots Daily's timer has -- Blitz has neither. */
-.bz-timer-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 18px;
-  border-radius: 16px;
-  background: rgba(248, 246, 241, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
-  isolation: isolate;
-  transform: translateZ(0);
-  font-family: 'Nunito', 'Segoe UI', sans-serif;
-}
-
-.bz-timer-value {
-  font-size: 20px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-
-/* Same transform-only pulse as DailyMap.css's .dm-timer-urgent, bounded to
-   the last quarter of BLITZ.TIMER_SECONDS (see blitzTimerColor in
-   BlitzMap.jsx) -- a few real seconds at most, never a long-running loop. */
-.bz-timer-value.bz-timer-urgent {
-  animation: bz-timer-urgent 1s ease-in-out infinite;
-}
-
-@keyframes bz-timer-urgent {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.12); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bz-timer-value.bz-timer-urgent {
-    animation: none;
-  }
 }
 
 /* Session streak -- current count + best-of-session, both tracked by

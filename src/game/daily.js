@@ -13,16 +13,25 @@ function lcgNext(s) {
   return (s * 1664525 + 1013904223) >>> 0;
 }
 
+const IST_OFFSET_MS = 5.5 * 3600 * 1000;
+const DAY_MS = 86400 * 1000;
+
 /** IST "today" as YYYY-MM-DD. */
 export function getTodayString() {
-  return new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slice(0, 10);
+  return new Date(Date.now() + IST_OFFSET_MS).toISOString().slice(0, 10);
 }
 
 /** IST "yesterday" as YYYY-MM-DD. */
 export function getYesterdayString() {
-  return new Date(Date.now() + 5.5 * 3600 * 1000 - 86400 * 1000)
-    .toISOString()
-    .slice(0, 10);
+  return new Date(Date.now() + IST_OFFSET_MS - DAY_MS).toISOString().slice(0, 10);
+}
+
+/** Milliseconds remaining until the next IST-midnight rollover -- i.e. until
+ *  getTodayString() next changes and a new Daily challenge goes live. Used
+ *  by Leaderboard's "next challenge in" countdown. */
+export function getMsUntilNextDaily() {
+  const istNow = Date.now() + IST_OFFSET_MS;
+  return DAY_MS - (istNow % DAY_MS);
 }
 
 /**

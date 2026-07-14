@@ -33,7 +33,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { LS_KEYS } from '../config.js';
-import { getTodayString } from '../game/daily.js';
+import { getTodayString, getMsUntilNextDaily } from '../game/daily.js';
 import { getLeaderboard } from '../game/api.js';
 import { loadDailyStats, bestDailyScore } from '../game/stats.js';
 import { shareNodeAsImage } from '../game/shareImage.js';
@@ -79,6 +79,15 @@ function ShareIcon() {
 function formatShortDate(dateStr) {
   const [y, m, d] = dateStr.split('-');
   return `${d}-${m}-${y}`;
+}
+
+/** "Xh Ym" until the next Daily -- rounds up to the next whole minute so
+ *  this never reads "0h 0m" right up until the actual rollover. */
+function formatCountdown(ms) {
+  const totalMinutes = Math.max(0, Math.ceil(ms / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}h ${minutes}m`;
 }
 
 /** Rank is unset unless RANK_TODAY's stored date is actually today --
@@ -127,6 +136,17 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   const todayEntry = lastEntry?.date === today ? lastEntry : null;
   const hasTodayEntry = !!todayEntry;
   const hasSites = !!(allSites && allSites.length > 0);
+
+  // "Next challenge in Xh Ym" -- only meaningful once today's Daily is
+  // done. Recomputed from Date.now() on a 30s interval rather than
+  // decremented locally, so it can't drift and self-corrects if the tab
+  // was backgrounded. Minute-granularity display doesn't need a faster tick.
+  const [msUntilReset, setMsUntilReset] = useState(getMsUntilNextDaily);
+  useEffect(() => {
+    if (!hasTodayEntry) return undefined;
+    const id = setInterval(() => setMsUntilReset(getMsUntilNextDaily()), 30_000);
+    return () => clearInterval(id);
+  }, [hasTodayEntry]);
 
   // Auto-opens once today's recap is ready, but only the first time: waits
   // 2s (so the leaderboard/recap have visibly settled before popping the
@@ -242,6 +262,10 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
         <h1>Today's Leaderboard</h1>
         <span className="lb-date">{formatShortDate(today)}</span>
       </div>
+
+      {hasTodayEntry && (
+        <p className="lb-next-daily">Next challenge in {formatCountdown(msUntilReset)}</p>
+      )}
 
       {banner === 'already_submitted' && (
         <div className="lb-banner">Already submitted for today.</div>

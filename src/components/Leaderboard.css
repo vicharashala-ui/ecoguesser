@@ -37,6 +37,20 @@
   color: #6b7280;
 }
 
+.lb-next-daily {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(22, 163, 74, 0.08);
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  box-sizing: border-box;
+}
+
 .lb-banner {
   width: 100%;
   max-width: 420px;

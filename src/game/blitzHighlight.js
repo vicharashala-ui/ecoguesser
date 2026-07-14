@@ -15,17 +15,16 @@
 // useMapState.js) so each state's own name works directly as its
 // feature-state id.
 
-import { LAYER_IDS } from '../config.js';
+import { LAYER_IDS, CATEGORY_META } from '../config.js';
 import { fetchBoundary } from './boundaryCache.js';
 
 const STATE_SOURCE_ID = 'india-states';
-// Boundary polygon color -- deliberately NOT CATEGORY_META[site.category].color,
-// to avoid clashing with the correct/wrong highlight palette regardless of
-// which category is active. This blue matches useMapState.js's BLITZ_COLOR
-// 'selected' entry -- already part of this feature's palette, and unused by
-// the time REVEALING draws the boundary (selection only shows pre-Confirm),
-// so it never collides.
-const BOUNDARY_COLOR = '#3b82f6';
+// Boundary polygon color -- CATEGORY_META[site.category].color, same as
+// Classic/Daily's resultLayer.js. Safe alongside the state-polygon
+// correct(green)/wrong(red) feature-state palette: no CATEGORY_META color
+// overlaps those, and by REVEALING (when this boundary draws) 'selected'
+// blue is no longer in play either.
+const FALLBACK_COLOR = '#16a34a'; // same fallback resultLayer.js uses for a missing/unknown category
 // Fallback only -- BlitzMap.jsx now passes zoomToBoundary() a fitPadding
 // built from BlitzCard's real measured height (same pattern as
 // resultLayer.js's zoomToSiteBoundary), since the expanded card's height
@@ -68,14 +67,15 @@ export async function showReveal(map, correctStates, guessedState, isCorrect, si
   const geo = await boundaryPromise;
   if (!geo || !map.getSource(STATE_SOURCE_ID)) return; // no boundary, or map torn down mid-fetch
 
+  const color = CATEGORY_META[site.category]?.color ?? FALLBACK_COLOR;
   map.addSource(LAYER_IDS.BLITZ_BOUNDARY, { type: 'geojson', data: geo });
   map.addLayer({
     id: `${LAYER_IDS.BLITZ_BOUNDARY}-fill`, type: 'fill', source: LAYER_IDS.BLITZ_BOUNDARY,
-    paint: { 'fill-color': BOUNDARY_COLOR, 'fill-opacity': 0.2 },
+    paint: { 'fill-color': color, 'fill-opacity': 0.2 },
   });
   map.addLayer({
     id: `${LAYER_IDS.BLITZ_BOUNDARY}-outline`, type: 'line', source: LAYER_IDS.BLITZ_BOUNDARY,
-    paint: { 'line-color': BOUNDARY_COLOR, 'line-opacity': 0.7, 'line-width': 2 },
+    paint: { 'line-color': color, 'line-opacity': 0.7, 'line-width': 2 },
   });
 }
 

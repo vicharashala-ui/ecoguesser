@@ -232,7 +232,7 @@ function BlitzSection() {
         </div>
       </div>
 
-      <p className="sv-heading">By category</p>
+      <p className="sv-heading">Accuracy by category</p>
       <ScoreHistogram
         distribution={DAILY.CATEGORIES.map((cat) => stats.byCategory[cat])}
         labels={DAILY.CATEGORIES.map((cat) => CATEGORY_META[cat].label)}
