@@ -29,7 +29,15 @@ const DEFAULT_FIT_PADDING = { top: 60, bottom: 260, left: 40, right: 40 };
 const RESULT_FIT_DURATION_MS = 1700;
 // easeInOutCubic -- gentle acceleration/deceleration rather than MapLibre's
 // default easing, which reads as abrupt for a camera move this size.
-const RESULT_FIT_EASING = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+// Exported so ClassicMap.jsx/DailyMap.jsx can reuse the same curve for
+// their own "reset to India-wide framing" fitBounds call on LOADING --
+// both ends of a round (reveal in, reset back out) then share one
+// consistent camera feel instead of only the reveal being smoothed.
+export const RESULT_FIT_EASING = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+// Shorter than RESULT_FIT_DURATION_MS -- resetting to the flat India-wide
+// view is a simpler, usually smaller camera move than fitting a specific
+// guess<->site pair, so it doesn't need the reveal's slower travel time.
+export const ROUND_RESET_DURATION_MS = 700;
 
 // MODULE-LEVEL state per spec -- reset on every LOADING entry via clearResult().
 let boundaryPromise = null;

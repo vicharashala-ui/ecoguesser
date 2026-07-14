@@ -55,7 +55,8 @@ function HowToPlayContent() {
         state turns green, get it wrong and you'll see your guess in red
         next to the correct answer in green. No pins, no distance, just
         geography. Correct answers build a streak, shown alongside your best
-        streak for the session. Play as many rounds as you like.
+        streak for the session. Each round gives you a few seconds to
+        answer -- play as many rounds as you like, back to back.
       </p>
 
       <h3>Scoring</h3>

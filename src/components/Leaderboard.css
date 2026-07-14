@@ -100,6 +100,21 @@
   border-bottom: 1px solid #d1d5db;
 }
 
+/* Top-3 rank cell -- a small colored circle (background set inline per
+   rank in Leaderboard.jsx) in place of the plain rank number every other
+   row gets. Sized to sit comfortably inside the 28px first grid column. */
+.lb-rank-medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .lb-name {
   overflow: hidden;
   text-overflow: ellipsis;

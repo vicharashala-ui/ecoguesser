@@ -78,7 +78,7 @@ define(['./workbox-fdf26176'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "index.html",
-    "revision": "0.mqc5idkeugg"
+    "revision": "0.2usjdi2m2j4"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
@@ -90,7 +90,7 @@ define(['./workbox-fdf26176'], (function (workbox) { 'use strict';
   workbox.registerRoute(/\.(?:geojson|topojson|json|png|jpg|jpeg|svg)$/, new workbox.StaleWhileRevalidate({
     "cacheName": "eg-static-data",
     plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 300,
+      maxEntries: 1000,
       maxAgeSeconds: 2592000
     })]
   }), 'GET');

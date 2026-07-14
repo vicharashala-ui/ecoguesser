@@ -220,6 +220,7 @@ export default function App() {
             mapRef={blitzMapRef}
             sites={allSites}
             filters={classicFilters}
+            active={activeTab === 'blitz'}
             style={{ position: 'absolute', inset: 0, display: activeTab === 'blitz' ? 'block' : 'none' }}
           />
         </Suspense>

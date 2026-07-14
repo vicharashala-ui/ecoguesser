@@ -22,9 +22,19 @@ import {
 } from '../game/blitzHighlight.js';
 import { siteMatchesFilter, DEFAULT_FILTERS, getRegionHintStates } from '../utils/filters.js';
 import { recordBlitzResult } from '../game/stats.js';
-import { LAYER_IDS, MAP_CONFIG, BARE_VISUAL } from '../config.js';
+import { LAYER_IDS, MAP_CONFIG, BARE_VISUAL, BLITZ } from '../config.js';
 import { TERRAIN_PLACE_LABEL_IDS } from '../hooks/useMapState.js';
 import './BlitzMap.css';
+
+// Dark text -> amber under half the timer -> red (+ pulse) under a quarter.
+// Own thresholds, not DailyMap.jsx's timerColor -- BLITZ.TIMER_SECONDS is a
+// fraction of DAILY.TIMER_SECONDS, so Daily's flat 10s/30s cutoffs would
+// read as permanently red for the entire round here.
+function blitzTimerColor(remaining) {
+  if (remaining <= Math.ceil(BLITZ.TIMER_SECONDS * 0.25)) return '#dc2626';
+  if (remaining <= Math.ceil(BLITZ.TIMER_SECONDS * 0.5)) return '#f59e0b';
+  return '#111827';
+}
 
 // Same flame glyph as BottomNav.jsx's Daily-tab icon -- duplicated rather
 // than imported, per this codebase's no-shared-icon-module convention (each
@@ -106,17 +116,19 @@ const REVEAL_CARD_GAP = 20; // gap above the card's top edge
  * @param {import('../config').Site[]} sites - full unfiltered list from App.jsx
  * @param {{categories: string[], states: string[]}} [filters] - same lifted
  *   filter state as ClassicMap.jsx (Category + Region/State), shared with Blitz.
+ * @param {boolean} [active=true] - false while another tab is active; see
+ *   useBlitzRound.js's own doc comment for why the round timer needs this.
  */
-export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTERS }) {
+export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTERS, active = true }) {
   const sitePool = useMemo(
     () => sites.filter((s) => siteMatchesFilter(s, filters)),
     [sites, filters]
   );
 
   const {
-    roundState, site, selectedState, result, streak, bestStreak,
+    roundState, site, selectedState, result, streak, bestStreak, timeRemaining,
     handleStateClick, handleConfirm, handleNextSite, handleSkip,
-  } = useBlitzRound(sitePool);
+  } = useBlitzRound(sitePool, active);
 
   const { mapReady, politicalNames, setPoliticalNames } = useMapState(mapRef, 'blitz');
   // political is forced true inside useMapState's onLoad for mode==='blitz'
@@ -317,6 +329,24 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   return (
     <div style={style}>
       <div className="bz-top-right-stack">
+        {/* Round countdown -- always mounted (mirrors the streak card just
+            below it), frozen at whatever it read once REVEALING pauses it.
+            aria-live would double-announce every single tick, so this is
+            aria-hidden -- the streak/result already carry the outcome for
+            assistive tech. */}
+        <div className="bz-timer-card" aria-hidden="true">
+          <span
+            className={`bz-timer-value${
+              (roundState === 'READING' || roundState === 'SELECTING') && timeRemaining > 0
+                && timeRemaining <= Math.ceil(BLITZ.TIMER_SECONDS * 0.25)
+                ? ' bz-timer-urgent'
+                : ''
+            }`}
+            style={{ color: blitzTimerColor(timeRemaining) }}
+          >
+            {timeRemaining}
+          </span>
+        </div>
         {/* Session streak -- tracked by useBlitzRound.js the whole time but
             previously never surfaced in the UI. Always mounted (not gated
             on streak > 0) so its position never jumps mid-session; the

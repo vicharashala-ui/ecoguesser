@@ -24,7 +24,7 @@ import { useClassicRound } from '../hooks/useClassicRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
 import { MAP_CONFIG } from '../config.js';
-import { showResult, clearResult, zoomToSiteBoundary } from '../game/resultLayer.js';
+import { showResult, clearResult, zoomToSiteBoundary, RESULT_FIT_EASING, ROUND_RESET_DURATION_MS } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
 import { recordClassicResult } from '../game/stats.js';
 import './ClassicMap.css';
@@ -107,8 +107,15 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
       });
     } else if (roundState === 'LOADING') {
       clearResult(map);
-      // Reset to the default India-wide framing for the next round.
-      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING });
+      // Reset to the default India-wide framing for the next round -- same
+      // eased curve resultLayer.js's own reveal fitBounds uses, so the
+      // camera doesn't snap between a smoothed reveal and an untouched
+      // default reset.
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, {
+        padding: MAP_CONFIG.FIT_PADDING,
+        duration: ROUND_RESET_DURATION_MS,
+        easing: RESULT_FIT_EASING,
+      });
     }
   }, [mapRef, mapReady, roundState, result]);
 

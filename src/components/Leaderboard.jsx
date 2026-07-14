@@ -38,7 +38,14 @@ import { getLeaderboard } from '../game/api.js';
 import { loadDailyStats, bestDailyScore } from '../game/stats.js';
 import { shareNodeAsImage } from '../game/shareImage.js';
 import DailyRecap from './DailyRecap.jsx';
+import ConfettiBurst from './ConfettiBurst.jsx';
 import './Leaderboard.css';
+
+// sessionStorage guard so revisiting the Daily tab later the same session
+// doesn't replay the burst every time -- same one-per-session pattern as
+// BottomCard.jsx's SEEN_PIN_TIP_KEY, just keyed on the date instead of a
+// plain flag so a new day (new session or not) can still celebrate fresh.
+const RANK1_CELEBRATED_KEY = 'eg_rank1_celebrated';
 
 function computeRanks(top10) {
   let rank = 0;
@@ -48,6 +55,17 @@ function computeRanks(top10) {
     prevScore = row.total_pts;
     return { ...row, tableRank: rank };
   });
+}
+
+// Gold/silver/bronze -- reuses colors already established elsewhere in the
+// app (amber accent, muted gray text, the perfect-score pulse's bronze)
+// rather than inventing a new trio just for this.
+const MEDAL_COLORS = { 1: '#f59e0b', 2: '#9ca3af', 3: '#b45309' };
+
+function RankBadge({ rank }) {
+  const color = MEDAL_COLORS[rank];
+  if (!color) return <span>{rank}</span>;
+  return <span className="lb-rank-medal" style={{ background: color }}>{rank}</span>;
 }
 
 function ShareIcon() {
@@ -204,8 +222,22 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   const banner = fetched?.banner ?? null;
   const ranked = computeRanks(top10);
 
+  // Fires once per day the player actually holds rank #1 -- not on every
+  // render rank stays 1 (the sessionStorage check below only lets this
+  // flip showRankOneConfetti from false to true once), and not at all on
+  // days they don't top the board.
+  const [showRankOneConfetti, setShowRankOneConfetti] = useState(false);
+  useEffect(() => {
+    if (loading || rank !== 1) return;
+    if (typeof sessionStorage === 'undefined') return;
+    if (sessionStorage.getItem(RANK1_CELEBRATED_KEY) === today) return;
+    sessionStorage.setItem(RANK1_CELEBRATED_KEY, today);
+    setShowRankOneConfetti(true);
+  }, [loading, rank, today]);
+
   return (
     <div className="lb-screen">
+      {showRankOneConfetti && <ConfettiBurst key={today} />}
       <div className="lb-header">
         <h1>Today's Leaderboard</h1>
         <span className="lb-date">{formatShortDate(today)}</span>
@@ -244,7 +276,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
                   key={i}
                   style={{ animationDelay: `${Math.min(i, 10) * 40}ms` }}
                 >
-                  <span>{row.tableRank}</span>
+                  <RankBadge rank={row.tableRank} />
                   <span className="lb-name">
                     {row.player_name}
                   </span>

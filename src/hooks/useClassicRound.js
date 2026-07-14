@@ -23,6 +23,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { haversine, calcScore, applyHintPenalty, isPointInBoundary } from '../game/scoring.js';
 import { fetchBoundary } from '../game/boundaryCache.js';
 import { SCORING } from '../config.js';
+import { hapticConfirm, hapticPerfect } from '../utils/haptics.js';
 
 const MAX_HINTS = 2;
 
@@ -100,6 +101,7 @@ export function useClassicRound(sitePool) {
     // scoring.js's own spec -- hintLevel is still recorded on the result
     // below for stats, it just never reduces finalScore in this mode.
     const finalScore = applyHintPenalty(rawScore, 0);
+    insideBoundary ? hapticPerfect() : hapticConfirm();
 
     setResult({
       site,

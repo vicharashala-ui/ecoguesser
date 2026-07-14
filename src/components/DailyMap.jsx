@@ -20,7 +20,7 @@ import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import { useDailyRound } from '../hooks/useDailyRound.js';
 import { useMapState } from '../hooks/useMapState.js';
-import { showResult, clearResult, zoomToSiteBoundary } from '../game/resultLayer.js';
+import { showResult, clearResult, zoomToSiteBoundary, RESULT_FIT_EASING, ROUND_RESET_DURATION_MS } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
 import { MAP_CONFIG, DAILY, CATEGORY_META } from '../config.js';
 import './DailyMap.css';
@@ -126,9 +126,14 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
     } else if (roundState === 'LOADING') {
       clearResult(map);
       // Next Site (and Skip's auto-advance) lands here -- reset to the
-      // default India-wide framing, same fitBounds call RecenterButton/
-      // MapContainer's initial load both use.
-      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING });
+      // default India-wide framing, same eased curve resultLayer.js's own
+      // reveal fitBounds uses so the camera doesn't snap between a
+      // smoothed reveal and an untouched default reset.
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, {
+        padding: MAP_CONFIG.FIT_PADDING,
+        duration: ROUND_RESET_DURATION_MS,
+        easing: RESULT_FIT_EASING,
+      });
     }
   }, [mapReady, roundState, result, guess, site, mapRef]);
 

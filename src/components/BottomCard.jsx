@@ -16,7 +16,7 @@
 // Show Site Boundary renders as a small chip at the right edge of the
 // result row (distance + pts) rather than its own row, to save vertical space.
 
-import { useId, useEffect, forwardRef } from 'react';
+import { useId, useState, useEffect, forwardRef } from 'react';
 import { CATEGORY_META, SCORING } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import ConfettiBurst from './ConfettiBurst.jsx';
@@ -136,6 +136,58 @@ function IconSkip({ size = 18 }) {
   );
 }
 
+// Distance-feedback tier shown for every scored, non-perfect round (a
+// boundary hit already gets its own "Perfect!" treatment below; a
+// timed-out Daily round with no marker placed shows "Skipped" instead and
+// gets neither). Bands are fractions of SCORING.MAX_SCORE -- the same
+// value the round-score line further down already reads against, so a
+// hint-penalized guess docked mid-band still reads consistently in both
+// places. Colors run green -> red, deliberately independent of the
+// per-category --eg-accent so a tier reads clearly regardless of which
+// category's color happens to be active.
+const SCORE_TIERS = [
+  { min: 0.8, label: 'Excellent!', color: '#16a34a' },
+  { min: 0.5, label: 'Great',      color: '#65a30d' },
+  { min: 0.2, label: 'Good',       color: '#d97706' },
+  { min: 0.05, label: 'Fair',      color: '#f97316' },
+  { min: 0, label: 'Way Off',      color: '#dc2626' },
+];
+
+function getScoreTier(finalScore) {
+  const ratio = finalScore / SCORING.MAX_SCORE;
+  return SCORE_TIERS.find((t) => ratio >= t.min) ?? SCORE_TIERS[SCORE_TIERS.length - 1];
+}
+
+// Counts up from 0 to `value` once, on mount -- pair with `key={site.id}`
+// at the call site so a new round always remounts (and therefore replays)
+// it, same convention BottomCard.jsx's own .bc-celebrate keying already
+// uses. Same easeOutCubic curve as resultLayer.js's animateLine, for the
+// same "quick then settling" feel. Skips straight to the final value under
+// prefers-reduced-motion, matching the guard BottomCard.css's own
+// keyframes already respect.
+function AnimatedScore({ value, duration = 700 }) {
+  const reduceMotion = typeof window !== 'undefined'
+    && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const [display, setDisplay] = useState(reduceMotion ? value : 0);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    let raf;
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - (1 - t) ** 3;
+      setDisplay(Math.round(value * eased));
+      if (t < 1) raf = requestAnimationFrame(step);
+    }
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return display.toLocaleString();
+}
+
 // ---------------------------------------------------------------------------
 // BottomCard
 // ---------------------------------------------------------------------------
@@ -193,6 +245,12 @@ const BottomCard = forwardRef(function BottomCard({
   // Daily round with hint penalties correctly does NOT celebrate a
   // boundary hit that got docked below 5000.
   const isPerfect = isRevealing && result && result.finalScore === SCORING.MAX_SCORE;
+  // Same "has a real guess" condition as the distance chip just below
+  // (result.skipped || result.distanceKm == null) uses, inverted -- a
+  // timed-out Daily round with no marker placed gets neither the count-up
+  // nor a tier label, same as it already skips the distance figure.
+  const isScored = isRevealing && result && !result.skipped && result.distanceKm != null;
+  const tier = isScored && !isPerfect ? getScoreTier(result.finalScore) : null;
 
   // Only relevant pre-guess (READING/PLACING) -- once revealed there's
   // nothing left to place, and markerPlaced already covers "this round's
@@ -337,13 +395,19 @@ const BottomCard = forwardRef(function BottomCard({
                     : `${Math.round(result.distanceKm).toLocaleString()} km away`}
                 </span>
                 <span className={`bc-meta-item bc-score ${isPerfect ? 'bc-score-perfect' : ''}`}>
-                  <IconStar size={15} /> {result.finalScore.toLocaleString()} pts
+                  <IconStar size={15} />{' '}
+                  {isScored ? <AnimatedScore key={site.id} value={result.finalScore} /> : result.finalScore.toLocaleString()} pts
                   {isPerfect && (
                     <span className="bc-celebrate" key={site.id} aria-hidden="true">
                       <span className="bc-celebrate-label">Perfect!</span>
                       {Array.from({ length: 8 }).map((_, i) => (
                         <span key={i} className="bc-spark" style={{ '--i': i }} />
                       ))}
+                    </span>
+                  )}
+                  {tier && (
+                    <span className="bc-celebrate" key={`tier-${site.id}`} aria-hidden="true">
+                      <span className="bc-celebrate-label" style={{ color: tier.color }}>{tier.label}</span>
                     </span>
                   )}
                 </span>

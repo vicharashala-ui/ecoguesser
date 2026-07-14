@@ -243,6 +243,15 @@ export const DAILY = {
   COLLISION_KM: 50, TIMER_SECONDS: 120,
 };
 
+// Blitz round timer -- new; the mode was previously untimed despite its
+// name/framing (flame streak, "blitz" branding) implying speed pressure.
+// 10s is a starting value tuned for "glance at the highlighted region, tap
+// a state" rather than Daily's much larger pin-placement task -- easy to
+// retune, nothing else derives from this number.
+export const BLITZ = {
+  TIMER_SECONDS: 10,
+};
+
 // State name labels are no longer difficulty-gated -- Classic shows them by
 // zoom alone (STATE_LABEL_MIN_ZOOM, same as Daily), same as every other
 // difficulty level. Only the Borders toggle default still varies by level.
