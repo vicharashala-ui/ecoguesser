@@ -16,6 +16,7 @@
 // feature-state id.
 
 import { LAYER_IDS } from '../config.js';
+import { fetchBoundary } from './boundaryCache.js';
 
 const STATE_SOURCE_ID = 'india-states';
 // Boundary polygon color -- deliberately NOT CATEGORY_META[site.category].color,
@@ -63,11 +64,7 @@ export async function showReveal(map, correctStates, guessedState, isCorrect, si
   correctStates.forEach((s) => paint(map, s, 'correct'));
   if (!isCorrect && guessedState) paint(map, guessedState, 'wrong');
 
-  boundaryPromise = site?.hasBoundary
-    ? fetch(`/boundaries/${site.id}.geojson`)
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null)
-    : null;
+  boundaryPromise = site?.hasBoundary ? fetchBoundary(site) : null;
   const geo = await boundaryPromise;
   if (!geo || !map.getSource(STATE_SOURCE_ID)) return; // no boundary, or map torn down mid-fetch
 

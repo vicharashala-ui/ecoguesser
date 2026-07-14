@@ -119,12 +119,17 @@ export default defineConfig({
           // src/App.jsx's loadSites()) and app icons: rarely change
           // between visits, safe to serve from cache first and refresh in
           // the background so repeat rounds don't re-download the same data.
+          // maxEntries: 858 real files match this pattern today (835
+          // per-site boundaries + protected-areas.json + physical-features
+          // .geojson + india-states.topojson + 16 icons + map-style.json).
+          // 1000 covers that with headroom for new protected areas before
+          // Workbox's LRU eviction starts silently re-fetching older sites.
           {
             urlPattern: /\.(?:geojson|topojson|json|png|jpg|jpeg|svg)$/,
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'eg-static-data',
-              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              expiration: { maxEntries: 1000, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
           // Covers the lazy route chunks excluded from the eager precache

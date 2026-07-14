@@ -44,19 +44,18 @@ function IconFlame({ size = 20 }) {
 // use, applied to the fetched style JSON before MapContainer.jsx
 // constructs the map from it -- see MapContainer's styleTransform doc
 // comment for why this has to happen pre-construction rather than via
-// setPaintProperty in onLoad (the maxzoom cap specifically, since a vector
-// source's maxzoom has no runtime setter; the paint overrides could
-// technically happen post-load too, but doing them here avoids a one-frame
-// flash of the earthy Classic/Daily palette before switching to bare).
+// setPaintProperty in onLoad (the paint overrides could technically happen
+// post-load too, but doing them here avoids a one-frame flash of the
+// earthy Classic/Daily palette before switching to bare).
 // Used to be a second, hand-maintained static file (map-style-ofm.json) --
 // see config.js's MAP_STYLE comment for why that was retired.
 function blitzStyleTransform(styleJson) {
   const style = JSON.parse(JSON.stringify(styleJson)); // plain data, safe to round-trip
 
-  // Blitz is a broad country/state view -- no need for street-level tile
-  // detail. Immutable after construction (MapLibre has no runtime setter
-  // for a vector source's maxzoom), so this has to happen here.
-  if (style.sources.openmaptiles) style.sources.openmaptiles.maxzoom = 10;
+  // openmaptiles.maxzoom is now set directly in map-style.json (shared by
+  // all three modes -- Classic/Daily's camera reaches z12 with no detail
+  // gain past the same z10 cap Blitz already relied on), so no per-mode
+  // override is needed here anymore.
 
   // Dropped entirely, not just hidden -- MapLibre fetches a geojson
   // source's full data as soon as it's registered regardless of layer
