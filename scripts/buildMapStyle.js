@@ -55,6 +55,13 @@ function filterLayers(layers) {
   });
 }
 
+// English-only: EcoGuesser is India-focused and doesn't need bilingual
+// Latin/local-script labels. name_en -> name:latin -> name covers cases
+// where name_en is missing but a transliterated Latin name still exists.
+// Shared by every remaining openmaptiles label layer (place/country here,
+// water_name/waterway/mountain_peak via englishOnlyPassthroughLabels below).
+const ENGLISH_TEXT_FIELD = ['coalesce', ['get', 'name_en'], ['get', 'name:latin'], ['get', 'name']];
+
 // The blanket 'place' removal above also strips country labels (they share
 // source-layer "place" with city/town labels; there's no layer-level way to
 // tell admin classes apart). Re-added here as a hand-built layer.
@@ -63,9 +70,7 @@ function buildCountryLabelLayer() {
     id: 'country_label', type: 'symbol', source: 'openmaptiles', 'source-layer': 'place',
     minzoom: 3, filter: ['==', ['get', 'class'], 'country'],
     layout: {
-      'text-field': ['case', ['has', 'name:nonlatin'],
-        ['concat', ['get', 'name:latin'], '\n', ['get', 'name:nonlatin']],
-        ['coalesce', ['get', 'name_en'], ['get', 'name']]],
+      'text-field': ENGLISH_TEXT_FIELD,
       'text-font': ['Noto Sans Bold'],
       'text-size': ['interpolate', ['linear'], ['zoom'], 3, 11, 6, 17],
     },
@@ -90,16 +95,12 @@ const PLACE_TEXT_PAINT = {
   'text-halo-blur': 0.8,
 };
 
-const PLACE_TEXT_FIELD = ['case', ['has', 'name:nonlatin'],
-  ['concat', ['get', 'name:latin'], '\n', ['get', 'name:nonlatin']],
-  ['coalesce', ['get', 'name_en'], ['get', 'name']]];
-
 function buildPlaceLabelLayer(id, cls, minzoom, sizeStops) {
   return {
     id, type: 'symbol', source: 'openmaptiles', 'source-layer': 'place',
     minzoom, filter: ['==', ['get', 'class'], cls],
     layout: {
-      'text-field': PLACE_TEXT_FIELD,
+      'text-field': ENGLISH_TEXT_FIELD,
       'text-font': ['Noto Sans Regular'],
       'text-size': ['interpolate', ['linear'], ['zoom'], ...sizeStops],
       'text-offset': [0, 0.8],
@@ -133,6 +134,19 @@ function buildHamletLabelLayer() {
   return buildPlaceLabelLayer('place_hamlet_label', 'hamlet', 11, [9, 7, 11, 10]);
 }
 
+// water_name/waterway/mountain_peak labels ride straight through
+// filterLayers untouched (only place/poi/etc. source-layers are stripped),
+// so they still carry upstream Liberty's bilingual case/concat pattern.
+// Rewrite every remaining symbol layer's text-field to English-only so
+// labeling is consistent, not just on the hand-built place/country layers.
+function englishOnlyPassthroughLabels(layers) {
+  return layers.map(layer =>
+    layer.type === 'symbol' && layer.layout?.['text-field']
+      ? { ...layer, layout: { ...layer.layout, 'text-field': ENGLISH_TEXT_FIELD } }
+      : layer
+  );
+}
+
 async function main() {
   console.log(`Fetching ${STYLE_URL} ...`);
   const res = await fetch(STYLE_URL);
@@ -151,7 +165,7 @@ async function main() {
   delete style.sprite;
 
   const before = style.layers.length;
-  style.layers = filterLayers(style.layers);
+  style.layers = englishOnlyPassthroughLabels(filterLayers(style.layers));
   style.layers.push(buildCityLabelLayer());
   style.layers.push(buildTownLabelLayer());
   style.layers.push(buildVillageLabelLayer());
