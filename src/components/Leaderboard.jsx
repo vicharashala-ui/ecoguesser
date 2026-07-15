@@ -36,7 +36,9 @@ import { LS_KEYS } from '../config.js';
 import { getTodayString, getMsUntilNextDaily } from '../game/daily.js';
 import { getLeaderboard } from '../game/api.js';
 import { loadDailyStats, bestDailyScore } from '../game/stats.js';
-import { shareNodeAsImage } from '../game/shareImage.js';
+// shareImage.js pulls in html-to-image, only needed if the player taps
+// Share -- dynamically imported inside handleShare so it never lands in
+// this (already lazy) chunk for the common case of just checking rank.
 import DailyRecap from './DailyRecap.jsx';
 import ConfettiBurst from './ConfettiBurst.jsx';
 import './Leaderboard.css';
@@ -225,6 +227,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
     if (sharing) return;
     setSharing(true);
     try {
+      const { shareNodeAsImage } = await import('../game/shareImage.js');
       await shareNodeAsImage(dailyRecapRef.current, {
         filename: `ecoguesser-daily-${today}.png`,
         shareTitle: 'EcoGuesser',

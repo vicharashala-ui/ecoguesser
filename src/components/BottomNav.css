@@ -28,10 +28,28 @@
 */
 
 .eg-bottom-nav {
+  /* Chrome 135+ edge-to-edge fast path (see
+     https://developer.chrome.com/docs/css-ui/edge-to-edge#using_the_safe_area_bottom_inset_and_the_safe_area_bottom_maximum_inset):
+     grow the box by the MAX possible inset up front via padding-bottom, then
+     pull it down by `env(safe-area-inset-bottom) - max` so it sits flush
+     against the (possibly Chrome-drawn "chin") bottom edge. Only `bottom`
+     recomputes as the chin slides away, which is the specific calc() shape
+     Chrome fast-paths -- our previous plain `padding-bottom:
+     env(safe-area-inset-bottom)` is the exact anti-pattern Chrome's guide
+     calls out: it doesn't hit the fast path, so Chrome keeps its own opaque
+     chin bar permanently over the gesture-nav-bar region instead of ever
+     letting this element's black background paint into it. That's what was
+     showing as a white strip beneath the nav bar. 36px fallback is Chrome's
+     own recommended value (tuned to iOS Safari's max bottom offset) for
+     browsers that don't support safe-area-max-inset-bottom yet. */
+  --eg-safe-area-max: env(safe-area-max-inset-bottom, 36px);
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 0; /* graceful-degradation fallback -- kept in case the calc() below is invalid on a given engine */
+  bottom: calc(env(safe-area-inset-bottom, 0px) - var(--eg-safe-area-max));
+  height: var(--eg-nav-height, 64px);
+  padding-bottom: var(--eg-safe-area-max);
   z-index: 40;
   isolation: isolate;
   transform: translateZ(0);
@@ -45,7 +63,6 @@
      `var(--eg-nav-height) + env(safe-area-inset-bottom)` bottom-offset
      calc still lines up correctly against this container. */
   background: #000000;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .eg-nav-tabs {
