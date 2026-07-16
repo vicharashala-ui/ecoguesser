@@ -100,3 +100,29 @@ export function pickRandom(pool, excludeIds = []) {
   const eligible = pool.length === 1 ? pool : pool.filter((site) => !excludeIds.includes(site.id));
   return eligible[Math.floor(Math.random() * eligible.length)];
 }
+
+/**
+ * Classic/Blitz site picker: round-robins through DAILY.CATEGORIES
+ * (np -> wls -> tr -> br -> ramsar) so category-skewed pool sizes (wls has
+ * 554 sites, br has 18) don't dominate what the player sees, and never
+ * repeats `previousSite` within the chosen category. Categories absent
+ * from `pool` (filtered out via the drawer, or just empty) are skipped --
+ * the rotation only advances across whatever categories are actually
+ * present, so it stays correct as the player's filters change.
+ *
+ * @param {import('../config').Site[]} pool - non-empty, already filtered
+ * @param {import('../config').Site|null} previousSite - last site shown,
+ *   or null for the first pick of a session
+ */
+export function pickNextSite(pool, previousSite) {
+  const byCategory = {};
+  for (const site of pool) {
+    (byCategory[site.category] ??= []).push(site);
+  }
+  const order = DAILY.CATEGORIES.filter((cat) => byCategory[cat]?.length);
+
+  const prevIndex = previousSite ? order.indexOf(previousSite.category) : -1;
+  const nextCategory = order[(prevIndex + 1) % order.length];
+  const excludeIds = previousSite ? [previousSite.id] : [];
+  return pickRandom(byCategory[nextCategory], excludeIds);
+}

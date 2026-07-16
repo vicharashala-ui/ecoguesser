@@ -22,6 +22,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { haversine, calcScore, applyHintPenalty, isPointInBoundary } from '../game/scoring.js';
 import { fetchBoundary } from '../game/boundaryCache.js';
+import { pickNextSite } from '../utils/filters.js';
 import { SCORING } from '../config.js';
 import { hapticConfirm, hapticPerfect } from '../utils/haptics.js';
 import { soundConfirm, soundPerfect } from '../utils/sound.js';
@@ -68,7 +69,7 @@ export function useClassicRound(sitePool) {
     if (roundState !== 'LOADING') return;
     if (!sitePool || sitePool.length === 0) return; // nothing to pick -- stay in LOADING
 
-    const next = sitePool[Math.floor(Math.random() * sitePool.length)];
+    const next = pickNextSite(sitePool, site);
     boundaryRef.current = null;
     fetchBoundary(next).then((geo) => { boundaryRef.current = geo; });
     setSite(next);
@@ -76,6 +77,9 @@ export function useClassicRound(sitePool) {
     setHintLevel(0);
     setResult(null);
     setRoundState('READING');
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `site` is read
+    // for pickNextSite's round-robin/exclusion, not as a retrigger: it's
+    // the previous round's value at the moment LOADING starts.
   }, [roundState, sitePool]);
 
   const handleMapClick = useCallback((lat, lng) => {

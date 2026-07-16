@@ -16,6 +16,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { hapticConfirm, hapticWrong } from '../utils/haptics.js';
 import { soundConfirm, soundWrong } from '../utils/sound.js';
+import { pickNextSite } from '../utils/filters.js';
 
 /**
  * @param {import('../config').Site[]} sitePool - caller (BlitzMap.jsx) already
@@ -60,11 +61,14 @@ export function useBlitzRound(sitePool) {
     if (roundState !== 'LOADING') return;
     if (!sitePool || sitePool.length === 0) return;
 
-    const next = sitePool[Math.floor(Math.random() * sitePool.length)];
+    const next = pickNextSite(sitePool, site);
     setSite(next);
     setSelectedState(null);
     setResult(null);
     setRoundState('READING');
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `site` is read
+    // for pickNextSite's round-robin/exclusion, not as a retrigger: it's
+    // the previous round's value at the moment LOADING starts.
   }, [roundState, sitePool]);
 
   // Single scoring path used by Confirm. `guessedState` is only ever a
