@@ -20,6 +20,7 @@ import { useState, useEffect, useRef } from 'react';
 import { LS_KEYS, CATEGORY_META, FEEDBACK_FORM_URL, FEEDBACK_ENTRY_ID } from '../config.js';
 import { REGION_STATES } from '../utils/filters.js';
 import { submitFeedback } from '../game/api.js';
+import { isSoundEnabled, setSoundEnabled } from '../utils/sound.js';
 import './SideDrawer.css';
 
 const REGIONS = Object.keys(REGION_STATES);
@@ -52,6 +53,7 @@ export default function SideDrawer({
   onNavigate,
 }) {
   const [name, setName] = useState(() => localStorage.getItem(LS_KEYS.NAME) ?? '');
+  const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
   const [expandedRegion, setExpandedRegion] = useState(null);
   // Each region's state list is measured (not guessed) because some state
   // names wrap to two lines at this drawer width -- a fixed per-row height
@@ -109,6 +111,11 @@ export default function SideDrawer({
     const trimmed = value.trim();
     if (trimmed) localStorage.setItem(LS_KEYS.NAME, trimmed);
     else localStorage.removeItem(LS_KEYS.NAME);
+  }
+
+  function handleSoundToggle(enabled) {
+    setSoundOn(enabled);
+    setSoundEnabled(enabled);
   }
 
   function handleNavigate(dest) {
@@ -171,6 +178,32 @@ export default function SideDrawer({
               <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
+        </div>
+
+        <hr className="sd-divider" />
+
+        <div className="sd-section">
+          <p className="sd-heading">Sound</p>
+          <div className="sd-chip-row">
+            <button
+              type="button"
+              className={`sd-chip${soundOn ? ' sd-chip-active' : ''}`}
+              style={soundOn ? { background: '#16a34a' } : undefined}
+              onClick={() => handleSoundToggle(true)}
+              aria-pressed={soundOn}
+            >
+              On
+            </button>
+            <button
+              type="button"
+              className={`sd-chip${!soundOn ? ' sd-chip-active' : ''}`}
+              style={!soundOn ? { background: '#16a34a' } : undefined}
+              onClick={() => handleSoundToggle(false)}
+              aria-pressed={!soundOn}
+            >
+              Off
+            </button>
+          </div>
         </div>
 
         {showFilters && (

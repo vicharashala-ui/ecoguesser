@@ -24,6 +24,7 @@ import { haversine, calcScore, applyHintPenalty, isPointInBoundary } from '../ga
 import { fetchBoundary } from '../game/boundaryCache.js';
 import { SCORING } from '../config.js';
 import { hapticConfirm, hapticPerfect } from '../utils/haptics.js';
+import { soundConfirm, soundPerfect } from '../utils/sound.js';
 
 const MAX_HINTS = 2;
 
@@ -102,6 +103,7 @@ export function useClassicRound(sitePool) {
     // below for stats, it just never reduces finalScore in this mode.
     const finalScore = applyHintPenalty(rawScore, 0);
     insideBoundary ? hapticPerfect() : hapticConfirm();
+    insideBoundary ? soundPerfect() : soundConfirm();
 
     setResult({
       site,

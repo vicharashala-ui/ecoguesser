@@ -41,6 +41,7 @@ import { loadDailyStats, bestDailyScore } from '../game/stats.js';
 // this (already lazy) chunk for the common case of just checking rank.
 import DailyRecap from './DailyRecap.jsx';
 import ConfettiBurst from './ConfettiBurst.jsx';
+import { soundCelebrate } from '../utils/sound.js';
 import './Leaderboard.css';
 
 // sessionStorage guard so revisiting the Daily tab later the same session
@@ -256,6 +257,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
     if (sessionStorage.getItem(RANK1_CELEBRATED_KEY) === today) return;
     sessionStorage.setItem(RANK1_CELEBRATED_KEY, today);
     setShowRankOneConfetti(true);
+    soundCelebrate();
   }, [loading, rank, today]);
 
   return (

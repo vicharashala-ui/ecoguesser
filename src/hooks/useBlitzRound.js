@@ -15,6 +15,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { hapticConfirm, hapticWrong } from '../utils/haptics.js';
+import { soundConfirm, soundWrong } from '../utils/sound.js';
 
 /**
  * @param {import('../config').Site[]} sitePool - caller (BlitzMap.jsx) already
@@ -76,6 +77,7 @@ export function useBlitzRound(sitePool) {
     const currentSite = siteRef.current;
     const isCorrect = guessedState != null && currentSite.state.includes(guessedState);
     isCorrect ? hapticConfirm() : hapticWrong();
+    isCorrect ? soundConfirm() : soundWrong();
 
     setResult({
       site: currentSite,

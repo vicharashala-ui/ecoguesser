@@ -272,6 +272,7 @@ export const LS_KEYS = {
   UUID:        'ecoguesser_uuid',
   NAME:        'ecoguesser_name',
   DIFFICULTY:  'ecoguesser_difficulty',
+  SOUND:       'ecoguesser_sound', // 'on' | 'off' -- absent (new player) defaults to on
   STATS_DAILY: 'stats_daily',
   STATS_NORM:  'stats_normal',
   STATS_BLITZ: 'stats_blitz',

@@ -26,6 +26,7 @@ import { fetchBoundary } from '../game/boundaryCache.js';
 import { useCountdownTimer } from './useCountdownTimer.js';
 import { DAILY, SCORING } from '../config.js';
 import { hapticConfirm, hapticPerfect, hapticWrong } from '../utils/haptics.js';
+import { soundConfirm, soundPerfect, soundWrong } from '../utils/sound.js';
 
 const TOTAL_ROUNDS = DAILY.CATEGORIES.length; // 5
 
@@ -117,9 +118,9 @@ export function useDailyRound(allSites, active = true) {
 
     const rawScore = insideBoundary ? SCORING.MAX_SCORE : calcScore(distanceKm);
     const finalScore = applyHintPenalty(rawScore, hintsUsed);
-    if (insideBoundary) hapticPerfect();
-    else if (timedOut) hapticWrong();
-    else hapticConfirm();
+    if (insideBoundary) { hapticPerfect(); soundPerfect(); }
+    else if (timedOut) { hapticWrong(); soundWrong(); }
+    else { hapticConfirm(); soundConfirm(); }
 
     const roundResult = {
       site: currentSite,
