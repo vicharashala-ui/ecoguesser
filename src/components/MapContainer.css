@@ -20,3 +20,53 @@
 @media (prefers-reduced-motion: reduce) {
   .eg-guess-marker { animation: none; }
 }
+
+/*
+  Shown over a mode's map area on 'webglcontextlost' (see MapContainer.jsx).
+  Centered rather than a bottom pill like DailyMap's loading/start states --
+  this covers a dead canvas, not a peripheral status, so it needs to read as
+  "this broke" rather than "still working on it".
+*/
+.eg-context-lost {
+  position: absolute;
+  inset: 0;
+  /* Above BottomNav's z-index: 40, same reasoning as ConfettiBurst.css --
+     otherwise the nav bar wins the tie and can sit over this. */
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
+  background: rgba(248, 246, 241, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.eg-context-lost p {
+  margin: 0;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.eg-context-lost-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 999px;
+  background: #16a34a;
+  color: #fff;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(17, 24, 39, 0.18);
+  transition: transform 0.15s ease;
+}
+
+.eg-context-lost-btn:active {
+  transform: scale(0.97);
+}

@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import '../styles/maplibre-gl-trimmed.css';
 import { MAP_STYLE, MAP_CONFIG } from '../config.js';
+import { fetchMapStyle } from '../utils/mapStyleCache.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_PATH } from './tigerMarkPath';
 import './MapContainer.css';
 
@@ -45,6 +46,19 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
   const containerRef = useRef(null);
   const markerRef = useRef(null);
 
+  // Set on the map's 'webglcontextlost' event (GPU-memory eviction, driver
+  // reset, or a low-memory mobile browser reclaiming one of the 3
+  // concurrently-mounted maps' contexts -- see App.jsx's keep-mounted
+  // comment). Browsers don't auto-restore a lost context unless the app
+  // calls preventDefault() and manually rebuilds every GL resource; instead
+  // of chasing that, "reload" here just tears down the dead map and
+  // constructs a fresh one below (a new canvas gets a new context for
+  // free). reloadKey is in the mount effect's deps specifically to drive
+  // that recreate -- bumping it re-runs cleanup (tears down the dead map)
+  // then the effect body (fetches -- now cache-warm -- and reconstructs).
+  const [contextLost, setContextLost] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+
   // onMapClick is read through a ref inside the 'click' listener below so a
   // new callback identity on re-render doesn't require tearing down and
   // re-attaching the listener -- same stale-closure fix already applied to
@@ -71,10 +85,15 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
     // this effect has already been cleaned up (mode switch, fast unmount).
     let cancelled = false;
 
-    fetch(mapStyle)
-      .then((res) => res.json())
-      .then((styleJson) => {
+    // fetchMapStyle is a shared cache (Classic/Daily/Blitz all request the
+    // same URL) -- structuredClone gives this mount its own copy so
+    // MapLibre's internal mutation of the style object it's constructed
+    // from, and styleTransform's edits below, can never leak into the
+    // cached copy or another mode's in-flight mount.
+    fetchMapStyle(mapStyle)
+      .then((cachedStyleJson) => {
         if (cancelled) return;
+        const styleJson = structuredClone(cachedStyleJson);
         const finalStyle = styleTransformRef.current ? styleTransformRef.current(styleJson) : styleJson;
 
         mapRef.current = new maplibregl.Map({
@@ -130,6 +149,12 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
         mapRef.current.on('click', (e) => {
           onMapClickRef.current?.(e.lngLat.lat, e.lngLat.lng);
         });
+
+        mapRef.current.on('webglcontextlost', () => setContextLost(true));
+        // Rare, but MapLibre does let the browser restore a context on its
+        // own sometimes -- if that happens before the player taps Reload,
+        // just clear the banner instead of tearing down a map that's fine.
+        mapRef.current.on('webglcontextrestored', () => setContextLost(false));
       })
       .catch((err) => {
         // Style JSON fetch itself failed (offline, bad deploy, etc.) --
@@ -147,8 +172,11 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
       mapRef.current?.remove();
       mapRef.current = null;
     };
+    // Only reloadKey is a real dependency (bumping it is the recreate-after-
+    // context-loss path above) -- mapStyle/onMapClick/guessMarkerVisible
+    // intentionally stay out of this list, same as before.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [reloadKey]);
 
   // Syncs the player's guess pin to the map. A move (re-tap before Confirm)
   // updates the existing marker's position rather than recreating it, so
@@ -175,13 +203,40 @@ export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP
         .setLngLat([guess.lng, guess.lat])
         .addTo(map);
     }
+    // reloadKey: a context-loss recreate nulls markerRef in the mount
+    // effect's cleanup, but guess itself doesn't change -- without
+    // reloadKey here, a guess placed before the crash would never get its
+    // marker back. NOTE: if this fires in the brief window between reload
+    // starting and the new map finishing construction (mapRef.current still
+    // null), it bails out below and won't retry until guess next changes --
+    // acceptable given how rare "context lost with a pin already down" is,
+    // and the cache-warm reconstruct is fast.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guess]);
+  }, [guess, reloadKey]);
 
   useEffect(() => {
     const el = markerRef.current?.getElement();
     if (el) el.style.display = guessMarkerVisible ? '' : 'none';
   }, [guess, guessMarkerVisible]);
 
-  return <div ref={containerRef} style={{ position: 'absolute', inset: 0 }} />;
+  return (
+    <div style={{ position: 'absolute', inset: 0 }}>
+      <div ref={containerRef} style={{ position: 'absolute', inset: 0 }} />
+      {contextLost && (
+        <div className="eg-context-lost">
+          <p>Map display was interrupted.</p>
+          <button
+            type="button"
+            className="eg-context-lost-btn"
+            onClick={() => {
+              setContextLost(false);
+              setReloadKey((k) => k + 1);
+            }}
+          >
+            Reload map
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
