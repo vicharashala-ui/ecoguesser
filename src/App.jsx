@@ -262,7 +262,10 @@ export default function App() {
         </Suspense>
       )}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />
-      <Header onMenuClick={() => { drawerEverOpened.current = true; setDrawerOpen(true); }} />
+      <Header
+        onMenuClick={() => { drawerEverOpened.current = true; setDrawerOpen(true); }}
+        titleIsH1={!(activeTab === 'stats' || (activeTab === 'daily' && dailyPhase === 'leaderboard'))}
+      />
       <InstallPrompt />
       {infoModalVariant && (
         <Suspense fallback={null}>

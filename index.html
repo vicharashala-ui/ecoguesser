@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>EcoGuesser</title>
+    <title>EcoGuesser — India Protected Areas Geography Guessing Game</title>
 
     <!-- Preconnect to the two third-party origins MapLibre fetches from on
          first paint: tiles.openfreemap.org (vector tiles, sprite, glyphs --
@@ -60,6 +60,38 @@
          same dark green as the icon background. -->
     <meta name="theme-color" content="#1c3b28" />
     <meta name="description" content="Guess India's national parks, wildlife sanctuaries, tiger reserves, biosphere reserves, and Ramsar wetlands from the map." />
+
+    <!-- Canonical + social preview tags. og:image/twitter:image point at the
+         PWA icon as a placeholder -- it's square (192x192), not the ideal
+         1200x630 OG aspect ratio, so link previews on Twitter/Discord/etc.
+         will letterbox it. Swap in a proper 1200x630 share image under
+         public/ and repoint these two href/content values when one exists. -->
+    <link rel="canonical" href="https://ecoguesser.pages.dev/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ecoguesser.pages.dev/" />
+    <meta property="og:title" content="EcoGuesser — India Protected Areas Geography Guessing Game" />
+    <meta property="og:description" content="Guess India's national parks, wildlife sanctuaries, tiger reserves, biosphere reserves, and Ramsar wetlands from the map." />
+    <meta property="og:image" content="https://ecoguesser.pages.dev/icons/icon-192.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="EcoGuesser — India Protected Areas Geography Guessing Game" />
+    <meta name="twitter:description" content="Guess India's national parks, wildlife sanctuaries, tiger reserves, biosphere reserves, and Ramsar wetlands from the map." />
+    <meta name="twitter:image" content="https://ecoguesser.pages.dev/icons/icon-192.png" />
+
+    <!-- JSON-LD: tells Google this is a playable game, not just a generic
+         page -- eligible for richer treatment in search results than plain
+         blue-link + snippet. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Game",
+        "name": "EcoGuesser",
+        "url": "https://ecoguesser.pages.dev/",
+        "description": "Guess India's national parks, wildlife sanctuaries, tiger reserves, biosphere reserves, and Ramsar wetlands from the map.",
+        "applicationCategory": "Game",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
 
     <!-- manifest.webmanifest itself is generated + injected by
          vite-plugin-pwa at build time; no manual <link rel="manifest">

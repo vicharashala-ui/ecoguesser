@@ -60,6 +60,11 @@
 }
 
 .eg-header-title {
+  /* Neutralizes the UA default <h1> margin (~0.67em block) -- needed since
+     Header.jsx renders this as either <span> or <h1> depending on which
+     screen is active; margin: 0 keeps both cases visually identical inside
+     the flex row. */
+  margin: 0;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-weight: 800;
   font-size: 21px;
