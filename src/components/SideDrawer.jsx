@@ -20,7 +20,6 @@ import { useState, useEffect, useRef } from 'react';
 import { LS_KEYS, CATEGORY_META, FEEDBACK_FORM_URL, FEEDBACK_ENTRY_ID } from '../config.js';
 import { REGION_STATES } from '../utils/filters.js';
 import { submitFeedback } from '../game/api.js';
-import { isSoundEnabled, setSoundEnabled } from '../utils/sound.js';
 import './SideDrawer.css';
 
 const REGIONS = Object.keys(REGION_STATES);
@@ -53,7 +52,6 @@ export default function SideDrawer({
   onNavigate,
 }) {
   const [name, setName] = useState(() => localStorage.getItem(LS_KEYS.NAME) ?? '');
-  const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
   const [expandedRegion, setExpandedRegion] = useState(null);
   // Each region's state list is measured (not guessed) because some state
   // names wrap to two lines at this drawer width -- a fixed per-row height
@@ -113,11 +111,6 @@ export default function SideDrawer({
     else localStorage.removeItem(LS_KEYS.NAME);
   }
 
-  function handleSoundToggle(enabled) {
-    setSoundOn(enabled);
-    setSoundEnabled(enabled);
-  }
-
   function handleNavigate(dest) {
     onClose();
     onNavigate(dest);
@@ -175,36 +168,22 @@ export default function SideDrawer({
           </div>
           <button type="button" className="sd-banner-menu" onClick={onClose} aria-label="Close menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <circle cx="12" cy="12" r="4.7" stroke="currentColor" strokeWidth="2" />
+              <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="16.7" y1="12" x2="19.2" y2="12" />
+                <line x1="15.32" y1="15.32" x2="17.09" y2="17.09" />
+                <line x1="12" y1="16.7" x2="12" y2="19.2" />
+                <line x1="8.68" y1="15.32" x2="6.91" y2="17.09" />
+                <line x1="7.3" y1="12" x2="4.8" y2="12" />
+                <line x1="8.68" y1="8.68" x2="6.91" y2="6.91" />
+                <line x1="12" y1="7.3" x2="12" y2="4.8" />
+                <line x1="15.32" y1="8.68" x2="17.09" y2="6.91" />
+              </g>
             </svg>
           </button>
         </div>
 
         <hr className="sd-divider" />
-
-        <div className="sd-section">
-          <p className="sd-heading">Sound</p>
-          <div className="sd-chip-row">
-            <button
-              type="button"
-              className={`sd-chip${soundOn ? ' sd-chip-active' : ''}`}
-              style={soundOn ? { background: '#16a34a' } : undefined}
-              onClick={() => handleSoundToggle(true)}
-              aria-pressed={soundOn}
-            >
-              On
-            </button>
-            <button
-              type="button"
-              className={`sd-chip${!soundOn ? ' sd-chip-active' : ''}`}
-              style={!soundOn ? { background: '#16a34a' } : undefined}
-              onClick={() => handleSoundToggle(false)}
-              aria-pressed={!soundOn}
-            >
-              Off
-            </button>
-          </div>
-        </div>
 
         {showFilters && (
           <>
