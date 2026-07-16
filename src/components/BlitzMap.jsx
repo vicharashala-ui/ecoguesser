@@ -14,6 +14,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BlitzCard from './BlitzCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
+import MilestoneToast from './MilestoneToast.jsx';
 import { useBlitzRound } from '../hooks/useBlitzRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import {
@@ -273,12 +274,14 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // ClassicMap.jsx's recordClassicResult effect (prevents Strict Mode's
   // dev-only double-invoke from recording the same round twice).
   const recordedResultRef = useRef(null);
+  const [milestone, setMilestone] = useState(null);
   useEffect(() => {
     if (roundState !== 'REVEALING' || !result) return;
     if (recordedResultRef.current === result) return;
     recordedResultRef.current = result;
     recordBlitzResult(result, streak);
-    recordSiteEncounter(result.site.id);
+    const seenCount = recordSiteEncounter(result.site.id);
+    if (seenCount !== null && seenCount % 10 === 0) setMilestone(seenCount);
   }, [roundState, result, streak]);
 
   // State names are fully player-controlled via the toggle below; this only
@@ -365,6 +368,10 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
             : undefined
         }
       />
+
+      {milestone !== null && (
+        <MilestoneToast key={milestone} count={milestone} onDone={() => setMilestone(null)} />
+      )}
 
       {site && (
         <BlitzCard

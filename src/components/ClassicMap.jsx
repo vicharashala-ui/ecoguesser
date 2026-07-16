@@ -20,6 +20,7 @@ import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import SatelliteOverlay from './SatelliteOverlay.jsx';
+import MilestoneToast from './MilestoneToast.jsx';
 import { useClassicRound } from '../hooks/useClassicRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
@@ -163,12 +164,14 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
   // double-invoke of this effect can't record the same round twice -- a
   // new round's `result` always compares unequal.
   const recordedResultRef = useRef(null);
+  const [milestone, setMilestone] = useState(null);
   useEffect(() => {
     if (roundState !== 'REVEALING' || !result) return;
     if (recordedResultRef.current === result) return;
     recordedResultRef.current = result;
     recordClassicResult(result);
-    recordSiteEncounter(result.site.id);
+    const seenCount = recordSiteEncounter(result.site.id);
+    if (seenCount !== null && seenCount % 10 === 0) setMilestone(seenCount);
   }, [roundState, result]);
 
   // "Show Site Boundary" button -- zooms in on the revealed site's polygon.
@@ -197,6 +200,10 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
         }
       />
       <SatelliteOverlay active={satellite} />
+
+      {milestone !== null && (
+        <MilestoneToast key={milestone} count={milestone} onDone={() => setMilestone(null)} />
+      )}
 
       {/* Layer toggle panel -- functional checkbox toggles, styled with the
           app's shared glassmorphism recipe. Swap for an icon-button layer UI

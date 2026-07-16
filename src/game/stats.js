@@ -353,14 +353,20 @@ export function loadEncounteredSites() {
  * per round, so no extra de-dupe is needed here beyond "is this id already
  * in the set" -- re-encountering an already-seen site is a normal, frequent
  * no-op, not an error.
+ *
+ * @returns {number|null} the new total distinct-sites-seen count if this
+ *   was a genuinely new site, or null if it was already encountered --
+ *   lets callers detect a just-crossed milestone (e.g. count % 10 === 0)
+ *   without a second localStorage read.
  */
 export function recordSiteEncounter(siteId) {
-  if (!siteId) return;
+  if (!siteId) return null;
   const encountered = loadEncounteredSites();
-  if (encountered.includes(siteId)) return;
+  if (encountered.includes(siteId)) return null;
 
   encountered.push(siteId);
   localStorage.setItem(LS_KEYS.SITES_SEEN, JSON.stringify(encountered));
+  return encountered.length;
 }
 
 /**
