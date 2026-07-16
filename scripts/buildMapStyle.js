@@ -56,11 +56,15 @@ function filterLayers(layers) {
 }
 
 // English-only: EcoGuesser is India-focused and doesn't need bilingual
-// Latin/local-script labels. name_en -> name:latin -> name covers cases
-// where name_en is missing but a transliterated Latin name still exists.
+// Latin/local-script labels. name_en -> name:latin covers cases where
+// name_en is missing but a transliterated Latin name still exists.
+// Deliberately NOT falling through to raw name: for features missing both
+// tags, name can be Devanagari/other non-Latin script, which forces
+// MapLibre to fetch extra glyph-range PBFs from OFM on first paint. Better
+// to drop the label than pay for a glyph range this style never uses again.
 // Shared by every remaining openmaptiles label layer (place/country here,
 // water_name/waterway/mountain_peak via englishOnlyPassthroughLabels below).
-const ENGLISH_TEXT_FIELD = ['coalesce', ['get', 'name_en'], ['get', 'name:latin'], ['get', 'name']];
+const ENGLISH_TEXT_FIELD = ['coalesce', ['get', 'name_en'], ['get', 'name:latin']];
 
 // The blanket 'place' removal above also strips country labels (they share
 // source-layer "place" with city/town labels; there's no layer-level way to
