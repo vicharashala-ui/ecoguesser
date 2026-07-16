@@ -258,7 +258,7 @@ export default function App() {
       )}
       {activeTab === 'stats' && (
         <Suspense fallback={null}>
-          <StatsView />
+          <StatsView sites={allSites} />
         </Suspense>
       )}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />

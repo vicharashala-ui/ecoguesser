@@ -26,7 +26,7 @@ import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
 import { MAP_CONFIG } from '../config.js';
 import { showResult, clearResult, zoomToSiteBoundary, RESULT_FIT_EASING, ROUND_RESET_DURATION_MS } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
-import { recordClassicResult } from '../game/stats.js';
+import { recordClassicResult, recordSiteEncounter } from '../game/stats.js';
 import './ClassicMap.css';
 
 // fitBounds padding for the post-Confirm reveal; `bottom` is computed per
@@ -168,6 +168,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     if (recordedResultRef.current === result) return;
     recordedResultRef.current = result;
     recordClassicResult(result);
+    recordSiteEncounter(result.site.id);
   }, [roundState, result]);
 
   // "Show Site Boundary" button -- zooms in on the revealed site's polygon.

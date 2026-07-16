@@ -16,6 +16,7 @@ import {
   computeDailyStats,
   computeClassicStats,
   computeBlitzStats,
+  computeCollectionStats,
 } from '../game/stats.js';
 import { computeAchievements } from '../game/achievements.js';
 import './StatsView.css';
@@ -370,10 +371,52 @@ function AchievementBadge({ achievement, grown }) {
   );
 }
 
+// "N / 837 explored" completionist counter -- see stats.js's
+// computeCollectionStats. Rendered at the top of the Awards tab, above the
+// achievement badges, since it's the headline "collection" stat the rest
+// of the tab builds on. Shares AchievementsSection's rAF-delayed `grown`
+// flip (passed in as a prop) so its progress bar animates in alongside the
+// achievements-unlocked one instead of on its own separate timer.
+function CollectionSection({ sites, grown }) {
+  const stats = useMemo(() => computeCollectionStats(sites), [sites]);
+
+  // `sites` is [] until App.jsx's /protected-areas.json fetch resolves --
+  // rendering "0 / 0 explored" in that brief window would read as broken,
+  // so this section just doesn't render until real site data has arrived.
+  if (stats.total === 0) return null;
+
+  const pct = Math.round((stats.seen / stats.total) * 100);
+
+  return (
+    <>
+      <p className="sv-heading">Site Collection</p>
+      <p className="sv-subheading">Distinct protected areas you've encountered in Classic or Blitz</p>
+      <div className="sv-ach-summary">
+        <div className="sv-ach-summary-top">
+          <span className="sv-ach-summary-count">{stats.seen} / {stats.total}</span>
+          <span className="sv-ach-summary-label">explored</span>
+        </div>
+        <div className="sv-ach-summary-track">
+          <div className="sv-ach-summary-fill" style={{ width: grown ? `${pct}%` : '0%' }} />
+        </div>
+      </div>
+      <div className="sv-cat-grid">
+        {DAILY.CATEGORIES.map((cat) => (
+          <div className="sv-cat-item" key={cat}>
+            <span className="sv-cat-dot" style={{ background: CATEGORY_META[cat].color }} />
+            <span className="sv-cat-label">{CATEGORY_META[cat].label}</span>
+            <span className="sv-cat-score">{stats.byCategory[cat].seen} / {stats.byCategory[cat].total}</span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 // Awards sub-tab. Purely derived from the OTHER three modes' already-
 // persisted stats (see achievements.js) -- no separate "achievements"
 // localStorage entry, so nothing here needs to be written back on unlock.
-function AchievementsSection() {
+function AchievementsSection({ sites }) {
   const achievements = useMemo(() => computeAchievements(), []);
   const [grown, setGrown] = useState(false);
 
@@ -387,6 +430,9 @@ function AchievementsSection() {
 
   return (
     <>
+      <CollectionSection sites={sites} grown={grown} />
+
+      <p className="sv-heading">Achievements</p>
       <div className="sv-ach-summary">
         <div className="sv-ach-summary-top">
           <span className="sv-ach-summary-count">{unlockedCount} / {achievements.length}</span>
@@ -415,7 +461,7 @@ function AchievementsSection() {
   );
 }
 
-export default function StatsView() {
+export default function StatsView({ sites = [] }) {
   const [tab, setTab] = useState('daily');
 
   return (
@@ -457,7 +503,7 @@ export default function StatsView() {
         {tab === 'daily' ? <DailySection />
           : tab === 'classic' ? <ClassicSection />
           : tab === 'blitz' ? <BlitzSection />
-          : <AchievementsSection />}
+          : <AchievementsSection sites={sites} />}
       </div>
     </div>
   );

@@ -272,11 +272,17 @@ export const LS_KEYS = {
   UUID:        'ecoguesser_uuid',
   NAME:        'ecoguesser_name',
   DIFFICULTY:  'ecoguesser_difficulty',
-  SOUND:       'ecoguesser_sound', // 'on' | 'off' -- absent (new player) defaults to on
   STATS_DAILY: 'stats_daily',
   STATS_NORM:  'stats_normal',
   STATS_BLITZ: 'stats_blitz',
   RANK_TODAY:  'ecoguesser_rank_today', // { date, rank } -- rank only valid when date === today
   RECAP_SHOWN: 'ecoguesser_recap_shown', // plain date string -- the day the recap modal last auto-opened
   INSTALL_PROMPT_SHOWN: 'ecoguesser_install_prompt_shown', // plain date string -- the day the Add-to-Home-Screen toast last auto-opened
+  // Array of distinct site ids the player has encountered in Classic/Blitz
+  // (a completed, Confirm'd round -- see recordSiteEncounter in stats.js).
+  // Deliberately NOT written from Daily: Daily's 5 sites/day are the same
+  // for every player, not a free choice from the full pool, so they don't
+  // fit the same "exploring the collection" framing Classic/Blitz's
+  // fully-random site picks do.
+  SITES_SEEN:  'ecoguesser_sites_seen',
 };

@@ -8,6 +8,11 @@
 //     per-category means, hint/timeout/skip sums, Classic's sparkline
 //     trend array). Pulled into this file rather than left inline in
 //     StatsView.jsx so they're unit-testable independent of rendering.
+//   - Site collection (Classic/Blitz only): loadEncounteredSites/
+//     recordSiteEncounter/computeCollectionStats -- the "N / 837 explored"
+//     completionist counter. A separate concern from the three per-mode
+//     stat blocks above (it's keyed by site id, not by round), but lives in
+//     this file since it's the same localStorage-backed persistence layer.
 
 import { LS_KEYS, DAILY } from '../config.js';
 import { getTodayString, getYesterdayString } from './daily.js';
@@ -320,4 +325,66 @@ export function computeBlitzStats(stats) {
   }
 
   return { rounds, accuracy, bestStreak: stats.bestStreak, byCategory };
+}
+
+// ---------------------------------------------------------------------------
+// Site collection (Classic + Blitz only)
+// ---------------------------------------------------------------------------
+// A completionist counter over the full 837-site pool -- "N / 837 explored"
+// -- separate from the per-mode round stats above. Stored as a flat array
+// of distinct site ids rather than nested under stats_normal/stats_blitz
+// since a site encountered in either mode counts toward the same shared
+// collection (a player exploring both Classic and Blitz shouldn't have two
+// independent completion percentages).
+
+export function loadEncounteredSites() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LS_KEYS.SITES_SEEN));
+    return Array.isArray(raw) ? raw : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Idempotently marks one site as encountered. Called once per completed
+ * (Confirm'd) Classic/Blitz round -- ClassicMap.jsx/BlitzMap.jsx's existing
+ * recordedResultRef-guarded effect already ensures this fires exactly once
+ * per round, so no extra de-dupe is needed here beyond "is this id already
+ * in the set" -- re-encountering an already-seen site is a normal, frequent
+ * no-op, not an error.
+ */
+export function recordSiteEncounter(siteId) {
+  if (!siteId) return;
+  const encountered = loadEncounteredSites();
+  if (encountered.includes(siteId)) return;
+
+  encountered.push(siteId);
+  localStorage.setItem(LS_KEYS.SITES_SEEN, JSON.stringify(encountered));
+}
+
+/**
+ * @param {import('../config').Site[]} allSites - the full site pool (837),
+ *   as fetched by App.jsx from /protected-areas.json. Cross-referenced
+ *   against the persisted id list (rather than trusting encountered.length
+ *   directly) so a stale id from a since-removed/renamed site can never
+ *   inflate the count past allSites.length.
+ * @returns {{
+ *   seen: number, total: number,
+ *   byCategory: Record<string, {seen:number, total:number}>,
+ * }}
+ */
+export function computeCollectionStats(allSites) {
+  const encountered = new Set(loadEncounteredSites());
+  const total = allSites.length;
+  const seen = allSites.reduce((n, s) => n + (encountered.has(s.id) ? 1 : 0), 0);
+
+  const byCategory = {};
+  for (const cat of DAILY.CATEGORIES) {
+    const catSites = allSites.filter((s) => s.category === cat);
+    const catSeen = catSites.reduce((n, s) => n + (encountered.has(s.id) ? 1 : 0), 0);
+    byCategory[cat] = { seen: catSeen, total: catSites.length };
+  }
+
+  return { seen, total, byCategory };
 }

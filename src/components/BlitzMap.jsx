@@ -21,7 +21,7 @@ import {
   showHintRegion, hideHintRegion,
 } from '../game/blitzHighlight.js';
 import { siteMatchesFilter, DEFAULT_FILTERS, getRegionHintStates } from '../utils/filters.js';
-import { recordBlitzResult } from '../game/stats.js';
+import { recordBlitzResult, recordSiteEncounter } from '../game/stats.js';
 import { LAYER_IDS, MAP_CONFIG, BARE_VISUAL } from '../config.js';
 import { TERRAIN_PLACE_LABEL_IDS } from '../hooks/useMapState.js';
 import './BlitzMap.css';
@@ -50,10 +50,7 @@ function IconFlame({ size = 20 }) {
 // Used to be a second, hand-maintained static file (map-style-ofm.json) --
 // see config.js's MAP_STYLE comment for why that was retired.
 function blitzStyleTransform(styleJson) {
-  // No clone here -- MapContainer.jsx already hands this an instance-owned
-  // structuredClone of the (shared, cached) base style before calling
-  // styleTransform, so mutating it in place below is safe.
-  const style = styleJson;
+  const style = JSON.parse(JSON.stringify(styleJson)); // plain data, safe to round-trip
 
   // openmaptiles.maxzoom is now set directly in map-style.json (shared by
   // all three modes -- Classic/Daily's camera reaches z12 with no detail
@@ -281,6 +278,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     if (recordedResultRef.current === result) return;
     recordedResultRef.current = result;
     recordBlitzResult(result, streak);
+    recordSiteEncounter(result.site.id);
   }, [roundState, result, streak]);
 
   // State names are fully player-controlled via the toggle below; this only
