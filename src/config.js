@@ -59,7 +59,17 @@ export const SATELLITE_ATTRIBUTION = 'Imagery: Esri, Maxar, Earthstar Geographic
 // hillshade and the base map's always-on hillshade + hypsometric tint
 // (public/map-style.json: 'terrain-dem' source, 'hypsometric-tint' /
 // 'base-hillshade' layers). Hoisted here once instead of duplicated per-mode.
-export const TERRAIN_TILES    = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
+//
+// Routed through our own edge-caching proxy (functions/tiles/dem/[[path]].js),
+// same pattern as SATELLITE_TILES below -- was a raw s3.amazonaws.com URL,
+// which cost every session a separate external DNS+TCP+TLS connection (its
+// own preconnect in index.html) with no edge caching of its own. Terrarium's
+// bucket is public with no quota to protect (unlike ArcGIS), but same-origin
+// + Cloudflare edge cache is still a real win for repeat z/x/y requests
+// across players, since India's protected areas cluster the same regions.
+// No trailing .png here, matching SATELLITE_TILES' extension-less style --
+// the proxy's own upstream fetch appends it (see handleDemTileProxy).
+export const TERRAIN_TILES    = '/tiles/dem/{z}/{x}/{y}';
 export const TERRAIN_ENCODING = 'terrarium';
 
 // Full satellite visual spec. hillshade "multiply blend" is not a literal

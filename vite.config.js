@@ -63,39 +63,54 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // App-shell only in the eager precache -- JS/CSS/HTML are
-        // content-hashed by Vite, so precaching them is free (a new deploy
-        // just ships new filenames). The ~7MB of site/boundary GeoJSON in
-        // public/ is deliberately NOT precached here -- forcing that whole
-        // dataset into the SW install step would make first-load feel like
-        // it hung. It's handled by the CacheFirst-style runtimeCaching rule
-        // below instead, so each file gets cached lazily the first time a
-        // round actually needs it.
-        globPatterns: ['**/*.{js,css,html,woff2,ico}'],
-        // The glob above still matches every chunk in dist/, including the
-        // seven components App.jsx deliberately code-splits via lazy() --
-        // ClassicMap/BlitzMap (only mount once their tab is opened),
-        // DailySummary/Leaderboard (only after a Daily round completes),
-        // StatsView (Stats tab only), InfoModal/SideDrawer (only once
-        // opened). Precaching them anyway forces every one of those
-        // fetches into the SW install step on first visit, which defeats
-        // the point of code-splitting them out of the initial bundle in
-        // the first place and burns bandwidth a player may never need
-        // (e.g. someone who only ever plays Daily never needs Blitz's
-        // chunk). globIgnores drops them from the eager manifest; the
-        // runtimeCaching rule below still caches each one, just lazily,
-        // the first time its tab/action is actually used. Vite names each
-        // chunk after its source component by default (verified via
-        // `npm run build`: ClassicMap-*.js, BlitzMap-*.js, etc.), so these
-        // patterns need updating only if a component here is renamed.
-        globIgnores: [
-          '**/ClassicMap-*',
-          '**/BlitzMap-*',
-          '**/DailySummary-*',
-          '**/Leaderboard-*',
-          '**/StatsView-*',
-          '**/InfoModal-*',
-          '**/SideDrawer-*',
+        // App-shell only in the eager precache -- everything else (the
+        // seven lazy() components below, plus their own helper/utility
+        // chunks) is deliberately left out, so a fresh install only ever
+        // downloads what render actually needs before becoming
+        // interactive. The ~7MB of site/boundary GeoJSON in public/ is
+        // similarly excluded -- forcing that whole dataset into the SW
+        // install step would make first-load feel like it hung. Both are
+        // handled by the runtimeCaching rules below instead, so each file
+        // gets cached lazily the first time a round/tab/action actually
+        // needs it.
+        //
+        // This is an ALLOWLIST -- globPatterns lists exactly what belongs
+        // in the eager set -- not a denylist. An earlier version tried to
+        // enumerate every lazy component by name instead (globIgnores:
+        // ClassicMap-*, BlitzMap-*, DailySummary-*, Leaderboard-*,
+        // StatsView-*, InfoModal-*, SideDrawer-*), but that only catches
+        // the lazy() components themselves. Their own helper chunks --
+        // shareImage.js (html-to-image work, only reachable from
+        // Leaderboard's Share button), MilestoneToast (only reachable from
+        // Classic/Blitz), api.js (only reachable from DailySummary/
+        // Leaderboard/SideDrawer) -- don't match any of those literal
+        // names, so all three kept silently leaking back into the eager
+        // 1.3MB+ precache anyway (confirmed via a real build's sw.js
+        // manifest, not just in theory). An allowlist can't leak the same
+        // way: anything not named here is simply left for the
+        // runtimeCaching rule below to pick up lazily, whether it's one of
+        // today's helper chunks or one nobody's written yet -- the failure
+        // mode for an unlisted chunk is "cached one visit later than
+        // ideal", not "silently bloats every fresh install".
+        globPatterns: [
+          'index.html',
+          'favicon.ico',
+          // NOT manifest.webmanifest or the manifest icons here -- vite-
+          // plugin-pwa already precaches the web manifest and its
+          // referenced icons on its own, independently of this list;
+          // naming them here too just double-precaches the same files
+          // under duplicate (if identical) entries (confirmed via a real
+          // build: the two mechanisms don't dedupe against each other).
+          //
+          // The app entry (index-*) and the three vendor/runtime chunks
+          // manualChunks (above) splits out -- see the modulepreload tags
+          // in a real `npm run build`'s dist/index.html for the ground
+          // truth this list is meant to mirror.
+          'assets/index-*.{js,css}',
+          'assets/vendor-*.js',
+          'assets/config-*.js',
+          'assets/rolldown-runtime-*.js',
+          'assets/*.woff2',
         ],
         // Never precache/cache the leaderboard API or the ArcGIS tile proxy:
         // scores and Daily's date-keyed selection must always hit the
@@ -155,6 +170,22 @@ export default defineConfig({
   ],
   server: {
     proxy: {
+      // Dev-only convenience, MUST come before the general /tiles rule below
+      // so it's matched first (Vite/http-proxy matches by startsWith in key
+      // order) -- otherwise that broader rule also catches /tiles/dem/* and
+      // forwards it to ArcGIS instead of here, producing a nonsense ArcGIS
+      // URL (.../MapServer/tile/dem/{z}/{x}/{y}) that comes back as a 400
+      // error page instead of any elevation data. Forwards straight to the
+      // Terrarium DEM bucket -- same upstream functions/tiles/dem/[[path]].js
+      // hits in production -- since `npm run dev` is plain Vite with no
+      // Cloudflare Pages Functions support. .png is re-appended in rewrite
+      // since Terrarium's actual S3 keys carry that extension (unlike the
+      // extension-less client-side URL and the ArcGIS rule below).
+      '/tiles/dem': {
+        target: 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/tiles\/dem/, '') + '.png',
+      },
       // Dev-only convenience: `npm run dev` is plain Vite with no Cloudflare
       // Pages Functions support, so /tiles/* would otherwise fall through to
       // the SPA fallback (index.html) instead of hitting our tile proxy.

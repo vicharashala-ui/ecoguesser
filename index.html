@@ -5,24 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>EcoGuesser — India Protected Areas Geography Guessing Game</title>
 
-    <!-- Preconnect to the two third-party origins MapLibre fetches from on
-         first paint: tiles.openfreemap.org (vector tiles, sprite, glyphs --
-         public/map-style.json) and the AWS elevation-tiles-prod bucket
-         (terrain-dem source, used by the always-on hillshade/hypsometric
-         tint, independent of the separate HILLSHADE_ENABLED flag). Without
-         this the browser doesn't start DNS/TCP/TLS setup for either until
-         MapLibre's own JS has downloaded, parsed, and run -- these hints let
-         that handshake happen in parallel with the JS fetch instead of
-         after it. crossorigin is required on the preconnect even though
-         these aren't fetched with credentials, since font/tile CORS
-         requests are treated as a distinct connection from a plain one.
-         dns-prefetch is a same-line fallback for browsers that don't
-         support preconnect. The /tiles/ ArcGIS proxy is same-origin
-         (Cloudflare Pages Function) and needs no hint. -->
+    <!-- Preconnect to the one remaining third-party origin MapLibre fetches
+         from on first paint: tiles.openfreemap.org (vector tiles, glyphs --
+         public/map-style.json). Without this the browser doesn't start
+         DNS/TCP/TLS setup until MapLibre's own JS has downloaded, parsed,
+         and run -- this hint lets that handshake happen in parallel with
+         the JS fetch instead of after it. crossorigin is required on the
+         preconnect even though this isn't fetched with credentials, since
+         font/tile CORS requests are treated as a distinct connection from a
+         plain one. dns-prefetch is a same-line fallback for browsers that
+         don't support preconnect. Both the /tiles/ ArcGIS proxy and the
+         /tiles/dem/ Terrarium DEM proxy are same-origin (Cloudflare Pages
+         Functions) and need no hint -- the DEM source used to be a direct
+         s3.amazonaws.com fetch (its own preconnect lived here), until it was
+         moved behind the same edge-caching proxy pattern as satellite. -->
     <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
     <link rel="dns-prefetch" href="https://tiles.openfreemap.org" />
-    <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin />
-    <link rel="dns-prefetch" href="https://s3.amazonaws.com" />
 
     <!-- map-style.json itself, not just the origins above: MapContainer.jsx
          fetches this in application code now (style is fetched-then-patched
@@ -38,6 +36,20 @@
          opposite of the intended effect. fetchpriority nudges it ahead of
          same-priority-class requests it'd otherwise queue behind. -->
     <link rel="preload" href="/map-style.json" as="fetch" crossorigin="anonymous" fetchpriority="high" />
+
+    <!-- Nunito 400 (src/index.css's @fontsource import) -- the weight the
+         bulk of unstyled body text uses (nothing explicitly declares
+         font-weight:400 in CSS; it's the un-styled default, so it's also
+         the hardest weight for the browser to discover early: it's never
+         named in any selector the way 700/800 headings are). Without this,
+         the request only starts once the CSSOM is built and matched
+         against actually-rendered text -- one extra round trip on a slow
+         connection where the splash's own timing floor doesn't cover the
+         gap. Path is the source npm-package file, not the hashed dist
+         filename -- Vite's asset pipeline rewrites this href to the real
+         hashed output path at build time, same mechanism as any other
+         asset reference in this file. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/node_modules/@fontsource/nunito/files/nunito-latin-400-normal.woff2" />
 
     <!-- Favicon: multi-res .ico covers old browsers; PNG/SVG variants below
          are what modern Chrome/Firefox tab bars and bookmarks actually
