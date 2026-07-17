@@ -91,6 +91,12 @@
 
 .sv-stat {
   flex: 1;
+  /* Flex items default to min-width:auto (their content's min-content size),
+     not 0 -- a wide unbroken value (e.g. a 5-digit score) can then force
+     this wider than its 1/2 or 1/3 share of .sv-stat-row, pushing the row
+     past the screen width and triggering horizontal scroll instead of
+     wrapping. Same fix already applied to .sv-hist-col/.sv-ach-body below. */
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -254,6 +260,7 @@
 
 .sv-cat-label {
   flex: 1;
+  min-width: 0; /* same overflow fix as .sv-stat above */
   font-size: 13px;
   font-weight: 700;
   color: #374151;

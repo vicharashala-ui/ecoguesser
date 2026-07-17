@@ -37,7 +37,9 @@ export const RESULT_FIT_EASING = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t +
 // Shorter than RESULT_FIT_DURATION_MS -- resetting to the flat India-wide
 // view is a simpler, usually smaller camera move than fitting a specific
 // guess<->site pair, so it doesn't need the reveal's slower travel time.
-export const ROUND_RESET_DURATION_MS = 700;
+// Bumped from 700ms: at 700 the eased curve barely had room to read as an
+// ease before the move was over, so it landed feeling like a hard cut.
+export const ROUND_RESET_DURATION_MS = 950;
 
 // MODULE-LEVEL state per spec -- reset on every LOADING entry via clearResult().
 let boundaryPromise = null;
