@@ -285,4 +285,6 @@ export const LS_KEYS = {
   // fit the same "exploring the collection" framing Classic/Blitz's
   // fully-random site picks do.
   SITES_SEEN:  'ecoguesser_sites_seen',
+  SOUND:       'ecoguesser_sound',
+  HAPTICS:     'ecoguesser_haptics',
 };

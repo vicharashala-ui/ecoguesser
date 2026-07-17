@@ -17,8 +17,7 @@
 // Mute preference lives here (not threaded through the round hooks as a
 // prop) since every call site already just fires a bare soundX() -- the
 // hooks don't need to know sound is even togglable. isSoundEnabled/
-// setSoundEnabled are exported for any future settings UI; sound defaults
-// on and currently has no in-app toggle.
+// setSoundEnabled are read/written by SideDrawer's settings panel.
 
 import { LS_KEYS } from '../config.js';
 

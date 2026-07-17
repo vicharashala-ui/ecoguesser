@@ -13,8 +13,30 @@
 //   perfect(): a boundary-hit guess (Classic/Daily only) -- a distinct
 //     multi-pulse pattern, reserved for the same isPerfect condition
 //     BottomCard.jsx's own celebration already gates on.
+//
+// Mute preference mirrors sound.js: stored here, read by the settings
+// toggle in SideDrawer, checked before every vibrate() call.
+
+import { LS_KEYS } from '../config.js';
+
+let muted = localStorage.getItem(LS_KEYS.HAPTICS) === 'off';
+
+export function isHapticsEnabled() {
+  return !muted;
+}
+
+export function setHapticsEnabled(enabled) {
+  muted = !enabled;
+  try {
+    localStorage.setItem(LS_KEYS.HAPTICS, enabled ? 'on' : 'off');
+  } catch {
+    // no-op -- private-browsing/quota storage errors still leave `muted`
+    // updated in-memory for the rest of this session
+  }
+}
 
 function vibrate(pattern) {
+  if (muted) return;
   try {
     navigator.vibrate?.(pattern);
   } catch {

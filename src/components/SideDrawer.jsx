@@ -20,6 +20,8 @@ import { useState, useEffect, useRef } from 'react';
 import { LS_KEYS, CATEGORY_META, FEEDBACK_FORM_URL, FEEDBACK_ENTRY_ID } from '../config.js';
 import { REGION_STATES } from '../utils/filters.js';
 import { submitFeedback } from '../game/api.js';
+import { isSoundEnabled, setSoundEnabled } from '../utils/sound.js';
+import { isHapticsEnabled, setHapticsEnabled } from '../utils/haptics.js';
 import './SideDrawer.css';
 
 const REGIONS = Object.keys(REGION_STATES);
@@ -52,6 +54,9 @@ export default function SideDrawer({
   onNavigate,
 }) {
   const [name, setName] = useState(() => localStorage.getItem(LS_KEYS.NAME) ?? '');
+  const [showSettings, setShowSettings] = useState(false);
+  const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
+  const [hapticsOn, setHapticsOn] = useState(() => isHapticsEnabled());
   const [expandedRegion, setExpandedRegion] = useState(null);
   // Each region's state list is measured (not guessed) because some state
   // names wrap to two lines at this drawer width -- a fixed per-row height
@@ -111,6 +116,16 @@ export default function SideDrawer({
     else localStorage.removeItem(LS_KEYS.NAME);
   }
 
+  function handleSoundToggle(enabled) {
+    setSoundOn(enabled);
+    setSoundEnabled(enabled);
+  }
+
+  function handleHapticsToggle(enabled) {
+    setHapticsOn(enabled);
+    setHapticsEnabled(enabled);
+  }
+
   function handleNavigate(dest) {
     onClose();
     onNavigate(dest);
@@ -166,7 +181,13 @@ export default function SideDrawer({
               <path d="M4 20l1-4L16 5l3 3L8 19l-4 1Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
             </svg>
           </div>
-          <button type="button" className="sd-banner-menu" onClick={onClose} aria-label="Close menu">
+          <button
+            type="button"
+            className="sd-banner-menu"
+            onClick={() => setShowSettings((v) => !v)}
+            aria-label="Settings"
+            aria-expanded={showSettings}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="12" cy="12" r="4.7" stroke="currentColor" strokeWidth="2" />
               <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -182,6 +203,52 @@ export default function SideDrawer({
             </svg>
           </button>
         </div>
+
+        {showSettings && (
+          <div className="sd-settings-row">
+            <button
+              type="button"
+              className="sd-banner-menu"
+              style={soundOn ? { background: '#16a34a', color: '#fff' } : undefined}
+              onClick={() => handleSoundToggle(!soundOn)}
+              aria-pressed={soundOn}
+              aria-label={soundOn ? 'Mute sound' : 'Unmute sound'}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 9h3l4-4v14l-4-4H4z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                {soundOn ? (
+                  <g stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                    <path d="M13.62 10.16A3.2 3.2 0 0 1 13.62 13.84" />
+                    <path d="M15.91 8.56A6 6 0 0 1 15.91 15.44" />
+                  </g>
+                ) : (
+                  <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                )}
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="sd-banner-menu"
+              style={hapticsOn ? { background: '#16a34a', color: '#fff' } : undefined}
+              onClick={() => handleHapticsToggle(!hapticsOn)}
+              aria-pressed={hapticsOn}
+              aria-label={hapticsOn ? 'Turn off haptics' : 'Turn on haptics'}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="8" y="3" width="8" height="18" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                <circle cx="12" cy="18" r="0.9" fill="currentColor" />
+                {hapticsOn ? (
+                  <g stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                    <path d="M4.7 13.26A2.2 2.2 0 0 1 4.7 10.74" />
+                    <path d="M19.3 10.74A2.2 2.2 0 0 1 19.3 13.26" />
+                  </g>
+                ) : (
+                  <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                )}
+              </svg>
+            </button>
+          </div>
+        )}
 
         <hr className="sd-divider" />
 
