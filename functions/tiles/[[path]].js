@@ -1,5 +1,5 @@
-import { handleDemTileProxy } from '../../_shared/tileProxy.js';
+import { handleTileProxy } from '../_shared/tileProxy.js';
 
 export async function onRequestGet(context) {
-  return handleDemTileProxy(context.request, context.params.path, context.waitUntil.bind(context));
+  return handleTileProxy(context.request, context.params.path, context.waitUntil.bind(context));
 }
