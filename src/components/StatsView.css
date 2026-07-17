@@ -293,6 +293,11 @@
 
 .sv-ach-summary {
   width: 100%;
+  /* Without this, width:100% (content-box) + padding + border pushed the
+     card ~30px past .sv-body's right edge -- the actual cause of the
+     Awards-tab horizontal scroll (the min-width:0 flex fix on .sv-stat/
+     .sv-cat-label was a real bug too, just not this one). */
+  box-sizing: border-box;
   padding: 14px 14px 16px;
   margin-bottom: 20px;
   border-radius: 14px;
