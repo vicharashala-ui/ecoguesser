@@ -29,8 +29,8 @@
 // timing) is randomized once per mount via useMemo(..., []) -- re-renders
 // during the burst (e.g. toggling the result card's collapsed state) must
 // not reshuffle mid-flight values. The parent keys this component on
-// `site.id` (same convention as BottomCard.jsx's `.bc-celebrate`) so every
-// new round gets a fresh mount and therefore a fresh, single play-through.
+// `site.id` (same convention as ScoreRemark.jsx) so every new round gets a
+// fresh mount and therefore a fresh, single play-through.
 
 import { useMemo } from 'react';
 import './ConfettiBurst.css';

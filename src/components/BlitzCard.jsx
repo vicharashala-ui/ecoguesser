@@ -202,9 +202,9 @@ const BlitzCard = forwardRef(function BlitzCard({
 
           {/* Keyed on site.id so a new round always remounts it -- same
               fresh-play-on-every-round convention as ConfettiBurst.jsx and
-              BottomCard.jsx's .bc-celebrate -- ensuring the pop-in below
-              replays even if two consecutive rounds land on the same
-              correct/wrong outcome. */}
+              ScoreRemark.jsx -- ensuring the pop-in below replays even if
+              two consecutive rounds land on the same correct/wrong
+              outcome. */}
           <div key={site.id} className={`bz-badge ${result.isCorrect ? 'bz-badge-correct' : 'bz-badge-wrong'}`}>
             {result.isCorrect ? <IconCheck /> : <IconCross />}
             <span>{result.isCorrect ? 'Correct!' : `Wrong — it's in ${result.correctStates.join(', ')}`}</span>

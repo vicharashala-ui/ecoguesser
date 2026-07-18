@@ -1,0 +1,74 @@
+/* src/components/ScoreRemark.css */
+
+/* position: absolute over the inset:0 map wrapper -- same `fixed`-is-banned
+   reasoning as MilestoneToast.css/ConfettiBurst.css. Centered on both axes
+   (not just horizontally, like MilestoneToast) since this is meant to read
+   as a full-screen flash, not a pinned toast. pointer-events: none so it
+   never blocks the map or the Next Site/Boundary buttons underneath.
+   z-index sits above MilestoneToast (46) -- both only ever show during
+   REVEALING, when milestones can't fire, so there's no real overlap, but
+   this keeps the remark on top if that ever changes. */
+.eg-score-remark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 47;
+  pointer-events: none;
+}
+
+.eg-score-remark-label {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  white-space: nowrap;
+  opacity: 0;
+  /* Light halo (legible over dark satellite tiles) plus a soft dark shadow
+     (legible over the cream/green terrain basemap) -- one text-shadow
+     stack that holds up regardless of which basemap is active. */
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.85),
+    0 0 20px rgba(255, 255, 255, 0.55),
+    0 2px 6px rgba(17, 24, 39, 0.25);
+  animation: eg-score-remark-pop 1.4s ease-out 1 forwards;
+}
+
+@keyframes eg-score-remark-pop {
+  0% { opacity: 0; transform: scale(0.7); }
+  15% { opacity: 1; transform: scale(1.12); }
+  30% { opacity: 1; transform: scale(1); }
+  75% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.04); }
+}
+
+/* Perfect only -- eight sparks fanned out at 45-degree increments (--i:
+   0..7), same mechanics as BottomCard.css's old .bc-spark, just a longer
+   throw now that they radiate from screen-center instead of a small score
+   badge. */
+.eg-score-remark-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #f59e0b;
+  opacity: 0;
+  animation: eg-score-remark-spark-burst 0.9s ease-out 1 forwards;
+  animation-delay: calc(var(--i) * 15ms);
+  transform: rotate(calc(var(--i) * 45deg)) translateY(0);
+}
+
+@keyframes eg-score-remark-spark-burst {
+  0% { opacity: 1; transform: rotate(calc(var(--i) * 45deg)) translateY(0) scale(1); }
+  100% { opacity: 0; transform: rotate(calc(var(--i) * 45deg)) translateY(-64px) scale(0.4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eg-score-remark-label,
+  .eg-score-remark-spark {
+    animation: none;
+  }
+}
