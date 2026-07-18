@@ -13,6 +13,7 @@
 // card. Outside REVEALING, no override is passed and RecenterButton.css's
 // fixed 64px-pill-clearance default applies.
 
+import { memo } from 'react';
 import { MAP_CONFIG } from '../config.js';
 import './RecenterButton.css';
 
@@ -30,7 +31,14 @@ function IconCrosshair({ size = 20 }) {
 // doesn't cover this button's direct fitBounds() call (handler-enabled
 // state has no bearing on programmatic camera moves), so this needs its
 // own guard to keep the map frozen while paused.
-export default function RecenterButton({ mapRef, style, disabled = false }) {
+// memo(): same per-second countdown-tick reasoning as MapContainer.jsx's
+// memo -- during an active round, `style` is undefined (the object-literal
+// override only exists during REVEALING, when the timer is paused anyway)
+// and mapRef/disabled are tick-stable, so every tick's re-render here was
+// a no-op reconcile this now skips.
+export default memo(RecenterButton);
+
+function RecenterButton({ mapRef, style, disabled = false }) {
   const handleClick = () => {
     if (disabled) return;
     mapRef.current?.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING });

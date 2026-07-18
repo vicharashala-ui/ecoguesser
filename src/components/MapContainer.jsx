@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import '../styles/maplibre-gl-trimmed.css';
 import { MAP_STYLE, MAP_CONFIG } from '../config.js';
@@ -42,7 +42,17 @@ const GUESS_PIN_SVG = `
 // @param guessMarkerVisible: boolean -- hides the tiger-head marker without
 //   removing it, so resultLayer.js's plain guess dot (drawn at the same
 //   coordinate during REVEALING) is the only thing shown at that spot.
-export default function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP_STYLE, styleTransform, guessMarkerVisible = true }) {
+// memo(): the Daily/Blitz countdown re-renders the whole mode subtree once
+// per second (useCountdownTimer's setRemaining), and this component's props
+// are all tick-stable -- mapRef is a stable ref, onMapClick comes from a
+// useCallback in the round hooks, guess/guessMarkerVisible only change on
+// real interactions, mapStyle/styleTransform are module-level constants.
+// The render itself is just two divs (all real work lives in ref-guarded
+// effects), so this is a small win, but it's free: skip the per-tick
+// reconcile entirely instead of re-running it to a no-op.
+export default memo(MapContainer);
+
+function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP_STYLE, styleTransform, guessMarkerVisible = true }) {
   const containerRef = useRef(null);
   const markerRef = useRef(null);
 

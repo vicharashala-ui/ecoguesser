@@ -4,10 +4,40 @@
    all UI copy in this app is English/Latin script, so those extra ranges
    are dead weight -- ~144KB across the three weights that the service
    worker's precache glob for woff2 files was fetching unconditionally on
-   every first visit. Revisit if the app ever adds a non-Latin locale. */
-@import '@fontsource/nunito/latin-400.css';
-@import '@fontsource/nunito/latin-700.css';
-@import '@fontsource/nunito/latin-800.css';
+   every first visit. Revisit if the app ever adds a non-Latin locale.
+
+   Hand-rolled @font-face blocks rather than @import
+   '@fontsource/nunito/latin-{weight}.css': the package CSS declares a
+   legacy .woff fallback alongside each .woff2, so Vite was emitting (and
+   every deploy was shipping) three ~20KB .woff files no browser ever
+   downloads -- woff2 support is universal in anything capable of running
+   this app's ES modules. Declarations below are copied from the package
+   CSS verbatim (same family/style/display/weight; the latin subset files
+   carry no unicode-range) minus the woff source. The url()s resolve to the
+   exact same files index.html's font preload references, so both emit one
+   shared hashed asset. If @fontsource/nunito is ever major-bumped, re-diff
+   these against the package's latin-*.css. */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('../node_modules/@fontsource/nunito/files/nunito-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('../node_modules/@fontsource/nunito/files/nunito-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url('../node_modules/@fontsource/nunito/files/nunito-latin-800-normal.woff2') format('woff2');
+}
 
 :root {
   /* Real source of truth for BottomNav's height -- BottomCard.css and

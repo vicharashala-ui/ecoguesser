@@ -103,13 +103,31 @@ export async function handleScore(request, env) {
     return jsonResp({ error: 'invalid_dist' }, 400);
   }
 
+  const top10Stmt = env.DB.prepare(
+    `SELECT uuid, player_name, total_pts, total_dist
+     FROM scores WHERE date = ?
+     ORDER BY total_pts DESC, total_dist ASC, submitted_at ASC
+     LIMIT 10`
+  ).bind(date);
+
+  // Always SELECT and return top10 -- even for a 0-score submission.
+  // The insert-path runs both statements through one DB.batch() -- a single
+  // D1 round trip instead of the two sequential ones (INSERT .run(), then
+  // SELECT .all()) this used to make. batch() is transactional, so the
+  // SELECT sees the INSERT exactly as before, and a UNIQUE(uuid, date)
+  // violation aborts the whole batch -- which lands in the same catch/409
+  // path the standalone INSERT used, with an identical response body (the
+  // 409 never included top10 before either).
+  let result;
   if (total_pts > 0) {
     try {
-      await env.DB.prepare(
-        'INSERT INTO scores (uuid, player_name, date, total_pts, total_dist) VALUES (?,?,?,?,?)'
-      )
-        .bind(uuid, cleanName, date, total_pts, total_dist)
-        .run();
+      const batchResults = await env.DB.batch([
+        env.DB.prepare(
+          'INSERT INTO scores (uuid, player_name, date, total_pts, total_dist) VALUES (?,?,?,?,?)'
+        ).bind(uuid, cleanName, date, total_pts, total_dist),
+        top10Stmt,
+      ]);
+      result = batchResults[1];
     } catch (err) {
       // UNIQUE(uuid, date) -- this player already submitted today.
       if (err.message?.includes('UNIQUE')) {
@@ -117,17 +135,9 @@ export async function handleScore(request, env) {
       }
       throw err;
     }
+  } else {
+    result = await top10Stmt.all();
   }
-
-  // Always SELECT and return top10 -- even for a 0-score submission.
-  const result = await env.DB.prepare(
-    `SELECT uuid, player_name, total_pts, total_dist
-     FROM scores WHERE date = ?
-     ORDER BY total_pts DESC, total_dist ASC, submitted_at ASC
-     LIMIT 10`
-  )
-    .bind(date)
-    .all();
 
   const pos = result.results.findIndex((r) => r.uuid === uuid);
   const rank = pos === -1 ? null : pos + 1; // array-position rank; null for 0-score/outside top10
@@ -153,7 +163,7 @@ function buildLeaderboardResponse(body, isToday) {
  * client-assigned from array index since this endpoint never identifies
  * "you" the way /api/score does.
  */
-export async function handleLeaderboard(request, env) {
+export async function handleLeaderboard(request, env, waitUntil) {
   const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
   if (isRateLimited(ip)) return jsonResp({ error: 'rate_limited' }, 429);
 
@@ -161,6 +171,24 @@ export async function handleLeaderboard(request, env) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return jsonResp({ error: 'invalid_date' }, 400);
 
   const isToday = date === todayIST();
+
+  // Past dates only: also serve/store through Cloudflare's edge Cache API
+  // (same caches.default pattern, normalized internal key, and waitUntil
+  // write-behind as tileProxy.js). Pages Functions responses are never
+  // CDN-cached automatically -- the Cache-Control header below only helps
+  // the browser -- and _lbCache further down is per-isolate, so every cold
+  // isolate/colo was re-querying D1 for boards that are immutable once the
+  // IST day rolls over. The edge entry expires per the stored response's
+  // own max-age=86400. Today's board deliberately stays OFF the edge cache
+  // and on the short-TTL in-isolate cache only, preserving its existing
+  // freshness semantics exactly.
+  const edgeKey = isToday
+    ? null
+    : new Request(`https://ecoguesser-lb-cache.internal/leaderboard/${date}`);
+  if (edgeKey) {
+    const edgeHit = await caches.default.match(edgeKey);
+    if (edgeHit) return edgeHit;
+  }
 
   const now = Date.now();
   const cached = _lbCache.get(date);
@@ -177,11 +205,19 @@ export async function handleLeaderboard(request, env) {
 
   const top10 = result.results.map(({ submitted_at: _submittedAt, ...row }) => row);
   const body = JSON.stringify({ top10 });
-  const ttl = isToday ? 60_000 : 3_600_000; // 1hr for past dates -- they're immutable; CDN covers the rest
+  const ttl = isToday ? 60_000 : 3_600_000; // 1hr for past dates -- they're immutable; the edge cache above covers the rest
   _lbCache.set(date, { body, expires: now + ttl });
   for (const [k, v] of _lbCache) {
     if (v.expires < now - 30_000) _lbCache.delete(k);
   }
 
-  return buildLeaderboardResponse(body, isToday);
+  const response = buildLeaderboardResponse(body, isToday);
+  if (edgeKey) {
+    // Cache a clone so the original body can still be returned -- same
+    // clone-then-put + waitUntil write-behind as tileProxy.js.
+    const toCache = response.clone();
+    if (waitUntil) waitUntil(caches.default.put(edgeKey, toCache));
+    else await caches.default.put(edgeKey, toCache);
+  }
+  return response;
 }

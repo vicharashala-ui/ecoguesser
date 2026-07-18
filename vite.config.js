@@ -120,13 +120,68 @@ export default defineConfig({
         // serving stale imagery.
         navigateFallbackDenylist: [/^\/api\//, /^\/tiles\//],
         runtimeCaching: [
+          // Match callbacks, NOT RegExps: Workbox tests a RegExp urlPattern
+          // against the request's FULL href (https://ecoguesser.pages.dev/
+          // api/...), so the previous /^\/api\//-anchored patterns could
+          // never match anything -- both NetworkOnly guards were dead code
+          // (verified against a real build's sw.js: re.exec(url.href) is
+          // null). Nothing was caching these endpoints anyway, but only by
+          // accident -- the extension-based rules below just happen not to
+          // match extension-less API/tile URLs. Any future .json-suffixed
+          // API route would have silently fallen into the 30-day SWR cache
+          // below, which is exactly the stale-leaderboard/stale-imagery
+          // failure these two rules exist to prevent. A pathname callback
+          // matches the way the pattern always intended to.
+          // (navigateFallbackDenylist above is unaffected -- NavigationRoute
+          // denylists match against the pathname and were already correct.)
           {
-            urlPattern: /^\/api\//,
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
             handler: 'NetworkOnly',
           },
           {
-            urlPattern: /^\/tiles\//,
+            urlPattern: ({ url }) => url.pathname.startsWith('/tiles/'),
             handler: 'NetworkOnly',
+          },
+          // OpenFreeMap TileJSON (/planet) -- the one mutable document on
+          // that origin: it names the current deployment's tile URL paths,
+          // which rotate on their redeploys. NetworkFirst (not CacheFirst/
+          // SWR) so a live session always prefers the fresh document --
+          // serving a stale one could point MapLibre at a purged
+          // deployment's tile URLs -- while the cached copy still covers
+          // offline opens and dead-network timeouts. index.html preloads
+          // this same URL, so the online-path cost of NetworkFirst is
+          // already paid in parallel with the JS download.
+          {
+            urlPattern: ({ url }) => url.origin === 'https://tiles.openfreemap.org' && url.pathname === '/planet',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'ofm-tilejson',
+              networkTimeoutSeconds: 4,
+              expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 * 7 },
+            },
+          },
+          // Everything else on the OFM origin: glyph PBFs (on the
+          // first-paint path -- every label layer needs its fontstack/range
+          // files, and country_label starts at minzoom 2) and vector tiles.
+          // Previously uncached by the SW entirely: the extension rules
+          // below can't reach cross-origin URLs (Workbox requires a
+          // cross-origin RegExp to match from index 0), so repeat visits
+          // re-paid whatever OFM's HTTP cache headers allowed, and offline
+          // PWA opens lost the basemap outright. CacheFirst is safe for
+          // both: glyph range files are immutable in practice, and tile
+          // URLs embed the deployment path from the TileJSON above, so a
+          // rotation produces brand-new URLs rather than stale hits (old
+          // entries just age out via LRU/maxAge). ~300 entries x ~30-80KB
+          // vector tiles bounds worst-case storage near 15-20MB;
+          // purgeOnQuotaError lets the browser reclaim this cache first if
+          // storage pressure ever bites.
+          {
+            urlPattern: ({ url }) => url.origin === 'https://tiles.openfreemap.org',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'ofm-static',
+              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 30, purgeOnQuotaError: true },
+            },
           },
           // Site/boundary GeoJSON (+ india-states.topojson -- see
           // scripts/convertStatesTopo.js -- and protected-areas.json, the

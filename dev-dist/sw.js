@@ -67,7 +67,7 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-fdf26176'], (function (workbox) { 'use strict';
+define(['./workbox-ef3e8fa0'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
   workbox.clientsClaim();
@@ -78,15 +78,39 @@ define(['./workbox-fdf26176'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "index.html",
-    "revision": "0.ou29m3hvo8g"
+    "revision": "0.pfbeqbcjr3c"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/],
     denylist: [/^\/api\//, /^\/tiles\//]
   }));
-  workbox.registerRoute(/^\/api\//, new workbox.NetworkOnly(), 'GET');
-  workbox.registerRoute(/^\/tiles\//, new workbox.NetworkOnly(), 'GET');
+  workbox.registerRoute(({
+    url
+  }) => url.pathname.startsWith("/api/"), new workbox.NetworkOnly(), 'GET');
+  workbox.registerRoute(({
+    url
+  }) => url.pathname.startsWith("/tiles/"), new workbox.NetworkOnly(), 'GET');
+  workbox.registerRoute(({
+    url
+  }) => url.origin === "https://tiles.openfreemap.org" && url.pathname === "/planet", new workbox.NetworkFirst({
+    "cacheName": "ofm-tilejson",
+    "networkTimeoutSeconds": 4,
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 4,
+      maxAgeSeconds: 604800
+    })]
+  }), 'GET');
+  workbox.registerRoute(({
+    url
+  }) => url.origin === "https://tiles.openfreemap.org", new workbox.CacheFirst({
+    "cacheName": "ofm-static",
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 300,
+      maxAgeSeconds: 2592000,
+      purgeOnQuotaError: true
+    })]
+  }), 'GET');
   workbox.registerRoute(/\.(?:geojson|topojson|json|png|jpg|jpeg|svg)$/, new workbox.StaleWhileRevalidate({
     "cacheName": "eg-static-data",
     plugins: [new workbox.ExpirationPlugin({

@@ -212,6 +212,30 @@ function loadIndiaStatesTopology(map) {
     .catch(() => {}); // Borders/labels just don't appear; nothing else depends on this.
 }
 
+// Optional early warm-up for the three shared static files onLoad consumes
+// (~345KB gzip total). Without this, none of them starts downloading until
+// MapLibre's 'load' fires -- i.e. after every first-render tile/glyph has
+// finished -- so on slow networks the map appears and then state/country
+// borders visibly pop in a beat later. Called from App.jsx's existing
+// idle-prefetch effect (requestIdleCallback / 2s fallback -- the same
+// deliberately-deferred slot the Classic/Blitz chunk prefetch already uses)
+// rather than eagerly at mount, so it never competes with the map's own
+// first-paint budget; and it goes through the same promise cache the onLoad
+// path reads, so this is a pure head start with zero duplicate fetch or
+// duplicate parse -- whichever caller runs second gets the first caller's
+// promise. The topoFeature arc expansion for the states file (real
+// main-thread work) also happens here during idle instead of inside the
+// post-'load' window. Parse callbacks MUST stay identical to the onLoad
+// call sites' -- the cache is keyed by URL and whichever registers first
+// wins.
+export function warmSharedMapData() {
+  loadSharedGeoJsonOnce('/india-states.topojson', (topology) =>
+    topoFeature(topology, topology.objects['india-states'])
+  ).catch(() => {});
+  loadSharedGeoJsonOnce('/india-boundary.geojson', (geojson) => geojson).catch(() => {});
+  loadSharedGeoJsonOnce('/india-state-labels.geojson', (geojson) => geojson).catch(() => {});
+}
+
 // Scope querySelector to map container -- supports two simultaneous map instances.
 function appendAttribution(mapInstance, text) {
   const ctrl = mapInstance._controls.find(c => c._container?.classList.contains('maplibregl-ctrl-attrib'));

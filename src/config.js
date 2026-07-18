@@ -13,8 +13,10 @@ export const MAP_STYLE = '/map-style.json';
 export const MAP_CONFIG = {
   INDIA_BOUNDS:       [[68.1,6.4],[97.4,37.1]],
   MAX_BOUNDS:         [[45,-18],[112,52]],
-  INDIA_CENTER:       [82.5,22.5],     // flyTo() Reset button only
-  INDIA_ZOOM:         4.5,             // flyTo() Reset button only
+  // INDIA_CENTER/INDIA_ZOOM removed: their "flyTo() Reset button only"
+  // comments had gone stale -- RecenterButton.jsx resets via
+  // fitBounds(INDIA_BOUNDS, FIT_PADDING), same as every other framing
+  // call site, so nothing consumed them (verified repo-wide).
   MIN_ZOOM: 3, MAX_ZOOM: 12,
   SATELLITE_MAX_ZOOM: 10,
   // Daily AND Classic both use this now -- state names stay hidden until

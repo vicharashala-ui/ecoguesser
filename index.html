@@ -23,6 +23,24 @@
     <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
     <link rel="dns-prefetch" href="https://tiles.openfreemap.org" />
 
+    <!-- The OpenFreeMap TileJSON document itself, not just its origin:
+         map-style.json's vector source uses TileJSON indirection
+         (sources.openmaptiles.url), so MapLibre must fetch and parse
+         /planet before it can issue a single tile or glyph request -- a
+         full round trip serialized behind "JS downloaded, parsed, map
+         constructed". The preconnect above only warms the TLS handshake;
+         this starts the actual request at HTML-parse time so the response
+         is (usually) already sitting in the preload cache by the time
+         MapLibre asks for it. crossorigin="anonymous" matches MapLibre's
+         own fetch (mode: cors, credentials: same-origin -- its Request
+         constructor defaults) -- same mode-mismatch/double-fetch gotcha
+         already documented on the map-style.json preload below.
+         Deliberately NOT inlined as a tiles:[...] array in map-style.json
+         instead: OpenFreeMap's tile URLs embed rotating deployment paths,
+         and the TileJSON URL is the stable contract -- inlining would
+         break silently on their next deployment rotation. -->
+    <link rel="preload" href="https://tiles.openfreemap.org/planet" as="fetch" crossorigin="anonymous" fetchpriority="high" />
+
     <!-- map-style.json itself, not just the origins above: MapContainer.jsx
          fetches this in application code now (style is fetched-then-patched
          via styleTransform before the map is constructed, rather than handed
@@ -37,6 +55,17 @@
          opposite of the intended effect. fetchpriority nudges it ahead of
          same-priority-class requests it'd otherwise queue behind. -->
     <link rel="preload" href="/map-style.json" as="fetch" crossorigin="anonymous" fetchpriority="high" />
+
+    <!-- protected-areas.json: App.jsx's loadSites() fetch()es this in a
+         mount effect, so without a preload the request only starts after
+         ~360KB gzip of JS has downloaded, parsed, and React has committed
+         -- often 0.5-2s after HTML arrival on mid-range mobile. It gates
+         today's site selection (the "Loading today's challenge..." pill),
+         so starting it here, in parallel with the JS itself, directly
+         shortens that wait. Same crossorigin="anonymous" credentials-mode
+         requirement as map-style.json above (see that comment); same
+         stable unhashed public/ URL, so nothing to rewrite at build time. -->
+    <link rel="preload" href="/protected-areas.json" as="fetch" crossorigin="anonymous" />
 
     <!-- Nunito 400 (src/index.css's @fontsource import) -- the weight the
          bulk of unstyled body text uses (nothing explicitly declares

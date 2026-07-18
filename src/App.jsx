@@ -4,6 +4,7 @@ import BottomNav from './components/BottomNav.jsx';
 import Header from './components/Header.jsx';
 import InstallPrompt from './components/InstallPrompt.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
+import { warmSharedMapData } from './hooks/useMapState.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
 import { LS_KEYS } from './config.js';
 
@@ -165,6 +166,13 @@ export default function App() {
     const prefetch = () => {
       import('./components/ClassicMap.jsx');
       import('./components/BlitzMap.jsx');
+      // Also warm the shared border/state/label data useMapState's onLoad
+      // needs (~345KB gzip) -- otherwise none of it starts downloading
+      // until MapLibre's 'load' fires, so borders pop in visibly after the
+      // map on slow connections. Same promise cache as onLoad, so this is
+      // a pure head start, never a duplicate fetch -- see
+      // warmSharedMapData's comment in useMapState.js.
+      warmSharedMapData();
     };
     if (typeof requestIdleCallback === 'function') {
       const id = requestIdleCallback(prefetch, { timeout: 5000 });
