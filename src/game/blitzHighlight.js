@@ -149,35 +149,28 @@ export function clearBoundary(map) {
 // feature at a time -- a 'hint' status would stomp 'selected' the instant a
 // tap lands inside the region. An independent filtered layer avoids that
 // collision entirely and needs no per-feature bookkeeping.
-const HINT_COLOR = '#f59e0b'; // amber -- distinct from selected(blue)/correct(green)/wrong(red)/boundary(blue)
+//
+// BLITZ_HINT_FILL/BLITZ_HINT_OUTLINE are added once, ever, by useMapState.js
+// (mode==='blitz'), same persistent add-once idiom as BLITZ_FILL/
+// BLITZ_OUTLINE above -- this file only ever calls setFilter on them now.
+// Cycling them via addLayer/removeLayer on every hint show/hide (the
+// previous approach) was the source of a visible flicker: a freshly
+// addLayer'd layer's first painted frame could still reflect the previous
+// round's filter result for one frame before the new filter applied.
+// setFilter on an already-mounted layer has no such gap.
+const NO_HINT_FILTER = ['in', ['get', 'st_nm'], ['literal', []]];
 
 /** Region-level hint -- fills+outlines every state in `regionStates` amber. Caller owns the 3s auto-hide timer. */
 export function showHintRegion(map, regionStates) {
-  if (!map || !map.getSource(STATE_SOURCE_ID) || !regionStates?.length) return;
+  if (!map || !map.getLayer(LAYER_IDS.BLITZ_HINT_FILL) || !regionStates?.length) return;
   const filter = ['in', ['get', 'st_nm'], ['literal', regionStates]];
-
-  if (map.getLayer(LAYER_IDS.BLITZ_HINT_FILL)) {
-    map.setFilter(LAYER_IDS.BLITZ_HINT_FILL, filter);
-  } else {
-    map.addLayer({
-      id: LAYER_IDS.BLITZ_HINT_FILL, type: 'fill', source: STATE_SOURCE_ID, filter,
-      paint: { 'fill-color': HINT_COLOR, 'fill-opacity': 0.25 },
-    });
-  }
-
-  if (map.getLayer(LAYER_IDS.BLITZ_HINT_OUTLINE)) {
-    map.setFilter(LAYER_IDS.BLITZ_HINT_OUTLINE, filter);
-  } else {
-    map.addLayer({
-      id: LAYER_IDS.BLITZ_HINT_OUTLINE, type: 'line', source: STATE_SOURCE_ID, filter,
-      paint: { 'line-color': HINT_COLOR, 'line-width': 1.5, 'line-opacity': 0.9 },
-    });
-  }
+  map.setFilter(LAYER_IDS.BLITZ_HINT_FILL, filter);
+  map.setFilter(LAYER_IDS.BLITZ_HINT_OUTLINE, filter);
 }
 
 /** Called after the 3s auto-hide timer, and defensively on LOADING (next site) so a stale hint never survives a round change. */
 export function hideHintRegion(map) {
-  if (!map) return;
-  if (map.getLayer(LAYER_IDS.BLITZ_HINT_FILL)) map.removeLayer(LAYER_IDS.BLITZ_HINT_FILL);
-  if (map.getLayer(LAYER_IDS.BLITZ_HINT_OUTLINE)) map.removeLayer(LAYER_IDS.BLITZ_HINT_OUTLINE);
+  if (!map || !map.getLayer(LAYER_IDS.BLITZ_HINT_FILL)) return;
+  map.setFilter(LAYER_IDS.BLITZ_HINT_FILL, NO_HINT_FILTER);
+  map.setFilter(LAYER_IDS.BLITZ_HINT_OUTLINE, NO_HINT_FILTER);
 }

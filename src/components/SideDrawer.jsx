@@ -16,7 +16,7 @@
 // `onNavigate` only ever fires for 'howtoplay'/'about'/'privacy', matching
 // InfoModal's variants 1:1; Stats is reachable via BottomNav's own tab.
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { LS_KEYS, CATEGORY_META, FEEDBACK_FORM_URL, FEEDBACK_ENTRY_ID } from '../config.js';
 import { REGION_STATES } from '../utils/filters.js';
 import { submitFeedback } from '../game/api.js';
@@ -100,13 +100,24 @@ export default function SideDrawer({
     return () => clearTimeout(t);
   }, [feedbackPhase]);
 
-  const categoryCounts = {};
-  for (const cat of CATEGORIES) categoryCounts[cat] = 0;
-  for (const s of sites) categoryCounts[s.category] = (categoryCounts[s.category] ?? 0) + 1;
+  // Both scan the full ~837-site list -- memoized so unrelated re-renders
+  // (typing in the name/feedback fields, toggling sound/haptics, opening/
+  // closing the drawer) don't repeat that work. categoryCounts is the
+  // stable "how many exist in total" figure (see file header), so it only
+  // depends on `sites`; matchCount also depends on the live filter selection.
+  const categoryCounts = useMemo(() => {
+    const counts = {};
+    for (const cat of CATEGORIES) counts[cat] = 0;
+    for (const s of sites) counts[s.category] = (counts[s.category] ?? 0) + 1;
+    return counts;
+  }, [sites]);
 
-  const matchCount = sites.filter(
-    (s) => filters.categories.includes(s.category) && s.state.some((st) => filters.states.includes(st))
-  ).length;
+  const matchCount = useMemo(
+    () => sites.filter(
+      (s) => filters.categories.includes(s.category) && s.state.some((st) => filters.states.includes(st))
+    ).length,
+    [sites, filters]
+  );
 
   function handleNameChange(e) {
     const value = e.target.value.slice(0, 30);

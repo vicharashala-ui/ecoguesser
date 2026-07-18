@@ -76,8 +76,25 @@ export default function SatelliteOverlay({ active }) {
     }
 
     draw();
-    window.addEventListener('resize', draw);
-    return () => window.removeEventListener('resize', draw);
+
+    // rAF-coalesced: a resize event storm (window drag-resize, mobile
+    // address-bar show/hide) would otherwise redraw both gradients once per
+    // individual event; batching to at most one draw per animation frame
+    // costs nothing when resizes are already infrequent and avoids the
+    // redundant redraws when they're not.
+    let rafId = null;
+    function onResize() {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        draw();
+      });
+    }
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, [active]);
 
   if (!active) return null;

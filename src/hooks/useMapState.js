@@ -657,6 +657,30 @@ export function useMapState(mapRef, mode) {
         },
       });
 
+      if (mode !== 'blitz') {
+        // Hint 2 (stateHighlight.js) fill+outline pair -- added once here,
+        // same persistent add-once idiom as BLITZ_FILL/BLITZ_OUTLINE and
+        // BLITZ_HINT_FILL/BLITZ_HINT_OUTLINE below, instead of
+        // stateHighlight.js calling addLayer/removeLayer on every
+        // showHint2/hideHint2. Blitz has no Hint 2 (its own region-hint
+        // mechanism is the BLITZ_HINT_* pair above), so this only applies
+        // to Classic/Daily. line-opacity-transition:0 is still needed here
+        // (not just on first add) since startPulse drives that property by
+        // hand every frame -- see stateHighlight.js's comment.
+        const NO_HINT2_FILTER = ['in', ['get', 'st_nm'], ['literal', []]];
+        map.addLayer({
+          id: LAYER_IDS.HINT_FILL, type: 'fill', source: 'india-states', filter: NO_HINT2_FILTER,
+          paint: { 'fill-color': '#8b5cf6', 'fill-opacity': 0.25 },
+        });
+        map.addLayer({
+          id: LAYER_IDS.HINT_OUTLINE, type: 'line', source: 'india-states', filter: NO_HINT2_FILTER,
+          paint: {
+            'line-color': '#8b5cf6', 'line-width': 1.5, 'line-opacity': 1,
+            'line-opacity-transition': { duration: 0, delay: 0 },
+          },
+        });
+      }
+
       // Dedicated one-point-per-state source for name labels, instead of
       // symbol-labeling india-states' polygons directly. GeoJSON sources are
       // internally split into a tile pyramid (geojson-vt) -- a polygon
@@ -749,6 +773,26 @@ export function useMapState(mapRef, mode) {
             'line-width': 2,
             'line-opacity': ['case', ['==', ['feature-state', 'blitzStatus'], null], 0, 1],
           },
+        });
+
+        // Hint fill+outline pair -- added once here, same persistent
+        // add-once idiom as BLITZ_FILL/BLITZ_OUTLINE above, instead of
+        // blitzHighlight.js calling addLayer/removeLayer on every hint
+        // show/hide. That cycling was the source of a visible flicker: a
+        // freshly addLayer'd layer starts with the *previous* round's
+        // now-stale filter result still in MapLibre's internal tile-feature
+        // cache for one paint, so the old highlighted states flashed before
+        // the new filter took over. An empty literal-list filter matches no
+        // features and costs nothing to keep mounted between rounds --
+        // showHintRegion/hideHintRegion now only ever call setFilter.
+        const NO_HINT_FILTER = ['in', ['get', 'st_nm'], ['literal', []]];
+        map.addLayer({
+          id: LAYER_IDS.BLITZ_HINT_FILL, type: 'fill', source: 'india-states', filter: NO_HINT_FILTER,
+          paint: { 'fill-color': '#f59e0b', 'fill-opacity': 0.25 },
+        });
+        map.addLayer({
+          id: LAYER_IDS.BLITZ_HINT_OUTLINE, type: 'line', source: 'india-states', filter: NO_HINT_FILTER,
+          paint: { 'line-color': '#f59e0b', 'line-width': 1.5, 'line-opacity': 0.9 },
         });
       }
 
