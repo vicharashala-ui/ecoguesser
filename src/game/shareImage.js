@@ -28,14 +28,19 @@ export async function shareNodeAsImage(node, { filename, shareTitle, shareText }
     // Without this, the area outside the card's rounded corners is
     // transparent -- most share sheets/viewers render transparent PNG
     // regions as black instead of the app's actual page background.
-    // Was '#f8f6f1' (the page bg) -- nearly identical to the card's own
-    // '#fffdf6', so the 22px corner cutouts were technically rounded but
-    // invisible against it. The live on-screen popup reads as clearly
-    // rounded because it sits on a dark backdrop (.lb-recap-backdrop);
-    // reusing the card's own dark green footer/logo color here gives the
-    // same kind of contrast without introducing a color that isn't
-    // already part of this card's design.
-    backgroundColor: '#14532d',
+    // Must exactly match .dr-card's own `background: #fffdf6` (Daily
+    // RecapCss), not just approximate it: html-to-image's apply-style.js
+    // sets this same color as an inline `background-color` directly on
+    // the captured node -- not only on the canvas area outside the
+    // rounded corners -- silently overriding .dr-card's real background
+    // for its entire interior. An approximate value here (previously
+    // '#f8f6f1', a near-white a couple RGB steps off) left interior and
+    // border both wrong, just too close to notice; the dark green tried
+    // after that made the mismatch obvious, painting the whole card
+    // instead of only the intended corner cutouts. Using the exact value
+    // makes that inline override a no-op, so the interior renders
+    // identically to the live on-screen card.
+    backgroundColor: '#fffdf6',
     // The live card is visually scaled down via CSS `transform: scale()` to
     // fit narrow phone screens (DailyRecap.jsx's useCardScale), but html-to-
     // image sizes the capture canvas off the node's untransformed
