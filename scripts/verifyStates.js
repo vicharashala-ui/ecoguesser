@@ -7,7 +7,7 @@ const fs   = require('fs');
 const path = require('path');
 
 const sites  = JSON.parse(fs.readFileSync(path.join(__dirname, '../public/protected-areas.json'), 'utf8'));
-const states = JSON.parse(fs.readFileSync(path.join(__dirname, '../public/india-states.geojson'), 'utf8'));
+const states = JSON.parse(fs.readFileSync(path.join(__dirname, 'source-data/india-states.geojson'), 'utf8'));
 
 const stNames = new Set(states.features.map(f => f.properties.st_nm));
 

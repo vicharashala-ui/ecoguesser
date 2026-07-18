@@ -81,7 +81,7 @@ const SOURCES = [
 ];
 
 // ---------------------------------------------------------------------------
-// State normalisation (must match `st_nm` in public/india-states.geojson)
+// State normalisation (must match `st_nm` in scripts/source-data/india-states.geojson)
 // ---------------------------------------------------------------------------
 const STATE_NORM = {
   'Andaman and Nicobar Islands': 'Andaman & Nicobar Islands',  // typo variant, source data ("and" not "&")

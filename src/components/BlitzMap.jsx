@@ -51,7 +51,11 @@ function IconFlame({ size = 20 }) {
 // Used to be a second, hand-maintained static file (map-style-ofm.json) --
 // see config.js's MAP_STYLE comment for why that was retired.
 function blitzStyleTransform(styleJson) {
-  const style = JSON.parse(JSON.stringify(styleJson)); // plain data, safe to round-trip
+  // No clone here: MapContainer.jsx's mount effect already hands this
+  // function a structuredClone'd copy exclusive to this mount (see that
+  // file's comment) -- a second full JSON.stringify/parse pass over the
+  // same ~20KB style document was pure duplicate work on every Blitz mount.
+  const style = styleJson;
 
   // openmaptiles.maxzoom is now set directly in map-style.json (shared by
   // all three modes -- Classic/Daily's camera reaches z12 with no detail

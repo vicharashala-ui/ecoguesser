@@ -28,7 +28,14 @@ export async function shareNodeAsImage(node, { filename, shareTitle, shareText }
     // Without this, the area outside the card's rounded corners is
     // transparent -- most share sheets/viewers render transparent PNG
     // regions as black instead of the app's actual page background.
-    backgroundColor: '#f8f6f1',
+    // Was '#f8f6f1' (the page bg) -- nearly identical to the card's own
+    // '#fffdf6', so the 22px corner cutouts were technically rounded but
+    // invisible against it. The live on-screen popup reads as clearly
+    // rounded because it sits on a dark backdrop (.lb-recap-backdrop);
+    // reusing the card's own dark green footer/logo color here gives the
+    // same kind of contrast without introducing a color that isn't
+    // already part of this card's design.
+    backgroundColor: '#14532d',
     // The live card is visually scaled down via CSS `transform: scale()` to
     // fit narrow phone screens (DailyRecap.jsx's useCardScale), but html-to-
     // image sizes the capture canvas off the node's untransformed

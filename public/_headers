@@ -64,6 +64,15 @@
 /favicon.ico
   Cache-Control: public, max-age=86400
 
+# Social-preview share card -- same regenerate-only-on-a-deliberate-pass
+# profile as /icons/*, so it gets the same tier. Previously uncovered by
+# any rule here, so it was silently falling through to Cloudflare Pages'
+# default (`max-age=0, must-revalidate`) -- every crawler/chat-app fetch
+# was paying a revalidation round-trip for a file that essentially never
+# changes.
+/og-image.png
+  Cache-Control: public, max-age=86400
+
 # --- Tier 3: unhashed files that DO change on ordinary content passes ------
 # Site/state/boundary GeoJSON and the MapLibre style JSON are the two
 # things this repo actually regenerates during normal work (this session's
@@ -85,15 +94,11 @@
 # Cloudflare's compression allowlist; .topojson has no registered MIME
 # type of its own, so application/json is the correct compressible
 # fallback) fixes this regardless of what the default guess was.
-/india-states.geojson
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-  Content-Type: application/geo+json; charset=utf-8
-
-# The client fetches india-states.topojson now (see useMapState.js +
-# scripts/convertStatesTopo.js) -- india-states.geojson above is kept only
-# as that script's source-of-truth input, no longer requested by the app
-# itself. Its rule is left in place rather than deleted (harmless either
-# way, and it's one less thing to remember to re-add if that ever changes).
+#
+# india-states.geojson itself has no rule here (or any presence in public/
+# at all) -- the client only ever fetches the derived .topojson below (see
+# useMapState.js + scripts/convertStatesTopo.js); the raw geojson is
+# build-source-only now, kept at scripts/source-data/india-states.geojson.
 /india-states.topojson
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
   Content-Type: application/json; charset=utf-8

@@ -33,7 +33,7 @@ export const INDIA_OUTLINE_PATH = 'M95,17 L93,17 L90,16 L89,13 L82,10 L81,8 L79,
 // State-border overlay for DailyRecap's mini-map -- interior admin boundaries
 // only (exterior already covered by INDIA_OUTLINE_PATH above), same
 // equirectangular projection/BOUNDS so it aligns pixel-for-pixel with the
-// outline. Generated via shapely from public/india-states.geojson
+// outline. Generated via shapely from scripts/source-data/india-states.geojson
 // (mainland epsilon 0.05, island epsilon 0.01, both in degrees; polygons
 // under 0.004 sq-deg dropped to avoid speckling from tiny islets). Regenerate
 // only if india-states.geojson itself changes -- build-time asset, not

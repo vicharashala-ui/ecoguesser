@@ -1,5 +1,10 @@
 // scripts/convertStatesTopo.js
-// Converts public/india-states.geojson -> public/india-states.topojson.
+// Converts scripts/source-data/india-states.geojson -> public/india-states.topojson.
+//
+// The source file lives outside public/ on purpose -- the app only ever
+// fetches the derived .topojson at runtime (useMapState.js), so keeping the
+// untouched geojson in public/ was shipping ~340KB gzip in every deploy that
+// no request ever actually asked for.
 // Run AFTER simplifyBoundaries.js (operates on the already-simplified file).
 //
 // WHY: india-states.geojson is 36 features (28 states + island UTs as
@@ -45,7 +50,7 @@ const mapshaper = require('mapshaper');
 const fs        = require('fs');
 const path      = require('path');
 
-const SRC  = path.join(__dirname, '../public/india-states.geojson');
+const SRC  = path.join(__dirname, 'source-data/india-states.geojson');
 const DEST = path.join(__dirname, '../public/india-states.topojson');
 
 function fwd(p) { return p.replace(/\\/g, '/'); }

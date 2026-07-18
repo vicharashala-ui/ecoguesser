@@ -17,7 +17,7 @@ const BOUNDS = path.join(__dirname, '../public/boundaries');
 
 // Also simplify these top-level files when present (added separately from data pipeline)
 const EXTRA = [
-  path.join(__dirname, '../public/india-states.geojson'),
+  path.join(__dirname, 'source-data/india-states.geojson'),
   path.join(__dirname, '../public/india-boundary.geojson'),
 ];
 
