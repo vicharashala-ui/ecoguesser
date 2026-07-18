@@ -15,7 +15,7 @@
 import { useEffect } from 'react';
 import './MilestoneToast.css';
 
-const DISPLAY_MS = 2800;
+const DISPLAY_MS = 3600; // must match .eg-milestone-toast's animation-duration in the CSS
 
 export default function MilestoneToast({ count, onDone }) {
   useEffect(() => {
@@ -25,11 +25,7 @@ export default function MilestoneToast({ count, onDone }) {
 
   return (
     <div className="eg-milestone-toast" role="status" aria-live="polite">
-      <span className="eg-milestone-icon" aria-hidden="true">🌿</span>
-      <div className="eg-milestone-text">
-        <p className="eg-milestone-title">{count} Sites Explored!</p>
-        <p className="eg-milestone-sub">Keep discovering India's wild places.</p>
-      </div>
+      <p className="eg-milestone-title">{count} Sites Explored!</p>
     </div>
   );
 }

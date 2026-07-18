@@ -37,30 +37,52 @@
   color: #111827;
 }
 
+/* Segmented control -- a sliding indicator (position/color driven by
+   StatsView.jsx's activeIndex/active.accent) sits behind the four
+   equal-width buttons, so switching tabs animates as one pill moving
+   across instead of each button toggling its own background instantly. */
 .sv-subtabs {
+  position: relative;
   width: 100%;
   max-width: 420px;
   display: flex;
-  gap: 8px;
+  padding: 4px;
   margin-bottom: 20px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+/* Width/left math: content area is 100% minus the container's 4px+4px
+   padding, split 4 ways -- matches each button's flex:1 cell exactly, so
+   translateX(index * 100%) in StatsView.jsx (relative to the indicator's
+   own width) lands flush under that button with no DOM measuring. */
+.sv-subtabs-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(25% - 2px);
+  border-radius: 10px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease;
 }
 
 .sv-subtab {
+  position: relative;
+  z-index: 1;
   flex: 1;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
+  height: 36px;
+  border: none;
+  background: transparent;
   color: #6b7280;
   font-weight: 700;
   font-size: 13.5px;
   cursor: pointer;
   font-family: inherit;
+  transition: color 0.2s ease;
 }
 
 .sv-subtab-active {
-  background: #16a34a;
-  border-color: #16a34a;
   color: #fff;
 }
 
@@ -73,6 +95,18 @@
   text-align: center;
   padding: 40px 10px;
   color: #6b7280;
+}
+
+.sv-empty-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sv-tint, #f3f4f6);
+  color: var(--sv-accent, #9ca3af);
 }
 
 .sv-empty p {
@@ -105,6 +139,7 @@
   border-radius: 14px;
   background: #fff;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
   text-align: center;
 }
 
@@ -122,12 +157,37 @@
   text-transform: uppercase;
 }
 
+/* Icon chip on each StatCard (StatsView.jsx) -- fixed green tint regardless
+   of section, since .sv-stat cards appear on Daily/Classic/Blitz where the
+   per-section accent (item 7) isn't relevant to individual metric tiles,
+   only to section-level headings/empty-states. */
+.sv-stat-icon {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 2px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+/* Small tinted pill instead of plain gray caps text -- color comes from
+   --sv-accent/--sv-tint set on .sv-body per active tab (StatsView.jsx), so
+   headings pick up that section's accent without four near-duplicate
+   heading classes. Falls back to the old plain gray if used outside
+   .sv-body (vars unset). */
 .sv-heading {
+  display: inline-block;
   margin: 4px 0 10px;
-  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.06em;
-  color: #6b7280;
+  color: var(--sv-accent, #6b7280);
+  background: var(--sv-tint, transparent);
   text-transform: uppercase;
 }
 
@@ -158,6 +218,7 @@
   border-radius: 14px;
   background: #fff;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 }
 
 .sv-hist-col {
@@ -232,6 +293,10 @@
   .sv-ach-progress-fill {
     transition: none;
   }
+
+  .sv-ach-badge-unlocked {
+    animation: none;
+  }
 }
 
 .sv-cat-grid {
@@ -249,6 +314,7 @@
   border-radius: 12px;
   background: #fff;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 }
 
 .sv-cat-dot {
@@ -303,6 +369,7 @@
   border-radius: 14px;
   background: #fff;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 }
 
 .sv-ach-summary-top {
@@ -357,13 +424,25 @@
   border-radius: 14px;
   background: #fff;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
   opacity: 0.6;
 }
 
+/* Pop + glow on mount -- ties back to MilestoneToast/ConfettiBurst's
+   "you did something" language elsewhere, scaled down since this fires
+   every time the Awards tab is opened (not only at the real unlock
+   moment), so it shouldn't be showy on repeat visits. */
 .sv-ach-badge-unlocked {
   opacity: 1;
   background: #f0fdf4;
   border-color: #bbf7d0;
+  animation: sv-ach-unlock-pop 0.45s ease;
+}
+
+@keyframes sv-ach-unlock-pop {
+  0% { transform: scale(0.94); box-shadow: 0 0 0 rgba(22, 163, 74, 0); }
+  55% { transform: scale(1.02); box-shadow: 0 0 14px rgba(22, 163, 74, 0.3); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(22, 163, 74, 0); }
 }
 
 .sv-ach-icon {

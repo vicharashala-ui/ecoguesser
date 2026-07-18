@@ -23,6 +23,18 @@ import './StatsView.css';
 
 const BUCKET_LABELS = ['0-5k', '5-10k', '10-15k', '15-20k', '20-25k'];
 
+// Tab order + per-section accent/tint, read by the sliding subtab indicator
+// (item 6) and by .sv-heading/.sv-empty-icon's CSS custom props (items 7,
+// 8) -- one map so the indicator and every chip/icon in a section always
+// agree on its color instead of four hardcoded CSS class variants drifting
+// out of sync with each other.
+const TABS = [
+  { id: 'daily', label: 'Daily', accent: '#65a30d', tint: '#f7fee7' },
+  { id: 'classic', label: 'Classic', accent: '#2563eb', tint: '#eff6ff' },
+  { id: 'blitz', label: 'Blitz', accent: '#f59e0b', tint: '#fffbeb' },
+  { id: 'awards', label: 'Awards', accent: '#9333ea', tint: '#faf5ff' },
+];
+
 // Vertical bar chart shared by Daily's score distribution and by Classic's
 // and Blitz's "by category" breakdowns -- all three use the same shared
 // green fill (StatsView.css .sv-hist-bar). Bars grow in on mount via a
@@ -74,12 +86,28 @@ function ScoreHistogram({ distribution, labels, format = (v) => v, ariaLabel = '
   );
 }
 
+// Small reusable stat tile -- centralizes the icon+value+label markup so
+// the icon chip (item 4) doesn't mean repeating <AchievementIcon> across
+// every one of the ~15 stat cards across Daily/Classic/Blitz below.
+function StatCard({ icon, value, label }) {
+  return (
+    <div className="sv-stat">
+      <div className="sv-stat-icon">
+        <AchievementIcon name={icon} size={16} />
+      </div>
+      <span className="sv-stat-value">{value}</span>
+      <span className="sv-stat-label">{label}</span>
+    </div>
+  );
+}
+
 function DailySection() {
   const stats = useMemo(() => computeDailyStats(loadDailyStats()), []);
 
   if (stats.games === 0) {
     return (
       <div className="sv-empty">
+        <div className="sv-empty-icon"><AchievementIcon name="compass" size={30} /></div>
         <p>No Daily Challenges played yet.</p>
         <p className="sv-empty-sub">Play today's challenge to start building your stats.</p>
       </div>
@@ -89,29 +117,14 @@ function DailySection() {
   return (
     <>
       <div className="sv-stat-row">
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.games}</span>
-          <span className="sv-stat-label">Games</span>
-        </div>
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.streak}d</span>
-          <span className="sv-stat-label">Streak</span>
-        </div>
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.bestStreak}d</span>
-          <span className="sv-stat-label">Best streak</span>
-        </div>
+        <StatCard icon="compass" value={stats.games} label="Games" />
+        <StatCard icon="flame" value={`${stats.streak}d`} label="Streak" />
+        <StatCard icon="trophy" value={`${stats.bestStreak}d`} label="Best streak" />
       </div>
 
       <div className="sv-stat-row">
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.avgScore.toLocaleString()}</span>
-          <span className="sv-stat-label">Avg score</span>
-        </div>
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.bestScore.toLocaleString()}</span>
-          <span className="sv-stat-label">Best score</span>
-        </div>
+        <StatCard icon="target" value={stats.avgScore.toLocaleString()} label="Avg score" />
+        <StatCard icon="star" value={stats.bestScore.toLocaleString()} label="Best score" />
       </div>
 
       <p className="sv-heading">Score distribution</p>
@@ -119,22 +132,17 @@ function DailySection() {
       <ScoreHistogram distribution={stats.distribution} labels={BUCKET_LABELS} />
 
       <div className="sv-stat-row">
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.avgDistPerGame.toLocaleString()} km</span>
-          <span className="sv-stat-label">Avg dist / game</span>
-        </div>
-        <div className="sv-stat">
-          <span className="sv-stat-value">
-            {stats.avgDistPerGuess != null ? `${stats.avgDistPerGuess.toLocaleString()} km` : '--'}
-          </span>
-          <span className="sv-stat-label">Avg dist / guess</span>
-        </div>
-        <div className="sv-stat">
-          <span className="sv-stat-value">
-            {stats.bestGuess != null ? `${stats.bestGuess.toLocaleString()} km` : '--'}
-          </span>
-          <span className="sv-stat-label">Best guess</span>
-        </div>
+        <StatCard icon="compass" value={`${stats.avgDistPerGame.toLocaleString()} km`} label="Avg dist / game" />
+        <StatCard
+          icon="compass"
+          value={stats.avgDistPerGuess != null ? `${stats.avgDistPerGuess.toLocaleString()} km` : '--'}
+          label="Avg dist / guess"
+        />
+        <StatCard
+          icon="bolt"
+          value={stats.bestGuess != null ? `${stats.bestGuess.toLocaleString()} km` : '--'}
+          label="Best guess"
+        />
       </div>
 
       <p className="sv-heading">By category</p>
@@ -164,6 +172,7 @@ function ClassicSection() {
   if (stats.rounds === 0) {
     return (
       <div className="sv-empty">
+        <div className="sv-empty-icon"><AchievementIcon name="flag" size={30} /></div>
         <p>No Classic rounds played yet.</p>
         <p className="sv-empty-sub">Play a round of Classic to start building your stats.</p>
       </div>
@@ -173,25 +182,17 @@ function ClassicSection() {
   return (
     <>
       <div className="sv-stat-row">
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.rounds.toLocaleString()}</span>
-          <span className="sv-stat-label">Total rounds</span>
-        </div>
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.avgScore.toLocaleString()}</span>
-          <span className="sv-stat-label">Avg score</span>
-        </div>
+        <StatCard icon="flag" value={stats.rounds.toLocaleString()} label="Total rounds" />
+        <StatCard icon="target" value={stats.avgScore.toLocaleString()} label="Avg score" />
       </div>
 
       <div className="sv-stat-row">
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.avgDist.toLocaleString()} km</span>
-          <span className="sv-stat-label">Avg distance</span>
-        </div>
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.bestGuess != null ? `${stats.bestGuess.toLocaleString()} km` : '--'}</span>
-          <span className="sv-stat-label">Best guess</span>
-        </div>
+        <StatCard icon="compass" value={`${stats.avgDist.toLocaleString()} km`} label="Avg distance" />
+        <StatCard
+          icon="bolt"
+          value={stats.bestGuess != null ? `${stats.bestGuess.toLocaleString()} km` : '--'}
+          label="Best guess"
+        />
       </div>
 
       <p className="sv-heading">Avg distance by category</p>
@@ -211,6 +212,7 @@ function BlitzSection() {
   if (stats.rounds === 0) {
     return (
       <div className="sv-empty">
+        <div className="sv-empty-icon"><AchievementIcon name="bolt" size={30} /></div>
         <p>No Blitz rounds played yet.</p>
         <p className="sv-empty-sub">Play a round of Blitz to start building your stats.</p>
       </div>
@@ -220,18 +222,9 @@ function BlitzSection() {
   return (
     <>
       <div className="sv-stat-row">
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.rounds.toLocaleString()}</span>
-          <span className="sv-stat-label">Rounds</span>
-        </div>
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.accuracy}%</span>
-          <span className="sv-stat-label">Accuracy</span>
-        </div>
-        <div className="sv-stat">
-          <span className="sv-stat-value">{stats.bestStreak}</span>
-          <span className="sv-stat-label">Best streak</span>
-        </div>
+        <StatCard icon="flag" value={stats.rounds.toLocaleString()} label="Rounds" />
+        <StatCard icon="target" value={`${stats.accuracy}%`} label="Accuracy" />
+        <StatCard icon="flame" value={stats.bestStreak} label="Best streak" />
       </div>
 
       <p className="sv-heading">Accuracy by category</p>
@@ -463,43 +456,41 @@ function AchievementsSection({ sites }) {
 
 export default function StatsView({ sites = [] }) {
   const [tab, setTab] = useState('daily');
+  const activeIndex = TABS.findIndex((t) => t.id === tab);
+  const active = TABS[activeIndex];
 
   return (
     <div className="sv-screen">
       <h1 className="sv-title">Statistics</h1>
 
       <div className="sv-subtabs">
-        <button
-          type="button"
-          className={`sv-subtab${tab === 'daily' ? ' sv-subtab-active' : ''}`}
-          onClick={() => setTab('daily')}
-        >
-          Daily
-        </button>
-        <button
-          type="button"
-          className={`sv-subtab${tab === 'classic' ? ' sv-subtab-active' : ''}`}
-          onClick={() => setTab('classic')}
-        >
-          Classic
-        </button>
-        <button
-          type="button"
-          className={`sv-subtab${tab === 'blitz' ? ' sv-subtab-active' : ''}`}
-          onClick={() => setTab('blitz')}
-        >
-          Blitz
-        </button>
-        <button
-          type="button"
-          className={`sv-subtab${tab === 'awards' ? ' sv-subtab-active' : ''}`}
-          onClick={() => setTab('awards')}
-        >
-          Awards
-        </button>
+        {/* Sliding pill behind the buttons -- position comes from
+            activeIndex (tabs are equal-width, so index*100% lines it up
+            with no DOM measuring needed) and its color previews the
+            section's accent the body below is about to switch to. */}
+        <div
+          className="sv-subtabs-indicator"
+          style={{ transform: `translateX(${activeIndex * 100}%)`, background: active.accent }}
+        />
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className={`sv-subtab${tab === t.id ? ' sv-subtab-active' : ''}`}
+            onClick={() => setTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      <div className="sv-body">
+      <div
+        className="sv-body"
+        // Exposes this section's accent/tint to .sv-heading and
+        // .sv-empty-icon via CSS custom props, instead of four
+        // near-duplicate per-tab class variants in the CSS.
+        style={{ '--sv-accent': active.accent, '--sv-tint': active.tint }}
+      >
         {tab === 'daily' ? <DailySection />
           : tab === 'classic' ? <ClassicSection />
           : tab === 'blitz' ? <BlitzSection />
