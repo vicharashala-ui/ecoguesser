@@ -215,7 +215,18 @@
 /* ---- Loading state (site not resolved yet) ------------------------------ */
 
 .dm-loading-pill {
-  position: fixed;
+  /* position: absolute, not fixed -- same fix as BottomCard.css's
+     .bottom-card (see the full writeup there): every wrapper this pill
+     renders inside (DailyMap.jsx's own `position: absolute; inset: 0` div,
+     itself inside App.jsx's `position: relative; width: 100vw; height:
+     100vh` root) already spans the full viewport, so absolute resolves to
+     the identical left/right/bottom box a fixed position would -- while
+     sidestepping the visual-viewport recompute mobile Chrome/Safari can
+     get out of sync with during a live WebGL canvas repaint (satellite
+     toggle, terrain toggle, style update), which is what made this and
+     similar pills vanish mid-round.
+  */
+  position: absolute;
   left: 16px;
   right: 16px;
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);
@@ -241,7 +252,9 @@
 /* ---- Start gate (round 1, before Start is pressed) ----------------------- */
 
 .dm-start-pill {
-  position: fixed;
+  /* position: absolute, not fixed -- see .dm-loading-pill above for the
+     full writeup (same fix, same reasoning). */
+  position: absolute;
   left: 16px;
   right: 16px;
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);

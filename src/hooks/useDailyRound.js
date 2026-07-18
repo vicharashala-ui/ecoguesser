@@ -21,7 +21,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { getTodayString, getDailySites } from '../game/daily.js';
-import { haversine, calcScore, applyHintPenalty, isPointInBoundary } from '../game/scoring.js';
+import { haversine, calcScore, applyHintPenalty, isPointInBoundary, distanceToBoundary } from '../game/scoring.js';
 import { fetchBoundary } from '../game/boundaryCache.js';
 import { useCountdownTimer } from './useCountdownTimer.js';
 import { DAILY, SCORING } from '../config.js';
@@ -110,8 +110,16 @@ export function useDailyRound(allSites, active = true) {
 
     const currentSite = siteRef.current;
     const hintsUsed = hintLevelRef.current;
+    // distanceToBoundary returns null when boundaryRef.current is missing (2
+    // hasBoundary:false sites) or hasn't resolved yet -- same fallback to
+    // centroid haversine fetchBoundary's own callers already rely on.
+    const boundaryDist = finalGuess
+      ? distanceToBoundary(finalGuess.lat, finalGuess.lng, boundaryRef.current)
+      : null;
     const distanceKm = finalGuess
-      ? haversine(finalGuess.lat, finalGuess.lng, currentSite.centroid_lat, currentSite.centroid_lng)
+      ? (boundaryDist
+          ? boundaryDist.distanceKm
+          : haversine(finalGuess.lat, finalGuess.lng, currentSite.centroid_lat, currentSite.centroid_lng))
       : null; // calcScore's null guard turns this into 0, not 5000
     const insideBoundary =
       finalGuess != null && isPointInBoundary(finalGuess.lat, finalGuess.lng, boundaryRef.current);
@@ -127,6 +135,11 @@ export function useDailyRound(allSites, active = true) {
       guessLat: finalGuess?.lat ?? null,
       guessLng: finalGuess?.lng ?? null,
       distanceKm,
+      // Null when boundaryDist is null (missing/unresolved boundary or no
+      // guess placed) -- resultLayer.js falls back to site.centroid for the
+      // reveal line in that case.
+      nearestLng: boundaryDist?.nearestLng ?? null,
+      nearestLat: boundaryDist?.nearestLat ?? null,
       rawScore,
       hintsUsed,
       hintPenalty: hintsUsed * SCORING.HINT_PENALTY,

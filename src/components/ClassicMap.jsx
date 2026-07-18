@@ -104,6 +104,8 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
       const fitPadding = { ...REVEAL_FIT_SIDES, bottom: measuredHeight + REVEAL_CARD_GAP };
       showResult(map, { lat: result.guessLat, lng: result.guessLng }, result.site, {
         distanceKmOverride: result.distanceKm,
+        nearestLng: result.nearestLng,
+        nearestLat: result.nearestLat,
         fitPadding,
       });
     } else if (roundState === 'LOADING') {

@@ -122,7 +122,12 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
       // this one-off read is only for the map's own fitBounds padding.
       const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 200;
       const fitPadding = { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 };
-      showResult(map, guess, site, { distanceKmOverride: result.distanceKm, fitPadding });
+      showResult(map, guess, site, {
+        distanceKmOverride: result.distanceKm,
+        nearestLng: result.nearestLng,
+        nearestLat: result.nearestLat,
+        fitPadding,
+      });
     } else if (roundState === 'LOADING') {
       clearResult(map);
       // Next Site (and Skip's auto-advance) lands here -- reset to the

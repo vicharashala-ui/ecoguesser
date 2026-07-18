@@ -246,7 +246,16 @@ export const LAYER_IDS = {
   BLITZ_HINT_OUTLINE:  'blitz-hint-outline',
 };
 
-export const SCORING = { MAX_SCORE: 5000, DECAY_KM: 100, HINT_PENALTY: 500 };
+// DECAY_KM=92, not 100 -- distance is now measured to the site's boundary
+// rather than its centroid, which acts as a per-site score bonus of
+// roughly exp(effectiveRadius/DECAY_KM) for guesses that miss outside the
+// site. Averaged over all 825 sites' real area_km2 (effectiveRadius =
+// sqrt(area/pi)), that bonus was ~x1.08 at the old DECAY_KM=100 -- 92
+// (100/1.081) cancels it back out for the typical "missed by more than the
+// site's own radius" round, while still letting near-misses on the
+// largest reserves (Great Rann of Kutch etc.) score noticeably better than
+// before, which is the intended effect of the boundary-distance change.
+export const SCORING = { MAX_SCORE: 5000, DECAY_KM: 92, HINT_PENALTY: 500 };
 
 export const DAILY = {
   CATEGORIES: ['np','wls','tr','br','ramsar'],
@@ -282,8 +291,14 @@ export const LS_KEYS = {
   UUID:        'ecoguesser_uuid',
   NAME:        'ecoguesser_name',
   DIFFICULTY:  'ecoguesser_difficulty',
-  STATS_DAILY: 'stats_daily',
-  STATS_NORM:  'stats_normal',
+  // Bumped to _v2: distance is now measured to the site boundary instead
+  // of the centroid, so old bestDist/history entries aren't comparable to
+  // new ones -- a version suffix naturally starts every player clean
+  // rather than mixing the two metrics. loadNormalStats()/loadDailyStats()
+  // already default-fall-back via try/catch on JSON.parse, so no separate
+  // migration code is needed for the old key to just go unread.
+  STATS_DAILY: 'stats_daily_v2',
+  STATS_NORM:  'stats_normal_v2',
   STATS_BLITZ: 'stats_blitz',
   RANK_TODAY:  'ecoguesser_rank_today', // { date, rank } -- rank only valid when date === today
   RECAP_SHOWN: 'ecoguesser_recap_shown', // plain date string -- the day the recap modal last auto-opened

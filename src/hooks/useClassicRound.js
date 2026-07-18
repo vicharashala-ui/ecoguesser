@@ -20,7 +20,7 @@
 // caller's job -- pass the already-filtered pool in.
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { haversine, calcScore, applyHintPenalty, isPointInBoundary } from '../game/scoring.js';
+import { haversine, calcScore, applyHintPenalty, isPointInBoundary, distanceToBoundary } from '../game/scoring.js';
 import { fetchBoundary } from '../game/boundaryCache.js';
 import { pickNextSite } from '../utils/filters.js';
 import { SCORING } from '../config.js';
@@ -99,7 +99,13 @@ export function useClassicRound(sitePool) {
   const handleConfirm = useCallback(() => {
     if (roundState !== 'PLACING' || !guess || !site) return; // Confirm is disabled in the UI until both hold
 
-    const distanceKm = haversine(guess.lat, guess.lng, site.centroid_lat, site.centroid_lng);
+    // distanceToBoundary returns null when boundaryRef.current is missing (2
+    // hasBoundary:false sites) or hasn't resolved yet -- same fallback to
+    // centroid haversine fetchBoundary's own callers already rely on.
+    const boundaryDist = distanceToBoundary(guess.lat, guess.lng, boundaryRef.current);
+    const distanceKm = boundaryDist
+      ? boundaryDist.distanceKm
+      : haversine(guess.lat, guess.lng, site.centroid_lat, site.centroid_lng);
     const insideBoundary = isPointInBoundary(guess.lat, guess.lng, boundaryRef.current);
     const rawScore = insideBoundary ? SCORING.MAX_SCORE : calcScore(distanceKm);
     // Classic callers always pass hintsUsed=0 into applyHintPenalty per
@@ -114,6 +120,11 @@ export function useClassicRound(sitePool) {
       guessLat: guess.lat,
       guessLng: guess.lng,
       distanceKm,
+      // Null when boundaryDist is null (missing/unresolved boundary) --
+      // resultLayer.js falls back to site.centroid for the reveal line in
+      // that case.
+      nearestLng: boundaryDist?.nearestLng ?? null,
+      nearestLat: boundaryDist?.nearestLat ?? null,
       rawScore,
       hintsUsed: hintLevel,
       hintPenalty: 0,

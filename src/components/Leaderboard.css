@@ -286,9 +286,17 @@
 .lb-recap-wrap-open {
   position: fixed;
   inset: 0;
-  z-index: 50; /* above BottomNav's z-index: 40 -- otherwise the nav bar
-                  permanently covers the Share/Close row at the bottom,
-                  even while the modal itself is scrolled */
+  /* Was relying on z-index:50 to render above BottomNav's z-index:40, but
+     .lb-screen (this element's own parent) is itself position:fixed with
+     z-index:20, which creates a stacking context of its own -- so nothing
+     inside it, this element included, can ever out-stack BottomNav (which
+     also isolates itself via `isolation: isolate`). The row only looked
+     fine before because the card's height happened to fall just short of
+     the nav's zone, leaving virtually no gap. Reserving the nav's height
+     here, the same way .lb-screen already does, guarantees real clearance
+     instead of depending on that coincidence. */
+  bottom: var(--eg-nav-height, 64px);
+  z-index: 50;
   max-width: none;
   display: flex;
   justify-content: center;

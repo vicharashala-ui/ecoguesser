@@ -3,7 +3,7 @@
 // guess is confirmed.
 //
 // Wire-up (round state machine):
-//   PLACING -> REVEALING:  await showResult(map, guess, site, { distanceKmOverride, fitPadding })
+//   PLACING -> REVEALING:  await showResult(map, guess, site, { distanceKmOverride, nearestLng, nearestLat, fitPadding })
 //   REVEALING -> LOADING:  clearResult(map)   (call BEFORE picking the next site)
 //
 // `guess` shape: { lat, lng }  (same shape MapContainer's marker already tracks)
@@ -12,6 +12,11 @@
 // Distance is recomputed internally via haversine() so this module only needs
 // (map, guess, site) -- pass opts.distanceKmOverride if you'd rather hand it the
 // authoritative value already computed by useClassicRound's scoring call.
+//
+// The reveal LINE targets opts.nearestLng/nearestLat (the nearest point on
+// the site's boundary, from the same scoring call) when given, falling back
+// to the centroid otherwise. The PIN always targets the centroid regardless
+// -- it's the stable "here's the site" marker, not the line's endpoint.
 
 import { LAYER_IDS, CATEGORY_META, MAP_CONFIG } from '../config.js';
 import { haversine } from './scoring.js';
@@ -45,9 +50,14 @@ export const ROUND_RESET_DURATION_MS = 950;
 let boundaryPromise = null;
 let animationFrameId = null;
 
-function buildResultData(guess, site, distanceKm) {
+// `lineTo` is the line's own endpoint -- the nearest point on the site's
+// boundary (or the centroid fallback), computed by the caller. `pinTo`
+// (site centroid) is separate and always stays put: it's the stable
+// "here's the site" marker and shouldn't move just because the line now
+// terminates at the boundary edge instead.
+function buildResultData(guess, site, distanceKm, lineTo) {
   const from = [guess.lng, guess.lat];
-  const to = [site.centroid_lng, site.centroid_lat];
+  const pinTo = [site.centroid_lng, site.centroid_lat];
   const distanceLabel = `${Math.round(distanceKm).toLocaleString()} km away`;
 
   return {
@@ -61,13 +71,13 @@ function buildResultData(guess, site, distanceKm) {
         // to stay upright no matter which way the line points.
         properties: { kind: 'line', distance: distanceLabel },
         // Starts collapsed to a zero-length line at `from` -- animateLine()
-        // grows this out to `to` over LINE_ANIMATION_MS.
+        // grows this out to `lineTo` over LINE_ANIMATION_MS.
         geometry: { type: 'LineString', coordinates: [from, from] },
       },
       {
         type: 'Feature',
         properties: { kind: 'pin' },
-        geometry: { type: 'Point', coordinates: to },
+        geometry: { type: 'Point', coordinates: pinTo },
       },
       {
         type: 'Feature',
@@ -155,13 +165,19 @@ function extendBounds(box, points) {
  * @param {object} [opts]
  * @param {number|null} [opts.distanceKmOverride] - use the hook's already-computed
  *   distanceKm instead of recomputing via haversine.
+ * @param {number|null} [opts.nearestLng] - nearest boundary point (paired with
+ *   opts.nearestLat) the hook's distanceToBoundary call already found; the reveal
+ *   line targets this instead of the site centroid. Falls back to the centroid
+ *   when either is null (missing boundary / not yet resolved -- same 2
+ *   hasBoundary:false sites distanceToBoundary itself falls back for).
+ * @param {number|null} [opts.nearestLat]
  * @param {object|null} [opts.fitPadding] - {top,bottom,left,right} px passed to
  *   fitBounds, e.g. BottomCard's measured height so the card never covers the
  *   reveal. Falls back to DEFAULT_FIT_PADDING if omitted.
  */
 export async function showResult(map, guess, site, opts = {}) {
   if (!map) return;
-  const { distanceKmOverride = null, fitPadding = null } = opts;
+  const { distanceKmOverride = null, nearestLng = null, nearestLat = null, fitPadding = null } = opts;
   const padding = fitPadding ?? DEFAULT_FIT_PADDING;
 
   // Kick off the boundary fetch immediately -- it runs in parallel with the
@@ -171,15 +187,21 @@ export async function showResult(map, guess, site, opts = {}) {
   const distanceKm =
     distanceKmOverride ?? haversine(guess.lat, guess.lng, site.centroid_lat, site.centroid_lng);
   const from = [guess.lng, guess.lat];
-  const to = [site.centroid_lng, site.centroid_lat];
+  const pinTo = [site.centroid_lng, site.centroid_lat];
+  // The line's own endpoint -- nearest boundary point when the caller has
+  // one, else the same centroid the pin uses (2 hasBoundary:false sites, or
+  // the boundary hadn't resolved yet when Confirm fired).
+  const lineTo = (nearestLng != null && nearestLat != null) ? [nearestLng, nearestLat] : pinTo;
   const color = CATEGORY_META[site.category]?.color ?? FALLBACK_COLOR;
-  const data = buildResultData(guess, site, distanceKm);
+  const data = buildResultData(guess, site, distanceKm, lineTo);
 
   // Zoom to the guess<->site pair right away, in parallel with the line/pin
   // animation below. This framing is what stays on screen through the whole
   // reveal now -- see the note above zoomToSiteBoundary() for why a later
-  // boundary load no longer re-fits the camera on its own.
-  map.fitBounds(extendBounds([from, from], [to]), {
+  // boundary load no longer re-fits the camera on its own. Both pinTo and
+  // lineTo are included so fitBounds never crops the point the line
+  // actually touches when it differs from the centroid.
+  map.fitBounds(extendBounds([from, from], [pinTo, lineTo]), {
     padding,
     duration: RESULT_FIT_DURATION_MS,
     easing: RESULT_FIT_EASING,
@@ -247,7 +269,7 @@ export async function showResult(map, guess, site, opts = {}) {
     },
   });
 
-  await animateLine(map, data, from, to);
+  await animateLine(map, data, from, lineTo);
 
   // showResult could theoretically be superseded mid-animation (e.g. a very
   // fast Next Site click triggering clearResult). Bail rather than re-adding
