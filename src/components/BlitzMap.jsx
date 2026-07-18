@@ -330,10 +330,17 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
             on streak > 0) so its position never jumps mid-session; the
             flame icon itself communicates "no streak yet" via its own
             gray-vs-lit color transition. */}
-        <div className="bz-streak-card" aria-live="polite">
-          <div className="bz-streak-main">
+        <div
+          className={`bz-streak-card${streak > 0 ? ' bz-streak-lit' : ''}`}
+          aria-live="polite"
+        >
+          <svg className="bz-streak-ring" width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
+            <circle cx="39" cy="39" r="36" className="bz-streak-ring-outer" />
+            <circle cx="39" cy="39" r="30" className="bz-streak-ring-inner" />
+          </svg>
+          <div className="bz-streak-face">
             <span className={`bz-streak-flame${streak > 0 ? ' bz-flame-active' : ''}`}>
-              <IconFlame />
+              <IconFlame size={16} />
             </span>
             <span
               key={streak}
@@ -341,8 +348,8 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
             >
               {streak}
             </span>
+            {bestStreak > 0 && <span className="bz-streak-best">Best {bestStreak}</span>}
           </div>
-          {bestStreak > 0 && <span className="bz-streak-best">Best {bestStreak}</span>}
         </div>
         <div className="bz-layer-panel">
           <label className="eg-toggle">
