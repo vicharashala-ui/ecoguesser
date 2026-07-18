@@ -279,3 +279,9 @@
 .dm-start-btn:active {
   transform: scale(0.97);
 }
+
+.dm-start-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}

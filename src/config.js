@@ -44,6 +44,12 @@ export const MAP_CONFIG = {
   // before actually hiding a layer (stops fetching its tiles) or tearing
   // down the satellite source. If you change one, change all three.
   TRANSITION_MS: 300,
+  // How long useMapState.js waits with no 'load' event before flipping
+  // mapLoadSlow true -- escalates DailyMap.jsx's loading pill from a quiet
+  // "Loading map..." to a "check your connection" warning. Was a bare
+  // 8000 inline in useMapState.js; pulled out here so it's tunable
+  // alongside every other timing constant instead of hidden in hook logic.
+  LOAD_SLOW_TIMEOUT_MS: 8000,
 };
 // Do NOT pass INDIA_CENTER/INDIA_ZOOM to MapLibre constructor.
 

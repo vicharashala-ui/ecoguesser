@@ -265,7 +265,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
               onChange={() => setTerrain(!terrain)}
             />
             <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            Terrain
+            Terrain{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
           </label>
           <label className="eg-toggle">
             <input
@@ -276,7 +276,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
               onChange={() => setSatellite(!satellite)}
             />
             <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            Satellite
+            Satellite{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
           </label>
           {satelliteUnavailable && (
             <span className="dm-sat-warning" title="Satellite imagery unavailable right now">
@@ -304,8 +304,19 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
         }
       />
 
-      {!mapReady && mapLoadSlow && (
-        <div className="dm-loading-pill">Map is taking a while to load — check your connection</div>
+      {/* NOT_STARTED's "Preparing map..." Start button (below) already
+          covers round 1's pre-start wait, and the !site branch below
+          covers the pre-round wait -- this pill only needs to fire once a
+          round is actually underway (rounds 2-5's auto-start, or a
+          context-loss reload mid-round) and the map still isn't ready.
+          Shows a quiet, immediate message first; escalates to the "check
+          your connection" copy once mapLoadSlow flips
+          (MAP_CONFIG.LOAD_SLOW_TIMEOUT_MS in useMapState.js) rather than
+          giving no feedback at all for that whole window. */}
+      {!mapReady && site && roundState !== 'NOT_STARTED' && (
+        <div className="dm-loading-pill">
+          {mapLoadSlow ? 'Map is taking a while to load — check your connection' : 'Loading map…'}
+        </div>
       )}
 
       {!site ? (
@@ -315,9 +326,26 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
         // only calls timer.start() on entering READING, which handleStart
         // triggers) and the guess panel hasn't appeared yet either. Rounds
         // 2-5 never hit this branch.
+        //
+        // Also gated on mapReady (not just roundState): `site` resolving
+        // (protected-areas.json fetch) races independently of the map's
+        // own style/tile/sprite/glyph load, and in practice the sites JSON
+        // usually wins that race -- so without this, the button could
+        // appear and be tappable while the map underneath still has no
+        // borders/hillshade and the Terrain/Satellite toggles disabled,
+        // and tapping it would start the real 120s countdown against that
+        // incomplete map. Button reads "Preparing map..." and is
+        // unclickable until mapReady; the onClick re-check is
+        // belt-and-suspenders for the gap between mapReady flipping true
+        // and the disabled attribute re-rendering.
         <div className="dm-start-pill">
-          <button type="button" className="dm-start-btn" onClick={handleStart}>
-            Start Daily Challenge
+          <button
+            type="button"
+            className="dm-start-btn"
+            disabled={!mapReady}
+            onClick={() => { if (mapReady) handleStart(); }}
+          >
+            {mapReady ? 'Start Daily Challenge' : 'Preparing map…'}
           </button>
         </div>
       ) : (

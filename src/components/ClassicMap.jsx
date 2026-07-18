@@ -214,7 +214,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
         <label className="eg-toggle">
           <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
           <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-          Borders
+          Borders{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
         </label>
         <label className="eg-toggle">
           {/* Not disabled while satellite is on -- it's clickable but inert
@@ -223,12 +223,12 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
               turns back off instead of needing to be re-set. */}
           <input type="checkbox" className="eg-toggle-input" checked={terrain} disabled={!mapReady} onChange={(e) => setTerrain(e.target.checked)} />
           <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-          Terrain
+          Terrain{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
         </label>
         <label className="eg-toggle">
           <input type="checkbox" className="eg-toggle-input" checked={satellite} disabled={!mapReady} onChange={(e) => setSatellite(e.target.checked)} />
           <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-          Satellite
+          Satellite{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
         </label>
         {satelliteUnavailable && <div className="cm-sat-warning">Satellite unavailable</div>}
       </div>

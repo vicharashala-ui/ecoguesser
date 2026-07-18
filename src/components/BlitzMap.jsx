@@ -354,7 +354,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
               onChange={() => setPoliticalNames(!politicalNames)}
             />
             <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            State Names
+            State Names{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
           </label>
         </div>
       </div>

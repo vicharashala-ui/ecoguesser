@@ -912,7 +912,7 @@ export function useMapState(mapRef, mode) {
       // person something's still in progress instead of looking stuck.
       slowLoadTimer = setTimeout(() => {
         setState(prev => (prev.mapReady ? prev : { ...prev, mapLoadSlow: true }));
-      }, 8000);
+      }, MAP_CONFIG.LOAD_SLOW_TIMEOUT_MS);
     }
 
     return () => {
