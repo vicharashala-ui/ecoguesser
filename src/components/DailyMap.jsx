@@ -251,6 +251,12 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
 
   const dailyTotal = results.reduce((sum, r) => sum + r.finalScore, 0);
 
+  // What clicking the Terrain/Basemap square actually does, for its
+  // aria-label/title -- mirrors ClassicMap.jsx's terrainBtnAction.
+  const terrainBtnAction = satellite
+    ? 'Turn off satellite view'
+    : terrain ? 'Switch to basemap' : 'Switch to terrain map';
+
   return (
     <div style={style} className="eg-daily-map">
       {/* Top-right stack: round timer, then the Terrain/Satellite squares
@@ -292,31 +298,33 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
           </div>
         </div>
         <div className="dm-mode-row">
-          {/* Terrain/Normal is one control, not two -- the icon always
-              shows the mode a click will switch TO, mirroring
-              ClassicMap.jsx's version of this same pattern. Gets .is-active
-              whenever terrain is on, same as the satellite square, so
-              there's a visible cue for the engaged mode, not just the icon.
-              Stays clickable (not disabled) while satellite is on, same
-              "ready the instant satellite turns off" rationale the old
-              checkbox had -- just dimmed via .is-inert. Caption mirrors
-              the icon's destination-mode wording, same as ClassicMap.jsx.
-              No panel wrapper (unlike Classic's Terrain/Satellite, which
-              never had one either) -- each square carries its own
-              background, and Daily has no Borders toggle to anchor a
-              panel around. */}
+          {/* Terrain/Basemap is one control, not two -- icon and caption show
+              the CURRENT mode ("Terrain" + mountain while terrain is on,
+              "Basemap" + flat map otherwise), mirroring ClassicMap.jsx's
+              version of this same pattern (see its comment for the full
+              rationale). .is-active is unconditional here (unlike the
+              satellite square, which has a true off state) -- this button
+              always shows one of its two modes, never "neither". While
+              satellite is on, this button is dimmed via .is-inert but stays
+              clickable -- clicking it turns satellite off and reveals
+              whatever terrain/basemap choice was already set, rather than
+              also flipping it on the same click. No panel wrapper (unlike
+              Classic's Terrain/Satellite, which never had one either) --
+              each square carries its own background, and Daily has no
+              Borders toggle to anchor a panel around. */}
           <div className="dm-mode-item">
             <button
               type="button"
-              className={`dm-mode-btn${terrain ? ' is-active' : ''}${satellite ? ' is-inert' : ''}`}
+              className={`dm-mode-btn is-active${satellite ? ' is-inert' : ''}`}
               disabled={!mapReady}
-              onClick={() => setTerrain(!terrain)}
-              aria-label={terrain ? 'Switch to normal map' : 'Switch to terrain map'}
-              title={terrain ? 'Switch to normal map' : 'Switch to terrain map'}
+              onClick={() => (satellite ? setSatellite(false) : setTerrain(!terrain))}
+              aria-label={terrainBtnAction}
+              aria-pressed={terrain}
+              title={terrainBtnAction}
             >
-              {terrain ? <IconMapFlat /> : <IconMountain />}
+              {terrain ? <IconMountain /> : <IconMapFlat />}
             </button>
-            <span className="dm-mode-label" aria-hidden="true">{terrain ? 'Normal' : 'Terrain'}</span>
+            <span className="dm-mode-label" aria-hidden="true">{terrain ? 'Terrain' : 'Basemap'}</span>
           </div>
           <div className="dm-mode-item">
             <button

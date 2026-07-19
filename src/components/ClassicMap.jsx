@@ -227,6 +227,14 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     zoomToSiteBoundary(map, { ...REVEAL_FIT_SIDES, bottom: measuredHeight + REVEAL_CARD_GAP });
   }
 
+  // What clicking the Terrain/Basemap square actually does, for its
+  // aria-label/title -- satellite-on is its own case since that click no
+  // longer flips terrain, it just turns satellite off (see the square's
+  // onClick and its comment below).
+  const terrainBtnAction = satellite
+    ? 'Turn off satellite view'
+    : terrain ? 'Switch to basemap' : 'Switch to terrain map';
+
   return (
     <div style={style}>
       <MapContainer
@@ -263,31 +271,36 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           </label>
         </div>
         <div className="cm-mode-row">
-          {/* Terrain/Normal is one control, not two -- the icon always shows
-              the mode a click will switch TO (mirrors a dark/light-mode
-              toggle showing the sun while dark), so it reads "terrain" while
-              flat and "normal" once terrain is on. Gets .is-active (same
-              highlight as the satellite square) whenever terrain is on, so
-              there's a visible cue for which mode is engaged, not just
-              which icon is showing. Stays clickable (not disabled) while
-              satellite is on, same "ready the instant satellite turns off"
-              rationale the old checkbox had -- just dimmed via .is-inert so
-              it reads as not doing anything right now. The caption below
-              mirrors the icon's destination-mode wording rather than the
-              current mode, so label and icon never disagree about what a
-              tap does. */}
+          {/* Terrain/Basemap is one control, not two -- icon and caption show
+              the CURRENT mode ("Terrain" + mountain while terrain is on,
+              "Basemap" + flat map otherwise), same direction as
+              aria-pressed below, so a labeled "Terrain" box always means
+              terrain is what's currently showing, not what tapping would
+              switch to. Clicking flips it, at which point both the icon
+              and caption flip together to the new current mode.
+              .is-active is unconditional here (unlike the satellite square,
+              which has a true off state) -- this button is always showing
+              one of its two modes, never "neither", so it's always
+              highlighted; only the icon/caption/aria-pressed change to say
+              which mode. While satellite is on, this button is dimmed via
+              .is-inert but stays clickable -- clicking it turns satellite
+              off and reveals whatever terrain/basemap choice was already
+              set (the preference kept ticking over in the background, see
+              useMapState.js's terrainRef), rather than also flipping it on
+              the same click. */}
           <div className="cm-mode-item">
             <button
               type="button"
-              className={`cm-mode-btn${terrain ? ' is-active' : ''}${satellite ? ' is-inert' : ''}`}
+              className={`cm-mode-btn is-active${satellite ? ' is-inert' : ''}`}
               disabled={!mapReady}
-              onClick={() => setTerrain(!terrain)}
-              aria-label={terrain ? 'Switch to normal map' : 'Switch to terrain map'}
-              title={terrain ? 'Switch to normal map' : 'Switch to terrain map'}
+              onClick={() => (satellite ? setSatellite(false) : setTerrain(!terrain))}
+              aria-label={terrainBtnAction}
+              aria-pressed={terrain}
+              title={terrainBtnAction}
             >
-              {terrain ? <IconMapFlat /> : <IconMountain />}
+              {terrain ? <IconMountain /> : <IconMapFlat />}
             </button>
-            <span className="cm-mode-label" aria-hidden="true">{terrain ? 'Normal' : 'Terrain'}</span>
+            <span className="cm-mode-label" aria-hidden="true">{terrain ? 'Terrain' : 'Basemap'}</span>
           </div>
           <div className="cm-mode-item">
             <button

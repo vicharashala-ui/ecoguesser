@@ -60,11 +60,13 @@
 }
 
 /* Square mode buttons -- replace the old Terrain/Satellite checkboxes.
-   Neutral border/icon by default; .is-active (terrain on, or satellite on)
-   switches both to a teal dedicated to these two map-mode squares, distinct
-   from the app's green "on" color (used by .eg-toggle, Borders included)
-   so a lit square here never reads as "the same kind of on" as a checked
-   toggle. .is-inert (terrain button while satellite is on) is a plain
+   .is-active switches to a teal dedicated to these two map-mode squares,
+   distinct from the app's green "on" color (used by .eg-toggle, Borders
+   included) so a lit square here never reads as "the same kind of on" as a
+   checked toggle. Unconditional on the Terrain/Basemap square (it's always
+   showing one of its two modes, never neither, so it's always highlighted);
+   conditional on `satellite` for the satellite square, which has a real
+   off state. .is-inert (terrain button while satellite is on) is a plain
    opacity dim, not :disabled -- it stays clickable so the preference is
    ready the instant satellite turns back off, same as the old checkbox
    behavior. width: 100% (not a fixed px) + aspect-ratio keeps it a square
