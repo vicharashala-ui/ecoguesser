@@ -44,7 +44,7 @@ export const RESULT_FIT_EASING = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t +
 // guess<->site pair, so it doesn't need the reveal's slower travel time.
 // Bumped from 700ms: at 700 the eased curve barely had room to read as an
 // ease before the move was over, so it landed feeling like a hard cut.
-export const ROUND_RESET_DURATION_MS = 950;
+export const ROUND_RESET_DURATION_MS = 1100;
 
 // MODULE-LEVEL state per spec -- reset on every LOADING entry via clearResult().
 let boundaryPromise = null;

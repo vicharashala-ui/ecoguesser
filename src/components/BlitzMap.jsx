@@ -22,6 +22,7 @@ import {
   showHintRegion, hideHintRegion,
 } from '../game/blitzHighlight.js';
 import { siteMatchesFilter, DEFAULT_FILTERS, getRegionHintStates } from '../utils/filters.js';
+import { RESULT_FIT_EASING } from '../game/resultLayer.js';
 import { recordBlitzResult, recordSiteEncounter } from '../game/stats.js';
 import { hapticPerfect } from '../utils/haptics.js';
 import { soundCelebrate } from '../utils/sound.js';
@@ -260,8 +261,10 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   }, [mapRef, mapReady, roundState, selectedState]);
 
   // REVEALING -> green/red (showReveal opens with its own clearAll), plus a
-  // fast reset to the default India-wide framing (500ms, distinct from the
-  // slower 1200ms "Show Boundary" zoom, which is meant to linger).
+  // fast reset to the default India-wide framing (580ms, eased with the
+  // same curve as Classic/Daily's round reset -- see RESULT_FIT_EASING --
+  // distinct from the slower 1200ms "Show Boundary" zoom, which is meant
+  // to linger).
   // LOADING -> clear everything before the next site's blue preview starts,
   // AND reset the camera again (same fitBounds as REVEALING's) -- mirrors
   // ClassicMap.jsx's equivalent effect. Without this second reset, "Show
@@ -276,10 +279,10 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     if (!map || !mapReady) return;
     if (roundState === 'REVEALING' && result) {
       showReveal(map, result.correctStates, result.guessedState, result.isCorrect, result.site);
-      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 500 });
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 580, easing: RESULT_FIT_EASING });
     } else if (roundState === 'LOADING') {
       clearAll(map);
-      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 500 });
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 580, easing: RESULT_FIT_EASING });
     }
   }, [mapRef, mapReady, roundState, result]);
 
