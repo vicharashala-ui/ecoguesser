@@ -23,6 +23,8 @@ import {
 } from '../game/blitzHighlight.js';
 import { siteMatchesFilter, DEFAULT_FILTERS, getRegionHintStates } from '../utils/filters.js';
 import { recordBlitzResult, recordSiteEncounter } from '../game/stats.js';
+import { hapticPerfect } from '../utils/haptics.js';
+import { soundCelebrate } from '../utils/sound.js';
 import { LAYER_IDS, MAP_CONFIG, BARE_VISUAL } from '../config.js';
 import { TERRAIN_PLACE_LABEL_IDS } from '../hooks/useMapState.js';
 import './BlitzMap.css';
@@ -260,7 +262,13 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // REVEALING -> green/red (showReveal opens with its own clearAll), plus a
   // fast reset to the default India-wide framing (500ms, distinct from the
   // slower 1200ms "Show Boundary" zoom, which is meant to linger).
-  // LOADING -> clear everything before the next site's blue preview starts.
+  // LOADING -> clear everything before the next site's blue preview starts,
+  // AND reset the camera again (same fitBounds as REVEALING's) -- mirrors
+  // ClassicMap.jsx's equivalent effect. Without this second reset, "Show
+  // Boundary" (zoomToBoundary, in handleShowBoundary above) can move the
+  // camera in AFTER REVEALING's own reset already ran, and nothing was
+  // ever resetting it again before Next Site -- the camera would stay
+  // zoomed into wherever Show Boundary left it for the whole next round.
   // (Hint region hide/show is fully owned by the declarative effect above --
   // this effect no longer touches it.)
   useEffect(() => {
@@ -271,6 +279,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
       map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 500 });
     } else if (roundState === 'LOADING') {
       clearAll(map);
+      map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 500 });
     }
   }, [mapRef, mapReady, roundState, result]);
 
@@ -279,6 +288,8 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // dev-only double-invoke from recording the same round twice).
   const recordedResultRef = useRef(null);
   const [milestone, setMilestone] = useState(null);
+  const [streakMilestone, setStreakMilestone] = useState(null);
+  const streakMilestoneTokenRef = useRef(0);
   useEffect(() => {
     if (roundState !== 'REVEALING' || !result) return;
     if (recordedResultRef.current === result) return;
@@ -286,7 +297,35 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     recordBlitzResult(result, streak);
     const seenCount = recordSiteEncounter(result.site.id);
     if (seenCount !== null && seenCount % 10 === 0) setMilestone(seenCount);
+
+    // Every 5th correct guess in a row -- bigger sound/haptic tier (the
+    // same ones Classic/Daily's perfect-guess and rank-1 moments use, not
+    // a new pair invented for this) plus an edge-glow flash (JSX/CSS
+    // below). A plain object (not the bare streak number) is what goes
+    // into state: setStreakMilestone(streak) would silently no-op the
+    // *second* time the streak reaches 5 in one session, since React
+    // bails out of a state update when the new value === the old one --
+    // an object literal is always a new reference, so it re-fires and
+    // remounts the glow (keyed on .token) every time, not just the first.
+    if (result.isCorrect && streak > 0 && streak % 5 === 0) {
+      hapticPerfect();
+      soundCelebrate();
+      setStreakMilestone({ streak, token: ++streakMilestoneTokenRef.current });
+    }
   }, [roundState, result, streak]);
+
+  // Auto-clear the streak-milestone glow (JSX further down) after its
+  // animation finishes. A timer, not onAnimationEnd -- animationend never
+  // fires under prefers-reduced-motion: reduce (the animation itself is
+  // disabled there), and the label needs opacity: 1 in that case (see
+  // BlitzMap.css) to stay readable at all, so relying on the animation to
+  // signal "done" would leave it stuck on screen permanently for
+  // reduced-motion users.
+  useEffect(() => {
+    if (!streakMilestone) return;
+    const t = setTimeout(() => setStreakMilestone(null), 1000);
+    return () => clearTimeout(t);
+  }, [streakMilestone]);
 
   // State names are fully player-controlled via the toggle below; this only
   // resets them to hidden on each new round (LOADING) so nothing carries
@@ -382,6 +421,17 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
 
       {milestone !== null && (
         <MilestoneToast key={milestone} count={milestone} onDone={() => setMilestone(null)} />
+      )}
+
+      {/* Every-5th-correct-in-a-row flourish -- edge-glow flash + a short
+          label, both purely decorative (aria-hidden, pointer-events:none)
+          since the streak medallion already carries the real number
+          persistently. Cleared by the timeout effect above, not an
+          animation-end handler (see that effect's comment for why). */}
+      {streakMilestone && (
+        <div key={streakMilestone.token} className="bz-milestone-glow" aria-hidden="true">
+          <span className="bz-milestone-label">{streakMilestone.streak} in a row!</span>
+        </div>
       )}
 
       {site && (

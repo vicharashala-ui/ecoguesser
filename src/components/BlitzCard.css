@@ -46,12 +46,26 @@
 .bz-badge-wrong {
   background: rgba(220, 38, 38, 0.1);
   color: #dc2626;
+  /* Overrides .bz-badge's pop above -- a bounce reads as "yay", which is
+     the wrong feeling for a miss. Same equal-specificity/later-in-source
+     override the reduced-motion block below already relies on to disable
+     either variant, so no extra selector needed here. */
+  animation: bz-badge-shake 0.4s ease-out;
 }
 
 @keyframes bz-badge-pop {
   0%   { transform: scale(0.7); opacity: 0; }
   60%  { transform: scale(1.05); opacity: 1; }
   100% { transform: scale(1); }
+}
+
+@keyframes bz-badge-shake {
+  0%   { transform: translateX(0); opacity: 0; }
+  15%  { transform: translateX(-7px); opacity: 1; }
+  35%  { transform: translateX(6px); }
+  55%  { transform: translateX(-4px); }
+  75%  { transform: translateX(2px); }
+  100% { transform: translateX(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {

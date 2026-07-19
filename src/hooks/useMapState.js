@@ -10,7 +10,7 @@ import {
 // BASE_VISUAL's white-text/dark-halo and BARE_VISUAL's dark-text/light-halo
 // treatment when the Terrain toggle flips -- see applyTerrainVisual below.
 export const TERRAIN_PLACE_LABEL_IDS = ['place_city_label', 'place_town_label', 'place_village_label', 'place_hamlet_label'];
-const TERRAIN_PLACE_LABEL_PROPS = ['text-color', 'text-halo-color', 'text-halo-width', 'text-halo-blur'];
+export const TERRAIN_PLACE_LABEL_PROPS = ['text-color', 'text-halo-color', 'text-halo-width', 'text-halo-blur'];
 
 // One-time capture of the live style's own baked-in paint for the layers
 // applyTerrainVisual doesn't have a BASE_VISUAL equivalent for (water's
@@ -783,11 +783,17 @@ export function useMapState(mapRef, mode) {
           ['==', ['feature-state', 'blitzStatus'], 'wrong'], '#dc2626',
           'transparent',
         ];
+        // 160ms, not MAP_CONFIG.TRANSITION_MS (300ms, used for the slower
+        // basemap crossfade) -- this fires on every tap, so it needs to
+        // read as responsive, just no longer an instant color snap.
+        const BLITZ_TRANSITION = { duration: 160, delay: 0 };
         map.addLayer({
           id: LAYER_IDS.BLITZ_FILL, type: 'fill', source: 'india-states',
           paint: {
             'fill-color': BLITZ_COLOR,
             'fill-opacity': ['case', ['==', ['feature-state', 'blitzStatus'], null], 0, 0.35],
+            'fill-color-transition': BLITZ_TRANSITION,
+            'fill-opacity-transition': BLITZ_TRANSITION,
           },
         });
         map.addLayer({
@@ -796,6 +802,8 @@ export function useMapState(mapRef, mode) {
             'line-color': BLITZ_COLOR,
             'line-width': 2,
             'line-opacity': ['case', ['==', ['feature-state', 'blitzStatus'], null], 0, 1],
+            'line-color-transition': BLITZ_TRANSITION,
+            'line-opacity-transition': BLITZ_TRANSITION,
           },
         });
 

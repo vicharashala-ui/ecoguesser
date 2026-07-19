@@ -5,6 +5,22 @@
    fight the backdrop-filter compositing bug documented in
    RecenterButton.css). */
 
+/* This bug keeps recurring one element at a time: browser-default
+   content-box sizing means width:100% + padding + border pushes an
+   element past its container's edge, which is the actual cause of the
+   Awards-tab horizontal scroll -- twice now (.sv-ach-summary previously,
+   .sv-subtabs more recently), each fixed individually with its own
+   box-sizing: border-box after the fact. Scoping border-box to every
+   element in this screen fixes the bug class at the source instead of the
+   next instance of it -- any future card/control added here inherits it
+   automatically rather than needing to remember this again. */
+.sv-screen,
+.sv-screen *,
+.sv-screen *::before,
+.sv-screen *::after {
+  box-sizing: border-box;
+}
+
 .sv-screen {
   position: fixed;
   inset: 0;
@@ -17,6 +33,13 @@
      height. */
   z-index: 12;
   overflow-y: auto;
+  /* Defensive backstop, not the primary fix -- the actual bug both times
+     (.sv-ach-summary previously, .sv-subtabs just now) was a child element
+     missing box-sizing: border-box on a width:100% + padding + border
+     combo, which content-box sizing pushes past this container's edge.
+     Fix the child when it happens; this just stops it from being a
+     visible horizontal scrollbar in the meantime if it recurs again. */
+  overflow-x: hidden;
   background: #f8f6f1;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   /* Clears Header's height (+ safe-area-inset-top) via the shared
@@ -367,11 +390,6 @@
 
 .sv-ach-summary {
   width: 100%;
-  /* Without this, width:100% (content-box) + padding + border pushed the
-     card ~30px past .sv-body's right edge -- the actual cause of the
-     Awards-tab horizontal scroll (the min-width:0 flex fix on .sv-stat/
-     .sv-cat-label was a real bug too, just not this one). */
-  box-sizing: border-box;
   padding: 14px 14px 16px;
   margin-bottom: 20px;
   border-radius: 14px;

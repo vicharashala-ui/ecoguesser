@@ -129,14 +129,74 @@
   100% { transform: translateX(0); color: #111827; }
 }
 
+/* Every-5th-in-a-row streak milestone -- edge-glow flash + a short label,
+   both in the same flame-orange (#f97316) the streak medallion already
+   uses for "lit", so the celebration ties visually back to the streak
+   mechanic itself rather than introducing a new color. The glow is an
+   animated inset box-shadow, not a full-screen tint -- it brightens in
+   from the edges and fades, like a photo-flash vignette, without ever
+   obscuring the map or card underneath. */
+.bz-milestone-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: bz-milestone-edge-glow 900ms ease-out;
+}
+
+@keyframes bz-milestone-edge-glow {
+  0%   { box-shadow: inset 0 0 0 0 rgba(249, 115, 22, 0); }
+  25%  { box-shadow: inset 0 0 90px 18px rgba(249, 115, 22, 0.6); }
+  100% { box-shadow: inset 0 0 0 0 rgba(249, 115, 22, 0); }
+}
+
+.bz-milestone-label {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #f97316;
+  white-space: nowrap;
+  opacity: 0;
+  /* Same light-halo/dark-shadow stack as ScoreRemark.css's tier label --
+     legible over both dark satellite tiles and the light cream/green
+     basemap without needing a backdrop of its own. */
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.85),
+    0 0 20px rgba(255, 255, 255, 0.55),
+    0 2px 6px rgba(17, 24, 39, 0.25);
+  animation: bz-milestone-label-pop 900ms ease-out;
+}
+
+@keyframes bz-milestone-label-pop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  20%  { transform: scale(1.08); opacity: 1; }
+  35%  { transform: scale(1); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bz-streak-flame,
   .bz-streak-ring-outer,
   .bz-streak-ring-inner,
   .bz-streak-value.bz-streak-pop,
-  .bz-streak-value.bz-streak-break {
+  .bz-streak-value.bz-streak-break,
+  .bz-milestone-glow {
     animation: none;
     transition: none;
+  }
+
+  /* opacity: 1, not just animation: none -- the animation above is the
+     only thing that ever sets this label's opacity to 1 (see
+     ScoreRemark.css's tier label for the same fix and full rationale),
+     so disabling it alone would leave the label permanently invisible
+     for reduced-motion users rather than just removing the pop. */
+  .bz-milestone-label {
+    animation: none;
+    opacity: 1;
   }
 }
 
