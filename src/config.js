@@ -31,13 +31,14 @@ export const MAP_CONFIG = {
   // fitBounds(MAP_CONFIG.INDIA_BOUNDS, ...) call used to share.
   // top: fitBounds centers INDIA_BOUNDS within the (top, height-bottom) box,
   // so raising top shifts that box's center down, pushing J&K further from
-  // the header. 100 ~= header height (72) + layer-panel's top offset (10) +
-  // panel's own top padding (10) + half a toggle row -- lines J&K up level
-  // with the layer panel's first toggle ("Borders" in Classic) instead of
-  // sitting up under the header. Shared by every fitBounds(INDIA_BOUNDS, ...)
-  // call site (Classic/Daily/Blitz initial load + reset, RecenterButton), so
-  // this one value keeps the framing consistent across all three modes.
-  FIT_PADDING: { top: 100, bottom: 260, left: 24, right: 24 },
+  // the header. 120 = the 100 that lines J&K up with the layer panel's first
+  // toggle ("Borders" in Classic), +20 more to sit India a little lower in
+  // the default frame -- bottom drops by the same 20 so box height (and
+  // therefore default zoom) is unchanged, only the vertical position shifts.
+  // Shared by every fitBounds(INDIA_BOUNDS, ...) call site (Classic/Daily/
+  // Blitz initial load + reset, RecenterButton), so this one value keeps the
+  // framing consistent across all three modes.
+  FIT_PADDING: { top: 120, bottom: 240, left: 24, right: 24 },
   // Terrain/Satellite layer-toggle fade duration. Two things must agree with
   // this number: map-style.json's root-level "transition" (every paint
   // property in the style animates over this long by default -- background/

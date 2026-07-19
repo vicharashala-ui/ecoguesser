@@ -41,30 +41,30 @@ const ROUND_COUNT = DAILY.CATEGORIES.length; // 5 -- one round per category, per
 // rounds) -- those live here instead of duplicating storage logic.
 
 /** Any single Daily round anywhere in history scored a perfect 5000. */
-export function dailyHasPerfectRound(rawDaily) {
+function dailyHasPerfectRound(rawDaily) {
   return rawDaily.scores.some((day) => day.rounds.some((r) => r.score >= SCORING.MAX_SCORE));
 }
 
 /** Any single Daily day totalled a perfect score across all its rounds. */
-export function dailyHasPerfectDay(rawDaily) {
+function dailyHasPerfectDay(rawDaily) {
   const perfectTotal = SCORING.MAX_SCORE * ROUND_COUNT;
   return rawDaily.scores.some((day) => day.total >= perfectTotal);
 }
 
 /** Any single Daily day was finished without using a hint on any round. */
-export function dailyHasHintFreeDay(rawDaily) {
+function dailyHasHintFreeDay(rawDaily) {
   return rawDaily.scores.some((day) => day.rounds.every((r) => (r.hints ?? 0) === 0));
 }
 
 /** Every DAILY.CATEGORIES entry has at least one Classic round played in it. */
-export function classicPlayedEveryCategory(classicComputed) {
+function classicPlayedEveryCategory(classicComputed) {
   return DAILY.CATEGORIES.every((cat) => classicComputed.byCategory[cat] != null);
 }
 
 /** Some category has >= minSample Blitz rounds logged, ALL correct -- i.e.
  *  100% accuracy to date in that category, not a literal consecutive streak
  *  (history has no per-category ordering guarantee to check that against). */
-export function blitzHasCategoryExpert(rawBlitz, minSample = 10) {
+function blitzHasCategoryExpert(rawBlitz, minSample = 10) {
   return DAILY.CATEGORIES.some((cat) => {
     const rounds = rawBlitz.history.filter((h) => h.cat === cat);
     return rounds.length >= minSample && rounds.every((h) => h.correct);
@@ -74,7 +74,7 @@ export function blitzHasCategoryExpert(rawBlitz, minSample = 10) {
 /** Rounds played across all three modes combined (Blitz/Classic history is
  *  capped at 200 entries -- see stats.js -- so this undercounts past that
  *  point for those two modes; acceptable for a "keep playing" milestone). */
-export function totalRoundsPlayed(rawDaily, classicComputed, blitzComputed) {
+function totalRoundsPlayed(rawDaily, classicComputed, blitzComputed) {
   return rawDaily.scores.length * ROUND_COUNT + classicComputed.rounds + blitzComputed.rounds;
 }
 
@@ -86,7 +86,7 @@ export function totalRoundsPlayed(rawDaily, classicComputed, blitzComputed) {
 // `mode` drives the color accent and the section an achievement is grouped
 // under: 'daily' | 'classic' | 'blitz' | 'meta'.
 
-export const ACHIEVEMENTS = [
+const ACHIEVEMENTS = [
   // -- Daily -----------------------------------------------------------
   {
     id: 'daily_first', mode: 'daily', icon: 'flag',

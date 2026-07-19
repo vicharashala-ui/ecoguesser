@@ -10,7 +10,7 @@ import {
 // BASE_VISUAL's white-text/dark-halo and BARE_VISUAL's dark-text/light-halo
 // treatment when the Terrain toggle flips -- see applyTerrainVisual below.
 export const TERRAIN_PLACE_LABEL_IDS = ['place_city_label', 'place_town_label', 'place_village_label', 'place_hamlet_label'];
-export const TERRAIN_PLACE_LABEL_PROPS = ['text-color', 'text-halo-color', 'text-halo-width', 'text-halo-blur'];
+const TERRAIN_PLACE_LABEL_PROPS = ['text-color', 'text-halo-color', 'text-halo-width', 'text-halo-blur'];
 
 // One-time capture of the live style's own baked-in paint for the layers
 // applyTerrainVisual doesn't have a BASE_VISUAL equivalent for (water's

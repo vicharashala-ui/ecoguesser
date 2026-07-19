@@ -337,7 +337,7 @@ export function computeBlitzStats(stats) {
 // collection (a player exploring both Classic and Blitz shouldn't have two
 // independent completion percentages).
 
-export function loadEncounteredSites() {
+function loadEncounteredSites() {
   try {
     const raw = JSON.parse(localStorage.getItem(LS_KEYS.SITES_SEEN));
     return Array.isArray(raw) ? raw : [];
