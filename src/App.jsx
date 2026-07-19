@@ -210,7 +210,12 @@ export default function App() {
       {/* DailyMap mounts immediately; ClassicMap/BlitzMap only after their
           tab is first activated, and all stay mounted afterward --
           display:none, not unmount, so MapLibre never recreates its WebGL
-          context on every tab switch. */}
+          context on every tab switch. Each also gets `animation:
+          eg-tab-fade-in` (see index.css) exactly when its display flips to
+          'block', so switching in feels like a fade rather than an instant
+          hard cut -- the outgoing panel still disappears instantly (no
+          fade-out), which keeps this a same-render display swap rather
+          than a period where two maps are both painting. */}
       {classicEverActivated.current && (
         <Suspense fallback={null}>
           <ClassicMap
@@ -218,7 +223,12 @@ export default function App() {
             sites={allSites}
             filters={classicFilters}
             difficulty={classicDifficulty}
-            style={{ position: 'absolute', inset: 0, display: activeTab === 'classic' ? 'block' : 'none' }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: activeTab === 'classic' ? 'block' : 'none',
+              animation: activeTab === 'classic' ? 'eg-tab-fade-in 220ms ease' : 'none',
+            }}
           />
         </Suspense>
       )}
@@ -228,7 +238,12 @@ export default function App() {
             mapRef={blitzMapRef}
             sites={allSites}
             filters={classicFilters}
-            style={{ position: 'absolute', inset: 0, display: activeTab === 'blitz' ? 'block' : 'none' }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: activeTab === 'blitz' ? 'block' : 'none',
+              animation: activeTab === 'blitz' ? 'eg-tab-fade-in 220ms ease' : 'none',
+            }}
           />
         </Suspense>
       )}
@@ -241,6 +256,7 @@ export default function App() {
           position: 'absolute',
           inset: 0,
           display: activeTab === 'daily' && dailyPhase === 'round' ? 'block' : 'none',
+          animation: activeTab === 'daily' && dailyPhase === 'round' ? 'eg-tab-fade-in 220ms ease' : 'none',
         }}
       />
       {activeTab === 'daily' && dailyPhase === 'summary' && dailySummaryData && (

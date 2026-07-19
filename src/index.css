@@ -158,6 +158,29 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* Plays once whenever a tab panel goes from display:none to display:block
+   (or freshly mounts, StatsView's case) -- CSS restarts animations on that
+   none->rendered transition for free, so App.jsx just needs to set this as
+   the active tab's `animation` alongside its `display` ternary, no extra
+   JS/state required. Opacity-only (no transform) is deliberate: several
+   elements in this app had to be moved off position:fixed specifically
+   because it fights with a live WebGL canvas + safe-area-insets on mobile
+   (see BottomCard.css's .bottom-card comment for the full incident) --
+   adding a transform to an ancestor risks the same class of bug for any
+   position:fixed descendant (StatsView's .sv-screen is one), so this stays
+   opacity-only rather than pairing it with a slide. */
+@keyframes eg-tab-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes eg-tab-fade-in {
+    from { opacity: 1; }
+    to { opacity: 1; }
+  }
+}
+
 /* Shared small toggle switch -- used for the map's Borders/Names/Satellite
    layer controls (ClassicMap, DailyMap, BlitzMap). One definition here
    instead of duplicating it per map stylesheet. The real checkbox stays in
@@ -222,6 +245,11 @@ body {
 }
 
 .eg-toggle-input:disabled {
+  cursor: not-allowed;
+}
+
+.eg-toggle-disabled {
+  color: #9ca3af;
   cursor: not-allowed;
 }
 

@@ -17,9 +17,6 @@
      height. */
   z-index: 12;
   overflow-y: auto;
-  overflow-x: hidden; /* overflow-y: auto alone turns a visible overflow-x
-    into auto too (per spec), so this tab could start scrolling sideways
-    from any future content overflow without this being explicit. */
   background: #f8f6f1;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   /* Clears Header's height (+ safe-area-inset-top) via the shared
@@ -29,6 +26,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Same fade-in as the map tabs' `animation: eg-tab-fade-in` in App.jsx
+     (see index.css for the keyframes) -- this element mounts fresh each
+     time the Stats tab activates rather than being display-toggled, so a
+     plain unconditional animation here already plays exactly once per
+     activation for free. Opacity-only, not paired with a transform -- kept
+     consistent with the map tabs' choice there (see index.css's comment)
+     rather than introducing a second transition style. */
+  animation: eg-tab-fade-in 220ms ease;
 }
 
 .sv-title {
@@ -48,9 +53,6 @@
   position: relative;
   width: 100%;
   max-width: 420px;
-  box-sizing: border-box; /* same fix as .sv-ach-summary below -- width:100%
-    content-box + this rule's own padding/border pushed it past .sv-screen's
-    right edge, the actual cause of the Stats tab's horizontal scroll. */
   display: flex;
   padding: 4px;
   margin-bottom: 20px;
