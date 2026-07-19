@@ -1,9 +1,9 @@
 /* src/components/DailyMap.css */
 /*
   Palette/font matched to BottomCard.css (Nunito, #16a34a/#6b7280/#111827/
-  #f59e0b/#dc2626) and to ClassicMap.css's panel treatment -- .dm-layer-panel
-  mirrors .cm-layer-panel's glassmorphism so the layer toggles read as one
-  visual language across modes rather than each screen inventing its own.
+  #f59e0b/#dc2626). Terrain/Satellite render as standalone square buttons
+  (.dm-mode-btn) rather than inside a glass panel -- see ClassicMap.css's
+  .cm-mode-btn, which this mirrors, for the shared visual language.
 */
 
 .eg-daily-map {
@@ -12,7 +12,7 @@
   height: 100%;
 }
 
-/* ---- Top-right stack: timer pill + layer panel below it ---------------- */
+/* ---- Top-right stack: timer pill, then the Terrain/Satellite squares --- */
 
 .dm-top-right-stack {
   position: absolute;
@@ -29,9 +29,11 @@
   z-index: 10;
   display: flex;
   flex-direction: column;
-  /* stretch (not flex-end) -- .dm-timer-card has no width of its own now, so
-     it takes on the stack's width, which is sized to its widest child
-     (.dm-layer-panel). This is what makes the two boxes line up. */
+  /* stretch -- .dm-timer-card's own content (time + round dots) sets the
+     stack's width; .dm-mode-item below is flex: 1, so the two squares grow
+     to evenly fill that same width instead of staying a fixed size. Lines
+     the row up under the timer card exactly, same technique as
+     ClassicMap.css's .cm-top-right-stack. */
   align-items: stretch;
   gap: 10px;
 }
@@ -188,28 +190,74 @@
   }
 }
 
-/* ---- Layer panel -- matches .dm-timer-card's glass treatment below it --- */
+/* ---- Terrain/Satellite squares -- standalone, no panel wrapper --------- */
 
-.dm-layer-panel {
-  background: rgba(248, 246, 241, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
-  isolation: isolate;
-  transform: translateZ(0);
-  padding: 10px 14px;
-  border-radius: 16px;
+.dm-mode-row {
   display: flex;
-  flex-direction: column;
   gap: 8px;
-  font-family: 'Nunito', 'Segoe UI', sans-serif;
+}
+
+.dm-mode-item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dm-mode-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  line-height: 1;
+  /* Light halo for legibility -- these captions sit directly over the map
+     now, not inside a glass panel backdrop. */
+  text-shadow: 0 1px 3px rgba(248, 246, 241, 0.9);
+}
+
+/* Square mode buttons -- replace the old Terrain/Satellite checkboxes.
+   Identical treatment to ClassicMap.css's .cm-mode-btn (see its comment
+   for the .is-active/.is-inert rationale); duplicated rather than shared
+   since this mirrors .cm-mode-btn the same way the rest of this file
+   mirrors ClassicMap.css. */
+.dm-mode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1.5px solid rgba(17, 24, 39, 0.14);
+  background: rgba(255, 255, 255, 0.5);
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.dm-mode-btn.is-active {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.dm-mode-btn.is-inert {
+  opacity: 0.45;
+}
+
+.dm-mode-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dm-mode-btn:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
 }
 
 .dm-sat-warning {
   color: #dc2626;
   font-size: 12px;
   font-weight: 700;
+  text-shadow: 0 1px 3px rgba(248, 246, 241, 0.9);
 }
 
 /* ---- Loading state (site not resolved yet) ------------------------------ */

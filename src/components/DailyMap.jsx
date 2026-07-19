@@ -55,6 +55,44 @@ function IconPlay({ size = 16 }) {
   );
 }
 
+// Layer-mode icons for the Terrain/Normal + Satellite square buttons --
+// identical to ClassicMap.jsx's set, duplicated rather than shared per
+// this codebase's no-shared-icon-module rule. Paths match the
+// mountain/map-2/satellite glyphs from the approved mockup.
+function IconMountain({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612" />
+      <path d="M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2" />
+    </svg>
+  );
+}
+
+function IconMapFlat({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5" />
+      <path d="M9 4v13" />
+      <path d="M15 7v5.5" />
+      <path d="M21.121 20.121a3 3 0 1 0 -4.242 0c.418 .419 1.125 1.045 2.121 1.879c1.051 -.89 1.759 -1.516 2.121 -1.879" />
+      <path d="M19 18v.01" />
+    </svg>
+  );
+}
+
+function IconSatellite({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3.707 6.293l2.586 -2.586a1 1 0 0 1 1.414 0l5.586 5.586a1 1 0 0 1 0 1.414l-2.586 2.586a1 1 0 0 1 -1.414 0l-5.586 -5.586a1 1 0 0 1 0 -1.414" />
+      <path d="M6 10l-3 3l3 3l3 -3" />
+      <path d="M10 6l3 -3l3 3l-3 3" />
+      <path d="M12 12l1.5 1.5" />
+      <path d="M14.5 17a2.5 2.5 0 0 0 2.5 -2.5" />
+      <path d="M15 21a6 6 0 0 0 6 -6" />
+    </svg>
+  );
+}
+
 function formatTime(totalSeconds) {
   const clamped = Math.max(0, totalSeconds);
   const m = Math.floor(clamped / 60);
@@ -215,9 +253,9 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
 
   return (
     <div style={style} className="eg-daily-map">
-      {/* Top-right stack: round timer with the layer panel (Terrain +
-          Satellite -- Daily forces state borders on at all times via
-          useMapState) sitting directly below it. */}
+      {/* Top-right stack: round timer, then the Terrain/Satellite squares
+          directly below it (Daily forces state borders on at all times via
+          useMapState, so there's no Borders toggle/panel to anchor here). */}
       <div className="dm-top-right-stack">
         <div className="dm-timer-card">
           {(roundState === 'READING' || roundState === 'PLACING') && (
@@ -253,37 +291,51 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
             })}
           </div>
         </div>
-        <div className="dm-layer-panel">
-          <label className="eg-toggle">
-            {/* Clickable but inert while satellite is on -- same rationale
-                as ClassicMap.jsx's Terrain toggle. */}
-            <input
-              type="checkbox"
-              className="eg-toggle-input"
-              checked={terrain}
+        <div className="dm-mode-row">
+          {/* Terrain/Normal is one control, not two -- the icon always
+              shows the mode a click will switch TO, mirroring
+              ClassicMap.jsx's version of this same pattern. Stays
+              clickable (not disabled) while satellite is on, same
+              "ready the instant satellite turns off" rationale the old
+              checkbox had -- just dimmed via .is-inert. Caption mirrors
+              the icon's destination-mode wording, same as ClassicMap.jsx.
+              No panel wrapper (unlike Classic's Terrain/Satellite, which
+              never had one either) -- each square carries its own
+              background, and Daily has no Borders toggle to anchor a
+              panel around. */}
+          <div className="dm-mode-item">
+            <button
+              type="button"
+              className={`dm-mode-btn${satellite ? ' is-inert' : ''}`}
               disabled={!mapReady}
-              onChange={() => setTerrain(!terrain)}
-            />
-            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            Terrain{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
-          </label>
-          <label className="eg-toggle">
-            <input
-              type="checkbox"
-              className="eg-toggle-input"
-              checked={satellite}
+              onClick={() => setTerrain(!terrain)}
+              aria-label={terrain ? 'Switch to normal map' : 'Switch to terrain map'}
+              title={terrain ? 'Switch to normal map' : 'Switch to terrain map'}
+            >
+              {terrain ? <IconMapFlat /> : <IconMountain />}
+            </button>
+            <span className="dm-mode-label" aria-hidden="true">{terrain ? 'Normal' : 'Terrain'}</span>
+          </div>
+          <div className="dm-mode-item">
+            <button
+              type="button"
+              className={`dm-mode-btn${satellite ? ' is-active' : ''}`}
               disabled={!mapReady || satelliteUnavailable}
-              onChange={() => setSatellite(!satellite)}
-            />
-            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            Satellite{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
-          </label>
-          {satelliteUnavailable && (
-            <span className="dm-sat-warning" title="Satellite imagery unavailable right now">
-              Satellite unavailable
-            </span>
-          )}
+              onClick={() => setSatellite(!satellite)}
+              aria-label={satellite ? 'Turn off satellite view' : 'Turn on satellite view'}
+              aria-pressed={satellite}
+              title={satellite ? 'Turn off satellite view' : 'Turn on satellite view'}
+            >
+              <IconSatellite />
+            </button>
+            <span className="dm-mode-label" aria-hidden="true">Satellite</span>
+          </div>
         </div>
+        {satelliteUnavailable && (
+          <span className="dm-sat-warning" title="Satellite imagery unavailable right now">
+            Satellite unavailable
+          </span>
+        )}
       </div>
 
       {paused && <div className="dm-paused-overlay">Paused</div>}

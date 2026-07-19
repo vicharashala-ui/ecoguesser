@@ -35,6 +35,48 @@ import './ClassicMap.css';
 const REVEAL_FIT_SIDES = { top: 60, left: 40, right: 40 };
 const REVEAL_CARD_GAP = 20; // gap above the card's top edge
 
+// Layer-mode icons for the Terrain/Normal + Satellite square buttons below.
+// Same stroke-only convention as BottomCard.jsx's icon set (viewBox 24x24,
+// currentColor stroke) -- duplicated rather than shared per this codebase's
+// no-shared-icon-module rule (see BlitzMap.jsx's IconFlame comment). Paths
+// match the mountain/map-2/satellite glyphs from the approved mockup.
+// IconMountain/IconMapFlat are shown on the same square, alternating with
+// terrain on/off since the icon always shows the mode a click will switch
+// *to* -- see the square's usage below.
+function IconMountain({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612" />
+      <path d="M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2" />
+    </svg>
+  );
+}
+
+function IconMapFlat({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5" />
+      <path d="M9 4v13" />
+      <path d="M15 7v5.5" />
+      <path d="M21.121 20.121a3 3 0 1 0 -4.242 0c.418 .419 1.125 1.045 2.121 1.879c1.051 -.89 1.759 -1.516 2.121 -1.879" />
+      <path d="M19 18v.01" />
+    </svg>
+  );
+}
+
+function IconSatellite({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3.707 6.293l2.586 -2.586a1 1 0 0 1 1.414 0l5.586 5.586a1 1 0 0 1 0 1.414l-2.586 2.586a1 1 0 0 1 -1.414 0l-5.586 -5.586a1 1 0 0 1 0 -1.414" />
+      <path d="M6 10l-3 3l3 3l3 -3" />
+      <path d="M10 6l3 -3l3 3l-3 3" />
+      <path d="M12 12l1.5 1.5" />
+      <path d="M14.5 17a2.5 2.5 0 0 0 2.5 -2.5" />
+      <path d="M15 21a6 6 0 0 0 6 -6" />
+    </svg>
+  );
+}
+
 /**
  * @param {{current: import('maplibre-gl').Map|null}} mapRef
  * @param {React.CSSProperties} style - controls display:block/none for tab switching
@@ -207,29 +249,58 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
         <MilestoneToast key={milestone} count={milestone} onDone={() => setMilestone(null)} />
       )}
 
-      {/* Layer toggle panel -- functional checkbox toggles, styled with the
-          app's shared glassmorphism recipe. Swap for an icon-button layer UI
-          later if design calls for it; not required for that today. */}
-      <div className="cm-layer-panel">
-        <label className="eg-toggle">
-          <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
-          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-          Borders{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
-        </label>
-        <label className="eg-toggle">
-          {/* Not disabled while satellite is on -- it's clickable but inert
-              then (satellite already overrides the same layers Terrain
-              controls), so the preference is ready the instant satellite
-              turns back off instead of needing to be re-set. */}
-          <input type="checkbox" className="eg-toggle-input" checked={terrain} disabled={!mapReady} onChange={(e) => setTerrain(e.target.checked)} />
-          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-          Terrain{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
-        </label>
-        <label className="eg-toggle">
-          <input type="checkbox" className="eg-toggle-input" checked={satellite} disabled={!mapReady} onChange={(e) => setSatellite(e.target.checked)} />
-          <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-          Satellite{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
-        </label>
+      {/* Top-right stack -- Borders keeps its own glass panel (as it had
+          before Terrain/Satellite were briefly merged into it); Terrain and
+          Satellite are their own standalone boxes below it, not wrapped in
+          any panel background. Mirrors DailyMap.jsx/BlitzMap.jsx's
+          top-right-stack pattern for stacking independent HUD pieces. */}
+      <div className="cm-top-right-stack">
+        <div className="cm-layer-panel">
+          <label className="eg-toggle">
+            <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
+            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
+            Borders{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
+          </label>
+        </div>
+        <div className="cm-mode-row">
+          {/* Terrain/Normal is one control, not two -- the icon always shows
+              the mode a click will switch TO (mirrors a dark/light-mode
+              toggle showing the sun while dark), so it reads "terrain" while
+              flat and "normal" once terrain is on. Stays clickable (not
+              disabled) while satellite is on, same "ready the instant
+              satellite turns off" rationale the old checkbox had -- just
+              dimmed via .is-inert so it reads as not doing anything right
+              now. The caption below mirrors the icon's destination-mode
+              wording rather than the current mode, so label and icon never
+              disagree about what a tap does. */}
+          <div className="cm-mode-item">
+            <button
+              type="button"
+              className={`cm-mode-btn${satellite ? ' is-inert' : ''}`}
+              disabled={!mapReady}
+              onClick={() => setTerrain(!terrain)}
+              aria-label={terrain ? 'Switch to normal map' : 'Switch to terrain map'}
+              title={terrain ? 'Switch to normal map' : 'Switch to terrain map'}
+            >
+              {terrain ? <IconMapFlat /> : <IconMountain />}
+            </button>
+            <span className="cm-mode-label" aria-hidden="true">{terrain ? 'Normal' : 'Terrain'}</span>
+          </div>
+          <div className="cm-mode-item">
+            <button
+              type="button"
+              className={`cm-mode-btn${satellite ? ' is-active' : ''}`}
+              disabled={!mapReady}
+              onClick={() => setSatellite(!satellite)}
+              aria-label={satellite ? 'Turn off satellite view' : 'Turn on satellite view'}
+              aria-pressed={satellite}
+              title={satellite ? 'Turn off satellite view' : 'Turn on satellite view'}
+            >
+              <IconSatellite />
+            </button>
+            <span className="cm-mode-label" aria-hidden="true">Satellite</span>
+          </div>
+        </div>
         {satelliteUnavailable && <div className="cm-sat-warning">Satellite unavailable</div>}
       </div>
 

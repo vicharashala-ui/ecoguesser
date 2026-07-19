@@ -1,12 +1,23 @@
 /* src/components/ClassicMap.css */
 
-.cm-layer-panel {
+/* Positions the whole stack. align-items: stretch (not flex-end) so
+   .cm-mode-row is forced to the same width as .cm-layer-panel above it --
+   .cm-mode-item below is flex: 1, so the two squares grow to evenly fill
+   that stretched width instead of staying a fixed size. This makes the row
+   line up under the panel exactly, whatever the panel's content-driven
+   width happens to be, rather than hand-tuning pixel sizes to match it. */
+.cm-top-right-stack {
   position: absolute;
-  /* Pulled down below Header.jsx's title bar (+ safe-area inset) -- used to
-     sit at a flat 10px and overlap the header's dark gradient/title. */
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
   right: 10px;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.cm-layer-panel {
   background: rgba(248, 246, 241, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(16px) saturate(140%);
@@ -23,15 +34,74 @@
   gap: 8px;
 }
 
-.cm-layer-panel .eg-toggle:not(:first-child) {
-  padding-top: 8px;
-  border-top: 1px solid rgba(17, 24, 39, 0.08);
+.cm-mode-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cm-mode-item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.cm-mode-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  line-height: 1;
+  text-shadow: 0 1px 3px rgba(248, 246, 241, 0.9);
+}
+
+/* Square mode buttons -- replace the old Terrain/Satellite checkboxes.
+   Neutral border/icon by default; .is-active (satellite on) switches both
+   to the app's existing green "on" color (same one every .eg-toggle uses),
+   so this doesn't invent a second accent language. .is-inert (terrain
+   button while satellite is on) is a plain opacity dim, not :disabled --
+   it stays clickable so the preference is ready the instant satellite
+   turns back off, same as the old checkbox behavior. width: 100% (not a
+   fixed px) + aspect-ratio keeps it a square while filling .cm-mode-item's
+   flex-grown share of the row. */
+.cm-mode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1.5px solid rgba(17, 24, 39, 0.14);
+  background: rgba(255, 255, 255, 0.5);
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.cm-mode-btn.is-active {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.cm-mode-btn.is-inert {
+  opacity: 0.45;
+}
+
+.cm-mode-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cm-mode-btn:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
 }
 
 .cm-sat-warning {
   color: #dc2626;
   font-size: 12px;
   font-weight: 700;
+  text-shadow: 0 1px 3px rgba(248, 246, 241, 0.9);
 }
 
 
