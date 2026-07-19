@@ -17,6 +17,9 @@
      height. */
   z-index: 12;
   overflow-y: auto;
+  overflow-x: hidden; /* overflow-y: auto alone turns a visible overflow-x
+    into auto too (per spec), so this tab could start scrolling sideways
+    from any future content overflow without this being explicit. */
   background: #f8f6f1;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   /* Clears Header's height (+ safe-area-inset-top) via the shared
@@ -45,6 +48,9 @@
   position: relative;
   width: 100%;
   max-width: 420px;
+  box-sizing: border-box; /* same fix as .sv-ach-summary below -- width:100%
+    content-box + this rule's own padding/border pushed it past .sv-screen's
+    right edge, the actual cause of the Stats tab's horizontal scroll. */
   display: flex;
   padding: 4px;
   margin-bottom: 20px;

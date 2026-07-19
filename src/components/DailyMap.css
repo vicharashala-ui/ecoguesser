@@ -207,19 +207,23 @@
 
 .dm-mode-label {
   font-size: 10px;
-  font-weight: 600;
-  color: #6b7280;
+  font-weight: 700;
+  color: #111827;
   line-height: 1;
-  /* Light halo for legibility -- these captions sit directly over the map
-     now, not inside a glass panel backdrop. */
-  text-shadow: 0 1px 3px rgba(248, 246, 241, 0.9);
+  /* Multi-direction halo for legibility -- these captions sit directly over
+     the map now, not inside a glass panel backdrop. */
+  text-shadow:
+    0 1px 2px rgba(248, 246, 241, 0.95),
+    0 -1px 2px rgba(248, 246, 241, 0.95),
+    1px 0 2px rgba(248, 246, 241, 0.95),
+    -1px 0 2px rgba(248, 246, 241, 0.95);
 }
 
 /* Square mode buttons -- replace the old Terrain/Satellite checkboxes.
    Identical treatment to ClassicMap.css's .cm-mode-btn (see its comment
-   for the .is-active/.is-inert rationale); duplicated rather than shared
-   since this mirrors .cm-mode-btn the same way the rest of this file
-   mirrors ClassicMap.css. */
+   for the teal-accent / .is-active / .is-inert rationale); duplicated
+   rather than shared since this mirrors .cm-mode-btn the same way the
+   rest of this file mirrors ClassicMap.css. */
 .dm-mode-btn {
   display: flex;
   align-items: center;
@@ -235,8 +239,8 @@
 }
 
 .dm-mode-btn.is-active {
-  border-color: #16a34a;
-  color: #16a34a;
+  border-color: #0d9488;
+  color: #0d9488;
 }
 
 .dm-mode-btn.is-inert {
@@ -249,7 +253,7 @@
 }
 
 .dm-mode-btn:focus-visible {
-  outline: 2px solid #16a34a;
+  outline: 2px solid #0d9488;
   outline-offset: 2px;
 }
 

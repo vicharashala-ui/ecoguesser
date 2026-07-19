@@ -294,8 +294,10 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
         <div className="dm-mode-row">
           {/* Terrain/Normal is one control, not two -- the icon always
               shows the mode a click will switch TO, mirroring
-              ClassicMap.jsx's version of this same pattern. Stays
-              clickable (not disabled) while satellite is on, same
+              ClassicMap.jsx's version of this same pattern. Gets .is-active
+              whenever terrain is on, same as the satellite square, so
+              there's a visible cue for the engaged mode, not just the icon.
+              Stays clickable (not disabled) while satellite is on, same
               "ready the instant satellite turns off" rationale the old
               checkbox had -- just dimmed via .is-inert. Caption mirrors
               the icon's destination-mode wording, same as ClassicMap.jsx.
@@ -306,7 +308,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
           <div className="dm-mode-item">
             <button
               type="button"
-              className={`dm-mode-btn${satellite ? ' is-inert' : ''}`}
+              className={`dm-mode-btn${terrain ? ' is-active' : ''}${satellite ? ' is-inert' : ''}`}
               disabled={!mapReady}
               onClick={() => setTerrain(!terrain)}
               aria-label={terrain ? 'Switch to normal map' : 'Switch to terrain map'}

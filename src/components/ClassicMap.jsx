@@ -266,17 +266,20 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           {/* Terrain/Normal is one control, not two -- the icon always shows
               the mode a click will switch TO (mirrors a dark/light-mode
               toggle showing the sun while dark), so it reads "terrain" while
-              flat and "normal" once terrain is on. Stays clickable (not
-              disabled) while satellite is on, same "ready the instant
-              satellite turns off" rationale the old checkbox had -- just
-              dimmed via .is-inert so it reads as not doing anything right
-              now. The caption below mirrors the icon's destination-mode
-              wording rather than the current mode, so label and icon never
-              disagree about what a tap does. */}
+              flat and "normal" once terrain is on. Gets .is-active (same
+              highlight as the satellite square) whenever terrain is on, so
+              there's a visible cue for which mode is engaged, not just
+              which icon is showing. Stays clickable (not disabled) while
+              satellite is on, same "ready the instant satellite turns off"
+              rationale the old checkbox had -- just dimmed via .is-inert so
+              it reads as not doing anything right now. The caption below
+              mirrors the icon's destination-mode wording rather than the
+              current mode, so label and icon never disagree about what a
+              tap does. */}
           <div className="cm-mode-item">
             <button
               type="button"
-              className={`cm-mode-btn${satellite ? ' is-inert' : ''}`}
+              className={`cm-mode-btn${terrain ? ' is-active' : ''}${satellite ? ' is-inert' : ''}`}
               disabled={!mapReady}
               onClick={() => setTerrain(!terrain)}
               aria-label={terrain ? 'Switch to normal map' : 'Switch to terrain map'}
