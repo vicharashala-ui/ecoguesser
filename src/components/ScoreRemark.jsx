@@ -13,6 +13,12 @@
 // spark burst, now radiating from screen-center instead of the old small
 // score badge. ConfettiBurst is a separate, already-screen-scale
 // celebration and keeps running independently of this component.
+//
+// The distance figure below the label is the same number BottomCard.jsx's
+// meta row shows persistently (small, muted) -- this is a second,
+// transient, much bigger presentation of it for the reveal flash itself;
+// it fades with the rest of this component and doesn't replace the
+// persistent one.
 
 import { SCORING } from '../config';
 import './ScoreRemark.css';
@@ -51,6 +57,9 @@ export default function ScoreRemark({ roundState, result }) {
   return (
     <div className="eg-score-remark" key={result.site.id} aria-hidden="true">
       <span className="eg-score-remark-label" style={{ color: tier.color }}>{tier.label}</span>
+      <span className="eg-score-remark-distance">
+        {Math.round(result.distanceKm).toLocaleString()} km away
+      </span>
       {isPerfect && Array.from({ length: 8 }).map((_, i) => (
         <span key={i} className="eg-score-remark-spark" style={{ '--i': i }} />
       ))}

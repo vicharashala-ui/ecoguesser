@@ -12,8 +12,10 @@
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   z-index: 47;
   pointer-events: none;
 }
@@ -24,14 +26,47 @@
   font-weight: 800;
   white-space: nowrap;
   opacity: 0;
-  will-change: opacity, transform;
-  /* Same values as bc-pin-tip's text-shadow (BottomCard.css) -- proven
-     enough for legibility over both terrain and satellite basemaps
-     without the paint cost of a wide glow blur. */
+  /* Light halo (legible over dark satellite tiles) plus a soft dark shadow
+     (legible over the cream/green terrain basemap) -- one text-shadow
+     stack that holds up regardless of which basemap is active. */
   text-shadow:
-    0 1px 3px rgba(17, 24, 39, 0.45),
-    0 1px 8px rgba(17, 24, 39, 0.3);
+    0 0 10px rgba(255, 255, 255, 0.85),
+    0 0 20px rgba(255, 255, 255, 0.55),
+    0 2px 6px rgba(17, 24, 39, 0.25);
   animation: eg-score-remark-pop 1.4s ease-out 1 forwards;
+}
+
+/* Distance is a fact, not a judgment -- unlike the label, it doesn't get a
+   tier color (a colored number would read as another verdict, competing
+   with the label right above it). Dark text (not white) is the deliberate
+   choice here: white text paired with a *light* halo is a no-op against
+   light basemap/satellite terrain, since the halo and the text are the
+   same color -- there's nothing for the halo to contrast against. Near-
+   black + a light halo is the same fix already used for
+   ClassicMap.css/DailyMap.css's .cm-mode-label/.dm-mode-label (captions
+   floating over the map with the same problem): the halo pops the text on
+   dark terrain/satellite, and the text's own darkness already reads fine
+   on light terrain without needing the halo to do anything there. 4
+   one-directional shadows (not one blurred radial one) forms a solid
+   outline around the letterforms rather than a soft glow, which holds up
+   better right at the text's edge. Smaller and lighter weight than the
+   label keeps it clearly secondary. Same pop animation, staggered slightly
+   so it settles in just after the label rather than both landing in the
+   same instant. */
+.eg-score-remark-distance {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  opacity: 0;
+  text-shadow:
+    0 1px 3px rgba(248, 246, 241, 0.95),
+    0 -1px 3px rgba(248, 246, 241, 0.95),
+    1px 0 3px rgba(248, 246, 241, 0.95),
+    -1px 0 3px rgba(248, 246, 241, 0.95);
+  animation: eg-score-remark-pop 1.4s ease-out 1 forwards;
+  animation-delay: 90ms;
 }
 
 @keyframes eg-score-remark-pop {
@@ -56,7 +91,6 @@
   border-radius: 50%;
   background: #f59e0b;
   opacity: 0;
-  will-change: opacity, transform;
   animation: eg-score-remark-spark-burst 0.9s ease-out 1 forwards;
   animation-delay: calc(var(--i) * 15ms);
   transform: rotate(calc(var(--i) * 45deg)) translateY(0);
@@ -68,7 +102,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* animation: none alone would leave these stuck at their static
+     opacity: 0 (the animation was the only thing ever setting opacity: 1),
+     so reduced-motion users would never see the remark or the distance at
+     all -- not just without the pop, invisible. opacity: 1 here restores
+     the content instantly instead. */
   .eg-score-remark-label,
+  .eg-score-remark-distance {
+    animation: none;
+    opacity: 1;
+  }
+
   .eg-score-remark-spark {
     animation: none;
   }
