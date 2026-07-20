@@ -19,16 +19,33 @@
   gap: 10px;
 }
 
+/* Row wrapper for the streak medallion + its (now separate) restore
+   badge. Stretches to match .bz-layer-panel's width below it (default
+   align-items: stretch from .bz-top-right-stack, same as the panel
+   itself), so centering the medallion inside via justify-content leaves
+   real open space to its right for the badge -- rather than the badge
+   overlapping the medallion's own circular footprint like before. */
+.bz-streak-row {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  /* Guarantees the badge clears the centered 78px dial without relying on
+     .bz-layer-panel's content (the "State Names" toggle) happening to
+     render wide enough on its own. Dial is centered, not left-aligned, so
+     this isn't a simple 78+30 sum: at width W the dial's right edge sits
+     at (W+78)/2 and the badge's left edge at W-30, so W must satisfy
+     W >= 78 + 2*30 (+ a few px of gap) for those to clear -- 142px covers
+     78 + 60 + ~4px gap on each side of the badge. */
+  min-width: 142px;
+}
+
 /* Session streak -- current count + best-of-session, both tracked by
    useBlitzRound.js. Rendered as a solid stamp medallion (coin edge +
    milled inner ring, drawn in the SVG below) rather than a glass pill --
    deliberately opaque, not blurred, since a stamped medal reads as solid
-   metal, not glass. align-self: center opts it out of
-   .bz-top-right-stack's align-items: stretch, so it keeps its own circular
-   footprint instead of stretching to the wider layer panel below it. */
+   metal, not glass. */
 .bz-streak-card {
   position: relative;
-  align-self: center;
   width: 78px;
   height: 78px;
   border-radius: 50%;
@@ -98,6 +115,60 @@
   font-weight: 700;
   color: #9ca3af;
   white-space: nowrap;
+}
+
+/* Streak-restore badge -- anchored to bz-streak-row's own bottom-right
+   corner (the row is position: relative and stretches to match
+   .bz-layer-panel's width), landing in the open space to the right of the
+   centered medallion and right above the layer panel below. A separate
+   element from .bz-streak-card now, not overlapping its circular edge.
+   Same "stamped coin" solidity as the medallion (opaque, not glass).
+   Gray/inactive at 0 restores, matching the ring's own gray-until-lit
+   convention; switches to green (distinct from the streak's
+   flame-orange, so the two currencies never look like the same thing)
+   once at least one restore is available. */
+.bz-restore-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(248, 246, 241, 0.98);
+  border: 1.5px solid #d1d5db;
+  color: #b0b7c3;
+  box-shadow: 0 3px 8px rgba(17, 24, 39, 0.18);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.bz-restore-badge.bz-restore-active {
+  color: #16a34a;
+  border-color: #16a34a;
+}
+
+/* Count pill -- tucked into the badge's own top-right corner (not
+   bottom-right) so it doesn't extend further down into the layer-panel
+   gap below. Only rendered (JS-side) once streakRestores > 0, so this
+   never needs its own hidden/visible state. */
+.bz-restore-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: #16a34a;
+  color: #f8f6f1;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.25);
 }
 
 /* Correct guess -- bounce-and-flash gold, same overshoot easing as

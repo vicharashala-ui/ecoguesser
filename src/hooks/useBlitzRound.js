@@ -33,6 +33,7 @@ import { pickNextSite } from '../utils/filters.js';
  *   }|null,
  *   streak: number,
  *   bestStreak: number,
+ *   streakRestores: number,
  *   handleStateClick: (stateName: string|null) => void,
  *   handleConfirm: () => void,
  *   handleNextSite: () => void,
@@ -47,12 +48,20 @@ export function useBlitzRound(sitePool) {
 
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
+  // Earned every 10th streak milestone (10, 20, 30...), spent elsewhere to
+  // save a live streak from breaking on a wrong guess. Session-only, same
+  // as streak/bestStreak -- not yet persisted across app restarts.
+  const [streakRestores, setStreakRestores] = useState(0);
 
   // Plain-value mirror finalizeRound reads to avoid a stale closure.
   const roundStateRef = useRef(roundState);
   const siteRef = useRef(site);
+  const streakRef = useRef(streak);
+  const streakRestoresRef = useRef(streakRestores);
   roundStateRef.current = roundState;
   siteRef.current = site;
+  streakRef.current = streak;
+  streakRestoresRef.current = streakRestores;
 
   // LOADING -> pick a site -> READING. Stays in LOADING if the pool is
   // empty (filters left nothing to play) -- BlitzMap.jsx's own empty-pool
@@ -90,12 +99,24 @@ export function useBlitzRound(sitePool) {
       isCorrect,
     });
 
+    // A wrong guess with a live streak spends a restore automatically if
+    // one's in reserve -- no prompt, silent like earning one is. Read via
+    // refs (not the isCorrect-branch's own setStreak updater) because this
+    // decision needs streak AND streakRestores together at the same
+    // instant; two separate functional updaters can't be read against each
+    // other mid-update the way these refs can.
+    const streakSaved = !isCorrect && streakRef.current > 0 && streakRestoresRef.current > 0;
+
     setStreak((s) => {
-      if (!isCorrect) return 0;
-      const next = s + 1;
-      setBestStreak((best) => Math.max(best, next));
-      return next;
+      if (isCorrect) {
+        const next = s + 1;
+        setBestStreak((best) => Math.max(best, next));
+        if (next % 10 === 0) setStreakRestores((r) => r + 1);
+        return next;
+      }
+      return streakSaved ? s : 0;
     });
+    if (streakSaved) setStreakRestores((r) => r - 1);
 
     setRoundState('REVEALING');
   }, []);
@@ -132,6 +153,7 @@ export function useBlitzRound(sitePool) {
     result,
     streak,
     bestStreak,
+    streakRestores,
     handleStateClick,
     handleConfirm,
     handleNextSite,

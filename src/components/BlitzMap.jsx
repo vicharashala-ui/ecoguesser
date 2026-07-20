@@ -44,6 +44,20 @@ function IconFlame({ size = 20 }) {
   );
 }
 
+// Streak-restore badge icon -- a heart (an extra life for the streak),
+// same stroke-only style/weight as IconFlame above so it reads as part
+// of the same icon set despite living in a separate small component.
+function IconHeartRestore({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 20s-6.5-4.1-9-8C1 8.5 2.3 5 6 5c2 0 4 1 6 3.5C14 6 16 5 18 5c3.7 0 5 3.5 3 7-2.5 3.9-9 8-9 8Z"
+        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 // Derives Blitz's flat look from the same map-style.json Classic/Daily
 // use, applied to the fetched style JSON before MapContainer.jsx
 // constructs the map from it -- see MapContainer's styleTransform doc
@@ -122,7 +136,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   );
 
   const {
-    roundState, site, selectedState, result, streak, bestStreak,
+    roundState, site, selectedState, result, streak, bestStreak, streakRestores,
     handleStateClick, handleConfirm, handleNextSite, handleSkip,
   } = useBlitzRound(sitePool);
 
@@ -367,30 +381,57 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   return (
     <div style={style}>
       <div className="bz-top-right-stack">
-        {/* Session streak -- tracked by useBlitzRound.js the whole time but
-            previously never surfaced in the UI. Always mounted (not gated
-            on streak > 0) so its position never jumps mid-session; the
-            flame icon itself communicates "no streak yet" via its own
-            gray-vs-lit color transition. */}
-        <div
-          className={`bz-streak-card${streak > 0 ? ' bz-streak-lit' : ''}`}
-          aria-live="polite"
-        >
-          <svg className="bz-streak-ring" width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
-            <circle cx="39" cy="39" r="36" className="bz-streak-ring-outer" />
-            <circle cx="39" cy="39" r="30" className="bz-streak-ring-inner" />
-          </svg>
-          <div className="bz-streak-face">
-            <span className={`bz-streak-flame${streak > 0 ? ' bz-flame-active' : ''}`}>
-              <IconFlame size={16} />
-            </span>
-            <span
-              key={streak}
-              className={`bz-streak-value${streakAnim === 'up' ? ' bz-streak-pop' : streakAnim === 'break' ? ' bz-streak-break' : ''}`}
-            >
-              {streak}
-            </span>
-            {bestStreak > 0 && <span className="bz-streak-best">Best {bestStreak}</span>}
+        {/* Wraps the streak medallion + restore badge as two separate,
+            independently-positioned elements (badge is no longer a child
+            of bz-streak-card) while keeping their combined footprint a
+            single flex item in bz-top-right-stack -- same "doesn't
+            displace anything" property as before, just achieved via this
+            row instead of the badge being pinned to the medallion itself. */}
+        <div className="bz-streak-row">
+          {/* Session streak -- tracked by useBlitzRound.js the whole time but
+              previously never surfaced in the UI. Always mounted (not gated
+              on streak > 0) so its position never jumps mid-session; the
+              flame icon itself communicates "no streak yet" via its own
+              gray-vs-lit color transition. */}
+          <div
+            className={`bz-streak-card${streak > 0 ? ' bz-streak-lit' : ''}`}
+            aria-live="polite"
+          >
+            <svg className="bz-streak-ring" width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
+              <circle cx="39" cy="39" r="36" className="bz-streak-ring-outer" />
+              <circle cx="39" cy="39" r="30" className="bz-streak-ring-inner" />
+            </svg>
+            <div className="bz-streak-face">
+              <span className={`bz-streak-flame${streak > 0 ? ' bz-flame-active' : ''}`}>
+                <IconFlame size={16} />
+              </span>
+              <span
+                key={streak}
+                className={`bz-streak-value${streakAnim === 'up' ? ' bz-streak-pop' : streakAnim === 'break' ? ' bz-streak-break' : ''}`}
+              >
+                {streak}
+              </span>
+              {bestStreak > 0 && <span className="bz-streak-best">Best {bestStreak}</span>}
+            </div>
+          </div>
+          {/* Streak-restore badge -- its own element now, pinned to
+              bz-streak-row's bottom-right (the row spans the same width as
+              .bz-layer-panel below it, so this lands in the open space to
+              the right of the centered medallion, right above the layer
+              panel). Always mounted, same reasoning as the medallion
+              itself: a fixed spot that just toggles lit/gray beats one
+              that pops in and shifts things around. Greyed out (no count
+              badge) at 0; count badge only renders once earned. */}
+          <div
+            className={`bz-restore-badge${streakRestores > 0 ? ' bz-restore-active' : ''}`}
+            role="status"
+            aria-label={streakRestores > 0
+              ? `${streakRestores} streak restore${streakRestores === 1 ? '' : 's'} available`
+              : 'No streak restores available yet'}
+            title={streakRestores > 0 ? `${streakRestores} streak restore${streakRestores === 1 ? '' : 's'}` : 'Streak restore -- earn one every 10-streak'}
+          >
+            <IconHeartRestore size={18} />
+            {streakRestores > 0 && <span className="bz-restore-count">{streakRestores}</span>}
           </div>
         </div>
         <div className="bz-layer-panel">
