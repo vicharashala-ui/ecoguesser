@@ -168,6 +168,19 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     prevStreakRef.current = streak;
   }, [streak]);
 
+  // Same pattern, for the restore badge: 'gained' when a 10-streak
+  // milestone mints a new restore, 'used' when a wrong guess auto-spends
+  // one. Read by .bz-restore-badge below, keyed on `streakRestores` so it
+  // always replays even if 'used' (or 'gained') repeats back-to-back.
+  const [restoreAnim, setRestoreAnim] = useState(null); // 'gained' | 'used' | null
+  const prevRestoresRef = useRef(streakRestores);
+  useEffect(() => {
+    const prev = prevRestoresRef.current;
+    if (streakRestores > prev) setRestoreAnim('gained');
+    else if (streakRestores < prev) setRestoreAnim('used');
+    prevRestoresRef.current = streakRestores;
+  }, [streakRestores]);
+
   function handleMapClick(lat, lng) {
     const map = mapRef.current;
     if (!map || !mapReady) return;
@@ -423,7 +436,8 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
               that pops in and shifts things around. Greyed out (no count
               badge) at 0; count badge only renders once earned. */}
           <div
-            className={`bz-restore-badge${streakRestores > 0 ? ' bz-restore-active' : ''}`}
+            key={streakRestores}
+            className={`bz-restore-badge${streakRestores > 0 ? ' bz-restore-active' : ''}${restoreAnim === 'gained' ? ' bz-restore-gained' : restoreAnim === 'used' ? ' bz-restore-used' : ''}`}
             role="status"
             aria-label={streakRestores > 0
               ? `${streakRestores} streak restore${streakRestores === 1 ? '' : 's'} available`

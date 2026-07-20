@@ -171,6 +171,38 @@
   box-shadow: 0 1px 3px rgba(17, 24, 39, 0.25);
 }
 
+/* A restore being earned -- overshoot scale-and-glow in green, same
+   overshoot easing as bz-streak-pop above (this codebase's standard
+   "positive gain" curve). Applied to the whole badge, not just the count
+   pill, so it's visible even on the 0->1 transition where the pill itself
+   is only just appearing. */
+.bz-restore-badge.bz-restore-gained {
+  animation: bz-restore-gained 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes bz-restore-gained {
+  0%   { transform: scale(1); box-shadow: 0 3px 8px rgba(17, 24, 39, 0.18); }
+  40%  { transform: scale(1.45); box-shadow: 0 0 0 7px rgba(22, 163, 74, 0.28), 0 3px 8px rgba(17, 24, 39, 0.18); }
+  100% { transform: scale(1); box-shadow: 0 3px 8px rgba(17, 24, 39, 0.18); }
+}
+
+/* A restore being auto-consumed to save a breaking streak -- a quick
+   wobble-and-shrink, distinct from bz-streak-break's red shake (that one
+   plays on the streak value at the same moment) so the two don't read as
+   the same event: the streak value shows it broke, the badge shows what
+   caught it. */
+.bz-restore-badge.bz-restore-used {
+  animation: bz-restore-used 0.45s ease-out;
+}
+
+@keyframes bz-restore-used {
+  0%   { transform: scale(1) rotate(0deg); }
+  30%  { transform: scale(0.75) rotate(-10deg); }
+  55%  { transform: scale(1.1) rotate(8deg); }
+  80%  { transform: scale(0.95) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
 /* Correct guess -- bounce-and-flash gold, same overshoot easing as
    MapContainer.css's pin-drop and BottomNav.css's tab indicator. Re-plays
    on every increase because BlitzMap.jsx keys this span on `streak` itself,
@@ -255,6 +287,8 @@
   .bz-streak-ring-inner,
   .bz-streak-value.bz-streak-pop,
   .bz-streak-value.bz-streak-break,
+  .bz-restore-badge.bz-restore-gained,
+  .bz-restore-badge.bz-restore-used,
   .bz-milestone-glow {
     animation: none;
     transition: none;

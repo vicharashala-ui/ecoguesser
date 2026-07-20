@@ -57,10 +57,12 @@ export function useBlitzRound(sitePool) {
   const roundStateRef = useRef(roundState);
   const siteRef = useRef(site);
   const streakRef = useRef(streak);
+  const bestStreakRef = useRef(bestStreak);
   const streakRestoresRef = useRef(streakRestores);
   roundStateRef.current = roundState;
   siteRef.current = site;
   streakRef.current = streak;
+  bestStreakRef.current = bestStreak;
   streakRestoresRef.current = streakRestores;
 
   // LOADING -> pick a site -> READING. Stays in LOADING if the pool is
@@ -99,25 +101,38 @@ export function useBlitzRound(sitePool) {
       isCorrect,
     });
 
-    // A wrong guess with a live streak spends a restore automatically if
-    // one's in reserve -- no prompt, silent like earning one is. Read via
-    // refs (not the isCorrect-branch's own setStreak updater) because this
-    // decision needs streak AND streakRestores together at the same
-    // instant; two separate functional updaters can't be read against each
-    // other mid-update the way these refs can.
-    const streakSaved = !isCorrect && streakRef.current > 0 && streakRestoresRef.current > 0;
+    // Everything below is computed from refs (current values, not stale
+    // closures) and each setter is called once with a plain value -- not a
+    // functional updater. That matters here specifically: React 18
+    // StrictMode double-invokes updater *functions* passed to setState in
+    // dev, to catch impure ones. The previous version nested
+    // setBestStreak/setStreakRestores calls inside setStreak's own updater;
+    // StrictMode's double-invoke then fired those nested calls twice too,
+    // silently minting 2 restores per 10-streak milestone instead of 1
+    // (Math.max happened to make the bestStreak version of this bug
+    // invisible -- calling it twice with the same inputs is harmless,
+    // r => r + 1 isn't). Plain-value setState calls don't have an updater
+    // function to double-invoke, so this sidesteps the problem entirely.
+    const prevStreak = streakRef.current;
+    const prevBest = bestStreakRef.current;
+    const prevRestores = streakRestoresRef.current;
 
-    setStreak((s) => {
-      if (isCorrect) {
-        const next = s + 1;
-        setBestStreak((best) => Math.max(best, next));
-        if (next % 10 === 0) setStreakRestores((r) => r + 1);
-        return next;
-      }
-      return streakSaved ? s : 0;
-    });
-    if (streakSaved) setStreakRestores((r) => r - 1);
+    let nextStreak;
+    let nextRestores = prevRestores;
+    if (isCorrect) {
+      nextStreak = prevStreak + 1;
+      if (nextStreak % 10 === 0) nextRestores = prevRestores + 1;
+    } else {
+      // A wrong guess with a live streak spends a restore automatically if
+      // one's in reserve -- no prompt, silent like earning one is.
+      const streakSaved = prevStreak > 0 && prevRestores > 0;
+      nextStreak = streakSaved ? prevStreak : 0;
+      if (streakSaved) nextRestores = prevRestores - 1;
+    }
 
+    setStreak(nextStreak);
+    setBestStreak(Math.max(prevBest, nextStreak));
+    setStreakRestores(nextRestores);
     setRoundState('REVEALING');
   }, []);
 
