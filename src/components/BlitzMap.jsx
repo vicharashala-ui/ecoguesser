@@ -44,16 +44,17 @@ function IconFlame({ size = 20 }) {
   );
 }
 
-// Streak-restore badge icon -- a heart (an extra life for the streak),
-// same stroke-only style/weight as IconFlame above so it reads as part
-// of the same icon set despite living in a separate small component.
+// Streak-restore badge icon -- a heart (an extra life for the streak).
+// Filled, not stroke-outline like IconFlame above: a heart drawn as a
+// thin outline reads as flimsy/lopsided at badge size, where a solid
+// silhouette reads immediately and cleanly. Path is two mirrored cubic
+// beziers off a shared center cusp -- the standard symmetric heart
+// construction (same curve as Material Design's "favorite" glyph) --
+// rather than a hand-tuned one-off, so the two lobes are actually equal.
 function IconHeartRestore({ size = 14 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 20s-6.5-4.1-9-8C1 8.5 2.3 5 6 5c2 0 4 1 6 3.5C14 6 16 5 18 5c3.7 0 5 3.5 3 7-2.5 3.9-9 8-9 8Z"
-        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
     </svg>
   );
 }
