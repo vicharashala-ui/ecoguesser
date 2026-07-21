@@ -19,7 +19,6 @@ import { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
-import SatelliteOverlay from './SatelliteOverlay.jsx';
 import MilestoneToast from './MilestoneToast.jsx';
 import AchievementToast from './AchievementToast.jsx';
 import { useClassicRound } from '../hooks/useClassicRound.js';
@@ -256,7 +255,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
             : undefined
         }
       />
-      <SatelliteOverlay active={satellite} />
+      {/* Vignette/glow overlay removed -- was darkening satellite view edges. */}
 
       {milestone !== null && (
         <MilestoneToast key={milestone} count={milestone} onDone={() => setMilestone(null)} />

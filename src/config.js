@@ -91,26 +91,30 @@ export const TERRAIN_ENCODING = 'terrarium';
 // MapLibre paint property -- closest available parameter is
 // hillshade-exaggeration, which controls shading strength, not a true blend mode.
 export const SATELLITE_VISUAL = {
-  BACKGROUND: '#021B3A',
+  // Matches BASE_VISUAL.BACKGROUND -- previously a dark navy override
+  // (#021B3A) that tinted the whole view; removed so satellite has no
+  // background color of its own beyond the raw imagery.
+  BACKGROUND: '#f8f4f0',
   // Scoped to the satellite raster layer only (raster-* paint properties), not a
   // canvas-wide CSS filter -- MapLibre draws satellite + boundaries + hints into one
   // shared canvas, so a container-level filter would also tint boundary/hint colors.
-  // Values below target a "punchier" feel similar to a CSS
-  // contrast(1.15) saturate(1.1) filter (no brightness reduction --
-  // brightnessMax was previously capped at 0.88, which read as too dark/
-  // gloomy overall, not just punchier), mapped onto MapLibre's
-  // raster-paint scale rather than a literal unit conversion.
+  // No processing applied -- raw Esri imagery, unfiltered. (Previously
+  // carried a "punchier" contrast(1.15) saturate(1.1) style adjustment via
+  // these raster-paint values; removed per request to see the original
+  // source imagery as-is.)
   RASTER_PAINT: {
-    saturation:     0.15,
-    contrast:       0.15,
+    saturation:     0,
+    contrast:       0,
     brightnessMin:  0.0,
     brightnessMax:  1.0,
     resampling:     'linear',
   },
+  // Water/river tint overlays removed (opacity 0) -- water and rivers now
+  // show raw imagery color instead of a navy/blue color layered on top.
   WATER_COLOR:    '#043A6B',
-  WATER_OPACITY:  0.32,
+  WATER_OPACITY:  0,
   RIVER_COLOR:    '#5A95B8',
-  RIVER_OPACITY:  0.55,
+  RIVER_OPACITY:  0,
   BOUNDARY_COLOR:   '#E8ECEF',
   BOUNDARY_OPACITY: 0.55,
   BOUNDARY_WIDTH:   1,
@@ -150,16 +154,6 @@ export const SATELLITE_VISUAL = {
     highlightColor:        '#F5F7F7',
     accentColor:           '#D8E3EA',
   },
-  // Two-stop vignette: near-transparent center, ~45% black at the mid
-  // stop, ~85% black at the edge.
-  VIGNETTE: {
-    innerStopRatio: 0.28,
-    midStopRatio:   0.68,
-    midOpacity:     0.45,
-    outerStopRatio: 1.0,
-    maxOpacity:     0.85,
-  },
-  GLOW: { color: '123,196,255', innerStopRatio: 0.35, outerStopRatio: 0.72, maxOpacity: 0.10 },
 };
 
 // Base-mode (non-satellite) colors/expressions, needed to restore on satellite OFF --
