@@ -265,3 +265,20 @@ export function computeAchievements() {
     return { ...a, unlocked, progress };
   });
 }
+
+/**
+ * Diffs two computeAchievements() snapshots and returns the achievements
+ * that flipped from locked to unlocked between them -- used by
+ * useAchievementUnlocks.js to detect a live in-session unlock (a "before"
+ * snapshot taken right before a mode's recordXResult write, an "after" one
+ * right after) without any separate "already seen" persistence: since
+ * achievements are re-derived fresh every call, this is a pure array diff.
+ *
+ * @param {ReturnType<typeof computeAchievements>} before
+ * @param {ReturnType<typeof computeAchievements>} after
+ * @returns {ReturnType<typeof computeAchievements>}
+ */
+export function findNewlyUnlocked(before, after) {
+  const wasUnlocked = new Set(before.filter((a) => a.unlocked).map((a) => a.id));
+  return after.filter((a) => a.unlocked && !wasUnlocked.has(a.id));
+}

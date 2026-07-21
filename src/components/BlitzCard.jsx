@@ -20,8 +20,22 @@
 import { useId, forwardRef } from 'react';
 import { CATEGORY_META } from '../config.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
+import { STATE_ADJACENCY } from '../data/stateAdjacency.js';
 import './BottomCard.css';
 import './BlitzCard.css';
+
+// True when a wrong guess still borders one of the correct state(s) --
+// STATE_ADJACENCY is generated from india-states.topojson's shared arcs
+// (see scripts/buildStateAdjacency.js), so this is a plain lookup, no
+// runtime geometry work. Softens the badge below from a flat "Wrong" into
+// a "so close" near-miss instead, same spirit as showing distance in
+// Classic/Daily rather than just right/wrong.
+function isCloseCall(guessedState, correctStates) {
+  if (!guessedState) return false;
+  const neighbors = STATE_ADJACENCY[guessedState];
+  if (!neighbors) return false;
+  return correctStates.some((s) => neighbors.includes(s));
+}
 
 // Same mark BottomCard.jsx uses -- path data is imported from
 // tigerMarkPath.js rather than duplicated (it's ~7.5KB), unlike the small
@@ -124,6 +138,7 @@ const BlitzCard = forwardRef(function BlitzCard({
   const titleId = useId();
   const isRevealing = roundState === 'REVEALING';
   const meta = CATEGORY_META[site.category];
+  const closeCall = !!result && !result.isCorrect && isCloseCall(result.guessedState, result.correctStates);
 
   return (
     <div
@@ -205,9 +220,18 @@ const BlitzCard = forwardRef(function BlitzCard({
               ScoreRemark.jsx -- ensuring the pop-in below replays even if
               two consecutive rounds land on the same correct/wrong
               outcome. */}
-          <div key={site.id} className={`bz-badge ${result.isCorrect ? 'bz-badge-correct' : 'bz-badge-wrong'}`}>
+          <div
+            key={site.id}
+            className={`bz-badge ${result.isCorrect ? 'bz-badge-correct' : closeCall ? 'bz-badge-wrong bz-badge-close' : 'bz-badge-wrong'}`}
+          >
             {result.isCorrect ? <IconCheck /> : <IconCross />}
-            <span>{result.isCorrect ? 'Correct!' : `Wrong — it's in ${result.correctStates.join(', ')}`}</span>
+            <span>
+              {result.isCorrect
+                ? 'Correct!'
+                : closeCall
+                  ? `So close! It's in ${result.correctStates.join(', ')} — right next door`
+                  : `Wrong — it's in ${result.correctStates.join(', ')}`}
+            </span>
           </div>
 
           <div className="bc-actions">

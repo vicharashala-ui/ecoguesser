@@ -65,19 +65,39 @@
   transition: stroke 0.2s ease;
 }
 
-.bz-streak-ring-inner {
+/* Progress-ring track -- the faint full circle the orange progress arc
+   below draws over. Replaced the old dashed decorative ring (same radius)
+   now that the ring does real work instead of being purely ornamental. */
+.bz-streak-ring-track {
   fill: none;
-  stroke: #d1d5db;
-  stroke-width: 1;
-  stroke-dasharray: 2 3;
-  transition: stroke 0.2s ease;
+  stroke: #e5e7eb;
+  stroke-width: 3;
 }
 
-/* Gray/unlit edge and flame until the first correct guess of the session,
-   then both switch to the warm flame color -- always mounted (not gated on
-   streak > 0) so the medallion's position never jumps mid-session. */
-.bz-streak-card.bz-streak-lit .bz-streak-ring-outer,
-.bz-streak-card.bz-streak-lit .bz-streak-ring-inner {
+/* Fills in across each run of 5 correct guesses -- see streakProgress's
+   comment in BlitzMap.jsx for the math. Rotated -90deg so the arc starts
+   at 12 o'clock rather than 3 o'clock (stroke-dashoffset's default start
+   point), same "read like a clock" convention as a countdown ring.
+   stroke-dashoffset is paint-only (no layout impact), so animating it here
+   carries the same negligible cost as the color transitions already on
+   this element's neighbors. */
+.bz-streak-ring-progress {
+  fill: none;
+  stroke: #f97316;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 39px 39px;
+  transition: stroke-dashoffset 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Gray/unlit edge until the first correct guess of the session, then
+   switches to the warm flame color -- always mounted (not gated on
+   streak > 0) so the medallion's position never jumps mid-session. The
+   progress arc/track deliberately don't participate in this switch: they
+   already communicate "unlit" by being empty (streakProgress is 0 with no
+   streak), so tying their color to bz-streak-lit too would be redundant. */
+.bz-streak-card.bz-streak-lit .bz-streak-ring-outer {
   stroke: #f97316;
 }
 
@@ -233,13 +253,18 @@
 }
 
 /* Every-5th-in-a-row streak milestone -- edge-glow flash + a short label,
-   both in the same flame-orange (#f97316) the streak medallion already
-   uses for "lit", so the celebration ties visually back to the streak
-   mechanic itself rather than introducing a new color. The glow is an
-   animated inset box-shadow, not a full-screen tint -- it brightens in
-   from the edges and fades, like a photo-flash vignette, without ever
-   obscuring the map or card underneath. */
+   escalating across three tiers (BlitzMap.jsx: tier 1 every 5, tier 2
+   every 25, tier 3 every 50). --bz-milestone-rgb carries the tier's color
+   to both the glow (box-shadow, set on this element) and the label (text
+   color, inherited by the child .bz-milestone-label below) from one place,
+   so the two can never drift out of sync. Tier 1 defaults to the same
+   flame-orange (#f97316) the streak medallion already uses for "lit", so
+   the smallest/most frequent tier still ties back to the streak mechanic
+   itself. The glow is an animated inset box-shadow, not a full-screen
+   tint -- it brightens in from the edges and fades, like a photo-flash
+   vignette, without ever obscuring the map or card underneath. */
 .bz-milestone-glow {
+  --bz-milestone-rgb: 249, 115, 22;
   position: absolute;
   inset: 0;
   z-index: 45;
@@ -250,17 +275,33 @@
   animation: bz-milestone-edge-glow 900ms ease-out;
 }
 
+/* Tier 2 (25-streak) -- gold, slightly longer hang time. Tier 3 (50-streak)
+   -- violet (a genuinely different hue, not just brighter, so it reads as
+   its own tier at a glance) plus a bigger/longer glow; ConfettiBurst.jsx
+   (mounted alongside this in BlitzMap.jsx, keyed on the same token) adds
+   the rest of tier 3's weight rather than this glow trying to carry it
+   alone. */
+.bz-milestone-glow.bz-milestone-tier2 {
+  --bz-milestone-rgb: 234, 179, 8;
+  animation-duration: 1100ms;
+}
+
+.bz-milestone-glow.bz-milestone-tier3 {
+  --bz-milestone-rgb: 168, 85, 247;
+  animation-duration: 1500ms;
+}
+
 @keyframes bz-milestone-edge-glow {
-  0%   { box-shadow: inset 0 0 0 0 rgba(249, 115, 22, 0); }
-  25%  { box-shadow: inset 0 0 90px 18px rgba(249, 115, 22, 0.6); }
-  100% { box-shadow: inset 0 0 0 0 rgba(249, 115, 22, 0); }
+  0%   { box-shadow: inset 0 0 0 0 rgba(var(--bz-milestone-rgb), 0); }
+  25%  { box-shadow: inset 0 0 90px 18px rgba(var(--bz-milestone-rgb), 0.6); }
+  100% { box-shadow: inset 0 0 0 0 rgba(var(--bz-milestone-rgb), 0); }
 }
 
 .bz-milestone-label {
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 26px;
   font-weight: 800;
-  color: #f97316;
+  color: rgb(var(--bz-milestone-rgb));
   white-space: nowrap;
   opacity: 0;
   /* Same light-halo/dark-shadow stack as ScoreRemark.css's tier label --
@@ -271,6 +312,18 @@
     0 0 20px rgba(255, 255, 255, 0.55),
     0 2px 6px rgba(17, 24, 39, 0.25);
   animation: bz-milestone-label-pop 900ms ease-out;
+}
+
+.bz-milestone-glow.bz-milestone-tier2 .bz-milestone-label {
+  font-size: 30px;
+  animation-duration: 1100ms;
+}
+
+.bz-milestone-glow.bz-milestone-tier3 .bz-milestone-label {
+  font-size: 34px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  animation-duration: 1500ms;
 }
 
 @keyframes bz-milestone-label-pop {
@@ -284,7 +337,7 @@
 @media (prefers-reduced-motion: reduce) {
   .bz-streak-flame,
   .bz-streak-ring-outer,
-  .bz-streak-ring-inner,
+  .bz-streak-ring-progress,
   .bz-streak-value.bz-streak-pop,
   .bz-streak-value.bz-streak-break,
   .bz-restore-badge.bz-restore-gained,

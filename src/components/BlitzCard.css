@@ -53,6 +53,18 @@
   animation: bz-badge-shake 0.4s ease-out;
 }
 
+/* Close-call variant -- a wrong guess that still borders the correct
+   state(s) (BlitzCard.jsx's isCloseCall, via src/data/stateAdjacency.js).
+   Amber instead of red so it reads as "nearly" rather than "wrong", same
+   distinction Classic/Daily draw with distance-based scoring. Layered on
+   top of .bz-badge-wrong (both classes applied together) so it only needs
+   to override color/background -- the shake animation stays, this was
+   still a miss. */
+.bz-badge-wrong.bz-badge-close {
+  background: rgba(217, 119, 6, 0.12);
+  color: #b45309;
+}
+
 @keyframes bz-badge-pop {
   0%   { transform: scale(0.7); opacity: 0; }
   60%  { transform: scale(1.05); opacity: 1; }

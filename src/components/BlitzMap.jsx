@@ -15,6 +15,8 @@ import MapContainer from './MapContainer.jsx';
 import BlitzCard from './BlitzCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import MilestoneToast from './MilestoneToast.jsx';
+import AchievementToast from './AchievementToast.jsx';
+import ConfettiBurst from './ConfettiBurst.jsx';
 import { useBlitzRound } from '../hooks/useBlitzRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import {
@@ -24,11 +26,18 @@ import {
 import { siteMatchesFilter, DEFAULT_FILTERS, getRegionHintStates } from '../utils/filters.js';
 import { RESULT_FIT_EASING } from '../game/resultLayer.js';
 import { recordBlitzResult, recordSiteEncounter } from '../game/stats.js';
+import { useAchievementUnlocks } from '../hooks/useAchievementUnlocks.js';
 import { hapticPerfect } from '../utils/haptics.js';
 import { soundCelebrate } from '../utils/sound.js';
 import { LAYER_IDS, MAP_CONFIG, BARE_VISUAL } from '../config.js';
 import { TERRAIN_PLACE_LABEL_IDS } from '../hooks/useMapState.js';
 import './BlitzMap.css';
+
+// Radius of the streak medallion's progress ring (bz-streak-ring-track/
+// -progress below) -- a module-level constant, not recomputed per render,
+// since it's fixed by the SVG markup's own r="30".
+const STREAK_RING_R = 30;
+const STREAK_RING_CIRCUMFERENCE = 2 * Math.PI * STREAK_RING_R;
 
 // Same flame glyph as BottomNav.jsx's Daily-tab icon -- duplicated rather
 // than imported, per this codebase's no-shared-icon-module convention (each
@@ -44,17 +53,16 @@ function IconFlame({ size = 20 }) {
   );
 }
 
-// Streak-restore badge icon -- a heart (an extra life for the streak).
-// Filled, not stroke-outline like IconFlame above: a heart drawn as a
-// thin outline reads as flimsy/lopsided at badge size, where a solid
-// silhouette reads immediately and cleanly. Path is two mirrored cubic
-// beziers off a shared center cusp -- the standard symmetric heart
-// construction (same curve as Material Design's "favorite" glyph) --
-// rather than a hand-tuned one-off, so the two lobes are actually equal.
+// Streak-restore badge icon -- a heart (an extra life for the streak),
+// same stroke-only style/weight as IconFlame above so it reads as part
+// of the same icon set despite living in a separate small component.
 function IconHeartRestore({ size = 14 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 20s-6.5-4.1-9-8C1 8.5 2.3 5 6 5c2 0 4 1 6 3.5C14 6 16 5 18 5c3.7 0 5 3.5 3 7-2.5 3.9-9 8-9 8Z"
+        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -142,6 +150,15 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   } = useBlitzRound(sitePool);
 
   const { mapReady, politicalNames, setPoliticalNames } = useMapState(mapRef, 'blitz');
+  const { current: newAchievement, recordAndDetect, dismissCurrent: dismissAchievement } = useAchievementUnlocks();
+
+  // Fraction of the current run-of-5 completed, for the streak medallion's
+  // progress ring: 1/5 after 1 correct, full (1) exactly on a multiple of
+  // 5, then back to 1/5 on the next correct guess after that. Plain
+  // ((streak-1) % 5 + 1) rather than (streak % 5) so a just-reached
+  // multiple of 5 reads as "full" instead of snapping back to empty the
+  // instant it's hit.
+  const streakProgress = streak === 0 ? 0 : (((streak - 1) % 5) + 1) / 5;
   // political is forced true inside useMapState's onLoad for mode==='blitz'
   // -- this component never calls setPolitical itself. politicalNames (the
   // "State Names" toggle below) stays player-controlled.
@@ -321,29 +338,48 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   const [milestone, setMilestone] = useState(null);
   const [streakMilestone, setStreakMilestone] = useState(null);
   const streakMilestoneTokenRef = useRef(0);
+  // Set only for tier-3 (50-streak) milestones -- confetti runs on its own
+  // longer timer (see the effect below), independent of the glow/label's
+  // own tier-scaled lifetime, so a full ~2.6s burst always plays out.
+  const [milestoneConfetti, setMilestoneConfetti] = useState(null);
   useEffect(() => {
     if (roundState !== 'REVEALING' || !result) return;
     if (recordedResultRef.current === result) return;
     recordedResultRef.current = result;
-    recordBlitzResult(result, streak);
-    const seenCount = recordSiteEncounter(result.site.id);
+    const seenCount = recordAndDetect(() => {
+      recordBlitzResult(result, streak);
+      return recordSiteEncounter(result.site.id);
+    });
     if (seenCount !== null && seenCount % 10 === 0) setMilestone(seenCount);
 
     // Every 5th correct guess in a row -- bigger sound/haptic tier (the
     // same ones Classic/Daily's perfect-guess and rank-1 moments use, not
     // a new pair invented for this) plus an edge-glow flash (JSX/CSS
-    // below). A plain object (not the bare streak number) is what goes
-    // into state: setStreakMilestone(streak) would silently no-op the
-    // *second* time the streak reaches 5 in one session, since React
-    // bails out of a state update when the new value === the old one --
-    // an object literal is always a new reference, so it re-fires and
-    // remounts the glow (keyed on .token) every time, not just the first.
+    // below), escalating at 25 and 50 into a richer color/size and (at 50)
+    // a confetti burst -- see bz-milestone-tier1/2/3 in BlitzMap.css. A
+    // plain object (not the bare streak number) is what goes into state:
+    // setStreakMilestone(streak) would silently no-op the *second* time
+    // the streak reaches 5 in one session, since React bails out of a
+    // state update when the new value === the old one -- an object
+    // literal is always a new reference, so it re-fires and remounts the
+    // glow (keyed on .token) every time, not just the first.
     if (result.isCorrect && streak > 0 && streak % 5 === 0) {
+      const tier = streak % 50 === 0 ? 3 : streak % 25 === 0 ? 2 : 1;
       hapticPerfect();
       soundCelebrate();
-      setStreakMilestone({ streak, token: ++streakMilestoneTokenRef.current });
+      const token = ++streakMilestoneTokenRef.current;
+      setStreakMilestone({ streak, tier, token });
+      if (tier === 3) setMilestoneConfetti(token);
     }
-  }, [roundState, result, streak]);
+  }, [roundState, result, streak, recordAndDetect]);
+
+  useEffect(() => {
+    if (milestoneConfetti === null) return;
+    // ~2.6s -- long enough for every ConfettiBurst.jsx piece's animation
+    // (staggered fall + fade) to finish before unmounting it.
+    const t = setTimeout(() => setMilestoneConfetti(null), 2700);
+    return () => clearTimeout(t);
+  }, [milestoneConfetti]);
 
   // Auto-clear the streak-milestone glow (JSX further down) after its
   // animation finishes. A timer, not onAnimationEnd -- animationend never
@@ -354,7 +390,11 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // reduced-motion users.
   useEffect(() => {
     if (!streakMilestone) return;
-    const t = setTimeout(() => setStreakMilestone(null), 1000);
+    // Matches each tier's animation-duration in BlitzMap.css (with the
+    // same ~100ms buffer tier 1's 900ms/1000ms pair already had) so the
+    // label never gets unmounted mid-animation.
+    const duration = streakMilestone.tier === 3 ? 1800 : streakMilestone.tier === 2 ? 1300 : 1000;
+    const t = setTimeout(() => setStreakMilestone(null), duration);
     return () => clearTimeout(t);
   }, [streakMilestone]);
 
@@ -413,7 +453,22 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
           >
             <svg className="bz-streak-ring" width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
               <circle cx="39" cy="39" r="36" className="bz-streak-ring-outer" />
-              <circle cx="39" cy="39" r="30" className="bz-streak-ring-inner" />
+              <circle cx="39" cy="39" r={STREAK_RING_R} className="bz-streak-ring-track" />
+              {/* Fills in over each run of 5 correct guesses, full right at
+                  the milestone itself (in step with the edge-glow flash),
+                  then resets for the next 5 -- see streakProgress's
+                  comment above for the exact math. stroke-dashoffset is a
+                  paint-only property (no reflow), same performance
+                  footprint as the color transitions already on the ring
+                  above it. */}
+              <circle
+                cx="39" cy="39" r={STREAK_RING_R}
+                className="bz-streak-ring-progress"
+                style={{
+                  strokeDasharray: STREAK_RING_CIRCUMFERENCE,
+                  strokeDashoffset: STREAK_RING_CIRCUMFERENCE * (1 - streakProgress),
+                }}
+              />
             </svg>
             <div className="bz-streak-face">
               <span className={`bz-streak-flame${streak > 0 ? ' bz-flame-active' : ''}`}>
@@ -488,9 +543,18 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
           persistently. Cleared by the timeout effect above, not an
           animation-end handler (see that effect's comment for why). */}
       {streakMilestone && (
-        <div key={streakMilestone.token} className="bz-milestone-glow" aria-hidden="true">
+        <div
+          key={streakMilestone.token}
+          className={`bz-milestone-glow bz-milestone-tier${streakMilestone.tier}`}
+          aria-hidden="true"
+        >
           <span className="bz-milestone-label">{streakMilestone.streak} in a row!</span>
         </div>
+      )}
+      {milestoneConfetti !== null && <ConfettiBurst key={`streak-confetti-${milestoneConfetti}`} />}
+
+      {newAchievement && (
+        <AchievementToast key={newAchievement.id} achievement={newAchievement} onDone={dismissAchievement} />
       )}
 
       {site && (

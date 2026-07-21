@@ -3,8 +3,10 @@ import { DailyMap } from './components/DailyMap.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import Header from './components/Header.jsx';
 import InstallPrompt from './components/InstallPrompt.jsx';
+import AchievementToast from './components/AchievementToast.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 import { warmSharedMapData } from './hooks/useMapState.js';
+import { useAchievementUnlocks } from './hooks/useAchievementUnlocks.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
 import { LS_KEYS } from './config.js';
 
@@ -84,6 +86,7 @@ export default function App() {
   const [dailyPhase, setDailyPhase] = useState(() => (hasPlayedToday() ? 'leaderboard' : 'round'));
   const [dailySummaryData, setDailySummaryData] = useState(null); // { totalPts, totalDist }
   const [dailyLeaderboardData, setDailyLeaderboardData] = useState(null); // { top10, rank, banner } | null
+  const { current: newAchievement, recordAndDetect, dismissCurrent: dismissAchievement } = useAchievementUnlocks();
 
   // drawerOpen is global (both tabs); classicFilters affects ClassicMap's
   // AND BlitzMap's site pools. Daily's pool is fixed and untouched by this.
@@ -125,7 +128,7 @@ export default function App() {
   function handleDailyComplete(results) {
     const totalPts = results.reduce((sum, r) => sum + r.finalScore, 0);
     const totalDist = results.reduce((sum, r) => sum + (r.distanceKm ?? 0), 0);
-    recordDailyResult(results, totalPts, totalDist);
+    recordAndDetect(() => recordDailyResult(results, totalPts, totalDist));
     setDailySummaryData({ totalPts, totalDist });
     setDailyPhase('summary');
   }
@@ -284,6 +287,9 @@ export default function App() {
         <Suspense fallback={null}>
           <StatsView sites={allSites} />
         </Suspense>
+      )}
+      {newAchievement && (
+        <AchievementToast key={newAchievement.id} achievement={newAchievement} onDone={dismissAchievement} />
       )}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />
       <Header

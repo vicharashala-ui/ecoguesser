@@ -21,8 +21,10 @@ import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import SatelliteOverlay from './SatelliteOverlay.jsx';
 import MilestoneToast from './MilestoneToast.jsx';
+import AchievementToast from './AchievementToast.jsx';
 import { useClassicRound } from '../hooks/useClassicRound.js';
 import { useMapState } from '../hooks/useMapState.js';
+import { useAchievementUnlocks } from '../hooks/useAchievementUnlocks.js';
 import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
 import { MAP_CONFIG } from '../config.js';
 import { showResult, clearResult, zoomToSiteBoundary, RESULT_FIT_EASING, ROUND_RESET_DURATION_MS } from '../game/resultLayer.js';
@@ -108,6 +110,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     political, satellite, satelliteUnavailable, mapReady, terrain,
     setPolitical, setSatellite, setDifficulty, setTerrain,
   } = useMapState(mapRef, 'classic');
+  const { current: newAchievement, recordAndDetect, dismissCurrent: dismissAchievement } = useAchievementUnlocks();
 
   const cardRef = useRef(null); // measures BottomCard's height for reveal fitBounds padding
   // Tracked separately so RecenterButton can sit above the expanded card
@@ -213,10 +216,12 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     if (roundState !== 'REVEALING' || !result) return;
     if (recordedResultRef.current === result) return;
     recordedResultRef.current = result;
-    recordClassicResult(result);
-    const seenCount = recordSiteEncounter(result.site.id);
+    const seenCount = recordAndDetect(() => {
+      recordClassicResult(result);
+      return recordSiteEncounter(result.site.id);
+    });
     if (seenCount !== null && seenCount % 10 === 0) setMilestone(seenCount);
-  }, [roundState, result]);
+  }, [roundState, result, recordAndDetect]);
 
   // "Show Site Boundary" button -- zooms in on the revealed site's polygon.
   // Recomputes fitPadding live since cardRef's height can only be read live.
@@ -255,6 +260,9 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
 
       {milestone !== null && (
         <MilestoneToast key={milestone} count={milestone} onDone={() => setMilestone(null)} />
+      )}
+      {newAchievement && (
+        <AchievementToast key={newAchievement.id} achievement={newAchievement} onDone={dismissAchievement} />
       )}
 
       {/* Top-right stack -- Borders keeps its own glass panel (as it had
