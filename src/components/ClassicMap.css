@@ -86,8 +86,8 @@
 }
 
 .cm-mode-btn.is-active {
-  border-color: #0d9488;
-  color: #0d9488;
+  border-color: #0891b2;
+  color: #0891b2;
 }
 
 .cm-mode-btn.is-inert {
@@ -100,7 +100,7 @@
 }
 
 .cm-mode-btn:focus-visible {
-  outline: 2px solid #0d9488;
+  outline: 2px solid #0891b2;
   outline-offset: 2px;
 }
 

@@ -95,14 +95,16 @@ export const SATELLITE_VISUAL = {
   // Scoped to the satellite raster layer only (raster-* paint properties), not a
   // canvas-wide CSS filter -- MapLibre draws satellite + boundaries + hints into one
   // shared canvas, so a container-level filter would also tint boundary/hint colors.
-  // Values below target the same "punchier, slightly darkened" feel as a CSS
-  // contrast(1.15) saturate(1.1) brightness(0.85) filter, mapped onto MapLibre's
+  // Values below target a "punchier" feel similar to a CSS
+  // contrast(1.15) saturate(1.1) filter (no brightness reduction --
+  // brightnessMax was previously capped at 0.88, which read as too dark/
+  // gloomy overall, not just punchier), mapped onto MapLibre's
   // raster-paint scale rather than a literal unit conversion.
   RASTER_PAINT: {
     saturation:     0.15,
     contrast:       0.15,
     brightnessMin:  0.0,
-    brightnessMax:  0.88,
+    brightnessMax:  1.0,
     resampling:     'linear',
   },
   WATER_COLOR:    '#043A6B',

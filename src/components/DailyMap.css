@@ -239,8 +239,8 @@
 }
 
 .dm-mode-btn.is-active {
-  border-color: #0d9488;
-  color: #0d9488;
+  border-color: #0891b2;
+  color: #0891b2;
 }
 
 .dm-mode-btn.is-inert {
@@ -253,7 +253,7 @@
 }
 
 .dm-mode-btn:focus-visible {
-  outline: 2px solid #0d9488;
+  outline: 2px solid #0891b2;
   outline-offset: 2px;
 }
 
