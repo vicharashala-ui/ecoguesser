@@ -83,6 +83,55 @@
   color: #111827;
   overflow: hidden;
   transition: border-radius 0.25s ease, max-height 0.3s ease;
+  /* Every .bottom-card (the live one below AND the departing .bc-ghost
+     snapshot BottomCard.jsx renders alongside it during a round change)
+     slides in from the left on its own creation -- this fires exactly once
+     per DOM node lifetime (mount), not on every re-render, because it's a
+     plain always-on declaration rather than something toggled by a class.
+     BottomCard.jsx gives the live card a fresh `key={site.id}` each round
+     specifically so this replays every time; Confirm/collapse-toggle swap
+     other classes on that same persisting node without remounting it, so
+     they never retrigger it. .bc-ghost below overrides this to slide out
+     to the right instead. 380ms must match config.js's CARD_SLIDE_MS --
+     CSS can't read a JS constant, so if you change one, change both. */
+  animation: bc-slide-in-left 380ms ease-out both;
+}
+
+/* Departing round's frozen visual snapshot -- see BottomCard.jsx's
+   beginExit()/outgoing state for why this can't just be the live card
+   animating out (its content is gone from props before an exit animation
+   would even get a chance to read it). Rendered as a sibling positioned
+   identically (same left/right/bottom as .bottom-card), so it overlaps the
+   incoming live card exactly, moving the opposite direction -- the "push"
+   is just two elements independently sliding through the same box.
+   z-index below the live card's default 30 (unset here) means the
+   incoming card renders on top of it, as if it's the one doing the
+   pushing. pointer-events:none backs up BottomCard.jsx's `inert` on the
+   same element -- belt and suspenders against a stray click mid-animation. */
+.bottom-card.bc-ghost {
+  z-index: 29;
+  pointer-events: none;
+  animation: bc-slide-out-right 380ms ease-in both;
+}
+
+@keyframes bc-slide-in-left {
+  from { transform: translateX(-130%) translateZ(0); }
+  to   { transform: translateX(0) translateZ(0); }
+}
+
+@keyframes bc-slide-out-right {
+  from { transform: translateX(0) translateZ(0); }
+  to   { transform: translateX(130%) translateZ(0); }
+}
+
+/* A departing card's hint-reveal/score-pulse are one-shot cues meant for
+   the moment they actually happened -- the ghost's DOM nodes are fresh
+   mounts too (see BottomCard.jsx), so without this they'd replay those
+   pulses purely because the snapshot rendered, which reads as a glitch on
+   a card that's already on its way out. */
+.bc-ghost .bc-hint-state,
+.bc-ghost .bc-score-perfect {
+  animation: none;
 }
 
 .bottom-card.is-pill {
@@ -550,5 +599,17 @@
   .bc-boundary-btn-sm,
   .bc-next-btn {
     transition: none;
+  }
+
+  /* Both cards settle instantly -- same "no slide" baseline the rest of
+     this file already falls back to. The ghost has nothing left to show
+     once it can't animate, so it's hidden outright rather than left
+     sitting on screen as a static duplicate of the live card for the
+     ~380ms until BottomCard.jsx's timeout clears it from state. */
+  .bottom-card {
+    animation: none;
+  }
+  .bottom-card.bc-ghost {
+    display: none;
   }
 }

@@ -1,12 +1,29 @@
 // src/components/BottomCard.jsx
 // Pre-guess floating pill -> post-guess expanded card.
 //
-// Two wiring choices worth flagging:
+// Three wiring choices worth flagging:
 //   1. Confirm Guess lives inside the pill at all times, disabled until
 //      `markerPlaced` is true, rather than only appearing in PLACING --
 //      avoids a layout jump between READING and PLACING.
 //   2. One generic icon (the tiger mark), tinted per the round's category
 //      color, is used in both pill and card, rather than a per-category icon.
+//   3. Round-to-round push transition: this component never remounts
+//      itself (Classic/DailyMap render one persistent instance each, no
+//      `key` on <BottomCard>), so the pill/card swap has always just been a
+//      CSS class change on the same DOM node. The new site's card slides in
+//      from the left on every round (BottomCard.css's always-on
+//      bc-slide-in-left animation, replayed each time by giving THIS
+//      component's root a fresh `key={site.id}`), while the previous
+//      round's card simultaneously slides out to the right. That outgoing
+//      card can't just be "this same node animating away", though --
+//      useClassicRound.js/useDailyRound.js each clear `result`/replace
+//      `site` at a different point in their own LOADING handoff, so the
+//      old content is gone from props before a props-driven exit animation
+//      would get a chance to read it. Next Site/Skip are wrapped
+//      (handleNextSiteClick/handleSkipClick) to snapshot the departing
+//      round's content into local `outgoing` state at the moment of the
+//      click instead, and render it as a separate, `inert` "ghost" sibling
+//      that animates away on its own clock (see beginExit() below).
 //
 // Icons below are inline SVGs (no icon-library dependency). IconMark's path
 // data lives in tigerMarkPath.js instead of being pasted here, since it's
@@ -16,8 +33,8 @@
 // Show Site Boundary renders as a small chip at the right edge of the
 // result row (distance + pts) rather than its own row, to save vertical space.
 
-import { useId, useState, useEffect, forwardRef } from 'react';
-import { CATEGORY_META, SCORING } from '../config';
+import { useId, useState, useEffect, useRef, forwardRef } from 'react';
+import { CATEGORY_META, SCORING, CARD_SLIDE_MS } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import ConfettiBurst from './ConfettiBurst.jsx';
 import ScoreRemark from './ScoreRemark.jsx';
@@ -215,8 +232,6 @@ const BottomCard = forwardRef(function BottomCard({
   const isRevealing = roundState === 'REVEALING';
   const isDaily = mode === 'daily';
   const meta = CATEGORY_META[site.category];
-  const hintsRemaining = 2 - hintLevel;
-  const hintsExhausted = hintLevel >= 2;
   // Perfect score only happens when the guess landed inside the site's
   // boundary (useClassicRound.js / useDailyRound.js both short-circuit
   // rawScore to SCORING.MAX_SCORE in that case) -- checking finalScore
@@ -224,11 +239,46 @@ const BottomCard = forwardRef(function BottomCard({
   // Daily round with hint penalties correctly does NOT celebrate a
   // boundary hit that got docked below 5000.
   const isPerfect = isRevealing && result && result.finalScore === SCORING.MAX_SCORE;
-  // Same "has a real guess" condition as the distance chip just below
-  // (result.skipped || result.distanceKm == null) uses, inverted -- a
-  // timed-out Daily round with no marker placed gets no count-up, same as
-  // it already skips the distance figure.
-  const isScored = isRevealing && result && !result.skipped && result.distanceKm != null;
+
+  // ---- Round-to-round push transition --------------------------------
+  // `outgoing` holds a frozen snapshot of whatever was on screen the
+  // instant Next Site or Skip was clicked -- the departing pill or card,
+  // exactly as the player last saw it -- so it can go on animating out to
+  // the right on its own, independent of how fast (or in what order)
+  // useClassicRound.js/useDailyRound.js clear `result` or swap in the next
+  // `site` afterward. `uid` (not just site.id) guarantees a fresh React
+  // key even in a single-site pool, where the "next" site can legitimately
+  // be the same object as the one leaving.
+  const [outgoing, setOutgoing] = useState(null);
+  const exitTimerRef = useRef(null);
+
+  useEffect(() => () => clearTimeout(exitTimerRef.current), []);
+
+  function beginExit() {
+    setOutgoing({
+      uid: `${site.id}-${Date.now()}`,
+      site,
+      result,
+      collapsed,
+      hintLevel,
+      markerPlaced,
+      isCard: isRevealing,
+    });
+    clearTimeout(exitTimerRef.current);
+    exitTimerRef.current = setTimeout(() => setOutgoing(null), CARD_SLIDE_MS);
+  }
+
+  // Snapshot-then-delegate: capture this render's props before calling the
+  // real handler, which is what actually advances roundState/site/result.
+  function handleNextSiteClick() {
+    beginExit();
+    onNextSite();
+  }
+
+  function handleSkipClick() {
+    beginExit();
+    onSkip();
+  }
 
   // Only relevant pre-guess (READING/PLACING) -- once revealed there's
   // nothing left to place, and markerPlaced already covers "this round's
@@ -252,6 +302,172 @@ const BottomCard = forwardRef(function BottomCard({
   // to know the instant the toggle is clicked rather than finding out via a
   // child re-render.
 
+  // Pill and card markup, factored out so the exact same JSX can render
+  // both the live, interactive card (current props) and the frozen ghost
+  // snapshot (outgoing's captured props) below -- everything either one
+  // needs is passed in explicitly rather than closed over, since the
+  // ghost's data is deliberately NOT the current props. `ghost` only
+  // changes two things: the id that feeds aria-labelledby (a ghost mustn't
+  // duplicate the live card's id) and whether the score counts up
+  // (AnimatedScore replaying its count-up on a card that's already leaving
+  // would just be distracting motion, not a real reveal).
+  function renderPillBody({ site: pillSite, hintLevel: pillHintLevel, markerPlaced: pillMarkerPlaced, ghost }) {
+    const remaining = 2 - pillHintLevel;
+    const exhausted = pillHintLevel >= 2;
+    return (
+      <div className="bc-pill">
+        <div className="bc-pill-top">
+          <span className="bc-icon" aria-hidden="true"><IconMark /></span>
+          <span className="bc-pill-text">
+            <span id={ghost ? undefined : titleId} className="bc-site-name">{pillSite.name}</span>
+            {pillHintLevel >= 1 && (
+              <span className="bc-hint-state">{pillSite.state.join(', ')}</span>
+            )}
+          </span>
+        </div>
+
+        <div className="bc-pill-actions">
+          {!isDaily && onSkip && (
+            <button
+              type="button"
+              className="bc-skip-btn"
+              onClick={handleSkipClick}
+              aria-label="Skip this site"
+              title="Skip this site"
+            >
+              <IconSkip />
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="bc-hint-btn"
+            onClick={onHint}
+            disabled={exhausted}
+            aria-label={exhausted ? 'No hints remaining' : `Use hint (${remaining} remaining)`}
+            title={exhausted ? 'No hints remaining' : 'Use a hint'}
+          >
+            <IconHint />
+            {!exhausted && <span className="bc-hint-count">{remaining}</span>}
+          </button>
+
+          <button
+            type="button"
+            className="bc-confirm-btn"
+            onClick={onConfirm}
+            disabled={!pillMarkerPlaced}
+            aria-label="Confirm guess"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function renderCardBody({ site: cardSite, result: cardResult, collapsed: cardCollapsed, ghost }) {
+    const cardMeta = CATEGORY_META[cardSite.category];
+    const cardIsPerfect = cardResult.finalScore === SCORING.MAX_SCORE;
+    const cardIsScored = !cardResult.skipped && cardResult.distanceKm != null;
+
+    return (
+      <div className="bc-card">
+        <button
+          type="button"
+          className={`bc-collapse-toggle ${cardCollapsed ? 'is-collapsed' : ''}`}
+          onClick={() => onToggleCollapsed(!cardCollapsed)}
+          aria-label={cardCollapsed ? 'Expand details' : 'Collapse details'}
+          title={cardCollapsed ? 'Expand details' : 'Collapse details'}
+        >
+          <IconChevronDown />
+        </button>
+
+        {!cardCollapsed && (
+          <div className="bc-card-header">
+            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
+            <span className="bc-category-label">{cardMeta.label.toUpperCase()}</span>
+          </div>
+        )}
+
+        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{cardSite.name}</h2>
+
+        <div className="bc-meta-row">
+          <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {cardSite.state.join(', ')}</span>
+          {!cardCollapsed && cardSite.year && (
+            <span className="bc-meta-item"><IconCalendar size={15} /> Est. {cardSite.year}</span>
+          )}
+        </div>
+
+        {!cardCollapsed && (
+          <>
+            {cardSite.desc && <p className="bc-desc">{cardSite.desc}</p>}
+
+            {cardSite.species && (
+              <div className="bc-species">
+                <IconPaw size={15} /> Key species: {cardSite.species}
+              </div>
+            )}
+
+            <hr className="bc-divider" />
+
+            <div className="bc-result-row">
+              <span className="bc-meta-item">
+                <IconPin size={15} />
+                {cardResult.skipped || cardResult.distanceKm == null
+                  ? 'Skipped'
+                  : `${Math.round(cardResult.distanceKm).toLocaleString()} km away`}
+              </span>
+              <span className={`bc-meta-item bc-score ${cardIsPerfect ? 'bc-score-perfect' : ''}`}>
+                <IconStar size={15} />{' '}
+                {!ghost && cardIsScored
+                  ? <AnimatedScore key={cardSite.id} value={cardResult.finalScore} />
+                  : cardResult.finalScore.toLocaleString()} pts
+              </span>
+
+              {cardSite.hasBoundary && onShowBoundary && (
+                <button
+                  type="button"
+                  className="bc-boundary-btn-sm"
+                  onClick={onShowBoundary}
+                  aria-label="Show site boundary"
+                  title="Show site boundary"
+                >
+                  <IconFrame size={14} /> Boundary
+                </button>
+              )}
+            </div>
+
+            {isDaily && cardResult.hintPenalty > 0 && (
+              <div className="bc-daily-line bc-penalty">
+                Hint penalty: -{cardResult.hintPenalty.toLocaleString()}
+              </div>
+            )}
+            {isDaily && (
+              <div className="bc-daily-line">
+                Round score: {cardResult.finalScore.toLocaleString()} / {SCORING.MAX_SCORE.toLocaleString()} pts
+              </div>
+            )}
+
+            <div className="bc-actions">
+              <button
+                type="button"
+                className="bc-trivia-btn"
+                disabled
+                aria-label="Play Trivia - coming soon"
+                title="Coming soon"
+              >
+                Play Trivia
+              </button>
+              <button type="button" className="bc-next-btn" onClick={handleNextSiteClick}>
+                {nextLabel}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
   return (
     <>
       {showPinTip && (
@@ -265,161 +481,37 @@ const BottomCard = forwardRef(function BottomCard({
           site.id keying internally (see ScoreRemark.jsx). */}
       {isPerfect && <ConfettiBurst key={site.id} />}
       <ScoreRemark roundState={roundState} result={result} />
+
+      {/* Departing round's frozen snapshot -- see beginExit() above for why
+          this has to be captured at click time rather than animated from
+          props. `inert` takes its buttons out of the tab order and makes
+          them unclickable for the ~380ms it's still visible sliding away
+          (pointer-events:none in BottomCard.css backs this up); it's
+          otherwise the exact same markup the live card had a moment ago. */}
+      {outgoing && (
+        <div
+          key={outgoing.uid}
+          className="bottom-card bc-ghost"
+          style={{ '--eg-accent': CATEGORY_META[outgoing.site.category].color }}
+          inert
+          aria-hidden="true"
+        >
+          {outgoing.isCard
+            ? renderCardBody({ site: outgoing.site, result: outgoing.result, collapsed: outgoing.collapsed, ghost: true })
+            : renderPillBody({ site: outgoing.site, hintLevel: outgoing.hintLevel, markerPlaced: outgoing.markerPlaced, ghost: true })}
+        </div>
+      )}
+
       <div
         ref={ref}
+        key={site.id}
         className={`bottom-card ${isRevealing ? `is-expanded ${collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
         style={{ '--eg-accent': meta.color }}
         role="region"
         aria-labelledby={titleId}
       >
-      {!isRevealing && (
-        <div className="bc-pill">
-          <div className="bc-pill-top">
-            <span className="bc-icon" aria-hidden="true"><IconMark /></span>
-            <span className="bc-pill-text">
-              <span id={titleId} className="bc-site-name">{site.name}</span>
-              {hintLevel >= 1 && (
-                <span className="bc-hint-state">{site.state.join(', ')}</span>
-              )}
-            </span>
-          </div>
-
-          <div className="bc-pill-actions">
-            {!isDaily && onSkip && (
-              <button
-                type="button"
-                className="bc-skip-btn"
-                onClick={onSkip}
-                aria-label="Skip this site"
-                title="Skip this site"
-              >
-                <IconSkip />
-              </button>
-            )}
-
-            <button
-              type="button"
-              className="bc-hint-btn"
-              onClick={onHint}
-              disabled={hintsExhausted}
-              aria-label={
-                hintsExhausted
-                  ? 'No hints remaining'
-                  : `Use hint (${hintsRemaining} remaining)`
-              }
-              title={hintsExhausted ? 'No hints remaining' : 'Use a hint'}
-            >
-              <IconHint />
-              {!hintsExhausted && <span className="bc-hint-count">{hintsRemaining}</span>}
-            </button>
-
-            <button
-              type="button"
-              className="bc-confirm-btn"
-              onClick={onConfirm}
-              disabled={!markerPlaced}
-              aria-label="Confirm guess"
-            >
-              Confirm
-            </button>
-          </div>
-        </div>
-      )}
-
-      {isRevealing && result && (
-        <div className="bc-card">
-          <button
-            type="button"
-            className={`bc-collapse-toggle ${collapsed ? 'is-collapsed' : ''}`}
-            onClick={() => onToggleCollapsed(!collapsed)}
-            aria-label={collapsed ? 'Expand details' : 'Collapse details'}
-            title={collapsed ? 'Expand details' : 'Collapse details'}
-          >
-            <IconChevronDown />
-          </button>
-
-          {!collapsed && (
-            <div className="bc-card-header">
-              <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
-              <span className="bc-category-label">{meta.label.toUpperCase()}</span>
-            </div>
-          )}
-
-          <h2 id={titleId} className="bc-card-name">{site.name}</h2>
-
-          <div className="bc-meta-row">
-            <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {site.state.join(', ')}</span>
-            {!collapsed && site.year && (
-              <span className="bc-meta-item"><IconCalendar size={15} /> Est. {site.year}</span>
-            )}
-          </div>
-
-          {!collapsed && (
-            <>
-              {site.desc && <p className="bc-desc">{site.desc}</p>}
-
-              {site.species && (
-                <div className="bc-species">
-                  <IconPaw size={15} /> Key species: {site.species}
-                </div>
-              )}
-
-              <hr className="bc-divider" />
-
-              <div className="bc-result-row">
-                <span className="bc-meta-item">
-                  <IconPin size={15} />
-                  {result.skipped || result.distanceKm == null
-                    ? 'Skipped'
-                    : `${Math.round(result.distanceKm).toLocaleString()} km away`}
-                </span>
-                <span className={`bc-meta-item bc-score ${isPerfect ? 'bc-score-perfect' : ''}`}>
-                  <IconStar size={15} />{' '}
-                  {isScored ? <AnimatedScore key={site.id} value={result.finalScore} /> : result.finalScore.toLocaleString()} pts
-                </span>
-
-                {site.hasBoundary && onShowBoundary && (
-                  <button
-                    type="button"
-                    className="bc-boundary-btn-sm"
-                    onClick={onShowBoundary}
-                    aria-label="Show site boundary"
-                    title="Show site boundary"
-                  >
-                    <IconFrame size={14} /> Boundary
-                  </button>
-                )}
-              </div>
-
-              {isDaily && result.hintPenalty > 0 && (
-                <div className="bc-daily-line bc-penalty">
-                  Hint penalty: -{result.hintPenalty.toLocaleString()}
-                </div>
-              )}
-              {isDaily && (
-                <div className="bc-daily-line">
-                  Round score: {result.finalScore.toLocaleString()} / {SCORING.MAX_SCORE.toLocaleString()} pts
-                </div>
-              )}
-
-              <div className="bc-actions">
-                <button
-                  type="button"
-                  className="bc-trivia-btn"
-                  disabled
-                  aria-label="Play Trivia - coming soon"
-                  title="Coming soon"
-                >
-                  Play Trivia
-                </button>
-                <button type="button" className="bc-next-btn" onClick={onNextSite}>
-                  {nextLabel}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
+        {!isRevealing && renderPillBody({ site, hintLevel, markerPlaced, ghost: false })}
+        {isRevealing && result && renderCardBody({ site, result, collapsed, ghost: false })}
       </div>
     </>
   );

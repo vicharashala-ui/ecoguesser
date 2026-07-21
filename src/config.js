@@ -268,6 +268,14 @@ export const LAYER_IDS = {
 // before, which is the intended effect of the boundary-distance change.
 export const SCORING = { MAX_SCORE: 5000, DECAY_KM: 92, HINT_PENALTY: 500 };
 
+// BottomCard.jsx's round-to-round push transition (new site's pill slides
+// in from the left while the previous round's card slides out to the
+// right, as if pushed). BottomCard.css's bc-slide-in-left/bc-slide-out-right
+// keyframes hardcode this same 380ms -- CSS can't read a JS constant, so if
+// you change one, change both. JS also needs the number on its own, to know
+// when the departing card's DOM snapshot is safe to discard.
+export const CARD_SLIDE_MS = 380;
+
 export const DAILY = {
   CATEGORIES: ['np','wls','tr','br','ramsar'],
   COLLISION_KM: 50, TIMER_SECONDS: 120,
