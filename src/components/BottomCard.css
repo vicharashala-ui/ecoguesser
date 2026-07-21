@@ -10,7 +10,7 @@
 
 /* ---- Session-start pin-placement tip ------------------------------------ */
 /* Positioned the same way RecenterButton.css is: offset up from the nav bar
-   by the pill's known 128px max-height (.bottom-card.is-pill below) plus a
+   by the pill's known 144px max-height (.bottom-card.is-pill below) plus a
    small gap, since this only ever shows during the pre-guess pill state
    (never REVEALING), so that assumption always holds here. Text only -- no
    background/border/shadow shape -- so it reads as a caption floating just
@@ -22,7 +22,7 @@
   position: absolute;
   left: 16px;
   right: 16px;
-  bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 128px + 2px);
+  bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 144px + 2px);
   z-index: 26;
   text-align: center;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
@@ -138,8 +138,10 @@
   border-radius: 24px;
   /* Two-row pill (name row + actions row) -- was a fixed 64px single row,
      bumped to fit a 2-line wrapped name + the hint-state line below it.
+     144px (was 128px) accounts for bc-site-name's 20px font -- a 2-line
+     name plus the hint-state line no longer fits in 128 at that size.
      RecenterButton.css's default `bottom` offset assumes this exact value. */
-  max-height: 128px;
+  max-height: 144px;
 }
 
 .bottom-card.is-expanded {
@@ -197,7 +199,7 @@
 
 .bc-site-name {
   font-weight: 700;
-  font-size: 15px;
+  font-size: 20px; /* matches .bc-card-name -- same name, same size pre/post-guess */
   overflow-wrap: break-word;
   display: -webkit-box;
   -webkit-line-clamp: 2;

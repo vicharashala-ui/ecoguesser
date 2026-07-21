@@ -32,6 +32,13 @@ const FALLBACK_COLOR = '#16a34a';
 // override is given.
 const DEFAULT_FIT_PADDING = { top: 60, bottom: 260, left: 40, right: 40 };
 const RESULT_FIT_DURATION_MS = 1700;
+// zoomToSiteBoundary()'s own duration -- deliberately separate from
+// RESULT_FIT_DURATION_MS above (was sharing it) so retuning the "Boundary"
+// button's zoom doesn't also retune the automatic guess<->site reveal fit.
+// Slightly slower: fitting a boundary that's usually much tighter than the
+// current view is a bigger relative scale change, which read as a fast
+// snap even at the reveal fit's own duration.
+const BOUNDARY_ZOOM_DURATION_MS = 2600;
 // easeInOutCubic -- gentle acceleration/deceleration rather than MapLibre's
 // default easing, which reads as abrupt for a camera move this size.
 // Exported so ClassicMap.jsx/DailyMap.jsx can reuse the same curve for
@@ -365,7 +372,7 @@ export async function zoomToSiteBoundary(map, fitPadding = null) {
 
   map.fitBounds(boundaryBounds, {
     padding: fitPadding ?? DEFAULT_FIT_PADDING,
-    duration: RESULT_FIT_DURATION_MS,
+    duration: BOUNDARY_ZOOM_DURATION_MS,
     easing: RESULT_FIT_EASING,
     maxZoom: MAP_CONFIG.MAX_ZOOM,
   });

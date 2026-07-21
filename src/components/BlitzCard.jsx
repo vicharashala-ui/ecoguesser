@@ -188,7 +188,7 @@ const BlitzCard = forwardRef(function BlitzCard({
     return (
       <div className="bc-pill">
         <div className="bc-pill-top">
-          <span className="bc-icon" aria-hidden="true"><IconMark /></span>
+          <span className="bc-icon" aria-hidden="true"><IconMark size={30} /></span>
           <span className="bc-pill-text">
             <span id={ghost ? undefined : titleId} className="bc-site-name">{pillSite.name}</span>
           </span>
@@ -302,7 +302,7 @@ const BlitzCard = forwardRef(function BlitzCard({
       {outgoing && (
         <div
           key={outgoing.uid}
-          className="bottom-card bc-ghost"
+          className={`bottom-card bc-ghost ${outgoing.isCard ? 'is-expanded' : 'is-pill'}`}
           style={{ '--eg-accent': CATEGORY_META[outgoing.site.category].color }}
           inert
           aria-hidden="true"

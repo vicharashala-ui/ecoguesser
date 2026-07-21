@@ -17,6 +17,7 @@
 
 import { LAYER_IDS, CATEGORY_META } from '../config.js';
 import { fetchBoundary } from './boundaryCache.js';
+import { RESULT_FIT_EASING } from './resultLayer.js';
 
 const STATE_SOURCE_ID = 'india-states';
 // Boundary polygon color -- CATEGORY_META[site.category].color, same as
@@ -32,6 +33,11 @@ const FALLBACK_COLOR = '#16a34a'; // same fallback resultLayer.js uses for a mis
 // border-spanning sites). This constant only applies if a caller omits
 // fitPadding entirely.
 const BOUNDARY_FIT_PADDING = { top: 60, bottom: 260, left: 40, right: 40 };
+// Was a flat 1200ms with no easing (MapLibre's own default), which read as
+// an abrupt snap for this size of camera move. Same easeInOutCubic curve
+// resultLayer.js's zoomToSiteBoundary uses, for a consistent camera feel
+// between Blitz and Classic/Daily's own "Boundary" zoom.
+const BOUNDARY_ZOOM_DURATION_MS = 2100;
 
 let paintedStates = []; // st_nm values currently carrying a non-null status
 // Resolves once REVEALING's boundary fetch settles; null if the current
@@ -128,7 +134,13 @@ export async function zoomToBoundary(map, fitPadding = null) {
   const geo = await boundaryPromise;
   if (!geo || !map.getSource(LAYER_IDS.BLITZ_BOUNDARY)) return; // torn down mid-await
   const bounds = boundsOfGeoJSON(geo);
-  if (bounds) map.fitBounds(bounds, { padding: fitPadding ?? BOUNDARY_FIT_PADDING, duration: 1200 });
+  if (bounds) {
+    map.fitBounds(bounds, {
+      padding: fitPadding ?? BOUNDARY_FIT_PADDING,
+      duration: BOUNDARY_ZOOM_DURATION_MS,
+      easing: RESULT_FIT_EASING,
+    });
+  }
 }
 
 /** Call on LOADING (next site) so a stale boundary never survives into the next round. */
