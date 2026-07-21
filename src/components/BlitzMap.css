@@ -165,8 +165,8 @@
 }
 
 .bz-restore-badge.bz-restore-active {
-  color: #16a34a;
-  border-color: #16a34a;
+  color: #dc2626;
+  border-color: #dc2626;
 }
 
 /* Count pill -- tucked into the badge's own top-right corner (not
@@ -175,13 +175,13 @@
    never needs its own hidden/visible state. */
 .bz-restore-count {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  top: -9.5px;
+  right: -9.5px;
   min-width: 16px;
   height: 16px;
   padding: 0 3px;
   border-radius: 8px;
-  background: #16a34a;
+  background: #dc2626;
   color: #f8f6f1;
   font-size: 10px;
   font-weight: 800;
@@ -202,7 +202,7 @@
 
 @keyframes bz-restore-gained {
   0%   { transform: scale(1); box-shadow: 0 3px 8px rgba(17, 24, 39, 0.18); }
-  40%  { transform: scale(1.45); box-shadow: 0 0 0 7px rgba(22, 163, 74, 0.28), 0 3px 8px rgba(17, 24, 39, 0.18); }
+  40%  { transform: scale(1.45); box-shadow: 0 0 0 7px rgba(220, 38, 38, 0.28), 0 3px 8px rgba(17, 24, 39, 0.18); }
   100% { transform: scale(1); box-shadow: 0 3px 8px rgba(17, 24, 39, 0.18); }
 }
 
