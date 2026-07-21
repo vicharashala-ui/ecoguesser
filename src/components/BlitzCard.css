@@ -38,6 +38,14 @@
   flex-shrink: 0;
 }
 
+/* Ghost's badge is a fresh mount of a cue that already played on the live
+   card a moment ago -- replaying it here would read as a glitch on a card
+   that's already on its way out. Same reasoning as BottomCard.css's
+   `.bc-ghost .bc-hint-state, .bc-ghost .bc-score-perfect` rule. */
+.bc-ghost .bz-badge {
+  animation: none;
+}
+
 .bz-badge-correct {
   background: rgba(34, 197, 94, 0.14);
   color: #16a34a;

@@ -16,9 +16,17 @@
 // instead, visible across the whole round rather than just the reveal), and
 // the state name is only shown once -- skipped in the meta row on a wrong
 // guess since the badge below already names it ("Wrong -- it's in ...").
+//
+// Round-to-round push transition: same mechanism as BottomCard.jsx (see its
+// header comment, point 3) -- the live card keeps `key={site.id}` so
+// BottomCard.css's always-on bc-slide-in-left animation replays every
+// round, and Next Site/Skip snapshot the departing pill or card into local
+// `outgoing` state (beginExit()) so it can render as an inert ghost sibling
+// sliding out to the right, independent of how fast useBlitzRound.js clears
+// `result`/swaps in the next `site` afterward.
 
-import { useId, forwardRef } from 'react';
-import { CATEGORY_META } from '../config.js';
+import { useId, useState, useEffect, useRef, forwardRef } from 'react';
+import { CATEGORY_META, CARD_SLIDE_MS } from '../config.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import { STATE_ADJACENCY } from '../data/stateAdjacency.js';
 import './BottomCard.css';
@@ -138,115 +146,185 @@ const BlitzCard = forwardRef(function BlitzCard({
   const titleId = useId();
   const isRevealing = roundState === 'REVEALING';
   const meta = CATEGORY_META[site.category];
-  const closeCall = !!result && !result.isCorrect && isCloseCall(result.guessedState, result.correctStates);
 
-  return (
-    <div
-      ref={ref}
-      className={`bottom-card ${isRevealing ? 'is-expanded' : 'is-pill'}`}
-      style={{ '--eg-accent': meta.color }}
-      role="region"
-      aria-labelledby={titleId}
-    >
-      {!isRevealing && (
-        <div className="bc-pill">
-          <div className="bc-pill-top">
-            <span className="bc-icon" aria-hidden="true"><IconMark /></span>
-            <span className="bc-pill-text">
-              <span id={titleId} className="bc-site-name">{site.name}</span>
-            </span>
-          </div>
+  // ---- Round-to-round push transition -- mirrors BottomCard.jsx's
+  // outgoing/beginExit exactly (see that file's header comment, point 3,
+  // for the full rationale). `outgoing` freezes whatever was on screen the
+  // instant Next Site or Skip was clicked so it can keep animating out to
+  // the right on its own clock, independent of useBlitzRound.js's LOADING
+  // handoff clearing `result`/swapping `site` out from under it.
+  const [outgoing, setOutgoing] = useState(null);
+  const exitTimerRef = useRef(null);
 
-          <div className="bc-pill-actions">
-            {onSkip && (
-              <button
-                type="button"
-                className="bc-skip-btn"
-                onClick={onSkip}
-                aria-label="Skip this site"
-                title="Skip this site"
-              >
-                <IconSkip />
-              </button>
-            )}
+  useEffect(() => () => clearTimeout(exitTimerRef.current), []);
 
-            <button
-              type="button"
-              className="bc-hint-btn"
-              onClick={onHint}
-              aria-label="Hint - highlight the region"
-              title="Highlight the correct region"
-            >
-              <IconHint />
-            </button>
+  function beginExit() {
+    setOutgoing({
+      uid: `${site.id}-${Date.now()}`,
+      site,
+      selectedState,
+      result,
+      isCard: isRevealing,
+    });
+    clearTimeout(exitTimerRef.current);
+    exitTimerRef.current = setTimeout(() => setOutgoing(null), CARD_SLIDE_MS);
+  }
 
-            <button
-              type="button"
-              className="bc-confirm-btn"
-              onClick={onConfirm}
-              disabled={!selectedState}
-              aria-label="Confirm guess"
-            >
-              Confirm
-            </button>
-          </div>
+  function handleNextSiteClick() {
+    beginExit();
+    onNextSite();
+  }
+
+  function handleSkipClick() {
+    beginExit();
+    onSkip();
+  }
+
+  // Pill and card markup, factored out so the same JSX renders both the
+  // live, interactive card (current props) and the frozen ghost snapshot
+  // (outgoing's captured props) below. `ghost` only changes which node
+  // owns aria-labelledby's id -- a ghost mustn't duplicate the live card's.
+  function renderPillBody({ site: pillSite, selectedState: pillSelectedState, ghost }) {
+    return (
+      <div className="bc-pill">
+        <div className="bc-pill-top">
+          <span className="bc-icon" aria-hidden="true"><IconMark /></span>
+          <span className="bc-pill-text">
+            <span id={ghost ? undefined : titleId} className="bc-site-name">{pillSite.name}</span>
+          </span>
         </div>
-      )}
 
-      {isRevealing && result && (
-        <div className="bc-card bz-compact">
-          <div className="bc-card-header">
-            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
-            <span className="bc-category-label">{meta.label.toUpperCase()}</span>
-          </div>
-
-          <h2 id={titleId} className="bc-card-name">{site.name}</h2>
-
-          {(site.area_km2 != null || result.isCorrect) && (
-            <div className="bc-meta-row">
-              {site.area_km2 != null && (
-                <span className="bc-meta-item">{site.area_km2.toLocaleString()} km²</span>
-              )}
-              {/* Wrong guesses already name the state(s) in the badge below --
-                  only repeat it here when correct, so it isn't shown twice. */}
-              {result.isCorrect && (
-                <span className="bc-meta-item">State: {result.correctStates.join(', ')}</span>
-              )}
-            </div>
+        <div className="bc-pill-actions">
+          {onSkip && (
+            <button
+              type="button"
+              className="bc-skip-btn"
+              onClick={handleSkipClick}
+              aria-label="Skip this site"
+              title="Skip this site"
+            >
+              <IconSkip />
+            </button>
           )}
 
-          {/* Keyed on site.id so a new round always remounts it -- same
-              fresh-play-on-every-round convention as ConfettiBurst.jsx and
-              ScoreRemark.jsx -- ensuring the pop-in below replays even if
-              two consecutive rounds land on the same correct/wrong
-              outcome. */}
-          <div
-            key={site.id}
-            className={`bz-badge ${result.isCorrect ? 'bz-badge-correct' : closeCall ? 'bz-badge-wrong bz-badge-close' : 'bz-badge-wrong'}`}
+          <button
+            type="button"
+            className="bc-hint-btn"
+            onClick={onHint}
+            aria-label="Hint - highlight the region"
+            title="Highlight the correct region"
           >
-            {result.isCorrect ? <IconCheck /> : <IconCross />}
-            <span>
-              {result.isCorrect
-                ? 'Correct!'
-                : closeCall
-                  ? `So close! It's in ${result.correctStates.join(', ')} — right next door`
-                  : `Wrong — it's in ${result.correctStates.join(', ')}`}
-            </span>
-          </div>
+            <IconHint />
+          </button>
 
-          <div className="bc-actions">
-            {site.hasBoundary && (
-              <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
-                <IconFrame /> Site Boundary
-              </button>
+          <button
+            type="button"
+            className="bc-confirm-btn"
+            onClick={onConfirm}
+            disabled={!pillSelectedState}
+            aria-label="Confirm guess"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function renderCardBody({ site: cardSite, result: cardResult, ghost }) {
+    const cardMeta = CATEGORY_META[cardSite.category];
+    const cardCloseCall = !cardResult.isCorrect && isCloseCall(cardResult.guessedState, cardResult.correctStates);
+
+    return (
+      <div className="bc-card bz-compact">
+        <div className="bc-card-header">
+          <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
+          <span className="bc-category-label">{cardMeta.label.toUpperCase()}</span>
+        </div>
+
+        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{cardSite.name}</h2>
+
+        {(cardSite.area_km2 != null || cardResult.isCorrect) && (
+          <div className="bc-meta-row">
+            {cardSite.area_km2 != null && (
+              <span className="bc-meta-item">{cardSite.area_km2.toLocaleString()} km²</span>
             )}
-            <button type="button" className="bc-next-btn" onClick={onNextSite} aria-label="Next site">
-              Next Site
-            </button>
+            {/* Wrong guesses already name the state(s) in the badge below --
+                only repeat it here when correct, so it isn't shown twice. */}
+            {cardResult.isCorrect && (
+              <span className="bc-meta-item">State: {cardResult.correctStates.join(', ')}</span>
+            )}
           </div>
+        )}
+
+        {/* Keyed on site.id so a new round always remounts it -- same
+            fresh-play-on-every-round convention as ConfettiBurst.jsx and
+            ScoreRemark.jsx -- ensuring the pop-in below replays even if
+            two consecutive rounds land on the same correct/wrong
+            outcome. The departing ghost's copy of this same element is a
+            fresh mount too, so BlitzCard.css mutes its animation -- see
+            that file's `.bc-ghost .bz-badge` rule. */}
+        <div
+          key={cardSite.id}
+          className={`bz-badge ${cardResult.isCorrect ? 'bz-badge-correct' : cardCloseCall ? 'bz-badge-wrong bz-badge-close' : 'bz-badge-wrong'}`}
+        >
+          {cardResult.isCorrect ? <IconCheck /> : <IconCross />}
+          <span>
+            {cardResult.isCorrect
+              ? 'Correct!'
+              : cardCloseCall
+                ? `So close! It's in ${cardResult.correctStates.join(', ')} — right next door`
+                : `Wrong — it's in ${cardResult.correctStates.join(', ')}`}
+          </span>
+        </div>
+
+        <div className="bc-actions">
+          {cardSite.hasBoundary && (
+            <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
+              <IconFrame /> Site Boundary
+            </button>
+          )}
+          <button type="button" className="bc-next-btn" onClick={handleNextSiteClick} aria-label="Next site">
+            Next Site
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Departing round's frozen snapshot -- see beginExit() above for why
+          this has to be captured at click time rather than animated from
+          props. `inert` takes it out of the tab order and makes it
+          unclickable for the ~380ms it's still visible sliding away
+          (pointer-events:none in BottomCard.css backs this up). */}
+      {outgoing && (
+        <div
+          key={outgoing.uid}
+          className="bottom-card bc-ghost"
+          style={{ '--eg-accent': CATEGORY_META[outgoing.site.category].color }}
+          inert
+          aria-hidden="true"
+        >
+          {outgoing.isCard
+            ? renderCardBody({ site: outgoing.site, result: outgoing.result, ghost: true })
+            : renderPillBody({ site: outgoing.site, selectedState: outgoing.selectedState, ghost: true })}
         </div>
       )}
-    </div>
+
+      <div
+        ref={ref}
+        key={site.id}
+        className={`bottom-card ${isRevealing ? 'is-expanded' : 'is-pill'}`}
+        style={{ '--eg-accent': meta.color }}
+        role="region"
+        aria-labelledby={titleId}
+      >
+        {!isRevealing && renderPillBody({ site, selectedState, ghost: false })}
+        {isRevealing && result && renderCardBody({ site, result, ghost: false })}
+      </div>
+    </>
   );
 });
 
