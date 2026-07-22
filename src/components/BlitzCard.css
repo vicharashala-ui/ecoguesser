@@ -46,11 +46,6 @@
   animation: none;
 }
 
-.bz-badge-correct {
-  background: rgba(34, 197, 94, 0.14);
-  color: #16a34a;
-}
-
 .bz-badge-wrong {
   background: rgba(220, 38, 38, 0.1);
   color: #dc2626;

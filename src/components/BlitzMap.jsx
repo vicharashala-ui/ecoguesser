@@ -168,6 +168,14 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // Tracked during REVEALING so RecenterButton can sit above the expanded
   // card instead of being hidden by it.
   const [cardHeight, setCardHeight] = useState(null);
+  // Lifted out of BlitzCard (rather than local state) for the same reason
+  // as ClassicMap.jsx's collapsed -- BlitzCard.jsx's collapse toggle and
+  // this component's cardHeight re-measure need to agree on the same
+  // value; unlike Classic/Daily's useLayoutEffect, cardHeight here is kept
+  // in sync by the transitionend listener below, which already re-measures
+  // on any max-height transition (collapsing/expanding included) without
+  // needing collapsed as an explicit dependency.
+  const [collapsed, setCollapsed] = useState(false);
 
   // Drives the streak card's feedback animation: 'up' on a correct guess
   // (streak increases), 'break' when a guess resets a live streak back to
@@ -324,6 +332,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     const map = mapRef.current;
     if (!map || !mapReady) return;
     if (roundState === 'REVEALING' && result) {
+      setCollapsed(false); // a collapse from the last round shouldn't carry into this one
       showReveal(map, result.correctStates, result.guessedState, result.isCorrect, result.site);
       map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, { padding: MAP_CONFIG.FIT_PADDING, duration: 580, easing: RESULT_FIT_EASING });
     } else if (roundState === 'LOADING') {
@@ -570,6 +579,8 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
           onSkip={handleSkipClearingHint}
           onHint={handleHint}
           onShowBoundary={handleShowBoundary}
+          collapsed={collapsed}
+          onToggleCollapsed={setCollapsed}
         />
       )}
     </div>

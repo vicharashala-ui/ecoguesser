@@ -260,8 +260,9 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
   return (
     <div style={style} className="eg-daily-map">
       {/* Top-right stack: round timer, then the Terrain/Satellite squares
-          directly below it (Daily forces state borders on at all times via
-          useMapState, so there's no Borders toggle/panel to anchor here). */}
+          directly below it, stretch-aligned to the same width/right edge
+          (Daily forces state borders on at all times via useMapState, so
+          there's no Borders toggle/panel to anchor here). */}
       <div className="dm-top-right-stack">
         <div className="dm-timer-card">
           {(roundState === 'READING' || roundState === 'PLACING') && (
@@ -349,6 +350,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
       </div>
 
       {paused && <div className="dm-paused-overlay">Paused</div>}
+
 
       <MapContainer
         mapRef={mapRef}

@@ -16,16 +16,15 @@
 
 .dm-top-right-stack {
   position: absolute;
-  /* Pulled down below Header.jsx's title bar (+ safe-area inset) via the
-     shared --eg-header-height var. 18px (not 10px) because .dm-timer-card is
-     now the top item in the stack, so the pause button's -12px top overhang
-     (see .dm-pause-btn below) needs clearance above the stack itself, not
-     just above the timer card. */
-  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 18px);
-  /* 20px, not 10px -- the pause button sits 10px outside .dm-timer-card's own
-     right edge (see .dm-pause-btn below), so 10px of stack clearance put it
-     flush with the viewport edge, right where a scrollbar/safe-area can eat it. */
-  right: 20px;
+  /* Matches ClassicMap.css's .cm-top-right-stack exactly (top/right/gap),
+     and .cm-layer-panel/.dm-timer-card are now the same height too (see
+     .cm-layer-panel's comment) -- so .cm-mode-row/.dm-mode-row land at the
+     identical position below them in both tabs. .dm-pause-btn's overhang
+     was shrunk from -12px to -8px (see below) specifically so it fits
+     within this now-tighter 10px clearance instead of needing its own
+     extra 8/10px of headroom the way it used to. */
+  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
+  right: 10px;
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -113,10 +112,14 @@
 
 /* ---- Pause button -- sits in the timer card's top-right corner --------- */
 
+/* -8px (was -12px) -- .dm-top-right-stack's top/right clearance shrank from
+   18px/20px to 10px/10px (to match Classic's stack exactly, see its
+   comment), so this overhang had to shrink to match or it'd poke past the
+   header above and get clipped at the viewport edge on the right. */
 .dm-pause-btn {
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: -8px;
+  right: -8px;
   width: 42px;
   height: 42px;
   border-radius: 50%;

@@ -93,16 +93,33 @@ function IconSkip({ size = 18 }) {
   );
 }
 
-// Badge icons -- correct/wrong prefix glyphs, same inline-SVG convention as
-// every icon above.
-function IconCheck({ size = 16 }) {
+// Single chevron, rotated via CSS (.bc-collapse-toggle.is-collapsed) rather
+// than swapped for a separate "up" glyph -- same icon/technique as
+// BottomCard.jsx's own copy of this icon.
+function IconChevronDown({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
+// Same icon BottomCard.jsx's own .bc-state-name uses, duplicated here per
+// this codebase's no-shared-icon-module convention.
+function IconPin({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12Z"
+        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
+      />
+      <circle cx="12" cy="9" r="2.4" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+// Wrong-guess badge's prefix glyph, same inline-SVG convention as every
+// icon above.
 function IconCross({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -125,6 +142,10 @@ function IconCross({ size = 16 }) {
  *   there's no hint counter or penalty in Blitz.
  * @param {() => void} onShowBoundary - zooms in tight on site.hasBoundary's
  *   polygon, already auto-drawn on reveal. Button only renders when site.hasBoundary is true.
+ * @param {boolean} collapsed - owned by the parent (not local state) so it
+ *   can drive RecenterButton's position in the same layout pass -- same
+ *   contract as BottomCard.jsx's collapsed prop; see its doc comment.
+ * @param {(collapsed: boolean) => void} onToggleCollapsed
  * @param {React.Ref<HTMLDivElement>} ref - forwarded to the outer `.bottom-card` div so
  *   BlitzMap.jsx can measure its real rendered height -- the expanded card's
  *   height varies with content (correctStates can list more than one state
@@ -142,6 +163,8 @@ const BlitzCard = forwardRef(function BlitzCard({
   onSkip,
   onHint,
   onShowBoundary,
+  collapsed,
+  onToggleCollapsed,
 }, ref) {
   const titleId = useId();
   const isRevealing = roundState === 'REVEALING';
@@ -164,6 +187,7 @@ const BlitzCard = forwardRef(function BlitzCard({
       site,
       selectedState,
       result,
+      collapsed,
       isCard: isRevealing,
     });
     clearTimeout(exitTimerRef.current);
@@ -231,63 +255,77 @@ const BlitzCard = forwardRef(function BlitzCard({
     );
   }
 
-  function renderCardBody({ site: cardSite, result: cardResult, ghost }) {
+  function renderCardBody({ site: cardSite, result: cardResult, collapsed: cardCollapsed, ghost }) {
     const cardMeta = CATEGORY_META[cardSite.category];
     const cardCloseCall = !cardResult.isCorrect && isCloseCall(cardResult.guessedState, cardResult.correctStates);
 
     return (
       <div className="bc-card bz-compact">
-        <div className="bc-card-header">
-          <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
-          <span className="bc-category-label">{cardMeta.label.toUpperCase()}</span>
-        </div>
+        <button
+          type="button"
+          className={`bc-collapse-toggle ${cardCollapsed ? 'is-collapsed' : ''}`}
+          onClick={() => onToggleCollapsed(!cardCollapsed)}
+          aria-label={cardCollapsed ? 'Expand details' : 'Collapse details'}
+          title={cardCollapsed ? 'Expand details' : 'Collapse details'}
+        >
+          <IconChevronDown />
+        </button>
 
-        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{cardSite.name}</h2>
-
-        {(cardSite.area_km2 != null || cardResult.isCorrect) && (
-          <div className="bc-meta-row">
-            {cardSite.area_km2 != null && (
-              <span className="bc-meta-item">{cardSite.area_km2.toLocaleString()} km²</span>
-            )}
-            {/* Wrong guesses already name the state(s) in the badge below --
-                only repeat it here when correct, so it isn't shown twice. */}
-            {cardResult.isCorrect && (
-              <span className="bc-meta-item">State: {cardResult.correctStates.join(', ')}</span>
-            )}
+        {!cardCollapsed && (
+          <div className="bc-card-header">
+            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
+            <span className="bc-category-label">{cardMeta.label.toUpperCase()}</span>
           </div>
         )}
 
-        {/* Keyed on site.id so a new round always remounts it -- same
-            fresh-play-on-every-round convention as ConfettiBurst.jsx and
-            ScoreRemark.jsx -- ensuring the pop-in below replays even if
-            two consecutive rounds land on the same correct/wrong
-            outcome. The departing ghost's copy of this same element is a
-            fresh mount too, so BlitzCard.css mutes its animation -- see
-            that file's `.bc-ghost .bz-badge` rule. */}
-        <div
-          key={cardSite.id}
-          className={`bz-badge ${cardResult.isCorrect ? 'bz-badge-correct' : cardCloseCall ? 'bz-badge-wrong bz-badge-close' : 'bz-badge-wrong'}`}
-        >
-          {cardResult.isCorrect ? <IconCheck /> : <IconCross />}
-          <span>
-            {cardResult.isCorrect
-              ? 'Correct!'
-              : cardCloseCall
+        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{cardSite.name}</h2>
+
+        {!cardCollapsed && cardSite.area_km2 != null && (
+          <div className="bc-meta-row">
+            <span className="bc-meta-item">{cardSite.area_km2.toLocaleString()} km²</span>
+          </div>
+        )}
+
+        {/* Correct: just the state name, same accent-colored/pin-icon
+            treatment Classic/Daily's own .bc-state-name uses -- no colored
+            box, since there's no "right vs wrong" to signal here beyond
+            what the pill's outcome already conveyed a moment ago. Wrong:
+            unchanged -- .bz-badge's colored box, keyed on site.id so a new
+            round always remounts it (see prior comment history for why:
+            same fresh-play-on-every-round convention as ConfettiBurst.jsx
+            and ScoreRemark.jsx). Both stay visible while collapsed (unlike
+            the header/meta-row/actions above/below) -- this is the one
+            line that answers "where", collapsed or not. */}
+        {cardResult.isCorrect ? (
+          <span className="bc-meta-item bc-state-name">
+            <IconPin size={15} /> {cardResult.correctStates.join(', ')}
+          </span>
+        ) : (
+          <div
+            key={cardSite.id}
+            className={`bz-badge bz-badge-wrong${cardCloseCall ? ' bz-badge-close' : ''}`}
+          >
+            <IconCross />
+            <span>
+              {cardCloseCall
                 ? `So close! It's in ${cardResult.correctStates.join(', ')} — right next door`
                 : `Wrong — it's in ${cardResult.correctStates.join(', ')}`}
-          </span>
-        </div>
+            </span>
+          </div>
+        )}
 
-        <div className="bc-actions">
-          {cardSite.hasBoundary && (
-            <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
-              <IconFrame /> Site Boundary
+        {!cardCollapsed && (
+          <div className="bc-actions">
+            {cardSite.hasBoundary && (
+              <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
+                <IconFrame /> Site Boundary
+              </button>
+            )}
+            <button type="button" className="bc-next-btn" onClick={handleNextSiteClick} aria-label="Next site">
+              Next Site
             </button>
-          )}
-          <button type="button" className="bc-next-btn" onClick={handleNextSiteClick} aria-label="Next site">
-            Next Site
-          </button>
-        </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -302,13 +340,13 @@ const BlitzCard = forwardRef(function BlitzCard({
       {outgoing && (
         <div
           key={outgoing.uid}
-          className={`bottom-card bc-ghost ${outgoing.isCard ? 'is-expanded' : 'is-pill'}`}
+          className={`bottom-card bc-ghost ${outgoing.isCard ? `is-expanded ${outgoing.collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
           style={{ '--eg-accent': CATEGORY_META[outgoing.site.category].color }}
           inert
           aria-hidden="true"
         >
           {outgoing.isCard
-            ? renderCardBody({ site: outgoing.site, result: outgoing.result, ghost: true })
+            ? renderCardBody({ site: outgoing.site, result: outgoing.result, collapsed: outgoing.collapsed, ghost: true })
             : renderPillBody({ site: outgoing.site, selectedState: outgoing.selectedState, ghost: true })}
         </div>
       )}
@@ -316,13 +354,13 @@ const BlitzCard = forwardRef(function BlitzCard({
       <div
         ref={ref}
         key={site.id}
-        className={`bottom-card ${isRevealing ? 'is-expanded' : 'is-pill'}`}
+        className={`bottom-card ${isRevealing ? `is-expanded ${collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
         style={{ '--eg-accent': meta.color }}
         role="region"
         aria-labelledby={titleId}
       >
         {!isRevealing && renderPillBody({ site, selectedState, ghost: false })}
-        {isRevealing && result && renderCardBody({ site, result, ghost: false })}
+        {isRevealing && result && renderCardBody({ site, result, collapsed, ghost: false })}
       </div>
     </>
   );
