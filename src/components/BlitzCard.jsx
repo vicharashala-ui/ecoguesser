@@ -128,6 +128,22 @@ function IconCross({ size = 16 }) {
   );
 }
 
+// Close-call badge's glyph -- the same pin shape IconPin uses above, ringed
+// with a dashed "just outside the radius" halo, standing in for the plain
+// cross this badge used to share with a flat "Wrong" a moment ago.
+function IconNearMiss({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="10.4" stroke="currentColor" strokeWidth="1.3" strokeDasharray="2.4 3" opacity="0.55" />
+      <path
+        d="M12 19s5-5.1 5-8.6a5 5 0 1 0-10 0c0 3.5 5 8.6 5 8.6Z"
+        stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
+      />
+      <circle cx="12" cy="10.4" r="1.7" fill="currentColor" />
+    </svg>
+  );
+}
+
 /**
  * @param {'LOADING'|'READING'|'SELECTING'|'REVEALING'} roundState
  * @param {import('../config').Site} site
@@ -305,12 +321,20 @@ const BlitzCard = forwardRef(function BlitzCard({
             key={cardSite.id}
             className={`bz-badge bz-badge-wrong${cardCloseCall ? ' bz-badge-close' : ''}`}
           >
-            <IconCross />
-            <span>
-              {cardCloseCall
-                ? `So close! It's in ${cardResult.correctStates.join(', ')} — right next door`
-                : `Wrong — it's in ${cardResult.correctStates.join(', ')}`}
-            </span>
+            {cardCloseCall ? (
+              <>
+                <span className="bz-badge-icon"><IconNearMiss /></span>
+                <span className="bz-badge-text">
+                  <span className="bz-badge-headline">One State Away</span>
+                  <span className="bz-badge-sub">It's in {cardResult.correctStates.join(', ')}</span>
+                </span>
+              </>
+            ) : (
+              <>
+                <IconCross />
+                <span>Wrong — it's in {cardResult.correctStates.join(', ')}</span>
+              </>
+            )}
           </div>
         )}
 

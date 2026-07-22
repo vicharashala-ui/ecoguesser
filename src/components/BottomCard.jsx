@@ -240,6 +240,27 @@ const BottomCard = forwardRef(function BottomCard({
   // boundary hit that got docked below 5000.
   const isPerfect = isRevealing && result && result.finalScore === SCORING.MAX_SCORE;
 
+  // isPerfect stays true for as long as the player sits on this REVEALING
+  // result (i.e. until Next Site), but Classic/DailyMap never unmount on
+  // tab switch -- App.jsx only toggles display:none/block. A CSS animation
+  // frozen mid-flight by an ancestor's display:none restarts from 0% the
+  // moment display flips back to block, so tying ConfettiBurst directly to
+  // isPerfect replayed the whole star burst every time the player reopened
+  // a tab where their last (still-unadvanced) guess happened to be perfect.
+  // Mirrors MilestoneToast's self-dismiss pattern: render it for exactly as
+  // long as its own animation actually runs (2600ms max piece duration,
+  // see ConfettiBurst.jsx's PIECES_PER_SIDE loop), then drop it from the
+  // tree so there's nothing left for a later display toggle to replay.
+  const CONFETTI_DISPLAY_MS = 2700;
+  const [confettiSiteId, setConfettiSiteId] = useState(null);
+  const confettiTimerRef = useRef(null);
+  useEffect(() => {
+    if (!isPerfect) return undefined;
+    setConfettiSiteId(site.id);
+    confettiTimerRef.current = setTimeout(() => setConfettiSiteId(null), CONFETTI_DISPLAY_MS);
+    return () => clearTimeout(confettiTimerRef.current);
+  }, [isPerfect, site.id]);
+
   // ---- Round-to-round push transition --------------------------------
   // `outgoing` holds a frozen snapshot of whatever was on screen the
   // instant Next Site or Skip was clicked -- the departing pill or card,
@@ -479,7 +500,7 @@ const BottomCard = forwardRef(function BottomCard({
           .bottom-card has overflow:hidden, which would clip a full-screen
           effect. ScoreRemark does its own REVEALING/result gating and
           site.id keying internally (see ScoreRemark.jsx). */}
-      {isPerfect && <ConfettiBurst key={site.id} />}
+      {confettiSiteId === site.id && <ConfettiBurst key={site.id} />}
       <ScoreRemark roundState={roundState} result={result} />
 
       {/* Departing round's frozen snapshot -- see beginExit() above for why
