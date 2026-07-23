@@ -1,14 +1,23 @@
 /* src/components/Leaderboard.css */
 /* Solid background, scrollable full screen -- same non-backdrop-filter
-   reasoning as DailySummary.css (DailyMap is display:none underneath). */
+   reasoning as DailySummary.css (DailyMap is display:none underneath).
+
+   position: absolute, not fixed -- this screen was missed by the earlier
+   position:fixed sweep (BottomCard.css has the authoritative writeup): the
+   App root is `position: relative; width: 100vw; height: 100vh` and this
+   renders as its direct child (see App.jsx), so absolute resolves to the
+   identical box fixed would. This element has no transform of its own, so
+   this doesn't change the containing block for .lb-recap-wrap's own
+   position:fixed below -- that one stays untouched; its choreography (see
+   closeRecap in Leaderboard.jsx) is a separate, more delicate concern. */
 
 .lb-screen {
-  position: fixed;
+  position: absolute;
   inset: 0;
   bottom: var(--eg-nav-height, 64px);
-  z-index: 20;
+  z-index: var(--eg-z-overlay, 20);
   overflow-y: auto;
-  background: #f8f6f1;
+  background: var(--eg-cream, #f8f6f1);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px));
   display: flex;
@@ -29,12 +38,12 @@
   margin: 0;
   font-size: 20px;
   font-weight: 800;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 .lb-date {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 .lb-next-daily {
@@ -89,8 +98,8 @@
   gap: 6px;
   padding: 9px 4px;
   font-size: 14px;
-  color: #111827;
-  border-bottom: 1px solid #e5e7eb;
+  color: var(--eg-ink, #111827);
+  border-bottom: 1px solid var(--eg-border, #e5e7eb);
   /* backwards fill so each row stays at the 0% keyframe (invisible) during
      its own animation-delay instead of flashing full-opacity content before
      its turn -- delay itself is set inline per-row in Leaderboard.jsx
@@ -109,7 +118,7 @@
   font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 0.05em;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
   text-transform: uppercase;
   border-bottom: 1px solid #d1d5db;
 }
@@ -138,7 +147,7 @@
 
 .lb-empty {
   text-align: center;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
   font-size: 13.5px;
   padding: 20px 0;
 }
@@ -147,7 +156,7 @@
   width: 100%;
   max-width: 420px;
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--eg-border, #e5e7eb);
   margin: 14px 0 10px;
 }
 
@@ -156,14 +165,14 @@
   max-width: 420px;
   margin: 2px 0;
   font-size: 13.5px;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 .lb-row-you {
   border-radius: 8px;
-  outline: 2px solid #16a34a;
+  outline: 2px solid var(--eg-brand, #227743);
   outline-offset: -1px;
-  background: rgba(22, 163, 74, 0.06);
+  background: rgba(34, 119, 67, 0.06);
   /* Overrides only animation-name/duration -- timing-function (ease-out)
      and fill-mode (backwards) still come from .lb-row above, since this
      rule doesn't redeclare them. Same inline animation-delay from
@@ -177,15 +186,21 @@
 }
 
 @keyframes lb-row-you-in {
-  0%   { opacity: 0; transform: translateY(6px); background-color: rgba(22, 163, 74, 0.06); }
+  0%   { opacity: 0; transform: translateY(6px); background-color: rgba(34, 119, 67, 0.06); }
   35%  { opacity: 1; transform: translateY(0); }
-  55%  { background-color: rgba(22, 163, 74, 0.32); }
-  100% { background-color: rgba(22, 163, 74, 0.06); }
+  55%  { background-color: rgba(34, 119, 67, 0.32); }
+  100% { background-color: rgba(34, 119, 67, 0.06); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .lb-row {
     animation: none;
+  }
+
+  .lb-share-btn,
+  .lb-classic-btn,
+  .lb-blitz-btn {
+    transition: none;
   }
 }
 
@@ -202,11 +217,18 @@
 .lb-blitz-btn {
   flex: 1;
   height: 44px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   border: none;
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.lb-share-btn:active:not(:disabled),
+.lb-classic-btn:active,
+.lb-blitz-btn:active {
+  transform: scale(0.96);
 }
 
 /* Same handleShare as the recap modal's Share button (shares/downloads
@@ -228,7 +250,7 @@
 }
 
 .lb-classic-btn {
-  background: #16a34a;
+  background: var(--eg-brand, #227743);
   color: #fff;
 }
 
@@ -264,7 +286,7 @@
 .lb-recap-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 49; /* just below .lb-recap-wrap-open's 50, so the card renders
+  z-index: var(--eg-z-recap-card, 49); /* just below .lb-recap-wrap-open's 50, so the card renders
                   on top of it */
   background: rgba(15, 23, 42, 0.6);
   cursor: pointer;
@@ -287,7 +309,7 @@
   position: fixed;
   inset: 0;
   /* Was relying on z-index:50 to render above BottomNav's z-index:40, but
-     .lb-screen (this element's own parent) is itself position:fixed with
+     .lb-screen (this element's own parent) is itself position:absolute with
      z-index:20, which creates a stacking context of its own -- so nothing
      inside it, this element included, can ever out-stack BottomNav (which
      also isolates itself via `isolation: isolate`). The row only looked
@@ -296,7 +318,7 @@
      here, the same way .lb-screen already does, guarantees real clearance
      instead of depending on that coincidence. */
   bottom: var(--eg-nav-height, 64px);
-  z-index: 50;
+  z-index: var(--eg-z-recap-card-open, 50);
   max-width: none;
   display: flex;
   justify-content: center;
@@ -387,7 +409,7 @@
 
 .lb-recap-close-btn {
   background: rgba(255, 255, 255, 0.92);
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 @keyframes lb-recap-fade-in {

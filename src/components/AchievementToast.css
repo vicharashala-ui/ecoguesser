@@ -12,7 +12,7 @@
   left: 50%;
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 78px);
   transform: translateX(-50%);
-  z-index: 47;
+  z-index: var(--eg-z-toast-achievement, 47);
   display: flex;
   align-items: center;
   gap: 12px;

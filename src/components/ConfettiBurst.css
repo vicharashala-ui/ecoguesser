@@ -13,7 +13,7 @@
      (55), NamePromptModal (60), InfoModal (65), SideDrawer (80) -- so a
      perfect guess landing right as a modal opens never visually competes
      with it. */
-  z-index: 45;
+  z-index: var(--eg-z-effects, 45);
 }
 
 /* 5-point star, drawn with clip-path rather than an SVG/icon asset so size

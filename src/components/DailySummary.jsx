@@ -20,6 +20,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import NamePromptModal from './NamePromptModal.jsx';
+import BrandSpinner from './BrandSpinner.jsx';
+import AnimatedScore from './AnimatedScore.jsx';
 import { LS_KEYS, SCORING, DAILY } from '../config.js';
 import { getTodayString } from '../game/daily.js';
 import { postScore, getLeaderboard } from '../game/api.js';
@@ -87,13 +89,13 @@ export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassi
   return (
     <div className="ds-screen">
       <div className="ds-total">
-        {totalPts.toLocaleString()} <span>/ {DAILY_MAX_TOTAL.toLocaleString()}</span>
+        <AnimatedScore value={totalPts} /> <span>/ {DAILY_MAX_TOTAL.toLocaleString()}</span>
       </div>
       <p className="ds-label">Today's Score</p>
 
       {phase === 'submitting' && (
         <>
-          <div className="eg-spinner" />
+          <BrandSpinner />
           <p className="ds-status">Submitting your score…</p>
         </>
       )}

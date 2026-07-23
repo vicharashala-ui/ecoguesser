@@ -11,7 +11,7 @@
   left: 50%;
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 14px);
   transform: translateX(-50%);
-  z-index: 46;
+  z-index: var(--eg-z-toast-milestone, 46);
   max-width: min(360px, calc(100vw - 24px));
   padding: 14px 28px;
   border-radius: 999px;

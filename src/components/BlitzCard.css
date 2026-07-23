@@ -48,7 +48,7 @@
 
 .bz-badge-wrong {
   background: rgba(220, 38, 38, 0.1);
-  color: #dc2626;
+  color: var(--eg-danger, #dc2626);
   /* Overrides .bz-badge's pop above -- a bounce reads as "yay", which is
      the wrong feeling for a miss. Same equal-specificity/later-in-source
      override the reduced-motion block below already relies on to disable

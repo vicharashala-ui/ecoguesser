@@ -22,7 +22,7 @@
 }
 
 .sv-screen {
-  position: fixed;
+  position: absolute;
   inset: 0;
   bottom: var(--eg-nav-height, 64px);
   /* Below Header's z-index:15 (Header.css), not above it like
@@ -30,8 +30,14 @@
      stay reachable while on the Stats tab. Header's own container has
      pointer-events:none outside its button, so this screen's content is
      still fully interactive everywhere except the header's own title bar
-     height. */
-  z-index: 12;
+     height.
+
+     position: absolute, not fixed -- this screen was missed by the earlier
+     position:fixed sweep (BottomCard.css has the authoritative writeup):
+     the App root is `position: relative; width: 100vw; height: 100vh` and
+     this renders as its direct child (see App.jsx), so absolute resolves
+     to the identical box fixed would. */
+  z-index: var(--eg-z-stats-header, 12);
   overflow-y: auto;
   /* Defensive backstop, not the primary fix -- the actual bug both times
      (.sv-ach-summary previously, .sv-subtabs just now) was a child element
@@ -40,7 +46,7 @@
      Fix the child when it happens; this just stops it from being a
      visible horizontal scrollbar in the meantime if it recurs again. */
   overflow-x: hidden;
-  background: #f8f6f1;
+  background: var(--eg-cream, #f8f6f1);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   /* Clears Header's height (+ safe-area-inset-top) via the shared
      --eg-header-height var, so the daily leaderboard/summary content never
@@ -65,7 +71,7 @@
   margin: 0 0 16px;
   font-size: 20px;
   font-weight: 800;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 /* Segmented control -- a sliding indicator (position/color driven by
@@ -79,9 +85,9 @@
   display: flex;
   padding: 4px;
   margin-bottom: 20px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--eg-border, #e5e7eb);
 }
 
 /* Width/left math: content area is 100% minus the container's 4px+4px
@@ -100,12 +106,12 @@
 
 .sv-subtab {
   position: relative;
-  z-index: 1;
+  z-index: var(--eg-z-local, 1);
   flex: 1;
   height: 36px;
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
   font-weight: 700;
   font-size: 13.5px;
   cursor: pointer;
@@ -125,7 +131,7 @@
 .sv-empty {
   text-align: center;
   padding: 40px 10px;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 .sv-empty-icon {
@@ -167,31 +173,35 @@
   align-items: center;
   gap: 2px;
   padding: 12px 8px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   background: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  /* Shadow-as-border (design-audit-fixes.md, "Also flagged" section) -- was
+     a separate `border: 1px solid #e5e7eb` stacked on top of this same
+     box-shadow; folded into one ring layer here instead (rgba(17,24,39,
+     0.06) reads at essentially the same visual weight as the old solid
+     border color). */
+  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
   text-align: center;
 }
 
 .sv-stat-value {
   font-size: 18px;
   font-weight: 800;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 .sv-stat-label {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
   text-transform: uppercase;
 }
 
-/* Icon chip on each StatCard (StatsView.jsx) -- fixed green tint regardless
-   of section, since .sv-stat cards appear on Daily/Classic/Blitz where the
-   per-section accent (item 7) isn't relevant to individual metric tiles,
-   only to section-level headings/empty-states. */
+/* Icon chip on each StatCard (StatsView.jsx) -- fixed brand-tinted chip
+   regardless of section, since .sv-stat cards appear on Daily/Classic/Blitz
+   where the per-section accent (item 7) isn't relevant to individual metric
+   tiles, only to section-level headings/empty-states. */
 .sv-stat-icon {
   width: 26px;
   height: 26px;
@@ -200,8 +210,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f0fdf4;
-  color: #16a34a;
+  background: #f1fbf5;
+  color: var(--eg-brand, #227743);
 }
 
 /* Small tinted pill instead of plain gray caps text -- color comes from
@@ -246,10 +256,10 @@
   height: 168px;
   padding: 16px 8px 0;
   margin-bottom: 18px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   background: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  /* Shadow-as-border, same as .sv-stat above. */
+  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 }
 
 .sv-hist-col {
@@ -266,7 +276,7 @@
   font-size: 12px;
   font-weight: 800;
   line-height: 1;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 /* Zero-count buckets still show their "0" (so the axis stays complete/
@@ -289,12 +299,12 @@
   width: 100%;
   border-radius: 7px 7px 3px 3px;
   /* Solid fill, not a gradient -- a light-to-dark gradient here washed out
-     the color. Same shared green for every histogram (Daily's score
+     the color. Same shared brand green for every histogram (Daily's score
      distribution, Classic's/Blitz's "by category") -- no per-category
      tinting. The thin inset highlight gives a bit of polish without
      diluting the color. */
-  background: #16a34a;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 6px rgba(22, 163, 74, 0.35);
+  background: var(--eg-brand, #227743);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 6px rgba(34, 119, 67, 0.35);
   transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -312,7 +322,7 @@
   margin-top: 8px;
   font-size: 10.5px;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
   text-align: center;
   line-height: 1.25;
   min-height: 2.5em;
@@ -342,10 +352,10 @@
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: var(--eg-radius-md, 14px);
   background: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  /* Shadow-as-border, same as .sv-stat above. */
+  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 }
 
 .sv-cat-dot {
@@ -366,36 +376,37 @@
 .sv-cat-score {
   font-size: 13.5px;
   font-weight: 800;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 .sv-footer-row {
   display: flex;
   justify-content: space-between;
   padding: 12px 4px 0;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--eg-border, #e5e7eb);
   font-size: 13px;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 /* -------------------------------------------------------------------------
    Awards sub-tab (StatsView.jsx's AchievementsSection/AchievementBadge).
    Reuses the same card/heading language as the other three sub-tabs (white
-   card, #e5e7eb border, 14px radius, #16a34a green for anything "earned")
-   rather than introducing a new accent color per mode -- the app's palette
-   otherwise only uses green for success/positive and amber (#f59e0b) for
-   "currently active", not a per-mode hue, so a badge's own icon shape does
-   the job of distinguishing Daily/Classic/Blitz/Overall instead. */
+   card, shadow-as-border ring, 14px radius, --eg-brand for anything
+   "earned") rather than introducing a new accent color per mode -- the
+   app's palette otherwise only uses green for success/positive and amber
+   (#f59e0b) for "currently active", not a per-mode hue, so a badge's own
+   icon shape does the job of distinguishing Daily/Classic/Blitz/Overall
+   instead. */
 
 .sv-ach-summary {
   width: 100%;
   padding: 14px 14px 16px;
   margin-bottom: 20px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   background: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  /* Shadow-as-border, same as .sv-stat above. */
+  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 }
 
 .sv-ach-summary-top {
@@ -408,7 +419,7 @@
 .sv-ach-summary-count {
   font-size: 18px;
   font-weight: 800;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 .sv-ach-summary-label {
@@ -416,7 +427,7 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 .sv-ach-summary-track {
@@ -429,7 +440,7 @@
 .sv-ach-summary-fill {
   height: 100%;
   border-radius: 999px;
-  background: #16a34a;
+  background: var(--eg-brand, #227743);
   transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -447,10 +458,10 @@
   display: flex;
   gap: 12px;
   padding: 12px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   background: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  /* Shadow-as-border, same as .sv-stat above. */
+  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
   opacity: 0.6;
 }
 
@@ -460,15 +471,15 @@
    moment), so it shouldn't be showy on repeat visits. */
 .sv-ach-badge-unlocked {
   opacity: 1;
-  background: #f0fdf4;
-  border-color: #bbf7d0;
+  background: #f1fbf5;
+  box-shadow: 0 0 0 1px #c8efd7, 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
   animation: sv-ach-unlock-pop 0.45s ease;
 }
 
 @keyframes sv-ach-unlock-pop {
-  0% { transform: scale(0.94); box-shadow: 0 0 0 rgba(22, 163, 74, 0); }
-  55% { transform: scale(1.02); box-shadow: 0 0 14px rgba(22, 163, 74, 0.3); }
-  100% { transform: scale(1); box-shadow: 0 0 0 rgba(22, 163, 74, 0); }
+  0% { transform: scale(0.94); box-shadow: 0 0 0 rgba(34, 119, 67, 0); }
+  55% { transform: scale(1.02); box-shadow: 0 0 14px rgba(34, 119, 67, 0.3); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(34, 119, 67, 0); }
 }
 
 .sv-ach-icon {
@@ -484,8 +495,8 @@
 }
 
 .sv-ach-badge-unlocked .sv-ach-icon {
-  background: #dcfce7;
-  color: #16a34a;
+  background: #daf6e5;
+  color: var(--eg-brand, #227743);
 }
 
 .sv-ach-body {
@@ -505,19 +516,19 @@
 .sv-ach-title {
   font-size: 13.5px;
   font-weight: 800;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 .sv-ach-check {
   font-size: 12px;
   font-weight: 800;
-  color: #16a34a;
+  color: var(--eg-brand, #227743);
 }
 
 .sv-ach-desc {
   font-size: 11.5px;
   line-height: 1.35;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 .sv-ach-progress-track {
@@ -531,7 +542,7 @@
 .sv-ach-progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: #16a34a;
+  background: var(--eg-brand, #227743);
   transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 

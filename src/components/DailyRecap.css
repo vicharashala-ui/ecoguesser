@@ -123,7 +123,13 @@
 }
 
 .dr-tagline-word {
-  color: #16a34a;
+  /* Literal hex, not var(--eg-brand) -- this file avoids CSS custom
+     properties throughout since it's captured via html-to-image for
+     sharing/download, and unlike the SVG-descendant class quirk already
+     documented here, var() resolution through that capture pipeline hasn't
+     been verified, so this stays consistent with the rest of the file
+     rather than being the one exception. */
+  color: #227743;
 }
 
 .dr-tagline-dot {
@@ -265,7 +271,7 @@
 }
 
 .dr-stats-icon--score {
-  background: #16a34a;
+  background: #227743;
 }
 
 .dr-stats-icon--distance {
@@ -280,7 +286,7 @@
 
 .dr-stats-box--score .dr-stats-value,
 .dr-stats-box--score .dr-stats-unit {
-  color: #16a34a;
+  color: #227743;
 }
 
 .dr-stats-box--distance .dr-stats-value,

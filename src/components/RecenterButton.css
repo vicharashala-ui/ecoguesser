@@ -21,10 +21,10 @@
   position: absolute;
   left: 16px;
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 144px + 12px);
-  z-index: 25;
+  z-index: var(--eg-z-recenter, 25);
   width: 44px;
   height: 44px;
-  border-radius: 999px;
+  border-radius: var(--eg-radius-pill, 999px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   background: rgba(248, 246, 241, 0.92);
   backdrop-filter: blur(16px) saturate(140%);
@@ -32,7 +32,7 @@
   isolation: isolate;
   transform: translateZ(0);
   box-shadow: 0 4px 14px rgba(17, 24, 39, 0.14);
-  color: #111827;
+  color: var(--eg-ink, #111827);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,11 +41,11 @@
 }
 
 .eg-recenter-btn:hover {
-  color: #16a34a;
+  color: var(--eg-brand, #227743);
 }
 
 .eg-recenter-btn:active {
-  transform: scale(0.94);
+  transform: scale(0.96);
 }
 
 .eg-recenter-btn:disabled {

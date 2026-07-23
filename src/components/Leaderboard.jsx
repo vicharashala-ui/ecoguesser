@@ -41,6 +41,7 @@ import { loadDailyStats, bestDailyScore } from '../game/stats.js';
 // this (already lazy) chunk for the common case of just checking rank.
 import DailyRecap from './DailyRecap.jsx';
 import ConfettiBurst from './ConfettiBurst.jsx';
+import BrandSpinner from './BrandSpinner.jsx';
 import { soundCelebrate } from '../utils/sound.js';
 import './Leaderboard.css';
 
@@ -224,6 +225,22 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
     }, 220);
   };
 
+  // Escape-to-close (design-audit-fixes.md #9) -- same pattern InfoModal.jsx
+  // already uses. closeRecap itself already no-ops mid-share/mid-close, so
+  // this doesn't need its own guard beyond `recapOpen`. Not memoized with
+  // useCallback, so this re-attaches on every render while recapOpen is
+  // true -- correctness (always reading the latest sharing/recapClosing via
+  // closure) over a micro-optimization here, since this only runs while a
+  // single modal is open.
+  useEffect(() => {
+    if (!recapOpen) return;
+    function onKeyDown(e) {
+      if (e.key === 'Escape') closeRecap();
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [recapOpen, closeRecap]);
+
   const handleShare = async () => {
     if (sharing) return;
     setSharing(true);
@@ -282,7 +299,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
         </div>
       )}
 
-      {loading && <div className="eg-spinner" />}
+      {loading && <BrandSpinner />}
 
       {fetchError && !loading && (
         <div className="lb-banner lb-banner-error">

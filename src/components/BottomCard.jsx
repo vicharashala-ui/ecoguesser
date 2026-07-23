@@ -38,6 +38,7 @@ import { CATEGORY_META, SCORING, CARD_SLIDE_MS } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import ConfettiBurst from './ConfettiBurst.jsx';
 import ScoreRemark from './ScoreRemark.jsx';
+import AnimatedScore from './AnimatedScore.jsx';
 import './BottomCard.css';
 
 // "Zoom in and tap to place pin" -- shown above the pill until the player's
@@ -152,36 +153,6 @@ function IconSkip({ size = 18 }) {
       <path d="M13 6l7 6-7 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
-}
-
-// Counts up from 0 to `value` once, on mount -- pair with `key={site.id}`
-// at the call site so a new round always remounts (and therefore replays)
-// it, same convention ScoreRemark.jsx's own result.site.id keying uses.
-// Same easeOutCubic curve as resultLayer.js's animateLine, for the
-// same "quick then settling" feel. Skips straight to the final value under
-// prefers-reduced-motion, matching the guard BottomCard.css's own
-// keyframes already respect.
-function AnimatedScore({ value, duration = 700 }) {
-  const reduceMotion = typeof window !== 'undefined'
-    && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  const [display, setDisplay] = useState(reduceMotion ? value : 0);
-
-  useEffect(() => {
-    if (reduceMotion) return;
-    let raf;
-    const start = performance.now();
-    function step(now) {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - (1 - t) ** 3;
-      setDisplay(Math.round(value * eased));
-      if (t < 1) raf = requestAnimationFrame(step);
-    }
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return display.toLocaleString();
 }
 
 // ---------------------------------------------------------------------------
@@ -513,7 +484,10 @@ const BottomCard = forwardRef(function BottomCard({
         <div
           key={outgoing.uid}
           className={`bottom-card bc-ghost ${outgoing.isCard ? `is-expanded ${outgoing.collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
-          style={{ '--eg-accent': CATEGORY_META[outgoing.site.category].color }}
+          style={{
+            '--eg-accent': CATEGORY_META[outgoing.site.category].color,
+            '--eg-accent-text': CATEGORY_META[outgoing.site.category].textColor ?? CATEGORY_META[outgoing.site.category].color,
+          }}
           inert
           aria-hidden="true"
         >
@@ -527,7 +501,7 @@ const BottomCard = forwardRef(function BottomCard({
         ref={ref}
         key={site.id}
         className={`bottom-card ${isRevealing ? `is-expanded ${collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
-        style={{ '--eg-accent': meta.color }}
+        style={{ '--eg-accent': meta.color, '--eg-accent-text': meta.textColor ?? meta.color }}
         role="region"
         aria-labelledby={titleId}
       >

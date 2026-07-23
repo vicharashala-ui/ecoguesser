@@ -10,7 +10,7 @@
   position: absolute;
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
   right: 10px;
-  z-index: 10;
+  z-index: var(--eg-z-map-controls, 10);
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -62,7 +62,7 @@
 .cm-mode-label {
   font-size: 10px;
   font-weight: 700;
-  color: #111827;
+  color: var(--eg-ink, #111827);
   line-height: 1;
   text-shadow:
     0 1px 2px rgba(248, 246, 241, 0.95),
@@ -129,10 +129,10 @@
   top: 50%;
   left: 16px;
   right: 16px;
-  z-index: 20;
+  z-index: var(--eg-z-overlay, 20);
   text-align: center;
   padding: 10px 16px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   background: rgba(248, 246, 241, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -145,5 +145,5 @@
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 13.5px;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }

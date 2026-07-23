@@ -1,11 +1,19 @@
 /* src/components/BottomCard.css */
 /*
-  Palette pulled directly from the spec (Sections 8/8b/14) -- not invented
-  here: #16a34a green, #6b7280 gray, #f8f6f1 cream, #111827 dark text,
-  #e5e7eb divider, #f59e0b amber (reserved for nav/CTA elsewhere, not used
-  in this component to avoid competing with the per-category accent color).
+  Color tokens (see index.css :root, design-audit-fixes.md #1-#3): app-wide
+  --eg-brand (a lightened/saturated step of the splash screen's actual
+  brand green, #1c3b28) replaces what used to be a hardcoded, unrelated
+  Tailwind green (#16a34a) here -- plus --eg-ink, --eg-ink-secondary,
+  --eg-border, --eg-cream, --eg-danger. #f59e0b amber is reserved for nav/
+  CTA elsewhere, not used in this component, to avoid competing with the
+  per-category accent color.
 
-  --eg-accent is set inline per-instance from CATEGORY_META[site.category].color.
+  --eg-accent is set inline per-instance from CATEGORY_META[site.category]
+  .color -- fine as-is for backgrounds/borders/icons (only need 3:1).
+  --eg-accent-text is also set inline, from CATEGORY_META[...].textColor
+  (falling back to .color for the two categories that already clear AA) --
+  used specifically where the category color renders as literal small text,
+  which needs the stricter 4.5:1 (design-audit-fixes.md #3).
 */
 
 /* ---- Session-start pin-placement tip ------------------------------------ */
@@ -23,7 +31,7 @@
   left: 16px;
   right: 16px;
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 144px + 2px);
-  z-index: 26;
+  z-index: var(--eg-z-card-tip, 26);
   text-align: center;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 16px;
@@ -69,9 +77,18 @@
   position: absolute;
   left: 16px;
   right: 16px;
+  /* Desktop width cap (design-audit-fixes.md #7) -- left/right:16px alone
+     stretches this to ~1888px on a 1920px window (unreadable line length).
+     max-width + margin-inline:auto still resolves correctly against the
+     left/right insets above: the browser computes width from left/right
+     first, max-width then caps it, and the now-auto margins split the
+     remaining space evenly -- centering a phone-width column. No effect on
+     mobile, where the viewport is already narrower than 480px. */
+  max-width: 480px;
+  margin-inline: auto;
   /* Clears the bottom nav bar -- adjust --eg-nav-height if yours differs. */
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);
-  z-index: 30;
+  z-index: var(--eg-z-card, 30);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   background: rgba(248, 246, 241, 0.82);
   backdrop-filter: blur(16px) saturate(140%);
@@ -80,7 +97,7 @@
   transform: translateZ(0);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
-  color: #111827;
+  color: var(--eg-ink, #111827);
   overflow: hidden;
   transition: border-radius 0.25s ease, max-height 0.3s ease;
   /* Every .bottom-card (the live one below AND the departing .bc-ghost
@@ -109,7 +126,7 @@
    pushing. pointer-events:none backs up BottomCard.jsx's `inert` on the
    same element -- belt and suspenders against a stray click mid-animation. */
 .bottom-card.bc-ghost {
-  z-index: 29;
+  z-index: var(--eg-z-card-ghost, 29);
   pointer-events: none;
   animation: bc-slide-out-right 380ms ease-in both;
 }
@@ -186,7 +203,7 @@
 .bc-icon {
   display: flex;
   flex-shrink: 0;
-  color: var(--eg-accent, #16a34a);
+  color: var(--eg-accent, var(--eg-brand, #227743));
 }
 
 .bc-pill-text {
@@ -246,15 +263,19 @@
   border-radius: 999px;
   border: none;
   background: rgba(17, 24, 39, 0.06);
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .bc-skip-btn:hover {
   background: rgba(220, 38, 38, 0.12);
-  color: #dc2626;
+  color: var(--eg-danger, #dc2626);
+}
+
+.bc-skip-btn:active {
+  transform: scale(0.96);
 }
 
 .bc-hint-btn {
@@ -270,12 +291,16 @@
   color: #4a3208;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.15s ease, color 0.15s ease, opacity 0.2s ease;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, opacity 0.2s ease;
 }
 
 .bc-hint-btn:hover:not(:disabled) {
   background: #eab308;
   color: #3a2706;
+}
+
+.bc-hint-btn:not(:disabled):active {
+  transform: scale(0.96);
 }
 
 .bc-hint-btn:disabled {
@@ -306,7 +331,7 @@
   height: 38px;
   border: none;
   border-radius: 999px;
-  background: #16a34a;
+  background: var(--eg-brand, #227743);
   color: #fff;
   font-weight: 700;
   font-size: 14px;
@@ -358,19 +383,19 @@
   border-radius: 999px;
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
   cursor: pointer;
-  z-index: 1;
+  z-index: var(--eg-z-local, 1);
   transition: background 0.15s ease, color 0.15s ease, transform 0.25s ease;
 }
 
 .bc-collapse-toggle:hover {
   background: rgba(17, 24, 39, 0.06);
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 .bc-collapse-toggle:active {
-  transform: scale(0.9);
+  transform: scale(0.96);
 }
 
 .bc-collapse-toggle.is-collapsed {
@@ -378,18 +403,21 @@
 }
 
 .bc-collapse-toggle.is-collapsed:active {
-  transform: rotate(180deg) scale(0.9);
+  transform: rotate(180deg) scale(0.96);
 }
 
 .bc-icon-lg {
-  color: var(--eg-accent, #16a34a);
+  color: var(--eg-accent, var(--eg-brand, #227743));
 }
 
+/* --eg-accent-text (not --eg-accent) -- this renders as literal small text
+   (12px/800), which needs 4.5:1 contrast; --eg-accent itself only clears
+   3:1 for three of the five categories (design-audit-fixes.md #3). */
 .bc-category-label {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
-  color: var(--eg-accent, #16a34a);
+  color: var(--eg-accent-text, var(--eg-accent, #227743));
 }
 
 .bc-card-name {
@@ -397,7 +425,7 @@
   padding-right: 40px; /* clears .bc-collapse-toggle, floated top-right */
   font-size: 20px;
   font-weight: 800;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 .bc-meta-row,
@@ -419,15 +447,17 @@
   align-items: center;
   gap: 5px;
   font-size: 13.5px;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 /* State name -- accent-colored and bolder than the plain-gray meta items
    (year, distance, etc.) so it reads as the headline fact of the reveal,
-   not just another metadata line. Uses the round's per-category --eg-accent
-   color, same variable driving the icon/category label/boundary chip. */
+   not just another metadata line. --eg-accent-text (not --eg-accent) for
+   the same 4.5:1-as-small-text reason as .bc-category-label above -- 15px/
+   800 is still under the ~18.66px bold cutoff for the large-text
+   exemption. */
 .bc-state-name {
-  color: var(--eg-accent, #16a34a);
+  color: var(--eg-accent-text, var(--eg-accent, #227743));
   font-weight: 800;
   font-size: 15px;
 }
@@ -454,13 +484,13 @@
 
 .bc-divider {
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--eg-border, #e5e7eb);
   margin: 2px 0;
 }
 
 .bc-score {
   font-weight: 700;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 /* Perfect guess (finalScore === SCORING.MAX_SCORE, i.e. landed inside the
@@ -472,9 +502,9 @@
 }
 
 @keyframes bc-score-pulse {
-  0%   { color: #111827; transform: scale(1); }
+  0%   { color: var(--eg-ink, #111827); transform: scale(1); }
   35%  { color: #b45309; transform: scale(1.28); }
-  100% { color: #111827; transform: scale(1); }
+  100% { color: var(--eg-ink, #111827); transform: scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -485,11 +515,11 @@
 
 .bc-daily-line {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 .bc-penalty {
-  color: #dc2626;
+  color: var(--eg-danger, #dc2626);
 }
 
 /* "Site Boundary" chip -- sits at the right edge of BottomCard.jsx's
@@ -507,9 +537,9 @@
   margin-left: auto; /* pushes the chip to the row's right edge */
   flex-shrink: 0;
   border-radius: 999px;
-  border: 1.5px solid var(--eg-accent, #16a34a);
+  border: 1.5px solid var(--eg-accent, #227743);
   background: rgba(255, 255, 255, 0.6);
-  color: var(--eg-accent, #16a34a);
+  color: var(--eg-accent-text, var(--eg-accent, #227743));
   font-weight: 700;
   font-size: 13.5px;
   white-space: nowrap;
@@ -522,7 +552,7 @@
 }
 
 .bc-boundary-btn-sm:active {
-  transform: scale(0.95);
+  transform: scale(0.96);
 }
 
 /* Show Boundary -- Blitz's flex-paired half of .bc-actions in
@@ -537,10 +567,10 @@
 .bc-boundary-btn {
   flex: 1;
   height: 44px;
-  border-radius: 14px;
-  border: 1.5px solid var(--eg-accent, #16a34a);
+  border-radius: var(--eg-radius-md, 14px);
+  border: 1.5px solid var(--eg-accent, #227743);
   background: rgba(255, 255, 255, 0.6);
-  color: var(--eg-accent, #16a34a);
+  color: var(--eg-accent-text, var(--eg-accent, #227743));
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
@@ -557,7 +587,7 @@
 }
 
 .bc-boundary-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .bc-actions {
@@ -570,7 +600,7 @@
 .bc-next-btn {
   flex: 1;
   height: 44px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   border: none;
   font-weight: 700;
   font-size: 14px;
@@ -584,17 +614,18 @@
 }
 
 .bc-next-btn {
-  background: #16a34a;
+  background: var(--eg-brand, #227743);
   color: #fff;
   transition: transform 0.2s ease;
 }
 
 .bc-next-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .bottom-card,
+  .bc-skip-btn,
   .bc-hint-btn,
   .bc-confirm-btn,
   .bc-boundary-btn,

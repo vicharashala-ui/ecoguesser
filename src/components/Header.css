@@ -4,7 +4,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 15;
+  z-index: var(--eg-z-header, 15);
   height: var(--eg-header-height, 72px);
   display: flex;
   align-items: center;
@@ -21,7 +21,7 @@
   border-radius: 10px;
   border: none;
   background: rgba(255, 255, 255, 0.9);
-  color: #111827;
+  color: var(--eg-ink, #111827);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,7 +30,7 @@
   /* Sits above/left of the absolutely-centered title block below, which
      would otherwise overlap it on narrow screens. */
   position: relative;
-  z-index: 1;
+  z-index: var(--eg-z-local, 1);
   flex-shrink: 0;
 }
 

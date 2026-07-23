@@ -50,6 +50,95 @@
      header bar instead of hardcoding 52px, which was the old single-line
      title's height. */
   --eg-header-height: 72px;
+
+  /* -----------------------------------------------------------------------
+     Design tokens (design-audit-fixes.md #1/#2/#3/#8) -- previously every
+     color/size was hand-typed per file (47x #16a34a, 41x #111827, etc. --
+     Tailwind's default palette, not an intentional one). Nothing below
+     renames or removes an existing class, so this doesn't require touching
+     all 18+ CSS files at once -- migrate opportunistically as files are
+     touched, same as this pass did for index.css/BottomCard.css/
+     StatsView.css/BottomNav.css/ErrorBoundary.css.
+     ------------------------------------------------------------------- */
+
+  /* -- Color --
+     --eg-brand replaces the generic, unrelated Tailwind green (#16a34a)
+     that was standing in for the app's actual brand color everywhere in
+     the UI (buttons, active states, "Excellent!" labels, nav). The real
+     brand color only ever showed up on the splash screen/app icon/favicon
+     mask (#1c3b28, see index.html's meta/icon tags + InstallPrompt.css) --
+     confined there, disconnected from the product itself. --eg-brand is
+     that same hue (143deg) lightened and saturated into a range usable as
+     an in-game accent, so the brand's actual green is what players
+     actually see. It also clears WCAG AA (4.5:1) as literal small text on
+     both white and --eg-cream below (verified: 5.54:1 / 5.13:1) -- unlike
+     the old #16a34a (3.30:1 / 3.05:1, fails) -- so this one token covers
+     both background/border use AND text use; no separate "-text" variant
+     needed the way the per-category accent below still requires.
+     config.js's BASE_VISUAL.BOUNDARY_COLOR (#1c3b28, the map's own country-
+     boundary line paint) is a different, deliberately-unrelated usage --
+     not touched by this token. */
+  --eg-brand: #227743;
+  --eg-ink: #111827;
+  --eg-ink-secondary: #6b7280;
+  --eg-border: #e5e7eb;
+  --eg-cream: #f8f6f1;
+  --eg-danger: #dc2626;
+
+  /* -- Type scale -- reference scale for new/touched text. The 23 one-off
+     sizes already in the app (10px-40px, including half-pixel tuned values
+     like 10.5/11.5/13.5/14.5px) aren't force-migrated by this pass -- see
+     design-audit-fixes.md #1. */
+  --eg-text-xs: 11px;
+  --eg-text-sm: 13px;
+  --eg-text-base: 14px;
+  --eg-text-md: 16px;
+  --eg-text-lg: 20px;
+  --eg-text-xl: 24px;
+
+  /* -- Spacing scale -- reference scale, same opportunistic-migration note
+     as the type scale above. */
+  --eg-space-1: 4px;
+  --eg-space-2: 8px;
+  --eg-space-3: 12px;
+  --eg-space-4: 16px;
+  --eg-space-5: 20px;
+  --eg-space-6: 24px;
+
+  /* -- Radius -- consolidates 13 one-off values (4-24px) down to 4. */
+  --eg-radius-sm: 8px;
+  --eg-radius-md: 14px;
+  --eg-radius-lg: 24px;
+  --eg-radius-pill: 999px;
+
+  /* -- Z-index -- names every literal already in use at its EXISTING
+     value, rather than collapsing them into a handful of round numbers.
+     The current numbers encode a real stacking order that's already
+     documented case-by-case at each call site (e.g. BottomCard.css's
+     ".bc-ghost z-index below the live card's default 30", AchievementToast
+     .css's "z-index 47, just above MilestoneToast's 46") -- forcing those
+     into e.g. 5 generic tiers would silently flatten relationships like
+     that. This turns 24 ad hoc numbers into a real, greppable scale
+     without moving a single layer relative to another. */
+  --eg-z-local: 1;              /* small in-component stacking (a tab's own underline, a toggle button above its own row) */
+  --eg-z-map-controls: 10;      /* Classic/Blitz/DailyMap's top-right layer-toggle panel */
+  --eg-z-stats-header: 12;      /* StatsView screen -- below Header (15) so the hamburger stays reachable, above its own content */
+  --eg-z-header: 15;            /* app Header bar */
+  --eg-z-overlay: 20;           /* full-screen tab overlays (Leaderboard, DailySummary) + Classic/Blitz's bottom-card wrap */
+  --eg-z-recenter: 25;          /* map recenter button */
+  --eg-z-card-tip: 26;          /* pre-guess pin-placement tip, above the recenter button */
+  --eg-z-card-ghost: 29;        /* departing bottom-card snapshot, just below the incoming live card */
+  --eg-z-card: 30;              /* live bottom-card / loading pill */
+  --eg-z-nav: 40;               /* bottom tab bar */
+  --eg-z-effects: 45;           /* one-shot effects layered above the nav (DEM/satellite overlay swap, confetti burst) */
+  --eg-z-toast-milestone: 46;   /* milestone toast */
+  --eg-z-toast-achievement: 47; /* achievement toast + perfect-score remark, just above the milestone toast */
+  --eg-z-recap-card: 49;        /* daily recap card, inline (just below its own modal-open state) */
+  --eg-z-recap-card-open: 50;   /* daily recap card, modal-open */
+  --eg-z-install-prompt: 55;    /* install prompt */
+  --eg-z-modal: 60;             /* name prompt modal */
+  --eg-z-modal-info: 65;        /* info modal (How to Play / About / Privacy) */
+  --eg-z-drawer: 80;            /* side drawer -- topmost */
 }
 
 /* Fixed-viewport app shell height. `100vh` alone locks to the mobile
@@ -128,17 +217,30 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid #16a34a;
+  outline: 2px solid var(--eg-brand, #227743);
   outline-offset: 2px;
 }
 
-.eg-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #16a34a;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: eg-spin 0.8s linear infinite;
+/* Brand loading mark (design-audit-fixes.md #6) -- replaces the plain CSS
+   ring spinner (the most generic loading pattern there is) with a pulsing
+   version of the app's own tiger mark (see tigerMarkPath.js), rendered via
+   the shared BrandSpinner.jsx component. currentColor lets BrandSpinner's
+   own inline style set the fill without a second, redundant color rule
+   here. transform+opacity only -- both GPU-compositable, no layout cost. */
+.eg-brand-spinner {
+  animation: eg-brand-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes eg-brand-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.88); }
+  50%      { opacity: 1;    transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eg-brand-spinner {
+    animation: none;
+    opacity: 0.85;
+  }
 }
 
 /* Trademark mark for the EcoGuesser wordmark -- applied once per screen, on
@@ -152,10 +254,6 @@ body {
   vertical-align: super;
   margin-left: 0.1em;
   letter-spacing: normal;
-}
-
-@keyframes eg-spin {
-  to { transform: rotate(360deg); }
 }
 
 /* Plays once whenever a tab panel goes from display:none to display:block
@@ -232,8 +330,8 @@ body {
 }
 
 .eg-toggle-input:checked ~ .eg-toggle-track {
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.65), rgba(22, 163, 74, 0.3));
-  border-color: rgba(22, 163, 74, 0.65);
+  background: linear-gradient(135deg, rgba(89, 207, 135, 0.65), rgba(34, 119, 67, 0.3));
+  border-color: rgba(34, 119, 67, 0.65);
 }
 
 .eg-toggle-input:checked ~ .eg-toggle-track .eg-toggle-thumb {
@@ -264,7 +362,7 @@ body {
 }
 
 .eg-toggle-input:focus-visible ~ .eg-toggle-track {
-  outline: 2px solid #16a34a;
+  outline: 2px solid var(--eg-brand, #227743);
   outline-offset: 2px;
 }
 

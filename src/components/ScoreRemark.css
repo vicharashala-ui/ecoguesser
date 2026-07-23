@@ -16,7 +16,7 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  z-index: 47;
+  z-index: var(--eg-z-toast-achievement, 47);
   pointer-events: none;
 }
 
@@ -57,7 +57,7 @@
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 19px;
   font-weight: 700;
-  color: #111827;
+  color: var(--eg-ink, #111827);
   white-space: nowrap;
   opacity: 0;
   text-shadow:

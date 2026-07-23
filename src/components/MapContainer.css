@@ -32,7 +32,7 @@
   inset: 0;
   /* Above BottomNav's z-index: 40, same reasoning as ConfettiBurst.css --
      otherwise the nav bar wins the tie and can sit over this. */
-  z-index: 45;
+  z-index: var(--eg-z-effects, 45);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -50,14 +50,14 @@
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 .eg-context-lost-btn {
   padding: 12px 28px;
   border: none;
   border-radius: 999px;
-  background: #16a34a;
+  background: var(--eg-brand, #227743);
   color: #fff;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 15px;
@@ -68,5 +68,5 @@
 }
 
 .eg-context-lost-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }

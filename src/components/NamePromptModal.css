@@ -1,14 +1,21 @@
 /* src/components/NamePromptModal.css */
-/* Palette matches BottomCard.css: #16a34a green, #6b7280 gray, #f8f6f1 cream,
-   #111827 dark text, #e5e7eb border. Solid backdrop, not backdrop-filter --
-   this sits over DailySummary's opaque screen, never over the map canvas
-   directly, so the WebGL compositing bug RecenterButton.css works around
-   doesn't apply here. */
+/* Solid backdrop, not backdrop-filter -- this sits over DailySummary's
+   opaque screen, never over the map canvas directly, so the WebGL
+   compositing bug RecenterButton.css works around doesn't apply here.
+
+   position: fixed here is deliberate, not the bug the other overlays in
+   this app were patched for (see BottomCard.css's writeup) -- this modal
+   renders nested *inside* .ds-screen (DailySummary.jsx), which itself has
+   no transform, so position:fixed is what lets this escape that ancestor's
+   box and reach true full-viewport coverage (including behind the bottom
+   nav) rather than being confined to .ds-screen's own inset. Switching this
+   to absolute would make it inherit .ds-screen's containing block instead
+   and stop short of the nav bar -- a real regression, not a fix. */
 
 .npm-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: var(--eg-z-modal, 60);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,7 +27,7 @@
 .npm-modal {
   width: 100%;
   max-width: 340px;
-  background: #f8f6f1;
+  background: var(--eg-cream, #f8f6f1);
   border-radius: 20px;
   padding: 24px 22px;
   box-shadow: 0 12px 40px rgba(17, 24, 39, 0.25);
@@ -44,19 +51,24 @@
   .npm-modal {
     animation: none;
   }
+
+  .npm-skip-btn,
+  .npm-save-btn {
+    transition: none;
+  }
 }
 
 .npm-modal h2 {
   margin: 0 0 6px;
   font-size: 19px;
   font-weight: 800;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 .npm-modal p {
   margin: 0 0 18px;
   font-size: 13.5px;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 .npm-input {
@@ -64,7 +76,7 @@
   height: 44px;
   padding: 0 14px;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--eg-border, #e5e7eb);
   background: #fff;
   font-size: 15px;
   font-family: inherit;
@@ -73,7 +85,7 @@
 
 .npm-input:focus {
   outline: none;
-  border-color: #16a34a;
+  border-color: var(--eg-brand, #227743);
 }
 
 .npm-actions {
@@ -86,11 +98,17 @@
 .npm-save-btn {
   flex: 1;
   height: 44px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   border: none;
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.npm-skip-btn:active,
+.npm-save-btn:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .npm-skip-btn {
@@ -99,7 +117,7 @@
 }
 
 .npm-save-btn {
-  background: #16a34a;
+  background: var(--eg-brand, #227743);
   color: #fff;
 }
 

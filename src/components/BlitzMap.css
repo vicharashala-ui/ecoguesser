@@ -12,7 +12,7 @@
      sit at a flat 10px and overlap the header's dark gradient/title. */
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
   right: 10px;
-  z-index: 10;
+  z-index: var(--eg-z-map-controls, 10);
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -70,7 +70,7 @@
    now that the ring does real work instead of being purely ornamental. */
 .bz-streak-ring-track {
   fill: none;
-  stroke: #e5e7eb;
+  stroke: var(--eg-border, #e5e7eb);
   stroke-width: 3;
 }
 
@@ -127,7 +127,7 @@
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
-  color: #111827;
+  color: var(--eg-ink, #111827);
 }
 
 .bz-streak-best {
@@ -232,9 +232,9 @@
 }
 
 @keyframes bz-streak-pop {
-  0%   { transform: scale(1); color: #111827; }
+  0%   { transform: scale(1); color: var(--eg-ink, #111827); }
   45%  { transform: scale(1.35); color: #f97316; }
-  100% { transform: scale(1); color: #111827; }
+  100% { transform: scale(1); color: var(--eg-ink, #111827); }
 }
 
 /* A live streak resetting to 0 -- a brief red shake, distinct from the
@@ -245,11 +245,11 @@
 }
 
 @keyframes bz-streak-break {
-  0%   { transform: translateX(0); color: #111827; }
+  0%   { transform: translateX(0); color: var(--eg-ink, #111827); }
   25%  { transform: translateX(-3px); color: #dc2626; }
   50%  { transform: translateX(3px); color: #dc2626; }
   75%  { transform: translateX(-2px); }
-  100% { transform: translateX(0); color: #111827; }
+  100% { transform: translateX(0); color: var(--eg-ink, #111827); }
 }
 
 /* Every-5th-in-a-row streak milestone -- edge-glow flash + a short label,
@@ -267,7 +267,7 @@
   --bz-milestone-rgb: 249, 115, 22;
   position: absolute;
   inset: 0;
-  z-index: 45;
+  z-index: var(--eg-z-effects, 45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -378,10 +378,10 @@
   top: 50%;
   left: 16px;
   right: 16px;
-  z-index: 20;
+  z-index: var(--eg-z-overlay, 20);
   text-align: center;
   padding: 10px 16px;
-  border-radius: 14px;
+  border-radius: var(--eg-radius-md, 14px);
   background: rgba(248, 246, 241, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -392,5 +392,5 @@
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 13.5px;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }

@@ -1,0 +1,68 @@
+/* src/components/ErrorBoundary.css */
+/* Top-level crash screen -- catches any render error anywhere in the tree,
+   so this can't assume anything about *what* broke, only that it did.
+   height comes from .eg-app-shell-height (index.css); this file only adds
+   the layout/visual treatment on top of it. */
+
+.eg-error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--eg-cream, #f8f6f1);
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  text-align: center;
+  padding: 2rem;
+}
+
+.eg-error-wordmark {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--eg-ink, #111827);
+}
+
+.eg-error-wordmark sup {
+  font-size: 0.4em;
+  font-weight: 700;
+  vertical-align: super;
+  margin-left: 0.1em;
+}
+
+.eg-error-heading {
+  color: var(--eg-ink, #111827);
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+}
+
+.eg-error-body {
+  color: var(--eg-ink-secondary, #6b7280);
+  margin: 0 0 1.5rem;
+  max-width: 320px;
+}
+
+.eg-error-refresh-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--eg-brand, #227743);
+  color: #fff;
+  border: none;
+  border-radius: var(--eg-radius-sm, 8px);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.eg-error-refresh-btn:hover {
+  background: #1a5f35; /* one step darker than --eg-brand */
+}
+
+.eg-error-refresh-btn:active {
+  transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eg-error-refresh-btn {
+    transition: none;
+  }
+}

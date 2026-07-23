@@ -1,7 +1,8 @@
 /* src/components/BottomNav.css */
 /*
   Palette matches BottomCard.css/DailyMap.css: #f59e0b amber for the active
-  tab, #6b7280 gray inactive, same Nunito stack as the rest of the floating UI.
+  tab, --eg-ink-secondary gray inactive, same Nunito stack as the rest of
+  the floating UI.
 
   Height equals --eg-nav-height, a real var defined in index.css's :root
   (64px) -- BottomCard.css's and DailyMap.css's own bottom-offset calc()
@@ -46,11 +47,17 @@
   position: absolute;
   left: 0;
   right: 0;
+  /* Desktop width cap (design-audit-fixes.md #7) -- same trick as
+     BottomCard.css's .bottom-card: max-width still applies on top of the
+     left:0/right:0-computed width, and margin-inline:auto then centers the
+     remaining space. No effect on mobile. */
+  max-width: 480px;
+  margin-inline: auto;
   bottom: 0; /* graceful-degradation fallback -- kept in case the calc() below is invalid on a given engine */
   bottom: calc(env(safe-area-inset-bottom, 0px) - var(--eg-safe-area-max));
   height: var(--eg-nav-height, 64px);
   padding-bottom: var(--eg-safe-area-max);
-  z-index: 40;
+  z-index: var(--eg-z-nav, 40);
   isolation: isolate;
   transform: translateZ(0);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
@@ -69,7 +76,7 @@
   position: relative; /* anchors .eg-nav-indicator */
   height: var(--eg-nav-height, 64px);
   display: flex;
-  background: #f8f6f1;
+  background: var(--eg-cream, #f8f6f1);
   border-top: 1px solid rgba(17, 24, 39, 0.08);
 }
 
@@ -98,7 +105,7 @@
   gap: 2px;
   border: none;
   background: none;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
   font-size: 11.5px;
   font-weight: 700;
   cursor: pointer;
@@ -119,7 +126,7 @@
    .eg-nav-tab-active's translateY for the instant of the press, then
    releases back to it (or to the plain resting state) automatically. */
 .eg-nav-tab:active {
-  transform: scale(0.92);
+  transform: scale(0.96);
 }
 
 @media (prefers-reduced-motion: reduce) {

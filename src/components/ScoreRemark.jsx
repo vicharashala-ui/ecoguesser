@@ -27,7 +27,7 @@ import './ScoreRemark.css';
 // red, independent of the per-category accent color so a tier reads
 // clearly regardless of which category's color happens to be active.
 const SCORE_TIERS = [
-  { min: 0.8, label: 'Excellent!', color: '#16a34a' },
+  { min: 0.8, label: 'Excellent!', color: 'var(--eg-brand, #227743)' },
   { min: 0.5, label: 'Great', color: '#65a30d' },
   { min: 0.2, label: 'Good', color: '#d97706' },
   { min: 0.05, label: 'Fair', color: '#f97316' },
@@ -52,7 +52,7 @@ export default function ScoreRemark({ roundState, result }) {
   }
 
   const isPerfect = result.finalScore === SCORING.MAX_SCORE;
-  const tier = isPerfect ? { label: 'Perfect!', color: '#16a34a' } : getScoreTier(result.finalScore);
+  const tier = isPerfect ? { label: 'Perfect!', color: 'var(--eg-brand, #227743)' } : getScoreTier(result.finalScore);
 
   return (
     <div className="eg-score-remark" key={result.site.id} aria-hidden="true">

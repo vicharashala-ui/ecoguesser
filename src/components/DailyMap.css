@@ -1,7 +1,7 @@
 /* src/components/DailyMap.css */
 /*
-  Palette/font matched to BottomCard.css (Nunito, #16a34a/#6b7280/#111827/
-  #f59e0b/#dc2626). Terrain/Satellite render as standalone square buttons
+  Palette/font matched to BottomCard.css (Nunito, --eg-brand/--eg-ink-
+  secondary/--eg-ink/#f59e0b/--eg-danger). Terrain/Satellite render as standalone square buttons
   (.dm-mode-btn) rather than inside a glass panel -- see ClassicMap.css's
   .cm-mode-btn, which this mirrors, for the shared visual language.
 */
@@ -25,7 +25,7 @@
      extra 8/10px of headroom the way it used to. */
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
   right: 10px;
-  z-index: 10;
+  z-index: var(--eg-z-map-controls, 10);
   display: flex;
   flex-direction: column;
   /* stretch -- .dm-timer-card's own content (time + round dots) sets the
@@ -140,7 +140,7 @@
 }
 
 .dm-pause-btn:active {
-  transform: scale(0.94);
+  transform: scale(0.96);
 }
 
 /* The icon swap itself (IconPause <-> IconPlay) is a full unmount/remount
@@ -163,7 +163,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 20;
+  z-index: var(--eg-z-overlay, 20);
   pointer-events: none;
   padding: 8px 20px;
   border-radius: 999px;
@@ -211,7 +211,7 @@
 .dm-mode-label {
   font-size: 10px;
   font-weight: 700;
-  color: #111827;
+  color: var(--eg-ink, #111827);
   line-height: 1;
   /* Multi-direction halo for legibility -- these captions sit directly over
      the map now, not inside a glass panel backdrop. */
@@ -285,7 +285,7 @@
   left: 16px;
   right: 16px;
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);
-  z-index: 30;
+  z-index: var(--eg-z-card, 30);
   text-align: center;
   padding: 14px 16px;
   border-radius: 999px;
@@ -301,7 +301,7 @@
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--eg-ink-secondary, #6b7280);
 }
 
 /* ---- Start gate (round 1, before Start is pressed) ----------------------- */
@@ -313,7 +313,7 @@
   left: 16px;
   right: 16px;
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);
-  z-index: 30;
+  z-index: var(--eg-z-card, 30);
 }
 
 .dm-start-btn {
@@ -321,7 +321,7 @@
   height: 56px;
   border: none;
   border-radius: 999px;
-  background: #16a34a;
+  background: var(--eg-brand, #227743);
   color: #fff;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 16px;
@@ -332,7 +332,7 @@
 }
 
 .dm-start-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .dm-start-btn:disabled {

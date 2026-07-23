@@ -37,14 +37,14 @@ const screenStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  background: '#f8f6f1',
+  background: 'var(--eg-cream, #f8f6f1)',
   textAlign: 'center',
   padding: '2rem',
 };
 
 const buttonStyle = {
   padding: '0.75rem 1.5rem',
-  background: '#16a34a',
+  background: 'var(--eg-brand, #227743)',
   color: '#fff',
   border: 'none',
   borderRadius: '8px',
@@ -188,11 +188,11 @@ export default function App() {
   if (sitesError) {
     return (
       <div className="eg-app-shell-height" style={screenStyle}>
-        <div style={{ fontSize: '32px', fontWeight: 800, color: '#16a34a', marginBottom: '1rem' }}>
+        <div style={{ fontSize: '32px', fontWeight: 800, color: 'var(--eg-brand, #227743)', marginBottom: '1rem' }}>
           EcoGuesser<sup style={{ fontSize: '0.4em', fontWeight: 700, verticalAlign: 'super', marginLeft: '0.1em' }}>™</sup>
         </div>
-        <p style={{ color: '#111827', marginBottom: '0.25rem' }}>Couldn't load game data.</p>
-        <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>Check your connection and try again.</p>
+        <p style={{ color: 'var(--eg-ink, #111827)', marginBottom: '0.25rem' }}>Couldn't load game data.</p>
+        <p style={{ color: 'var(--eg-ink-secondary, #6b7280)', marginBottom: '1.5rem' }}>Check your connection and try again.</p>
         <button onClick={() => { setSitesError(false); loadSites(); }} style={buttonStyle}>
           Try again
         </button>

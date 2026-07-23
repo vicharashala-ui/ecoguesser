@@ -86,6 +86,19 @@ export default function SideDrawer({
     return () => clearTimeout(t);
   }, [open]);
 
+  // Escape-to-close (design-audit-fixes.md #9) -- same pattern InfoModal.jsx
+  // already uses. Gated on `open` (not just mounted, since this drawer stays
+  // mounted through its own close transition above) so it doesn't fire while
+  // already closed/closing.
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(e) {
+      if (e.key === 'Escape') onClose();
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose]);
+
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackPhase, setFeedbackPhase] = useState('idle'); // 'idle' | 'sending' | 'sent'
 
@@ -220,7 +233,7 @@ export default function SideDrawer({
             <button
               type="button"
               className="sd-banner-menu"
-              style={soundOn ? { background: '#16a34a', color: '#fff' } : undefined}
+              style={soundOn ? { background: 'var(--eg-brand, #227743)', color: '#fff' } : undefined}
               onClick={() => handleSoundToggle(!soundOn)}
               aria-pressed={soundOn}
               aria-label={soundOn ? 'Mute sound' : 'Unmute sound'}
@@ -240,7 +253,7 @@ export default function SideDrawer({
             <button
               type="button"
               className="sd-banner-menu"
-              style={hapticsOn ? { background: '#16a34a', color: '#fff' } : undefined}
+              style={hapticsOn ? { background: 'var(--eg-brand, #227743)', color: '#fff' } : undefined}
               onClick={() => handleHapticsToggle(!hapticsOn)}
               aria-pressed={hapticsOn}
               aria-label={hapticsOn ? 'Turn off haptics' : 'Turn on haptics'}
@@ -277,7 +290,7 @@ export default function SideDrawer({
                         key={level}
                         type="button"
                         className={`sd-chip${difficulty === level ? ' sd-chip-active' : ''}`}
-                        style={difficulty === level ? { background: '#16a34a' } : undefined}
+                        style={difficulty === level ? { background: 'var(--eg-brand, #227743)' } : undefined}
                         onClick={() => onSetDifficulty(level)}
                       >
                         {DIFFICULTY_LABELS[level]}

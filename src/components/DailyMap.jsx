@@ -104,7 +104,7 @@ function formatTime(totalSeconds) {
 function timerColor(remaining) {
   if (remaining < 10) return '#dc2626';
   if (remaining < 30) return '#f59e0b';
-  return '#111827';
+  return 'var(--eg-ink, #111827)';
 }
 
 export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {

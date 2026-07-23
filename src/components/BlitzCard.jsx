@@ -365,7 +365,10 @@ const BlitzCard = forwardRef(function BlitzCard({
         <div
           key={outgoing.uid}
           className={`bottom-card bc-ghost ${outgoing.isCard ? `is-expanded ${outgoing.collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
-          style={{ '--eg-accent': CATEGORY_META[outgoing.site.category].color }}
+          style={{
+            '--eg-accent': CATEGORY_META[outgoing.site.category].color,
+            '--eg-accent-text': CATEGORY_META[outgoing.site.category].textColor ?? CATEGORY_META[outgoing.site.category].color,
+          }}
           inert
           aria-hidden="true"
         >
@@ -379,7 +382,7 @@ const BlitzCard = forwardRef(function BlitzCard({
         ref={ref}
         key={site.id}
         className={`bottom-card ${isRevealing ? `is-expanded ${collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
-        style={{ '--eg-accent': meta.color }}
+        style={{ '--eg-accent': meta.color, '--eg-accent-text': meta.textColor ?? meta.color }}
         role="region"
         aria-labelledby={titleId}
       >
