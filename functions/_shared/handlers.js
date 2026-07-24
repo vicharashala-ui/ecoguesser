@@ -1,26 +1,16 @@
 // functions/_shared/handlers.js
-// Module-scope state (_rateStore, _lbCache) persists for the lifetime of a
-// given Worker isolate -- not across isolates/deploys, which is fine for a
-// best-effort rate limit and a short-TTL leaderboard cache.
+// Module-scope state (_lbCache) persists for the lifetime of a given Worker
+// isolate -- not across isolates/deploys, which is fine for a short-TTL
+// leaderboard cache. The rate limiter itself now lives in rateLimit.js,
+// shared with the tile proxy -- see that file's header comment for why each
+// caller gets its own independent budget.
 
-const _rateStore = new Map(); // ip -> [timestamp, ...]
+import { createRateLimiter } from './rateLimit.js';
 
-function isRateLimited(ip) {
-  const now = Date.now();
-  const cutoff = now - 60_000;
-  const prev = (_rateStore.get(ip) ?? []).filter((t) => t > cutoff);
-  if (prev.length >= 10) {
-    _rateStore.set(ip, prev);
-    return true;
-  }
-  _rateStore.set(ip, [...prev, now]);
-  if (_rateStore.size > 10_000) {
-    for (const [k, v] of _rateStore) {
-      if (v.every((t) => t < cutoff)) _rateStore.delete(k);
-    }
-  }
-  return false;
-}
+// 10 requests/60s per IP -- unchanged from before this was factored out.
+// Generous for genuine play (one score submission a day, occasional
+// leaderboard re-checks) while bounding a script hammering either endpoint.
+const isRateLimited = createRateLimiter({ windowMs: 60_000, max: 10 });
 
 // public/_headers' security-header block doesn't reach Pages Functions (see
 // that file's header comment) -- these are the same headers, scoped to what

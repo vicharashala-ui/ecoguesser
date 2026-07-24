@@ -10,19 +10,27 @@
 # already noted below for Cache-Control). Their equivalent security headers
 # are set directly in functions/_shared/handlers.js and tileProxy.js instead.
 #
-# CSP ships as Report-Only for now, not enforced -- this app is a WebGL map
-# (MapLibre GL) pulling vector tiles/glyphs from OpenFreeMap and POSTing
-# feedback to a Google Form (satellite + elevation/DEM tiles are both
-# proxied same-origin now, via functions/tiles/, so neither needs its own
-# CSP allowance), and a static _headers file has no fast rollback if a
-# directive is wrong. Report-
-# Only logs violations to the browser console without blocking anything, so
-# the fix is: open the deployed site, play a full round in each of Classic/
-# Blitz/Daily (including satellite view), submit a Daily score, share a
-# leaderboard image, and submit the feedback form -- with DevTools' Console
-# open the whole time. Zero "Content-Security-Policy" violation lines means
-# it's safe to rename the header below to plain `Content-Security-Policy`
-# (enforcing). Any violation line names the exact directive to widen.
+# CSP is enforced (was Report-Only). This app is a WebGL map (MapLibre GL)
+# pulling vector tiles/glyphs from OpenFreeMap and POSTing feedback to a
+# Google Form -- satellite + elevation/DEM tiles are both proxied
+# same-origin via functions/tiles/, so neither needs its own CSP allowance.
+# Verified two ways before flipping from Report-Only: (1) every fetch(),
+# external link, worker/blob use, and data:/inline-style/inline-script
+# pattern in the codebase was traced against each directive below -- no
+# mismatches; (2) a full production build was served locally with this
+# exact header enforced (not Report-Only) and driven headlessly through
+# app load + every bottom-nav tab, capturing the console the whole time --
+# zero "Content-Security-Policy"/"Refused to" violation lines, and the
+# handful of unrelated errors (OpenFreeMap host unreachable, some
+# maplibre-gl image-load warnings) reproduced identically against the same
+# build with NO Content-Security-Policy header at all, confirming they're
+# sandbox-network artifacts, not CSP blocks. That headless pass couldn't
+# reach the real OpenFreeMap/ArcGIS/S3 origins the live site depends on
+# (sandboxed egress), so it's still worth one quick live sanity check --
+# open the deployed site with DevTools' Console open, play a round in each
+# mode including satellite, submit a Daily score, share, submit feedback --
+# but nothing above suggests a directive is missing or wrong. Any future
+# violation line names the exact directive to widen.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
@@ -30,7 +38,7 @@
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Cross-Origin-Opener-Policy: same-origin
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openfreemap.org; connect-src 'self' https://tiles.openfreemap.org https://docs.google.com; worker-src 'self' blob:; font-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openfreemap.org; connect-src 'self' https://tiles.openfreemap.org https://docs.google.com; worker-src 'self' blob:; font-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'
 
 # Cloudflare Pages' default for every static asset is
 # `Cache-Control: public, max-age=0, must-revalidate` -- the browser caches

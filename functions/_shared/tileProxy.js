@@ -6,6 +6,49 @@
 // is the primary lever for staying within the 2M-tile/month ArcGIS quota.
 // First request for a given z/y/x pays the ArcGIS quota; every later request
 // for that same tile, from any player, is served from the edge for free.
+//
+// That cache-hit-rate argument only holds if every request is for one of
+// the small set of real, in-range tile coordinates a legitimate map view
+// can ever produce. Nothing before this comment stopped a client from
+// requesting a sweep of well-formed-but-nonexistent coordinates (huge z, or
+// x/y outside a real tile grid) -- each one both a wasted round trip to the
+// upstream (never cached, since only .ok responses are cached below) and,
+// for the ArcGIS-backed proxy specifically, a real hit against the quota
+// this whole caching strategy exists to protect. validTileCoords + the
+// rate limiter below close that: bounds-check the coordinates before ever
+// contacting the upstream, and cap request volume per IP the same way
+// handlers.js already does for the score/leaderboard endpoints.
+
+import { createRateLimiter } from './rateLimit.js';
+
+// Real slippy-map tile grids never exceed z~22 in practice (this app's own
+// MIN_ZOOM/MAX_ZOOM in src/config.js top out at 12); 20 leaves generous
+// headroom for future zoom-range tuning without ever admitting the
+// pathological "z=999999999999" case a bare /^\d+$/ digit check lets through.
+const MAX_ZOOM = 20;
+
+// True only for coordinates a real map could ever request: all-digit,
+// integral, z within range, and x/y both within [0, 2^z) -- the actual
+// valid index range for a zoom level z tile grid. Order-agnostic between
+// the two (x, y) arguments, since the bound is identical for both.
+function validTileCoords(z, a, b) {
+  if (![z, a, b].every((v) => /^\d+$/.test(v ?? ''))) return false;
+  const zNum = Number(z);
+  if (!Number.isInteger(zNum) || zNum < 0 || zNum > MAX_ZOOM) return false;
+  const max = 2 ** zNum;
+  const aNum = Number(a);
+  const bNum = Number(b);
+  return Number.isInteger(aNum) && aNum >= 0 && aNum < max
+    && Number.isInteger(bNum) && bNum >= 0 && bNum < max;
+}
+
+// 400 requests/60s per IP, per proxy (satellite and DEM tracked
+// independently -- see rateLimit.js's header comment). Generous enough
+// that a real pan/zoom burst (satellite + DEM tiles loading together)
+// never trips it, while still bounding a script that hammers either
+// endpoint with junk coordinates purely to force cache misses.
+const isSatelliteRateLimited = createRateLimiter({ windowMs: 60_000, max: 400 });
+const isDemRateLimited = createRateLimiter({ windowMs: 60_000, max: 400 });
 
 const ARCGIS_BASE = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile';
 
@@ -19,8 +62,13 @@ const CACHE_TTL_SECONDS = 60 * 60 * 24 * 30;
  * @param waitUntil context.waitUntil, so the cache write doesn't block the response
  */
 export async function handleTileProxy(request, pathParams, waitUntil) {
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  if (isSatelliteRateLimited(ip)) {
+    return new Response('rate limited', { status: 429 });
+  }
+
   const [z, y, x] = pathParams ?? [];
-  if (![z, y, x].every((v) => /^\d+$/.test(v ?? ''))) {
+  if (!validTileCoords(z, y, x)) {
     return new Response('invalid tile coordinates', { status: 400 });
   }
 
@@ -89,8 +137,13 @@ const DEM_CACHE_TTL_SECONDS = 60 * 60 * 24 * 30;
  * @param waitUntil context.waitUntil, so the cache write doesn't block the response
  */
 export async function handleDemTileProxy(request, pathParams, waitUntil) {
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  if (isDemRateLimited(ip)) {
+    return new Response('rate limited', { status: 429 });
+  }
+
   const [z, x, y] = pathParams ?? [];
-  if (![z, x, y].every((v) => /^\d+$/.test(v ?? ''))) {
+  if (!validTileCoords(z, x, y)) {
     return new Response('invalid tile coordinates', { status: 400 });
   }
 

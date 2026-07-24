@@ -102,14 +102,30 @@ export default defineConfig({
           // under duplicate (if identical) entries (confirmed via a real
           // build: the two mechanisms don't dedupe against each other).
           //
-          // The app entry (index-*) and the three vendor/runtime chunks
-          // manualChunks (above) splits out -- see the modulepreload tags
-          // in a real `npm run build`'s dist/index.html for the ground
-          // truth this list is meant to mirror.
+          // The app entry (index-*), the three vendor/runtime chunks, and
+          // daily-* (below) are what manualChunks (above) + Rollup's
+          // automatic shared-chunk splitting produce -- see the
+          // modulepreload tags in a real `npm run build`'s dist/index.html
+          // for the ground truth this list is meant to mirror.
           'assets/index-*.{js,css}',
           'assets/vendor-*.js',
           'assets/config-*.js',
           'assets/rolldown-runtime-*.js',
+          // game/daily.js is imported by both eager code (InstallPrompt.jsx,
+          // useDailyRound.js -- Daily is the default tab) and lazy code
+          // (DailySummary/Leaderboard/DailyRecap), so Rollup auto-splits it
+          // into its own chunk instead of inlining it into index-*. That
+          // makes it eager, not lazy -- confirmed modulepreloaded in a real
+          // build's dist/index.html alongside vendor-react/vendor-maplibre
+          // -- so it belongs in this eager allowlist, not left for the lazy
+          // runtimeCaching rule below. Was missing (confirmed absent from a
+          // real build's dist/sw.js precache manifest), the one gap in this
+          // list actually breaking its own "eager set = exactly what render
+          // needs before interactive" rule. Any other module that later
+          // ends up shared across the eager/lazy boundary the same way will
+          // need the same manual addition here -- Rollup's auto-splitting
+          // isn't visible to this allowlist by construction.
+          'assets/daily-*.js',
           'assets/*.woff2',
         ],
         // Never precache/cache the leaderboard API or the ArcGIS tile proxy:

@@ -64,8 +64,11 @@
          so starting it here, in parallel with the JS itself, directly
          shortens that wait. Same crossorigin="anonymous" credentials-mode
          requirement as map-style.json above (see that comment); same
-         stable unhashed public/ URL, so nothing to rewrite at build time. -->
-    <link rel="preload" href="/protected-areas.json" as="fetch" crossorigin="anonymous" />
+         stable unhashed public/ URL, so nothing to rewrite at build time.
+         fetchpriority="high" to match map-style.json/OFM-planet above --
+         this gates first-render UI exactly like those two do, so it
+         shouldn't sit at a lower default priority than them. -->
+    <link rel="preload" href="/protected-areas.json" as="fetch" crossorigin="anonymous" fetchpriority="high" />
 
     <!-- Nunito 400/700/800 (src/index.css's @fontsource imports) -- all
          three weights actually visible on first paint, not just 400: the
