@@ -80,6 +80,7 @@
   font-size: 13px;
   cursor: pointer;
   white-space: nowrap;
+  transition: transform 0.15s ease;
 }
 
 .eg-install-add:active {
@@ -100,6 +101,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: transform 0.15s ease;
 }
 
 /* Invisible hit-area extension -- 40x40 min target without growing the
@@ -124,5 +126,10 @@
 @media (prefers-reduced-motion: reduce) {
   .eg-install-toast {
     animation: none;
+  }
+
+  .eg-install-add,
+  .eg-install-dismiss {
+    transition: none;
   }
 }

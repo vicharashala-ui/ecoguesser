@@ -94,7 +94,11 @@
   background: rgba(255, 255, 255, 0.5);
   color: #374151;
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.15s ease;
+}
+
+.cm-mode-btn:active {
+  transform: scale(0.96);
 }
 
 .cm-mode-btn.is-active {
@@ -146,4 +150,13 @@
   font-size: 13.5px;
   font-weight: 700;
   color: var(--eg-ink-secondary, #6b7280);
+}
+
+/* .cm-mode-btn's press feedback is new (see the transform addition above,
+   matching the app-wide transition:transform + :active:scale(0.96)
+   pattern used elsewhere) -- this file had no reduced-motion block yet. */
+@media (prefers-reduced-motion: reduce) {
+  .cm-mode-btn {
+    transition: none;
+  }
 }

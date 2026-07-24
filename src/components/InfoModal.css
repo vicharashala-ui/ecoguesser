@@ -56,6 +56,10 @@
   .im-modal {
     animation: none;
   }
+
+  .im-close-btn {
+    transition: none;
+  }
 }
 
 .im-header {
@@ -87,6 +91,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+/* Same darken-background/deepen-icon hover treatment as .bc-collapse-toggle
+   (BottomCard.css) -- the app's other small circular icon-only button. */
+.im-close-btn:hover {
+  background: var(--eg-border, #e5e7eb);
+  color: var(--eg-ink, #111827);
+}
+
+.im-close-btn:active {
+  transform: scale(0.96);
 }
 
 /* Invisible hit-area extension -- 40x40 min target without growing the

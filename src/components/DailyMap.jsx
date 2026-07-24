@@ -26,24 +26,24 @@ import { MAP_CONFIG, DAILY, CATEGORY_META } from '../config.js';
 import './DailyMap.css';
 
 // Icons -- same inline-SVG, currentColor convention as BottomCard.jsx's IconSkip etc.
-// className lives on the <svg> itself (not a wrapping span) because IconPause
-// and IconPlay are swapped via a ternary at the same JSX position -- React
-// unmounts/remounts the whole subtree on toggle, so putting the animation
-// class directly on the node that's actually fresh each time is what makes
-// it replay on every pause/resume tap instead of firing once and going
-// stale on a persistent wrapper.
-function IconPause({ size = 16 }) {
+// IconPause and IconPlay both stay mounted permanently (rather than being
+// swapped via a ternary, which used to unmount/remount the whole subtree)
+// so DailyMap.css can cross-fade between them -- a remount only ever gives
+// the incoming icon an animated entrance, never the outgoing one an exit.
+// `visible` just toggles the `is-visible` class; the transition itself
+// lives entirely in CSS.
+function IconPause({ size = 16, visible }) {
   return (
-    <svg className="dm-pause-icon" width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg className={`dm-pause-icon${visible ? ' is-visible' : ''}`} width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <rect x="7" y="5" width="4" height="14" rx="2" fill="currentColor" />
       <rect x="13" y="5" width="4" height="14" rx="2" fill="currentColor" />
     </svg>
   );
 }
 
-function IconPlay({ size = 16 }) {
+function IconPlay({ size = 16, visible }) {
   return (
-    <svg className="dm-pause-icon" width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg className={`dm-pause-icon${visible ? ' is-visible' : ''}`} width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
         d="M8.5 6.4v11.2a1 1 0 0 0 1.53.85l8.97-5.6a1 1 0 0 0 0-1.7l-8.97-5.6a1 1 0 0 0-1.53.85Z"
         fill="currentColor"
@@ -272,7 +272,11 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
               onClick={handlePauseToggle}
               aria-label={paused ? 'Resume timer' : 'Pause timer'}
             >
-              {paused ? <IconPlay size={20} /> : <IconPause size={20} />}
+              {/* Both icons stay mounted -- DailyMap.css cross-fades between
+                  them via the `is-visible` class (see IconPause/IconPlay's
+                  comment above). */}
+              <IconPause size={20} visible={!paused} />
+              <IconPlay size={20} visible={paused} />
             </button>
           )}
           {/* Gated to READING/PLACING and !paused -- timer.pause() on

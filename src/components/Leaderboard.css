@@ -199,7 +199,9 @@
 
   .lb-share-btn,
   .lb-classic-btn,
-  .lb-blitz-btn {
+  .lb-blitz-btn,
+  .lb-recap-share-btn,
+  .lb-recap-close-btn {
     transition: none;
   }
 }
@@ -388,6 +390,12 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+  transition: transform 0.15s ease;
+}
+
+.lb-recap-share-btn:active:not(:disabled),
+.lb-recap-close-btn:active {
+  transform: scale(0.96);
 }
 
 .lb-recap-share-btn {
