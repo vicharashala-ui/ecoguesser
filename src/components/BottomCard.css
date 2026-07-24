@@ -526,6 +526,7 @@
 .bc-score {
   font-weight: 700;
   color: var(--eg-ink, #111827);
+  font-variant-numeric: tabular-nums; /* counting up on mount (AnimatedScore) -- keeps digit width stable so it doesn't jitter, same as DailySummary.css's .ds-total */
 }
 
 /* Perfect guess (finalScore === SCORING.MAX_SCORE, i.e. landed inside the

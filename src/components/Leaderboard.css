@@ -100,6 +100,7 @@
   font-size: 14px;
   color: var(--eg-ink, #111827);
   border-bottom: 1px solid var(--eg-border, #e5e7eb);
+  font-variant-numeric: tabular-nums; /* fixed-width digits in the score/points/distance columns */
   /* backwards fill so each row stays at the 0% keyframe (invisible) during
      its own animation-delay instead of flashing full-opacity content before
      its turn -- delay itself is set inline per-row in Leaderboard.jsx
