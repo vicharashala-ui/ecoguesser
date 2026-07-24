@@ -58,6 +58,7 @@
 }
 
 .sd-banner-menu {
+  position: relative;
   flex: none;
   display: flex;
   align-items: center;
@@ -69,6 +70,18 @@
   background: rgba(17, 24, 39, 0.06);
   color: var(--eg-ink, #111827);
   cursor: pointer;
+}
+
+/* Invisible hit-area extension -- 40x40 min target without growing the
+   visible 36x36 square. 2px/side is safe for all three instances of this
+   class: the settings-gear (.sd-banner, next to flex:1 .sd-banner-name)
+   has an 10px gap and a taller 42px-tall sibling to spare; the sound/
+   haptics pair (.sd-settings-row, gap:10) only eats 4 of that 10px between
+   them. Both rows sit 18px clear of their neighbors vertically. */
+.sd-banner-menu::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
 }
 
 .sd-settings-row {
@@ -223,6 +236,7 @@
 }
 
 .sd-region-check {
+  position: relative;
   width: 20px;
   height: 20px;
   flex: none;
@@ -231,6 +245,28 @@
   background: #fff;
   cursor: pointer;
   padding: 0;
+}
+
+/* Invisible hit-area extension -- standalone <button> with no wrapping
+   label, so unlike the other targets in this pass it can't just rely on
+   surrounding text. Sized to the real available space rather than a blind
+   40x40, because two things box it in tighter than usual:
+   - Vertically: consecutive collapsed .sd-region rows are only 16px apart
+     edge-to-edge (32px row incl. 6px/6px padding, +4px .sd-region margin).
+     7px top/bottom keeps a 2px buffer so this checkbox's hit area never
+     touches the next/previous region's own checkbox hit area.
+   - Horizontally: .sd-region-name (the region-expand button) sits flush to
+     the right across only the row's 10px flex gap, and its own clickable
+     box is NOT being enlarged here -- so the extension leans left (10px,
+     into the drawer's empty 18px padding, nothing interactive there) and
+     only 6px right, leaving a 4px buffer before .sd-region-name's box. */
+.sd-region-check::after {
+  content: '';
+  position: absolute;
+  top: -7px;
+  bottom: -7px;
+  left: -10px;
+  right: -6px;
 }
 
 .sd-region-check-all {

@@ -143,6 +143,19 @@
   transform: scale(0.96);
 }
 
+/* Invisible hit-area extension -- 44x44 touch-primary target (pausing a
+   live timed round), already close at 42x42 so only 1px/side is needed.
+   The right/top sides have very little real clearance (this button
+   already overhangs -8px/-8px past .dm-timer-card, itself only 10px from
+   the header and viewport edge) -- but nothing else occupies that sliver,
+   so a 1px nudge there is either absorbed by the existing overhang or
+   falls harmlessly off-viewport, never onto another interactive element. */
+.dm-pause-btn::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+}
+
 /* The icon swap itself (IconPause <-> IconPlay) is a full unmount/remount
    at the same JSX position, not a class change on a persistent node -- see
    the comment on those two functions in DailyMap.jsx -- so this plays fresh

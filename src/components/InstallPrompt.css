@@ -87,6 +87,7 @@
 }
 
 .eg-install-dismiss {
+  position: relative;
   width: 28px;
   height: 28px;
   border: none;
@@ -99,6 +100,21 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+/* Invisible hit-area extension -- 40x40 min target without growing the
+   visible 28x28 circle. Leans right (9px) since only 6px of flex gap
+   separates this from .eg-install-add -- 3px left keeps a 3px buffer
+   there instead of touching it, made up on the other three sides (9px
+   right, 6px top/bottom) which all land in the toast's own 12px padding
+   with room left over. */
+.eg-install-dismiss::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: -3px;
+  right: -9px;
 }
 
 .eg-install-dismiss:active {

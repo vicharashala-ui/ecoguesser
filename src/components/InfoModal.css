@@ -75,6 +75,7 @@
 }
 
 .im-close-btn {
+  position: relative;
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -86,6 +87,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Invisible hit-area extension -- 40x40 min target without growing the
+   visible 30x30 circle. 5px/side stays well inside .im-header's 18px/20px
+   padding (and clear of .im-modal's overflow:hidden clip), and the only
+   neighbor -- the h2 title -- sits far enough left via space-between that
+   short header titles never come close. */
+.im-close-btn::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
 }
 
 .im-body {

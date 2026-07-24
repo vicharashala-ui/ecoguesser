@@ -34,6 +34,17 @@
   flex-shrink: 0;
 }
 
+/* Invisible hit-area extension -- 40x40 min tap target without growing the
+   visible 38x38 button (which would shift the header's centered title-block
+   math). 1px/side is plenty of room here: nothing else sits within several
+   px of this button (title-block is pointer-events:none), so no collision
+   risk with a neighboring interactive element. */
+.eg-menu-btn::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+}
+
 /* Centered independent of the hamburger -- left:50%/translateX(-50%) rather
    than flex `margin: 0 auto`, so the block's true center always lands on the
    viewport's center regardless of the button's own width. */

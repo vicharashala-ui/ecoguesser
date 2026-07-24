@@ -255,6 +255,7 @@
 }
 
 .bc-skip-btn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -267,6 +268,17 @@
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+/* Invisible hit-area extension -- 44x44 touch-primary target (tapped
+   mid-round, often in a hurry) without growing the visible 38x38 pill.
+   3px/side eats 6 of the 8px flex gap to .bc-hint-btn, and 3px into the
+   .bc-pill's own 12/14px padding on the other sides -- both leave a clear
+   buffer, so this never overlaps a neighboring interactive element. */
+.bc-skip-btn::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
 }
 
 .bc-skip-btn:hover {
@@ -306,6 +318,17 @@
 .bc-hint-btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
+}
+
+/* Invisible hit-area extension -- 44x44 touch-primary target, same
+   reasoning as .bc-skip-btn::after above (3px/side clears the 8px flex
+   gaps to both .bc-skip-btn and .bc-confirm-btn with room to spare). Sits
+   below .bc-hint-count in source order but that badge is a non-interactive
+   span, so no interactive overlap either way. */
+.bc-hint-btn::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
 }
 
 .bc-hint-count {
@@ -404,6 +427,18 @@
 
 .bc-collapse-toggle.is-collapsed:active {
   transform: rotate(180deg) scale(0.96);
+}
+
+/* Invisible hit-area extension -- 40x40 min target without growing the
+   visible 32x32 chevron. 4px/side stays well inside .bc-card's own 14/18px
+   padding (top:10/right:14 offsets leave 6/10px clearance respectively), so
+   it never reaches the card edge or .bottom-card's overflow:hidden clip.
+   No interactive neighbor sits under the extension -- bc-card-header's
+   icon/label are plain, non-interactive spans. */
+.bc-collapse-toggle::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
 }
 
 .bc-icon-lg {
