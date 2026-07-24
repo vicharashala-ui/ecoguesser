@@ -76,6 +76,7 @@
   font-size: 17px;
   font-weight: 800;
   color: var(--eg-ink, #111827);
+  text-wrap: balance;
 }
 
 .im-close-btn {
@@ -138,6 +139,7 @@
 
 .im-body p {
   margin: 0 0 10px;
+  text-wrap: pretty;
 }
 
 .im-body ul {

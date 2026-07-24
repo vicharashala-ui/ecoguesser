@@ -72,6 +72,7 @@
   letter-spacing: 0.06em;
   color: var(--eg-ink-secondary, #6b7280);
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
 .ds-status {

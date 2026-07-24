@@ -295,6 +295,7 @@ export default function App() {
       <Header
         onMenuClick={() => { drawerEverOpened.current = true; setDrawerOpen(true); }}
         titleIsH1={!(activeTab === 'stats' || (activeTab === 'daily' && dailyPhase === 'leaderboard'))}
+        showMenu={activeTab !== 'daily'}
       />
       <InstallPrompt />
       {infoModalVariant && (

@@ -9,6 +9,12 @@
 // to the button, so it stays centered on the viewport regardless of the
 // button's width/padding.
 //
+// showMenu: Daily mode has no per-round settings (category/state filtering
+// lives in SideDrawer, which only applies to Classic/Blitz), so App.jsx
+// passes showMenu=false there and the hamburger is omitted entirely. The
+// title block is independently centered (see Header.css), so its layout is
+// unaffected either way.
+//
 // titleIsH1: this header is mounted for every tab (App.jsx renders it
 // unconditionally), and Leaderboard.jsx/StatsView.jsx each already have
 // their own page-level <h1> -- rendering a second <h1> here while either of
@@ -25,15 +31,17 @@ import './Header.css';
 
 const LOGO_SIZE = 24;
 
-export default function Header({ onMenuClick, titleIsH1 }) {
+export default function Header({ onMenuClick, titleIsH1, showMenu = true }) {
   const TitleTag = titleIsH1 ? 'h1' : 'span';
   return (
     <header className="eg-header">
-      <button type="button" className="eg-menu-btn" onClick={onMenuClick} aria-label="Menu">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      </button>
+      {showMenu && (
+        <button type="button" className="eg-menu-btn" onClick={onMenuClick} aria-label="Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
       <div className="eg-header-title-block">
         <div className="eg-header-title-row">
           <svg
