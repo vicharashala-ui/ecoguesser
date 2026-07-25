@@ -5,22 +5,103 @@
    (z-index 46 vs 10); both modes only ever mount this during REVEALING,
    when the hint pills are already hidden, so there's no real overlap --
    the z-index just keeps it that way if that ever changes. pointer-events:
-   none since it's a passive celebration, not an interactive control. */
+   none since it's a passive celebration, not an interactive control.
+
+   Visually rebuilt to match AchievementToast.css's icon+kicker+title
+   structure and dark-gradient-card language (was a plain single-color pill
+   in Tailwind's emerald-400, #34d399/rgba(52,211,153,...) -- unrelated to
+   --eg-brand, the same "generic Tailwind green standing in for the real
+   brand color" anti-pattern index.css's --eg-brand comment already
+   describes fixing everywhere else in the UI). Background gradient reuses
+   #1c3b28, the app's actual dark brand green (splash screen/app icon/
+   favicon mask, see index.html), instead of achievement's neutral slate --
+   ties this specific toast to the brand mark itself, and keeps it visually
+   distinct from the amber achievement toast if both ever stack. Accent
+   color (#4dcc7e) isn't --eg-brand itself -- lightened from the same
+   143deg hue/saturation --eg-brand was derived from (see index.css's
+   comment), the same way --eg-brand was lightened from #1c3b28, since
+   --eg-brand at its normal lightness doesn't clear AA against a dark card
+   (verified: 6.01:1 for #4dcc7e vs #1c3b28, well past the 4.5:1 floor). */
 .eg-milestone-toast {
   position: absolute;
   left: 50%;
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 14px);
   transform: translateX(-50%);
   z-index: var(--eg-z-toast-milestone, 46);
+  display: flex;
+  align-items: center;
+  gap: 12px;
   max-width: min(360px, calc(100vw - 24px));
-  padding: 14px 28px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.94);
-  border: 1px solid rgba(52, 211, 153, 0.45);
-  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.35);
+  padding: 12px 22px 12px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1c3b28, #0d2015);
+  border: 1px solid rgba(77, 204, 126, 0.4);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.35), 0 0 20px rgba(77, 204, 126, 0.12);
   pointer-events: none;
   isolation: isolate;
+  overflow: hidden; /* clips the ::before shine sweep below to the rounded corners */
   animation: eg-milestone-life 3.6s ease forwards;
+}
+
+/* One-shot diagonal shine sweeping across the toast on entrance -- same
+   technique as AchievementToast.css's ::before, so the app's two
+   celebratory toasts share one signature entrance instead of two. */
+.eg-milestone-toast::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+  animation: eg-milestone-shine 1.6s ease-in-out 1;
+  pointer-events: none;
+}
+
+@keyframes eg-milestone-shine {
+  to { left: 130%; }
+}
+
+.eg-milestone-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(77, 204, 126, 0.28), rgba(77, 204, 126, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(77, 204, 126, 0.4);
+  color: #4dcc7e;
+}
+
+.eg-milestone-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.eg-milestone-kicker {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4dcc7e;
+  white-space: nowrap;
+}
+
+.eg-milestone-title {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #f8f6f1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Single keyframe covers pop-in, hold, and fade-out -- avoids a separate
@@ -32,19 +113,13 @@
   100% { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(0.97); }
 }
 
-.eg-milestone-title {
-  margin: 0;
-  font-family: 'Nunito', 'Segoe UI', sans-serif;
-  font-weight: 800;
-  font-size: 16px;
-  line-height: 1.25;
-  text-align: center;
-  color: #34d399;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .eg-milestone-toast {
     animation: eg-milestone-fade 3.6s linear forwards;
+  }
+
+  .eg-milestone-toast::before {
+    display: none;
   }
 }
 
