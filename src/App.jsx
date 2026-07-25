@@ -1,20 +1,30 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import { DailyMap } from './components/DailyMap.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import Header from './components/Header.jsx';
 import InstallPrompt from './components/InstallPrompt.jsx';
 import AchievementToast from './components/AchievementToast.jsx';
+import MapLoadingOverlay from './components/MapLoadingOverlay.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 import { warmSharedMapData } from './hooks/useMapState.js';
 import { useAchievementUnlocks } from './hooks/useAchievementUnlocks.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
 import { LS_KEYS } from './config.js';
 
-// Code-split, not eagerly imported: DailyMap (default tab) already pulls in
-// MapLibre on first paint, so these buy nothing there -- but Classic/Blitz
-// only ever mount after their tab is first activated (see
-// classicEverActivated/blitzEverActivated below), so deferring their
-// module fetch to that moment keeps them out of the initial bundle.
+// All three map components are now code-split, including DailyMap (the
+// default tab) -- it used to be imported eagerly on the reasoning that it
+// "needs MapLibre on first paint anyway", but that's only true once it
+// mounts, not for the app shell itself. Splitting it out means the splash
+// screen (index.html/main.jsx) can hand off to this shell -- and this
+// shell's own loading feedback (MapLoadingOverlay below, as DailyMap's
+// Suspense fallback) -- without waiting on the ~273KB gzip MapLibre chunk
+// first. Total bytes/requests are unchanged; only the visible split
+// between "static splash logo" and "spinner + loading text" moves earlier,
+// since the shell bundle mounts sooner. MapLoadingOverlay itself has no
+// MapLibre dependency (BrandSpinner -> tigerMarkPath.js only), so importing
+// it eagerly here for the fallback doesn't undo the split.
+const DailyMap = lazy(() =>
+  import('./components/DailyMap.jsx').then((m) => ({ default: m.DailyMap }))
+);
 const ClassicMap = lazy(() => import('./components/ClassicMap.jsx'));
 const BlitzMap = lazy(() => import('./components/BlitzMap.jsx'));
 
@@ -250,18 +260,20 @@ export default function App() {
           />
         </Suspense>
       )}
-      <DailyMap
-        mapRef={dailyMapRef}
-        sites={allSites}
-        onComplete={handleDailyComplete}
-        active={activeTab === 'daily'}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: activeTab === 'daily' && dailyPhase === 'round' ? 'block' : 'none',
-          animation: activeTab === 'daily' && dailyPhase === 'round' ? 'eg-tab-fade-in 220ms ease' : 'none',
-        }}
-      />
+      <Suspense fallback={<MapLoadingOverlay active />}>
+        <DailyMap
+          mapRef={dailyMapRef}
+          sites={allSites}
+          onComplete={handleDailyComplete}
+          active={activeTab === 'daily'}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: activeTab === 'daily' && dailyPhase === 'round' ? 'block' : 'none',
+            animation: activeTab === 'daily' && dailyPhase === 'round' ? 'eg-tab-fade-in 220ms ease' : 'none',
+          }}
+        />
+      </Suspense>
       {activeTab === 'daily' && dailyPhase === 'summary' && dailySummaryData && (
         <Suspense fallback={null}>
           <DailySummary

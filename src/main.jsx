@@ -53,7 +53,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // previously the splash's implicit job to hide that gap), so there's no
 // reason to hold the logo on screen any longer than the brand-moment floor
 // itself needs.
-const MIN_SPLASH_MS = 350;
+const MIN_SPLASH_MS = 120;
 const splashShownAt = performance.now();
 requestAnimationFrame(() => {
   const splash = document.getElementById('eg-splash');
