@@ -1,0 +1,37 @@
+/* position: absolute, not fixed -- standing project rule (see
+   DailyMap.css's .dm-loading-pill for the full writeup): fixed elements
+   disappear over the live WebGL canvas on mobile Chrome/Safari during
+   repaints. Every wrapper this mounts inside is already position:absolute;
+   inset:0 (or position:relative for DailyMap's own root), so inset:0 here
+   resolves to the same full-map box. z-index reuses --eg-z-card (30), same
+   as the pills it replaces -- sits above --eg-z-map-controls (10) so it
+   correctly covers the layer-toggle panel while loading. */
+.eg-map-loading-overlay {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  transform: translateZ(0);
+  z-index: var(--eg-z-card, 30);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(17, 24, 39, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  /* Map isn't interactive yet -- block taps from reaching the canvas
+     underneath instead of letting them pass through the dimmed backdrop. */
+  pointer-events: auto;
+}
+
+.eg-map-loading-text {
+  margin: 0;
+  padding: 0 24px;
+  max-width: 280px;
+  text-align: center;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+}

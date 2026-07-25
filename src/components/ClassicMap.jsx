@@ -21,6 +21,7 @@ import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import MilestoneToast from './MilestoneToast.jsx';
 import AchievementToast from './AchievementToast.jsx';
+import MapLoadingOverlay from './MapLoadingOverlay.jsx';
 import { useClassicRound } from '../hooks/useClassicRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import { useAchievementUnlocks } from '../hooks/useAchievementUnlocks.js';
@@ -106,7 +107,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
   } = useClassicRound(sitePool);
 
   const {
-    political, satellite, satelliteUnavailable, mapReady, terrain,
+    political, satellite, satelliteUnavailable, mapReady, mapLoadSlow, terrain,
     setPolitical, setSatellite, setDifficulty, setTerrain,
   } = useMapState(mapRef, 'classic');
   const { current: newAchievement, recordAndDetect, dismissCurrent: dismissAchievement } = useAchievementUnlocks();
@@ -247,6 +248,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
         guess={guess}
         guessMarkerVisible={roundState !== 'REVEALING'}
       />
+      <MapLoadingOverlay active={!mapReady} slow={mapLoadSlow} />
       <RecenterButton
         mapRef={mapRef}
         style={
@@ -274,7 +276,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           <label className="eg-toggle">
             <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
             <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            Borders{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
+            Borders
           </label>
         </div>
         <div className="cm-mode-row">

@@ -47,7 +47,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // mounted and kicked off their own fetches (map style, sites JSON, tiles)
 // by this point, so the game keeps loading at full speed behind the
 // splash the entire time -- nothing here gates or slows that down.
-const MIN_SPLASH_MS = 500;
+//
+// Kept short rather than long on purpose: DailyMap's own MapLoadingOverlay
+// throbber now covers "map still loading" once the splash fades (it was
+// previously the splash's implicit job to hide that gap), so there's no
+// reason to hold the logo on screen any longer than the brand-moment floor
+// itself needs.
+const MIN_SPLASH_MS = 350;
 const splashShownAt = performance.now();
 requestAnimationFrame(() => {
   const splash = document.getElementById('eg-splash');

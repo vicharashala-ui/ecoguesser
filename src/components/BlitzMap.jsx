@@ -17,6 +17,7 @@ import RecenterButton from './RecenterButton.jsx';
 import MilestoneToast from './MilestoneToast.jsx';
 import AchievementToast from './AchievementToast.jsx';
 import ConfettiBurst from './ConfettiBurst.jsx';
+import MapLoadingOverlay from './MapLoadingOverlay.jsx';
 import { useBlitzRound } from '../hooks/useBlitzRound.js';
 import { useMapState } from '../hooks/useMapState.js';
 import {
@@ -150,7 +151,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     handleStateClick, handleConfirm, handleNextSite, handleSkip,
   } = useBlitzRound(sitePool);
 
-  const { mapReady, politicalNames, setPoliticalNames } = useMapState(mapRef, 'blitz');
+  const { mapReady, mapLoadSlow, politicalNames, setPoliticalNames } = useMapState(mapRef, 'blitz');
   const { current: newAchievement, recordAndDetect, dismissCurrent: dismissAchievement } = useAchievementUnlocks();
 
   // Fraction of the current run-of-5 completed, for the streak medallion's
@@ -524,7 +525,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
               onChange={() => setPoliticalNames(!politicalNames)}
             />
             <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            State Names{!mapReady && <span className="eg-toggle-loading-hint"> · loading</span>}
+            State Names
           </label>
         </div>
       </div>
@@ -534,6 +535,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
       )}
 
       <MapContainer mapRef={mapRef} onMapClick={handleMapClick} guess={null} styleTransform={blitzStyleTransform} />
+      <MapLoadingOverlay active={!mapReady} slow={mapLoadSlow} />
       <RecenterButton
         mapRef={mapRef}
         style={

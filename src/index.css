@@ -351,16 +351,6 @@ body {
   cursor: not-allowed;
 }
 
-/* Suffix inside a toggle's label text (e.g. "Terrain · loading") while its
-   input is disabled because mapReady is still false. Deliberately not
-   .cm-sat-warning/.dm-sat-warning's bold red -- that styling means
-   "unavailable" (an error state); this one clears itself in a moment, so
-   it reads as quieter/informational instead of alarming. */
-.eg-toggle-loading-hint {
-  font-weight: 400;
-  color: #9ca3af;
-}
-
 .eg-toggle-input:focus-visible ~ .eg-toggle-track {
   outline: 2px solid var(--eg-brand, #227743);
   outline-offset: 2px;
