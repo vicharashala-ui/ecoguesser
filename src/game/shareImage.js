@@ -12,9 +12,9 @@ import { toBlob } from 'html-to-image';
 /**
  * @param {HTMLElement} node - the DOM node to rasterize (e.g. the DailyRecap
  *   card's root element via a ref).
- * @param {{ filename: string, shareTitle?: string, shareText?: string }} opts
+ * @param {{ filename: string, shareTitle?: string, shareText?: string, shareUrl?: string }} opts
  */
-export async function shareNodeAsImage(node, { filename, shareTitle, shareText }) {
+export async function shareNodeAsImage(node, { filename, shareTitle, shareText, shareUrl }) {
   if (!node) return;
 
   // Nunito is loaded site-wide via @fontsource, but a capture fired before
@@ -60,7 +60,7 @@ export async function shareNodeAsImage(node, { filename, shareTitle, shareText }
 
   if (navigator.canShare?.({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], title: shareTitle, text: shareText });
+      await navigator.share({ files: [file], title: shareTitle, text: shareText, url: shareUrl });
     } catch {
       // user cancelled the share sheet -- no fallback needed, they saw the image
     }

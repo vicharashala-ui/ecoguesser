@@ -32,7 +32,7 @@
 // lines below).
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { LS_KEYS } from '../config.js';
+import { LS_KEYS, APP_URL } from '../config.js';
 import { getTodayString, getMsUntilNextDaily } from '../game/daily.js';
 import { getLeaderboard } from '../game/api.js';
 import { loadDailyStats, bestDailyScore } from '../game/stats.js';
@@ -250,8 +250,9 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
         filename: `ecoguesser-daily-${today}.png`,
         shareTitle: 'EcoGuesser',
         shareText: todayEntry
-          ? `My EcoGuesser Daily recap: ${todayEntry.total.toLocaleString()} today`
-          : 'My EcoGuesser Daily recap',
+          ? `My EcoGuesser Daily Recap: ${todayEntry.total.toLocaleString()} today ${APP_URL}`
+          : `My EcoGuesser Daily Recap ${APP_URL}`,
+        shareUrl: APP_URL,
       });
     } finally {
       setSharing(false);

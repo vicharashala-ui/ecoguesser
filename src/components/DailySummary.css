@@ -24,25 +24,21 @@
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   padding: 2rem;
   text-align: center;
+  overflow-y: auto;
 }
 
-/* Entrance: split into two beats (score, then the play-row) rather than
-   one block fading in together -- see animations.md's "Split and Stagger".
-   opacity+transform+blur, each on its own class (not :nth-child) since the
-   submitting spinner/status conditionally renders between ds-label and
-   ds-play-row, which would shift nth-child positions. */
-.ds-total,
-.ds-label,
-.ds-play-row {
+/* Entrance: split into two beats (score, then the rest) rather than one
+   block fading in together -- see animations.md's "Split and Stagger".
+   .ds-total gets its own quicker, blur-free entrance (below) since a
+   lingering blur/opacity fade over the same ~200ms the digit-roll starts
+   in was masking the roll -- by the time the container was legible, the
+   digits had mostly already settled. .ds-label keeps the fuller fade. */
+.ds-label {
   opacity: 0;
   transform: translateY(12px);
   filter: blur(4px);
-  animation: eg-ds-fade-in-up 400ms ease-out forwards;
+  animation: eg-ds-fade-in-up 400ms ease-out 80ms forwards;
 }
-
-.ds-total { animation-delay: 0ms; }
-.ds-label { animation-delay: 80ms; }
-.ds-play-row { animation-delay: 200ms; }
 
 @keyframes eg-ds-fade-in-up {
   to {
@@ -53,21 +49,77 @@
 }
 
 .ds-total {
-  font-size: 40px;
-  font-weight: 800;
-  color: var(--eg-ink, #111827);
-  font-variant-numeric: tabular-nums; /* counting up on mount (AnimatedScore) -- keeps digit width stable so it doesn't jitter */
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+  animation: eg-ds-total-in 220ms ease-out forwards;
+}
+
+@keyframes eg-ds-total-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ds-total {
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--eg-brand, #227743);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums; /* odometer roll on mount -- keeps digit width stable so it doesn't jitter */
+}
+
+/* OdometerScore digit-roll, inlined into DailySummary.jsx (its only user) */
+.odo-score {
+  display: inline-flex;
+  font-variant-numeric: tabular-nums;
+}
+
+.odo-digit {
+  display: inline-block;
+  overflow: hidden;
+  height: 1em;
+  line-height: 1em;
+  width: 0.62em;
+  vertical-align: bottom;
+}
+
+.odo-strip {
+  display: flex;
+  flex-direction: column;
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.odo-num {
+  height: 1em;
+  line-height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.odo-sep {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .odo-strip {
+    transition: none;
+  }
 }
 
 .ds-total span {
-  font-size: 18px;
-  font-weight: 400;
+  font-size: 26px;
+  font-weight: 700;
   color: var(--eg-ink-secondary, #6b7280);
 }
 
 .ds-label {
   margin: 0 0 20px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.06em;
   color: var(--eg-ink-secondary, #6b7280);
@@ -78,61 +130,93 @@
 .ds-status {
   margin: 12px 0 0;
   color: var(--eg-ink-secondary, #6b7280);
-  font-size: 14px;
+  font-size: 15px;
 }
 
-.ds-play-row {
+.ds-site-list {
+  width: 100%;
+  max-width: 360px;
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
   display: flex;
-  gap: 12px;
-  margin-top: 28px;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(12px);
+  filter: blur(4px);
+  animation: eg-ds-fade-in-up 400ms ease-out 80ms forwards;
 }
 
-.ds-play-classic,
-.ds-play-blitz {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 999px;
-  background: transparent;
+.ds-site-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--eg-border, #e5e7eb);
+}
+
+.ds-site-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+}
+
+.ds-site-name {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: 15px;
   font-weight: 700;
+  color: var(--eg-ink, #111827);
+  overflow-wrap: break-word;
+}
+
+.ds-site-dist {
+  flex: none;
+  margin-top: 1px;
   font-size: 14px;
+  font-weight: 700;
+  color: var(--eg-ink-secondary, #6b7280);
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-leaderboard-btn {
+  opacity: 0;
+  transform: translateY(12px);
+  filter: blur(4px);
+  animation: eg-ds-fade-in-up 400ms ease-out 160ms forwards;
+  margin-top: 4px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--eg-ink-secondary, #6b7280);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
-.ds-play-classic:active,
-.ds-play-blitz:active {
-  transform: scale(0.96);
-}
-
-.ds-play-classic {
-  color: var(--eg-brand, #227743);
-}
-
-.ds-play-classic:hover {
-  background: rgba(34, 119, 67, 0.08);
-}
-
-.ds-play-blitz {
-  color: #f59e0b;
-}
-
-.ds-play-blitz:hover {
-  background: rgba(245, 158, 11, 0.08);
+.ds-leaderboard-btn:active {
+  opacity: 0.6;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ds-total,
   .ds-label,
-  .ds-play-row {
+  .ds-site-list,
+  .ds-leaderboard-btn {
     animation: none;
     opacity: 1;
     transform: none;
     filter: none;
-  }
-
-  .ds-play-classic,
-  .ds-play-blitz {
-    transition: none;
   }
 }
 

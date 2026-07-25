@@ -1,14 +1,16 @@
 // src/components/DailySummary.jsx
-// DAILY_SUMMARY -- the transient auto-submit screen between the 5th
-// round's REVEALING and LEADERBOARD:
+// DAILY_SUMMARY -- the score screen between the 5th round's REVEALING and
+// LEADERBOARD:
 //   1. (done by the caller) App.jsx's handleDailyComplete already called
 //      recordDailyResult before this component mounts -- that write must
 //      happen exactly once per real completion, not once per mount of
 //      this screen, so it doesn't live here.
 //   2. Name prompt modal if LS_KEYS.NAME is empty.
 //   3. POST /api/score, spinner shown throughout.
-//   4. All outcomes (200 / 409 / network error) resolve to LEADERBOARD via
-//      onDone() -- just with different payloads.
+//   4. All outcomes (200 / 409 / network error) resolve into `pendingResult`
+//      and phase 'ready' -- the score, the day's 5 sites with distance, and
+//      a "See Leaderboard" button. onDone() (-> LEADERBOARD) only fires when
+//      the player taps that button, not automatically.
 //
 // Known gap: unmounts if the player switches tabs mid-submit (App.jsx only
 // renders it while activeTab==='daily'). The in-flight POST/GET still
@@ -21,8 +23,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import NamePromptModal from './NamePromptModal.jsx';
 import BrandSpinner from './BrandSpinner.jsx';
-import AnimatedScore from './AnimatedScore.jsx';
-import { LS_KEYS, SCORING, DAILY } from '../config.js';
+import { LS_KEYS, SCORING, DAILY, CATEGORY_META, formatSiteName } from '../config.js';
 import { getTodayString } from '../game/daily.js';
 import { postScore, getLeaderboard } from '../game/api.js';
 import { getSkipPlayerName } from '../game/playerName.js';
@@ -30,13 +31,101 @@ import './DailySummary.css';
 
 const DAILY_MAX_TOTAL = SCORING.MAX_SCORE * DAILY.CATEGORIES.length; // 25,000 -- same derivation as BottomCard.jsx
 
-export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassic, onPlayBlitz }) {
+// Mechanical-odometer digit roll: each digit is a vertical strip of 0-9 that
+// transform-translates from '0' to its target value on mount, so the
+// intermediate digits visibly scroll past. Leftward (more significant)
+// digits get a longer duration, mimicking the cascading carry of a real
+// mechanical odometer. Skips straight to the final digits under
+// prefers-reduced-motion. Inlined here since this is its only user.
+//
+// Only mounted once phase 'ready' actually renders (see the JSX below) --
+// mounting it at component load instead let the whole roll play out during
+// the submitting/name-prompt phases, finished by the time the player's
+// focus ever reached this screen. startDelay then waits for the ready
+// phase's own site-list/button entrance (staggered up to 560ms) to land
+// before the roll starts, so it isn't fighting for attention with them.
+function OdometerScore({ value, duration = 1200, staggerMs = 140, startDelay = 0 }) {
+  const reduceMotion = typeof window !== 'undefined'
+    && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+  const formatted = value.toLocaleString();
+  const digitCount = formatted.replace(/\D/g, '').length;
+
+  const [settled, setSettled] = useState(reduceMotion);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    // Wait for the container's own landing animation (startDelay) before
+    // starting the roll -- rolling digits while the page itself is still
+    // fading/scaling in reads as two competing motions. Then double rAF:
+    // a single rAF can fire before the browser has actually painted the
+    // zeroed digits, so the transition never gets a "from" state to
+    // interpolate from and the roll is invisible -- it just appears
+    // already-settled. Waiting a second frame guarantees that first paint
+    // has happened.
+    let raf1;
+    let raf2;
+    const timer = setTimeout(() => {
+      raf1 = requestAnimationFrame(() => {
+        raf2 = requestAnimationFrame(() => setSettled(true));
+      });
+    }, startDelay);
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, [reduceMotion, startDelay]);
+
+  let digitIndex = -1;
+  return (
+    <span className="odo-score">
+      {formatted.split('').map((char, i) => {
+        if (!/\d/.test(char)) {
+          return <span className="odo-sep" key={i}>{char}</span>;
+        }
+        digitIndex += 1;
+        const rankFromRight = digitCount - 1 - digitIndex;
+        const digitDuration = duration + rankFromRight * staggerMs;
+        return (
+          <span className="odo-digit" key={i}>
+            <span
+              className="odo-strip"
+              style={{
+                transform: `translateY(${settled ? -Number(char) : 0}em)`,
+                transitionDuration: `${digitDuration}ms`,
+              }}
+            >
+              {Array.from({ length: 10 }, (_, d) => (
+                <span className="odo-num" key={d}>{d}</span>
+              ))}
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+// Keeps this screen open at least DAILY.SUMMARY_MIN_DISPLAY_MS from when
+// submit() started, regardless of how fast the POST/GET resolves.
+function waitRemaining(startedAt) {
+  const remaining = DAILY.SUMMARY_MIN_DISPLAY_MS - (performance.now() - startedAt);
+  return remaining > 0 ? new Promise((resolve) => setTimeout(resolve, remaining)) : Promise.resolve();
+}
+
+export default function DailySummary({ totalPts, totalDist, results, onDone }) {
   const [phase, setPhase] = useState(
     () => (localStorage.getItem(LS_KEYS.NAME) ? 'submitting' : 'name_prompt')
   );
+  // Holds the resolved leaderboard payload once submit() finishes -- 'ready'
+  // phase shows the score + site list and waits for the player to tap "See
+  // Leaderboard" instead of auto-navigating, so onDone only fires on that tap.
+  const [pendingResult, setPendingResult] = useState(null);
 
   const submit = useCallback(async (playerName) => {
     setPhase('submitting');
+    const startedAt = performance.now();
     const uuid = localStorage.getItem(LS_KEYS.UUID);
     const date = getTodayString();
 
@@ -45,13 +134,17 @@ export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassi
 
       if (status === 200 && data.success) {
         localStorage.setItem(LS_KEYS.RANK_TODAY, JSON.stringify({ date, rank: data.rank }));
-        onDone({ top10: data.top10, rank: data.rank, banner: null });
+        await waitRemaining(startedAt);
+        setPendingResult({ top10: data.top10, rank: data.rank, banner: null });
+        setPhase('ready');
         return;
       }
 
       if (status === 409) {
         const lb = await getLeaderboard(date);
-        onDone({ top10: lb.top10, rank: null, banner: 'already_submitted' });
+        await waitRemaining(startedAt);
+        setPendingResult({ top10: lb.top10, rank: null, banner: 'already_submitted' });
+        setPhase('ready');
         return;
       }
 
@@ -62,14 +155,18 @@ export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassi
     } catch {
       try {
         const lb = await getLeaderboard(date);
-        onDone({ top10: lb.top10, rank: null, banner: 'network_error' });
+        await waitRemaining(startedAt);
+        setPendingResult({ top10: lb.top10, rank: null, banner: 'network_error' });
+        setPhase('ready');
       } catch {
         // GET fallback also failed -- Leaderboard gets an empty board plus
         // the error banner; its own Retry button re-runs the GET.
-        onDone({ top10: [], rank: null, banner: 'network_error' });
+        await waitRemaining(startedAt);
+        setPendingResult({ top10: [], rank: null, banner: 'network_error' });
+        setPhase('ready');
       }
     }
-  }, [totalPts, totalDist, onDone]);
+  }, [totalPts, totalDist]);
 
   // Returning-player case: NAME already set, submit immediately on mount.
   // The empty-NAME case instead waits for the modal's Save/Skip below.
@@ -89,7 +186,10 @@ export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassi
   return (
     <div className="ds-screen">
       <div className="ds-total">
-        <AnimatedScore value={totalPts} /> <span>/ {DAILY_MAX_TOTAL.toLocaleString()}</span>
+        {phase === 'ready'
+          ? <OdometerScore value={totalPts} startDelay={600} />
+          : <span className="odo-score">{totalPts.toLocaleString()}</span>}
+        {' '}<span>/ {DAILY_MAX_TOTAL.toLocaleString()}</span>
       </div>
       <p className="ds-label">Today's Score</p>
 
@@ -100,16 +200,27 @@ export default function DailySummary({ totalPts, totalDist, onDone, onPlayClassi
         </>
       )}
 
-      <div className="ds-play-row">
-        <button type="button" className="ds-play-classic" onClick={onPlayClassic}>
-          Play Classic
-        </button>
-        <button type="button" className="ds-play-blitz" onClick={onPlayBlitz}>
-          Play Blitz
-        </button>
-      </div>
-
       {phase === 'name_prompt' && <NamePromptModal onSave={handleSave} onSkip={handleSkip} />}
+
+      {phase === 'ready' && (
+        <>
+          <ul className="ds-site-list">
+            {results.map((r) => (
+              <li key={r.site.id} className="ds-site-item">
+                <span
+                  className="ds-site-dot"
+                  style={{ background: CATEGORY_META[r.site.category].color }}
+                />
+                <span className="ds-site-name">{formatSiteName(r.site)}</span>
+                <span className="ds-site-dist">{Math.round(r.distanceKm ?? 0).toLocaleString()} km</span>
+              </li>
+            ))}
+          </ul>
+          <button type="button" className="ds-leaderboard-btn" onClick={() => onDone(pendingResult)}>
+            See Leaderboard
+          </button>
+        </>
+      )}
     </div>
   );
 }

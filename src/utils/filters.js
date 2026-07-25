@@ -97,6 +97,17 @@ export function pickRandom(pool, excludeIds = []) {
   return eligible[Math.floor(Math.random() * eligible.length)];
 }
 
+// Biosphere Reserve pool is small (18 sites) -- cycle through it in order
+// instead of random picks, so all 18 are seen before any repeat. Module-level
+// index resets on page reload; that's fine, it just restarts the cycle.
+let brCycleIndex = 0;
+
+function pickCycledBr(brPool) {
+  const site = brPool[brCycleIndex % brPool.length];
+  brCycleIndex = (brCycleIndex + 1) % brPool.length;
+  return site;
+}
+
 /**
  * Classic/Blitz site picker: round-robins through DAILY.CATEGORIES
  * (np -> wls -> tr -> br -> ramsar) so category-skewed pool sizes (wls has
@@ -119,6 +130,9 @@ export function pickNextSite(pool, previousSite) {
 
   const prevIndex = previousSite ? order.indexOf(previousSite.category) : -1;
   const nextCategory = order[(prevIndex + 1) % order.length];
+  if (nextCategory === 'br') {
+    return pickCycledBr(byCategory.br);
+  }
   const excludeIds = previousSite ? [previousSite.id] : [];
   return pickRandom(byCategory[nextCategory], excludeIds);
 }

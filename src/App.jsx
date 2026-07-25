@@ -139,7 +139,7 @@ export default function App() {
     const totalPts = results.reduce((sum, r) => sum + r.finalScore, 0);
     const totalDist = results.reduce((sum, r) => sum + (r.distanceKm ?? 0), 0);
     recordAndDetect(() => recordDailyResult(results, totalPts, totalDist));
-    setDailySummaryData({ totalPts, totalDist });
+    setDailySummaryData({ totalPts, totalDist, results });
     setDailyPhase('summary');
   }
 
@@ -279,9 +279,8 @@ export default function App() {
           <DailySummary
             totalPts={dailySummaryData.totalPts}
             totalDist={dailySummaryData.totalDist}
+            results={dailySummaryData.results}
             onDone={handleSummaryDone}
-            onPlayClassic={() => switchTab('classic')}
-            onPlayBlitz={() => switchTab('blitz')}
           />
         </Suspense>
       )}
