@@ -19,7 +19,15 @@
 
 .eg-recenter-btn {
   position: absolute;
-  left: 16px;
+  /* Anchors to the centered 480px column's left edge (+16px), not the raw
+     viewport edge -- on mobile the column IS the viewport, so `50% - 240px`
+     goes negative and max() falls back to the old flat 16px (unchanged
+     behavior). On desktop, where BottomCard/BottomNav/the Start pill are
+     all capped to max-width:480px + margin-inline:auto (design-audit-
+     fixes.md #7), a flat left:16px stranded this button at the true
+     viewport edge, disconnected from that centered stack. 480/240 match
+     the same hardcoded cap those files use. */
+  left: max(16px, calc(50% - 240px + 16px));
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px + 144px + 12px);
   z-index: var(--eg-z-recenter, 25);
   width: 44px;

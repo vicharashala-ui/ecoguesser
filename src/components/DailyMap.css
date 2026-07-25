@@ -253,10 +253,10 @@
 }
 
 /* Square mode buttons -- replace the old Terrain/Satellite checkboxes.
-   Identical treatment to ClassicMap.css's .cm-mode-btn (see its comment
-   for the teal-accent / .is-active / .is-inert rationale); duplicated
-   rather than shared since this mirrors .cm-mode-btn the same way the
-   rest of this file mirrors ClassicMap.css. */
+   Identical treatment to ClassicMap.css's .cm-mode-btn (brand-green
+   .is-active / .is-inert rationale); duplicated rather than shared since
+   this mirrors .cm-mode-btn the same way the rest of this file mirrors
+   ClassicMap.css. */
 .dm-mode-btn {
   display: flex;
   align-items: center;
@@ -276,8 +276,8 @@
 }
 
 .dm-mode-btn.is-active {
-  border-color: #0891b2;
-  color: #0891b2;
+  border-color: var(--eg-brand, #227743);
+  color: var(--eg-brand, #227743);
 }
 
 .dm-mode-btn.is-inert {
@@ -290,7 +290,7 @@
 }
 
 .dm-mode-btn:focus-visible {
-  outline: 2px solid #0891b2;
+  outline: 2px solid var(--eg-brand, #227743);
   outline-offset: 2px;
 }
 
@@ -346,6 +346,12 @@
   position: absolute;
   left: 16px;
   right: 16px;
+  /* Desktop width cap (same trick as BottomCard.css's .bottom-card /
+     BottomNav.css's .eg-bottom-nav, design-audit-fixes.md #7) -- without
+     this the button stretches to ~1888px on a 1920px window. No effect on
+     mobile, where the viewport is already narrower than 480px. */
+  max-width: 480px;
+  margin-inline: auto;
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);
   z-index: var(--eg-z-card, 30);
 }

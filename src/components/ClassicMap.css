@@ -72,17 +72,15 @@
 }
 
 /* Square mode buttons -- replace the old Terrain/Satellite checkboxes.
-   .is-active switches to a teal dedicated to these two map-mode squares,
-   distinct from the app's green "on" color (used by .eg-toggle, Borders
-   included) so a lit square here never reads as "the same kind of on" as a
-   checked toggle. Unconditional on the Terrain/Basemap square (it's always
-   showing one of its two modes, never neither, so it's always highlighted);
-   conditional on `satellite` for the satellite square, which has a real
-   off state. .is-inert (terrain button while satellite is on) is a plain
-   opacity dim, not :disabled -- it stays clickable so the preference is
-   ready the instant satellite turns back off, same as the old checkbox
-   behavior. width: 100% (not a fixed px) + aspect-ratio keeps it a square
-   while filling .cm-mode-item's flex-grown share of the row. */
+   .is-active uses the app's brand green (matches .eg-toggle's "on" color).
+   Unconditional on the Terrain/Basemap square (it's always showing one of
+   its two modes, never neither, so it's always highlighted); conditional
+   on `satellite` for the satellite square, which has a real off state.
+   .is-inert (terrain button while satellite is on) is a plain opacity dim,
+   not :disabled -- it stays clickable so the preference is ready the
+   instant satellite turns back off, same as the old checkbox behavior.
+   width: 100% (not a fixed px) + aspect-ratio keeps it a square while
+   filling .cm-mode-item's flex-grown share of the row. */
 .cm-mode-btn {
   display: flex;
   align-items: center;
@@ -102,8 +100,8 @@
 }
 
 .cm-mode-btn.is-active {
-  border-color: #0891b2;
-  color: #0891b2;
+  border-color: var(--eg-brand, #227743);
+  color: var(--eg-brand, #227743);
 }
 
 .cm-mode-btn.is-inert {
@@ -116,7 +114,7 @@
 }
 
 .cm-mode-btn:focus-visible {
-  outline: 2px solid #0891b2;
+  outline: 2px solid var(--eg-brand, #227743);
   outline-offset: 2px;
 }
 

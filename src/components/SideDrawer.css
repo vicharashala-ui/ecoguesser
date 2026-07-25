@@ -50,6 +50,52 @@
   text-transform: uppercase;
 }
 
+.sd-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sd-heading-row .sd-heading {
+  margin-bottom: 0;
+}
+
+.sd-select-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 5px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  color: #fff;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.sd-select-all svg {
+  transform: scale(0);
+  transition: transform 0.15s ease;
+}
+
+.sd-select-all-active {
+  background: var(--eg-brand, #227743);
+  border-color: var(--eg-brand, #227743);
+}
+
+.sd-select-all-active svg {
+  transform: scale(1);
+}
+
+.sd-select-all:focus-visible {
+  outline: 2px solid var(--eg-brand, #227743);
+  outline-offset: 2px;
+}
+
 .sd-banner {
   display: flex;
   align-items: center;
@@ -487,6 +533,8 @@
   .sd-state-collapse,
   .sd-state-checkbox,
   .sd-state-checkbox svg,
+  .sd-select-all,
+  .sd-select-all svg,
   .sd-feedback-send-btn,
   .sd-settings-row {
     transition: none;

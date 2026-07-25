@@ -26,6 +26,7 @@ import './SideDrawer.css';
 
 const REGIONS = Object.keys(REGION_STATES);
 const CATEGORIES = Object.keys(CATEGORY_META);
+const ALL_STATES = REGIONS.flatMap((r) => REGION_STATES[r]);
 const DIFFICULTIES = ['easy', 'normal', 'hard'];
 const DIFFICULTY_LABELS = { easy: 'Easy', normal: 'Normal', hard: 'Hard' };
 
@@ -172,6 +173,16 @@ export default function SideDrawer({
     return 'partial';
   }
 
+  function toggleAllCategories() {
+    const allSelected = filters.categories.length === CATEGORIES.length;
+    onApplyFilters({ categories: allSelected ? [] : [...CATEGORIES], states: filters.states });
+  }
+
+  function toggleAllStates() {
+    const allSelected = filters.states.length === ALL_STATES.length;
+    onApplyFilters({ categories: filters.categories, states: allSelected ? [] : [...ALL_STATES] });
+  }
+
   function toggleRegion(region) {
     const states = REGION_STATES[region];
     const nextStates =
@@ -304,7 +315,20 @@ export default function SideDrawer({
             <hr className="sd-divider" />
 
             <div className="sd-section">
-              <p className="sd-heading">Category</p>
+              <div className="sd-heading-row">
+                <p className="sd-heading">Category</p>
+                <button
+                  type="button"
+                  className={`sd-select-all${filters.categories.length === CATEGORIES.length ? ' sd-select-all-active' : ''}`}
+                  onClick={toggleAllCategories}
+                  aria-pressed={filters.categories.length === CATEGORIES.length}
+                  aria-label={filters.categories.length === CATEGORIES.length ? 'Deselect all categories' : 'Select all categories'}
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 12.5l5 5L20 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
               <div className="sd-cat-list">
                 {CATEGORIES.map((cat) => {
                   const active = filters.categories.includes(cat);
@@ -329,7 +353,20 @@ export default function SideDrawer({
             </div>
 
             <div className="sd-section">
-              <p className="sd-heading">Region & State</p>
+              <div className="sd-heading-row">
+                <p className="sd-heading">Region & State</p>
+                <button
+                  type="button"
+                  className={`sd-select-all${filters.states.length === ALL_STATES.length ? ' sd-select-all-active' : ''}`}
+                  onClick={toggleAllStates}
+                  aria-pressed={filters.states.length === ALL_STATES.length}
+                  aria-label={filters.states.length === ALL_STATES.length ? 'Deselect all states' : 'Select all states'}
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 12.5l5 5L20 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
               {REGIONS.map((region) => {
                 const state = regionState(region);
                 const isExpanded = expandedRegion === region;

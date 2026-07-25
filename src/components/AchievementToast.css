@@ -1,16 +1,18 @@
 /* src/components/AchievementToast.css */
 /* Same absolute-over-the-map positioning reasoning as MilestoneToast.css
    (position: fixed is banned in this app -- see that file's comment).
-   Offset further down than MilestoneToast's own top so the rare case of
-   both firing on the same round (a site-collection milestone AND an
-   achievement unlock) reads as two stacked toasts, not an overlap -- no
-   z-index trick needed to sort that out, they simply don't occupy the same
-   space. z-index 47, just above MilestoneToast's 46: an achievement is the
-   bigger of the two moments if they ever do coincide. */
+   Same top offset as MilestoneToast (header + 14px, right below the
+   "EcoGuesser" title) rather than the previous 78px-lower stagger -- on
+   the rare round where both a site-collection milestone AND an
+   achievement unlock fire together, they'll now overlap instead of
+   stacking; z-index 47 (still above MilestoneToast's 46) means the
+   achievement toast renders on top in that case, which is an acceptable
+   trade for keeping it visible right under the title on every other
+   round. */
 .eg-achievement-toast {
   position: absolute;
   left: 50%;
-  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 78px);
+  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 14px);
   transform: translateX(-50%);
   z-index: var(--eg-z-toast-achievement, 47);
   display: flex;
