@@ -141,14 +141,33 @@
   to   { transform: translateX(130%) translateZ(0); }
 }
 
-/* A departing card's hint-reveal/score-pulse are one-shot cues meant for
-   the moment they actually happened -- the ghost's DOM nodes are fresh
-   mounts too (see BottomCard.jsx), so without this they'd replay those
-   pulses purely because the snapshot rendered, which reads as a glitch on
-   a card that's already on its way out. */
+/* A departing card's hint-reveal/score-pulse/content-stagger are all
+   one-shot cues meant for the moment they actually happened -- the
+   ghost's DOM nodes are fresh mounts too (see BottomCard.jsx), so without
+   this they'd replay purely because the snapshot rendered, which reads as
+   a glitch on a card that's already on its way out. Content-stagger
+   pieces get opacity:1/transform:none/filter:none as well (not just
+   animation:none), same reason as the reduced-motion reset above -- those
+   are plain properties on the rule, not just keyframe endpoints. */
 .bc-ghost .bc-hint-state,
 .bc-ghost .bc-score-perfect {
   animation: none;
+}
+
+.bc-ghost .bc-card-header,
+.bc-ghost .bc-card-name,
+.bc-ghost .bc-meta-row,
+.bc-ghost .bc-desc,
+.bc-ghost .bc-species,
+.bc-ghost .bc-divider,
+.bc-ghost .bc-result-row,
+.bc-ghost .bc-daily-line,
+.bc-ghost .bc-card > .bc-state-name,
+.bc-ghost .bc-actions {
+  animation: none;
+  opacity: 1;
+  transform: none;
+  filter: none;
 }
 
 .bottom-card.is-pill {
@@ -380,6 +399,98 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* Content stagger -- header/name+meta, then desc+species, then the
+   score/result row, then the action buttons, each fading up on its own
+   delay. Mirrors DailySummary.css's .ds-total/.ds-label/.ds-play-row
+   pattern (same opacity+translateY+blur physics, same 400ms ease-out),
+   with one more tier since this card carries more content. Targets the
+   elements that already exist rather than adding wrapper divs.
+   Starts at 0ms, concurrent with .bottom-card's own 380ms
+   bc-slide-in-left -- nothing else in this file waits for that slide to
+   finish (bc-hint-reveal/bc-score-pulse below both fire immediately too),
+   and this repeats every round so staying snappy matters more than
+   sequencing after the container settles.
+   `.bc-card > .bc-state-name` (not plain `.bc-state-name`) is deliberate:
+   BlitzCard.jsx renders that class as a direct child of .bc-card for its
+   correct-answer line, while Classic/Daily's copy lives nested inside
+   .bc-meta-row (already covered by the header/name/meta tier below) --
+   the child combinator keeps this tier from double-animating that one.
+   Blitz's wrong-guess .bz-badge is deliberately NOT included here --
+   it already owns a mount-triggered pop/shake (see BlitzCard.css) that
+   animates its own opacity+transform, so adding this animation on top
+   would just overwrite it (two `animation` shorthand declarations on one
+   element don't combine, the later-cascading one wins outright). Its
+   existing animation is delayed to 140ms directly in BlitzCard.css
+   instead, so it still lands in the same tier-3 beat as this group's
+   .bc-result-row/.bc-daily-line without fighting over the property. */
+.bc-card-header,
+.bc-card-name,
+.bc-meta-row,
+.bc-desc,
+.bc-species,
+.bc-divider,
+.bc-result-row,
+.bc-daily-line,
+.bc-card > .bc-state-name,
+.bc-actions {
+  opacity: 0;
+  transform: translateY(12px);
+  filter: blur(4px);
+  animation: bc-reveal-fade-in-up 400ms ease-out forwards;
+}
+
+.bc-card-header,
+.bc-card-name,
+.bc-meta-row {
+  animation-delay: 0ms;
+}
+
+.bc-desc,
+.bc-species {
+  animation-delay: 70ms;
+}
+
+.bc-divider,
+.bc-result-row,
+.bc-daily-line,
+.bc-card > .bc-state-name {
+  animation-delay: 140ms;
+}
+
+.bc-actions {
+  animation-delay: 210ms;
+}
+
+@keyframes bc-reveal-fade-in-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* animation:none alone would leave content stuck at opacity:0 forever --
+   opacity/transform/filter above are plain properties on the rule itself,
+   not just keyframe endpoints, so they need their own reset here too.
+   Same pattern as DailySummary.css's reduced-motion block. */
+@media (prefers-reduced-motion: reduce) {
+  .bc-card-header,
+  .bc-card-name,
+  .bc-meta-row,
+  .bc-desc,
+  .bc-species,
+  .bc-divider,
+  .bc-result-row,
+  .bc-daily-line,
+  .bc-card > .bc-state-name,
+  .bc-actions {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }
 
 .bc-card-header {

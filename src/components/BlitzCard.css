@@ -30,8 +30,11 @@
   /* Same overshoot-bounce easing as MapContainer.css's pin-drop and
      BottomNav.css's tab indicator -- this app's established "juicy" motion
      signature. Plays on mount, which happens fresh every round (BlitzCard.jsx
-     keys this element on site.id), not just the first reveal. */
-  animation: bz-badge-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+     keys this element on site.id), not just the first reveal. 140ms delay
+     matches BottomCard.css's content-stagger tier 3 (.bc-result-row etc.) --
+     this badge is Blitz's equivalent of that score/result row, so it's
+     synced to arrive on the same beat rather than popping in at 0ms. */
+  animation: bz-badge-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 140ms;
 }
 
 .bz-badge svg {
@@ -52,8 +55,9 @@
   /* Overrides .bz-badge's pop above -- a bounce reads as "yay", which is
      the wrong feeling for a miss. Same equal-specificity/later-in-source
      override the reduced-motion block below already relies on to disable
-     either variant, so no extra selector needed here. */
-  animation: bz-badge-shake 0.4s ease-out;
+     either variant, so no extra selector needed here. 140ms delay for the
+     same content-stagger sync as .bz-badge's pop above. */
+  animation: bz-badge-shake 0.4s ease-out 140ms;
 }
 
 /* Close-call variant -- a wrong guess that still borders the correct
@@ -71,7 +75,7 @@
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(217, 119, 6, 0.07));
   border: 1px solid rgba(217, 119, 6, 0.22);
   color: #b45309;
-  animation: bz-badge-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: bz-badge-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 140ms;
 }
 
 .bz-badge-icon {
