@@ -44,6 +44,16 @@ let paintedStates = []; // st_nm values currently carrying a non-null status
 // site has none, or once clearBoundary() resets it for the next round.
 // Same module-level shape as resultLayer.js's boundaryPromise.
 let boundaryPromise = null;
+// Bumped by clearBoundary() and by each showReveal() call. On a fast round
+// change, the previous round's showReveal() can still be suspended at
+// `await boundaryPromise` when the next round has already reused the map --
+// the old `!map.getSource(...)` check alone can't tell the round moved on,
+// so it would draw the *previous* site's boundary onto the new round (and
+// the new round's own addSource would then throw on the duplicate id,
+// leaving the stale one stuck). Each call captures its own token and bails
+// post-await if a newer round has since started. Same pattern as
+// resultLayer.js's revealToken.
+let revealToken = 0;
 
 function paint(map, stateName, status) {
   map.setFeatureState({ source: STATE_SOURCE_ID, id: stateName }, { blitzStatus: status });
@@ -66,12 +76,14 @@ export function showSelection(map, stateName) {
  */
 export async function showReveal(map, correctStates, guessedState, isCorrect, site) {
   clearAll(map);
+  const token = ++revealToken; // this call's identity -- see revealToken comment above
   correctStates.forEach((s) => paint(map, s, 'correct'));
   if (!isCorrect && guessedState) paint(map, guessedState, 'wrong');
 
   boundaryPromise = site?.hasBoundary ? fetchBoundary(site) : null;
   const geo = await boundaryPromise;
-  if (!geo || !map.getSource(STATE_SOURCE_ID)) return; // no boundary, or map torn down mid-fetch
+  // Bail if a newer round has started since, or if there's no boundary, or the map was torn down mid-fetch.
+  if (token !== revealToken || !geo || !map.getSource(STATE_SOURCE_ID)) return;
 
   const color = CATEGORY_META[site.category]?.color ?? FALLBACK_COLOR;
   map.addSource(LAYER_IDS.BLITZ_BOUNDARY, { type: 'geojson', data: geo });
@@ -145,6 +157,7 @@ export async function zoomToBoundary(map, fitPadding = null) {
 
 /** Call on LOADING (next site) so a stale boundary never survives into the next round. */
 export function clearBoundary(map) {
+  revealToken++; // invalidate any in-flight showReveal() (see revealToken comment above)
   boundaryPromise = null;
   if (!map) return;
   for (const id of [`${LAYER_IDS.BLITZ_BOUNDARY}-fill`, `${LAYER_IDS.BLITZ_BOUNDARY}-outline`]) {

@@ -56,6 +56,15 @@ export const ROUND_RESET_DURATION_MS = 1100;
 // MODULE-LEVEL state per spec -- reset on every LOADING entry via clearResult().
 let boundaryPromise = null;
 let animationFrameId = null;
+// Bumped by clearResult() and by each showResult() call. On a fast round
+// change, the previous round's showResult() can still be suspended at
+// `await boundaryPromise` when the next round's showResult() has already
+// re-added LAYER_IDS.RESULT_DATA -- the old `!map.getSource(...)` check alone
+// can't tell the round moved on, so it would draw the *previous* site's
+// boundary onto the new round (and the new round's own addSource would then
+// throw on the duplicate id, leaving the stale one stuck). Each call captures
+// its own token and bails post-await if a newer round has since started.
+let revealToken = 0;
 
 // `lineTo` is the line's own endpoint -- the nearest point on the site's
 // boundary (or the centroid fallback), computed by the caller. `pinTo`
@@ -184,6 +193,7 @@ function extendBounds(box, points) {
  */
 export async function showResult(map, guess, site, opts = {}) {
   if (!map) return;
+  const token = ++revealToken; // this call's identity -- see revealToken comment above
   const { distanceKmOverride = null, nearestLng = null, nearestLat = null, fitPadding = null } = opts;
   const padding = fitPadding ?? DEFAULT_FIT_PADDING;
 
@@ -280,8 +290,8 @@ export async function showResult(map, guess, site, opts = {}) {
 
   // showResult could theoretically be superseded mid-animation (e.g. a very
   // fast Next Site click triggering clearResult). Bail rather than re-adding
-  // layers onto a source that's already been torn down.
-  if (!map.getSource(LAYER_IDS.RESULT_DATA)) return;
+  // layers onto a source a newer round now owns.
+  if (token !== revealToken || !map.getSource(LAYER_IDS.RESULT_DATA)) return;
 
   // Step 2: label, only after the line has finished drawing. Reads
   // `distance` off the same 'line' feature RESULT_LINE uses -- placing it
@@ -311,7 +321,7 @@ export async function showResult(map, guess, site, opts = {}) {
 
   // Step 3: boundary reveal, once the parallel fetch settles.
   const geo = await boundaryPromise;
-  if (!geo || !map.getSource(LAYER_IDS.RESULT_DATA)) return;
+  if (token !== revealToken || !geo || !map.getSource(LAYER_IDS.RESULT_DATA)) return;
 
   // Spec describes RESULT_BOUNDARY as a single "fill + outline" layer, but
   // fill-outline-color can't carry a custom width -- split into a fill layer
@@ -380,6 +390,7 @@ export async function zoomToSiteBoundary(map, fitPadding = null) {
 
 /** LOADING cleanup -- call before picking the next site. */
 export function clearResult(map) {
+  revealToken++; // invalidate any in-flight showResult() (see revealToken comment above)
   if (animationFrameId !== null) {
     cancelAnimationFrame(animationFrameId);
     animationFrameId = null;
