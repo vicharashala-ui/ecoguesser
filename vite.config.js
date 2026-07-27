@@ -9,6 +9,53 @@ import { VitePWA } from 'vite-plugin-pwa';
 // from src/components/tigerMarkPath.js), not regenerated at build time.
 const THEME_GREEN = '#1c3b28';
 
+// vendor-maplibre (273KB gzip -- bigger than every other file on Daily's
+// critical path combined) and DailyMap are only ever reached via a dynamic
+// import() (DailyMap is lazy() so Header/BottomNav can paint before the map
+// chunk blocks anything -- see App.jsx), so Vite has no static reference to
+// preload them from: the browser doesn't even know they exist until JS
+// execution reaches that import() call, itself gated behind index.js +
+// vendor-react + config + daily downloading AND running first. The service
+// worker eagerly precaches vendor-maplibre, but that's a repeat-visit-only
+// win -- SW registration is deliberately deferred to window.load (see
+// main.jsx) so it never helps a first visit, which is most new players.
+//
+// Fix: inject <link rel="modulepreload"> for both chunks so the browser
+// starts fetching them in parallel with index.js instead of one waterfall
+// step behind it. Can't be a static tag in index.html -- the hashed
+// filenames don't exist until this build produces them -- so this reads the
+// finished bundle in generateBundle and patches the already-emitted
+// dist/index.html directly. enforce: 'post' + generateBundle (not
+// transformIndexHtml) so it runs after Vite's own html plugin and VitePWA
+// have both finished writing/emitting index.html.
+//
+// No fetchpriority set: OFM planet/map-style.json/protected-areas.json
+// already hold fetchpriority="high" in index.html for the map-render path;
+// giving this the same priority could pull bandwidth from those instead of
+// just running alongside them. Revisit if real-world timing says otherwise.
+function preloadMapChunks() {
+  return {
+    name: 'preload-map-chunks',
+    enforce: 'post',
+    generateBundle(_, bundle) {
+      const html = bundle['index.html'];
+      if (!html || html.type !== 'asset') return;
+
+      const chunkFiles = Object.values(bundle)
+        .filter(
+          (f) =>
+            f.type === 'chunk' &&
+            (f.fileName.startsWith('assets/vendor-maplibre-') || f.fileName.startsWith('assets/DailyMap-'))
+        )
+        .map((f) => f.fileName);
+      if (chunkFiles.length === 0) return; // manualChunks/lazy split renamed or removed -- nothing to inject, not an error
+
+      const links = chunkFiles.map((f) => `    <link rel="modulepreload" crossorigin href="/${f}">`).join('\n');
+      html.source = `${String(html.source)}`.replace('</head>', `\n${links}\n  </head>`);
+    },
+  };
+}
+
 export default defineConfig({
   build: {
     rollupOptions: {
@@ -238,6 +285,7 @@ export default defineConfig({
         ],
       },
     }),
+    preloadMapChunks(),
   ],
   server: {
     proxy: {
