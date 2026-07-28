@@ -74,17 +74,6 @@ function HowToPlayContent() {
         Challenge, each hint used costs 500 points off that round's score,
         so using both costs 1,000.
       </p>
-
-      <h3>Difficulty (Classic only)</h3>
-      <p>
-        Difficulty sets the starting position of the Borders toggle, not a
-        locked mode: <strong>Easy</strong> and <strong>Normal</strong> start
-        with state borders visible, <strong>Hard</strong> starts with them
-        hidden. You can flip Borders back on or off yourself at any time
-        from the layer panel, whatever difficulty you're on -- and state
-        name labels appear at any difficulty once you're zoomed in far
-        enough, so Hard isn't a strictly label-free mode.
-      </p>
     </>
   );
 }
@@ -153,7 +142,7 @@ function PrivacyContent() {
 
       <h3>What's stored on your device</h3>
       <p>
-        Your player name, difficulty preference, a randomly generated
+        Your player name, a randomly generated
         identifier used to attribute leaderboard entries, and your Daily
         Challenge / Classic mode stats history are all stored in your
         browser's local storage. None of this requires an account, and none

@@ -3,7 +3,6 @@ import { feature as topoFeature } from 'topojson-client';
 import {
   MAP_CONFIG, LAYER_IDS, SATELLITE_TILES, SATELLITE_ATTRIBUTION,
   SATELLITE_VISUAL, BASE_VISUAL, BARE_VISUAL, TERRAIN_TILES, TERRAIN_ENCODING,
-  DIFFICULTY_DEFAULTS, LS_KEYS,
 } from '../config.js';
 
 // The 4 place-label layers that switch paint (not visibility) between
@@ -643,16 +642,6 @@ export function useMapState(mapRef, mode) {
     map.setLayoutProperty(LAYER_IDS.STATE_LABELS, 'visibility', on ? 'visible' : 'none');
   }, [mapRef]);
 
-  const setDifficulty = useCallback((level) => {
-    if (mode !== 'classic') return; // difficulty is Classic-only -- Blitz has no tiers either
-    const d = DIFFICULTY_DEFAULTS[level];
-    // Scoped to Borders only -- never touches satellite (independently user-toggled,
-    // must survive a difficulty switch). State name labels are no longer
-    // difficulty-gated; see the forced setPoliticalNames(true) call in onLoad below.
-    setPolitical(d.political);
-    localStorage.setItem(LS_KEYS.DIFFICULTY, level);
-  }, [mode, setPolitical]);
-
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return; // MapContainer must mount (and set mapRef.current) before this runs
@@ -884,8 +873,8 @@ export function useMapState(mapRef, mode) {
       // Always visible, both modes, both difficulties -- draws the compliance-patched
       // Aksai Chin/PoK border on top of OFM's boundary line. Not user-toggleable.
 
-      // Latch BEFORE the calls below -- setPolitical/setDifficulty both read
-      // mapReadyRef.current as their own guard now.
+      // Latch BEFORE the calls below -- setPolitical reads
+      // mapReadyRef.current as its own guard now.
       mapReadyRef.current = true;
       setState(prev => ({ ...prev, mapReady: true }));
 
@@ -918,10 +907,10 @@ export function useMapState(mapRef, mode) {
       } else {
         // Classic: no more Names toggle -- force politicalNames on so labels
         // follow the layer's minzoom (STATE_LABEL_MIN_ZOOM) alone, same as
-        // Daily. setDifficulty below only ever touches Borders now.
+        // Daily. Borders defaults on but stays manually toggleable (see the
+        // Borders checkbox in ClassicMap.jsx).
         setPoliticalNames(true);
-        const saved = localStorage.getItem(LS_KEYS.DIFFICULTY) || 'normal';
-        setDifficulty(saved);
+        setPolitical(true);
       }
     }
 
@@ -960,7 +949,6 @@ export function useMapState(mapRef, mode) {
     setSatellite,
     setPolitical,
     setPoliticalNames,
-    setDifficulty,
     setTerrain,
   };
 }

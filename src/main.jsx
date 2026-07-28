@@ -4,6 +4,7 @@ import { registerSW } from 'virtual:pwa-register';
 import App from './App.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { LS_KEYS } from './config.js';
+import './utils/installPromptCapture.js';
 import './index.css';
 
 // vite-plugin-pwa's virtual module -- only emits a real service worker at

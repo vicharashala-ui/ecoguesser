@@ -281,15 +281,6 @@ export const DAILY = {
   COLLISION_KM: 50, TIMER_SECONDS: 120,
 };
 
-// State name labels are no longer difficulty-gated -- Classic shows them by
-// zoom alone (STATE_LABEL_MIN_ZOOM, same as Daily), same as every other
-// difficulty level. Only the Borders toggle default still varies by level.
-export const DIFFICULTY_DEFAULTS = {
-  easy:   { political:true  },
-  normal: { political:true  },
-  hard:   { political:false },
-};
-
 // `color` is used both as literal text color (category label, state name,
 // boundary-guess button) AND as a background/border/icon tint. `.color`
 // alone is fine for the latter (only needs 3:1, already passes for all
@@ -319,7 +310,6 @@ export function formatSiteName(site) {
 export const LS_KEYS = {
   UUID:        'ecoguesser_uuid',
   NAME:        'ecoguesser_name',
-  DIFFICULTY:  'ecoguesser_difficulty',
   // Bumped to _v2: distance is now measured to the site boundary instead
   // of the centroid, so old bestDist/history entries aren't comparable to
   // new ones -- a version suffix naturally starts every player clean

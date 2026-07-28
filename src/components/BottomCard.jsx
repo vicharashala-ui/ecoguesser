@@ -33,13 +33,24 @@
 // Show Site Boundary renders as a small chip at the right edge of the
 // result row (distance + pts) rather than its own row, to save vertical space.
 
-import { useId, useState, useEffect, useRef, forwardRef } from 'react';
+import { useId, useState, useEffect, useRef, forwardRef, lazy, Suspense } from 'react';
 import { CATEGORY_META, SCORING, CARD_SLIDE_MS } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
-import ConfettiBurst from './ConfettiBurst.jsx';
 import ScoreRemark from './ScoreRemark.jsx';
 import AnimatedScore from './AnimatedScore.jsx';
 import './BottomCard.css';
+
+// Lazy, not a static import: BottomCard is statically reachable from
+// DailyMap (mounted immediately, Daily being the default tab), so a static
+// import here rides into that first-paint dependency graph even though a
+// perfect guess -- the only thing that renders this -- can't happen before
+// at least one round has been played. Confirmed via a real build: without
+// this, ConfettiBurst-*.{js,css} were fetched as part of DailyMap's own
+// preload batch despite never being modulepreloaded from index.html
+// directly. Suspense fallback={null} is safe here -- the burst is a bonus
+// animation, not something the result card is incomplete without while its
+// tiny chunk fetches.
+const ConfettiBurst = lazy(() => import('./ConfettiBurst.jsx'));
 
 // "Zoom in and tap to place pin" -- shown above the pill until the player's
 // first pin placement of the browser session (sessionStorage, not
@@ -471,7 +482,11 @@ const BottomCard = forwardRef(function BottomCard({
           .bottom-card has overflow:hidden, which would clip a full-screen
           effect. ScoreRemark does its own REVEALING/result gating and
           site.id keying internally (see ScoreRemark.jsx). */}
-      {confettiSiteId === site.id && <ConfettiBurst key={site.id} />}
+      {confettiSiteId === site.id && (
+        <Suspense fallback={null}>
+          <ConfettiBurst key={site.id} />
+        </Suspense>
+      )}
       <ScoreRemark roundState={roundState} result={result} />
 
       {/* Departing round's frozen snapshot -- see beginExit() above for why

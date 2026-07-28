@@ -8,7 +8,6 @@ import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 import { warmSharedMapData } from './hooks/useMapState.js';
 import { useAchievementUnlocks } from './hooks/useAchievementUnlocks.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
-import { LS_KEYS } from './config.js';
 
 // All three map components are now code-split, including DailyMap (the
 // default tab) -- it used to be imported eagerly on the reasoning that it
@@ -102,15 +101,6 @@ export default function App() {
   // AND BlitzMap's site pools. Daily's pool is fixed and untouched by this.
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [classicFilters, setClassicFilters] = useState(DEFAULT_FILTERS);
-  // Lifted the same way as classicFilters, so SideDrawer's DIFFICULTY
-  // buttons and ClassicMap's useMapState-backed setter can both stay
-  // controlled by one source of truth. Seeded from localStorage directly
-  // (not via useMapState, which doesn't exist yet at this point in the
-  // tree) so the drawer shows the right button highlighted even before
-  // ClassicMap has ever mounted.
-  const [classicDifficulty, setClassicDifficulty] = useState(
-    () => localStorage.getItem(LS_KEYS.DIFFICULTY) || 'normal'
-  );
 
   // null when closed, else one of 'howtoplay'/'about'/'privacy'. (Feedback
   // isn't part of this -- it's a self-contained box inside SideDrawer.jsx,
@@ -235,7 +225,6 @@ export default function App() {
             mapRef={classicMapRef}
             sites={allSites}
             filters={classicFilters}
-            difficulty={classicDifficulty}
             style={{
               position: 'absolute',
               inset: 0,
@@ -306,7 +295,6 @@ export default function App() {
       <Header
         onMenuClick={() => { drawerEverOpened.current = true; setDrawerOpen(true); }}
         titleIsH1={!(activeTab === 'stats' || (activeTab === 'daily' && dailyPhase === 'leaderboard'))}
-        showMenu={activeTab !== 'daily'}
       />
       <InstallPrompt />
       {infoModalVariant && (
@@ -322,10 +310,8 @@ export default function App() {
             sites={allSites}
             filters={classicFilters}
             onApplyFilters={setClassicFilters}
-            showFilters={activeTab === 'classic' || activeTab === 'blitz'}
-            showDifficulty={activeTab === 'classic'}
-            difficulty={classicDifficulty}
-            onSetDifficulty={setClassicDifficulty}
+            showFilters={activeTab === 'daily' || activeTab === 'classic' || activeTab === 'blitz'}
+            filtersDisabled={activeTab === 'daily'}
             onNavigate={setInfoModalVariant}
           />
         </Suspense>

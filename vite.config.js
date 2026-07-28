@@ -158,9 +158,9 @@ export default defineConfig({
           'assets/vendor-*.js',
           'assets/config-*.js',
           'assets/rolldown-runtime-*.js',
-          // game/daily.js is imported by both eager code (InstallPrompt.jsx,
-          // useDailyRound.js -- Daily is the default tab) and lazy code
-          // (DailySummary/Leaderboard/DailyRecap), so Rollup auto-splits it
+          // game/daily.js is imported by both eager code (useDailyRound.js --
+          // Daily is the default tab) and lazy code (DailySummary/
+          // Leaderboard/DailyRecap/InstallPrompt), so Rollup auto-splits it
           // into its own chunk instead of inlining it into index-*. That
           // makes it eager, not lazy -- confirmed modulepreloaded in a real
           // build's dist/index.html alongside vendor-react/vendor-maplibre

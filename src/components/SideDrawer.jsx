@@ -1,13 +1,17 @@
 // src/components/SideDrawer.jsx
-// Side drawer: Player Name, Difficulty (Classic only), Category +
-// Region/State filters (Classic and Blitz), footer links, and an inline
-// Feedback box.
+// Side drawer: Player Name, Category + Region/State filters (Classic and
+// Blitz; shown but disabled on Daily, whose site pool is fixed), footer
+// links, and an inline Feedback box.
 //
 // Category renders as a vertical list (one row per category) with each
 // row's total site count computed once from the full `sites` prop -- a
 // stable "how many exist in total" number, not a live facet count that
-// shifts as the player toggles states. Difficulty stays a chip row (3
-// short mutually-exclusive options suit chips better than a list).
+// shifts as the player toggles states.
+//
+// `filtersDisabled` (Daily only) greys out the Category/Region & State
+// sections and blocks their interaction -- Daily always plays the full
+// site pool, so the controls are visible for consistency with Classic/
+// Blitz but inert.
 //
 // Feedback is a plain box at the bottom of the drawer -- submitting clears
 // it and shows a brief inline "Thanks!" line, then reverts -- rather than a
@@ -27,8 +31,6 @@ import './SideDrawer.css';
 const REGIONS = Object.keys(REGION_STATES);
 const CATEGORIES = Object.keys(CATEGORY_META);
 const ALL_STATES = REGIONS.flatMap((r) => REGION_STATES[r]);
-const DIFFICULTIES = ['easy', 'normal', 'hard'];
-const DIFFICULTY_LABELS = { easy: 'Easy', normal: 'Normal', hard: 'Hard' };
 
 const FEEDBACK_MAX_CHARS = 500;
 const FEEDBACK_SUCCESS_MS = 2500;
@@ -49,9 +51,7 @@ export default function SideDrawer({
   filters,
   onApplyFilters,
   showFilters,
-  showDifficulty,
-  difficulty,
-  onSetDifficulty,
+  filtersDisabled,
   onNavigate,
 }) {
   const [name, setName] = useState(() => localStorage.getItem(LS_KEYS.NAME) ?? '');
@@ -288,30 +288,7 @@ export default function SideDrawer({
         <hr className="sd-divider" />
 
         {showFilters && (
-          <>
-            {showDifficulty && (
-              <>
-                <hr className="sd-divider" />
-
-                <div className="sd-section">
-                  <p className="sd-heading">Difficulty</p>
-                  <div className="sd-chip-row">
-                    {DIFFICULTIES.map((level) => (
-                      <button
-                        key={level}
-                        type="button"
-                        className={`sd-chip${difficulty === level ? ' sd-chip-active' : ''}`}
-                        style={difficulty === level ? { background: 'var(--eg-brand, #227743)' } : undefined}
-                        onClick={() => onSetDifficulty(level)}
-                      >
-                        {DIFFICULTY_LABELS[level]}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
+          <div className={filtersDisabled ? 'sd-filters-disabled' : undefined}>
             <hr className="sd-divider" />
 
             <div className="sd-section">
@@ -321,6 +298,7 @@ export default function SideDrawer({
                   type="button"
                   className={`sd-select-all${filters.categories.length === CATEGORIES.length ? ' sd-select-all-active' : ''}`}
                   onClick={toggleAllCategories}
+                  disabled={filtersDisabled}
                   aria-pressed={filters.categories.length === CATEGORIES.length}
                   aria-label={filters.categories.length === CATEGORIES.length ? 'Deselect all categories' : 'Select all categories'}
                 >
@@ -340,6 +318,7 @@ export default function SideDrawer({
                       className={`sd-cat-row${active ? ' sd-cat-row-active' : ''}`}
                       style={active ? { borderColor: color } : undefined}
                       onClick={() => onApplyFilters({ categories: toggle(filters.categories, cat), states: filters.states })}
+                      disabled={filtersDisabled}
                       aria-pressed={active}
                     >
                       <span className="sd-cat-dot" style={{ background: color }} />
@@ -359,6 +338,7 @@ export default function SideDrawer({
                   type="button"
                   className={`sd-select-all${filters.states.length === ALL_STATES.length ? ' sd-select-all-active' : ''}`}
                   onClick={toggleAllStates}
+                  disabled={filtersDisabled}
                   aria-pressed={filters.states.length === ALL_STATES.length}
                   aria-label={filters.states.length === ALL_STATES.length ? 'Deselect all states' : 'Select all states'}
                 >
@@ -377,12 +357,14 @@ export default function SideDrawer({
                         type="button"
                         className={`sd-region-check sd-region-check-${state}`}
                         onClick={() => toggleRegion(region)}
+                        disabled={filtersDisabled}
                         aria-label={`Toggle all ${region} states`}
                       />
                       <button
                         type="button"
                         className="sd-region-name"
                         onClick={() => setExpandedRegion(isExpanded ? null : region)}
+                        disabled={filtersDisabled}
                       >
                         {region}{' '}
                         <span className={`sd-region-arrow${isExpanded ? ' sd-region-arrow-open' : ''}`}>▸</span>
@@ -402,6 +384,7 @@ export default function SideDrawer({
                               className="sd-state-checkbox-input"
                               checked={filters.states.includes(st)}
                               onChange={() => onApplyFilters({ categories: filters.categories, states: toggle(filters.states, st) })}
+                              disabled={filtersDisabled}
                             />
                             <span className="sd-state-checkbox">
                               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -423,7 +406,7 @@ export default function SideDrawer({
                 {matchCount === 0 ? 'No sites match those filters' : `Showing ${matchCount}/${sites.length} sites`}
               </p>
             </div>
-          </>
+          </div>
         )}
 
         <hr className="sd-divider" />

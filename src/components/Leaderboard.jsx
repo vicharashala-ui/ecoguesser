@@ -124,7 +124,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
     setLoading(true);
     setFetchError(false);
     getLeaderboard(today)
-      .then((lb) => setFetched({ top10: lb.top10, rank: readRankToday(), banner: null }))
+      .then((lb) => setFetched({ top10: lb.top10, banner: null }))
       .catch(() => setFetchError(true))
       .finally(() => setLoading(false));
   }, [today]);
@@ -260,23 +260,35 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   };
 
   const top10 = fetched?.top10 ?? [];
-  const rank = fetched?.rank ?? null;
   const banner = fetched?.banner ?? null;
   const ranked = computeRanks(top10);
+
+  // Read straight from localStorage rather than off the fetched top10
+  // response -- getLeaderboard() only ever supplies the table, never the
+  // rank itself (see fetchLeaderboard above: it always derives rank via
+  // readRankToday(), the same call made here). Today's rank was already
+  // written locally the moment the original POST /api/score response came
+  // back, so it doesn't need to wait on this component's own GET
+  // /api/leaderboard round-trip to be known.
+  const rank = readRankToday();
 
   // Fires once per day the player actually holds rank #1 -- not on every
   // render rank stays 1 (the sessionStorage check below only lets this
   // flip showRankOneConfetti from false to true once), and not at all on
-  // days they don't top the board.
+  // days they don't top the board. Deliberately NOT gated on `loading`:
+  // that flag only tracks the top10 table fetch, which has nothing to do
+  // with whether the player is #1 today. Gating on it meant a slow/cold
+  // network could delay the celebration long enough that the player had
+  // already switched to another tab by the time it fired.
   const [showRankOneConfetti, setShowRankOneConfetti] = useState(false);
   useEffect(() => {
-    if (loading || rank !== 1) return;
+    if (rank !== 1) return;
     if (typeof sessionStorage === 'undefined') return;
     if (sessionStorage.getItem(RANK1_CELEBRATED_KEY) === today) return;
     sessionStorage.setItem(RANK1_CELEBRATED_KEY, today);
     setShowRankOneConfetti(true);
     soundCelebrate();
-  }, [loading, rank, today]);
+  }, [rank, today]);
 
   return (
     <div className="lb-screen">

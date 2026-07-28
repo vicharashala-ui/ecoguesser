@@ -41,6 +41,19 @@
   margin-bottom: 18px;
 }
 
+/* Daily: Category/Region & State render for visual consistency with
+   Classic/Blitz but are inert -- Daily's site pool is fixed. Every control
+   inside also gets a real `disabled` attribute (see SideDrawer.jsx), so
+   this class only needs to handle the visual side. */
+.sd-filters-disabled {
+  opacity: 0.45;
+}
+
+.sd-filters-disabled button,
+.sd-filters-disabled input {
+  cursor: not-allowed;
+}
+
 .sd-heading {
   margin: 0 0 10px;
   font-size: 12px;
@@ -186,32 +199,6 @@
   border: none;
   border-top: 1px solid var(--eg-border, #e5e7eb);
   margin: 16px 0;
-}
-
-/* Difficulty (3 short mutually-exclusive options) keeps the chip-row
-   treatment -- Category below moves to a vertical list instead, see
-   sd-cat-list. */
-.sd-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.sd-chip {
-  padding: 7px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--eg-border, #e5e7eb);
-  background: #fff;
-  color: #374151;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.sd-chip-active {
-  color: #fff;
-  border-color: transparent;
 }
 
 /* Category -- one row per category, stacked vertically, each showing that

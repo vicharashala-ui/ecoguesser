@@ -1,16 +1,24 @@
 // src/components/InstallPrompt.jsx
 //
-// A once-a-day "Add to Home Screen" nudge. Mounted once at the App root
-// (like Header), independent of activeTab, so it can surface regardless of
-// which mode the player is in.
+// A once-a-day "Add to Home Screen" nudge. Lazy-loaded from App.jsx
+// (independent of activeTab, so it can surface regardless of which mode
+// the player is in) -- this file is the render half only. The event-
+// capture half lives in utils/installPromptCapture.js, imported eagerly
+// from main.jsx: `beforeinstallprompt` is one-shot and un-refireable, so it
+// can't wait on this chunk's fetch, but the banner JSX/CSS below has no
+// browser API of its own and is safe to defer. getDeferredPrompt()/
+// wasJustInstalled() read whatever that eager module has captured by the
+// time this component mounts; onInstallPromptChange() covers the case
+// where the event fires after mount instead of before it.
 //
 // Two paths, since only one of them has any real browser API behind it:
-//   - Android/desktop Chrome/Edge: the browser fires `beforeinstallprompt`
-//     if the PWA-install criteria are met (manifest + SW registered, not
-//     already installed, etc). We preventDefault() it and hold onto the
-//     event so OUR banner's "Add" button can trigger the real native
-//     install sheet via promptEvent.prompt() -- otherwise Chrome would show
-//     its own little infobar on top of/instead of this one.
+//   - Android/desktop Chrome/Edge: `beforeinstallprompt` fires if the
+//     PWA-install criteria are met (manifest + SW registered, not already
+//     installed, etc) -- captured (preventDefault()'d and stashed) by
+//     installPromptCapture.js, so OUR banner's "Add" button can trigger the
+//     real native install sheet via promptEvent.prompt() -- otherwise
+//     Chrome would show its own little infobar on top of/instead of this
+//     one.
 //   - iOS Safari (and iPadOS, and other iOS browsers riding WebKit's share
 //     sheet): there's no install API at all. "Add to Home Screen" only
 //     exists behind the manual Share-sheet action, so that variant just
@@ -27,6 +35,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LS_KEYS } from '../config.js';
 import { getTodayString } from '../game/daily.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath.js';
+import { getDeferredPrompt, clearDeferredPrompt, wasJustInstalled, onInstallPromptChange } from '../utils/installPromptCapture.js';
 import './InstallPrompt.css';
 
 const MIN_DELAY_MS = 10000;
@@ -49,8 +58,7 @@ function isIOSDevice() {
 export default function InstallPrompt() {
   const [visible, setVisible] = useState(false);
   const [mode, setMode] = useState(null); // 'native' | 'ios'
-  const deferredPromptRef = useRef(null);
-  // Guards against the timer callback and the beforeinstallprompt handler
+  // Guards against the timer and an install-prompt-capture notification
   // both trying to open the toast in the same session.
   const shownRef = useRef(false);
 
@@ -63,37 +71,36 @@ export default function InstallPrompt() {
       const today = getTodayString();
       if (localStorage.getItem(LS_KEYS.INSTALL_PROMPT_SHOWN) === today) return;
       // No real install path available -- Android/desktop with no
-      // beforeinstallprompt fired yet, and not iOS either -- nothing to show.
-      if (!deferredPromptRef.current && !isIOSDevice()) return;
+      // beforeinstallprompt captured yet, and not iOS either -- nothing to show.
+      if (!getDeferredPrompt() && !isIOSDevice()) return;
       shownRef.current = true;
       localStorage.setItem(LS_KEYS.INSTALL_PROMPT_SHOWN, today);
-      setMode(deferredPromptRef.current ? 'native' : 'ios');
+      setMode(getDeferredPrompt() ? 'native' : 'ios');
       setVisible(true);
     }
 
-    function onBeforeInstallPrompt(e) {
-      e.preventDefault();
-      deferredPromptRef.current = e;
-      tryShow();
-    }
-    function onAppInstalled() {
-      setVisible(false);
-      deferredPromptRef.current = null;
-    }
+    // Covers the event having already fired before this chunk finished
+    // loading (installPromptCapture.js has been listening since main.jsx);
+    // the subscription below covers it firing after.
+    tryShow();
 
-    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-    window.addEventListener('appinstalled', onAppInstalled);
+    const unsubscribe = onInstallPromptChange(() => {
+      if (wasJustInstalled()) {
+        setVisible(false);
+        return;
+      }
+      tryShow();
+    });
     const timer = setTimeout(tryShow, MIN_DELAY_MS);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', onAppInstalled);
+      unsubscribe();
       clearTimeout(timer);
     };
   }, []);
 
   function handleAdd() {
-    const promptEvent = deferredPromptRef.current;
+    const promptEvent = getDeferredPrompt();
     if (!promptEvent) {
       setVisible(false);
       return;
@@ -103,7 +110,7 @@ export default function InstallPrompt() {
     // result means this specific native prompt is now spent and can't be
     // reused, so close the toast regardless of which way the user went.
     promptEvent.userChoice.finally(() => {
-      deferredPromptRef.current = null;
+      clearDeferredPrompt();
       setVisible(false);
     });
   }
