@@ -284,18 +284,18 @@ export const DAILY = {
 // `color` is used both as literal text color (category label, state name,
 // boundary-guess button) AND as a background/border/icon tint. `.color`
 // alone is fine for the latter (only needs 3:1, already passes for all
-// five), but three of these fail WCAG AA (4.5:1) as small text on white/
-// cream (measured: np 3.56/3.30, ramsar 4.10/3.79 -- see design-audit-
-// fixes.md #3). `textColor` is the same hue, darkened until it clears
-// 4.5:1 on both, with a bit of margin. wls/tr already pass as-is (5.70/
-// 7.09 on white) so they don't need a separate value -- callers should
+// five), but four of these fail WCAG AA (4.5:1) as small text on white/
+// cream (measured: np 3.56/3.30, ramsar 4.10/3.79, tr (#facc15) ~1.6:1 --
+// see design-audit-fixes.md #3). `textColor` is the same hue, darkened until
+// it clears 4.5:1 on both, with a bit of margin. wls already passes as-is
+// (5.70 on white) so it doesn't need a separate value -- callers should
 // fall back to `.color` when `.textColor` is undefined (e.g.
 // `meta.textColor ?? meta.color`).
 export const CATEGORY_META = {
   np:     { label:'National Park',      color:'#ea580c', textColor:'#b9460a' },
   br:     { label:'Biosphere Reserve',  color:'#db2777', textColor:'#cc226d' },
   wls:    { label:'Wildlife Sanctuary', color:'#7c3aed' },
-  tr:     { label:'Tiger Reserve',      color:'#92400e' },
+  tr:     { label:'Tiger Reserve',      color:'#facc15', textColor:'#854d0e' },
   ramsar: { label:'Ramsar Site',        color:'#0284c7', textColor:'#0270a9' },
 };
 

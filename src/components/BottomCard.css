@@ -90,7 +90,7 @@
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);
   z-index: var(--eg-z-card, 30);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
-  background: rgba(248, 246, 241, 0.82);
+  background: color-mix(in srgb, var(--eg-champagne, #f7e7ce) 82%, transparent);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   isolation: isolate;
