@@ -357,26 +357,78 @@
 }
 
 .dm-start-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   width: 100%;
-  height: 56px;
+  height: 64px;
   border: none;
   border-radius: 999px;
-  background: var(--eg-brand, #227743);
+  /* Same brand hue throughout, just lightened/darkened via color-mix for
+     depth -- no new color introduced. */
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--eg-brand, #227743) 88%, white) 0%,
+    var(--eg-brand, #227743) 55%,
+    color-mix(in srgb, var(--eg-brand, #227743) 85%, black) 100%
+  );
   color: #fff;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 16px;
   font-weight: 800;
+  letter-spacing: -0.1px;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(17, 24, 39, 0.18);
-  transition: transform 0.15s ease;
+  /* Layered, brand-tinted shadow (contact + ambient) plus a top-edge gloss
+     highlight (inset) for a subtle glassy sheen -- no extra DOM needed. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 2px 6px rgba(34, 119, 67, 0.3),
+    0 8px 20px rgba(17, 24, 39, 0.14);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.dm-start-btn:active {
-  transform: scale(0.96);
+.dm-start-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dm-start-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    0 4px 10px rgba(34, 119, 67, 0.34),
+    0 12px 24px rgba(17, 24, 39, 0.18);
+}
+
+.dm-start-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 3px rgba(34, 119, 67, 0.28);
 }
 
 .dm-start-btn:disabled {
   background: #9ca3af;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.dm-start-btn:disabled .dm-start-icon {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dm-start-btn {
+    transition: none;
+  }
+  .dm-start-btn:hover:not(:disabled),
+  .dm-start-btn:active:not(:disabled) {
+    transform: none;
+  }
 }

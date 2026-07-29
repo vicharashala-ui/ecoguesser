@@ -60,6 +60,22 @@ function IconPlay({ size = 16, visible }) {
 // identical to ClassicMap.jsx's set, duplicated rather than shared per
 // this codebase's no-shared-icon-module rule. Paths match the
 // mountain/map-2/satellite glyphs from the approved mockup.
+// Same glyph as BottomNav's Daily tab icon -- duplicated locally per this
+// codebase's icon convention (no shared icon module).
+function IconFire({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      {/* translate recenters the path -- its raw coordinates sit ~1 unit
+          left and ~1.75 units down from the viewBox center, which threw
+          off badge centering regardless of flex alignment. */}
+      <path
+        d="M12 21c-3.5 0-6-2.2-6-5.6 0-2 1-3.6 1-3.6s.4 1.4 1.4 2c-.3-2.6.6-5.4 3-7.3.4 1.8 1.3 2.8 2.3 3.7 1.7 1.5 2.3 3.1 2.3 5.2 0 3.4-2.5 5.6-4 5.6Z"
+        fill="currentColor" transform="translate(1, -1.75)"
+      />
+    </svg>
+  );
+}
+
 function IconMountain({ size = 24 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -401,7 +417,8 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
             disabled={!mapReady}
             onClick={() => { if (mapReady) handleStart(); }}
           >
-            Start Daily Challenge
+            <span className="dm-start-icon"><IconFire size={30} /></span>
+            <span>Start Daily Challenge</span>
           </button>
         </div>
       ) : (
