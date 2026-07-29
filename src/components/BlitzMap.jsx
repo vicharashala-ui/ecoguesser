@@ -163,7 +163,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   const streakProgress = streak === 0 ? 0 : (((streak - 1) % 5) + 1) / 5;
   // political is forced true inside useMapState's onLoad for mode==='blitz'
   // -- this component never calls setPolitical itself. politicalNames (the
-  // "State Names" toggle below) stays player-controlled.
+  // "States" toggle below) stays player-controlled.
 
   const cardRef = useRef(null); // measures BlitzCard's height, same role as ClassicMap.jsx's cardRef
   // Tracked during REVEALING so RecenterButton can sit above the expanded
@@ -446,62 +446,56 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   return (
     <div style={style}>
       <div className="bz-top-right-stack">
-        {/* Wraps the streak medallion + restore badge as two separate,
-            independently-positioned elements (badge is no longer a child
-            of bz-streak-card) while keeping their combined footprint a
-            single flex item in bz-top-right-stack -- same "doesn't
-            displace anything" property as before, just achieved via this
-            row instead of the badge being pinned to the medallion itself. */}
-        <div className="bz-streak-row">
-          {/* Session streak -- tracked by useBlitzRound.js the whole time but
-              previously never surfaced in the UI. Always mounted (not gated
-              on streak > 0) so its position never jumps mid-session; the
-              flame icon itself communicates "no streak yet" via its own
-              gray-vs-lit color transition. */}
-          <div
-            className={`bz-streak-card${streak > 0 ? ' bz-streak-lit' : ''}`}
-            aria-live="polite"
-          >
-            <svg className="bz-streak-ring" width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
-              <circle cx="39" cy="39" r="36" className="bz-streak-ring-outer" />
-              <circle cx="39" cy="39" r={STREAK_RING_R} className="bz-streak-ring-track" />
-              {/* Fills in over each run of 5 correct guesses, full right at
-                  the milestone itself (in step with the edge-glow flash),
-                  then resets for the next 5 -- see streakProgress's
-                  comment above for the exact math. stroke-dashoffset is a
-                  paint-only property (no reflow), same performance
-                  footprint as the color transitions already on the ring
-                  above it. */}
-              <circle
-                cx="39" cy="39" r={STREAK_RING_R}
-                className="bz-streak-ring-progress"
-                style={{
-                  strokeDasharray: STREAK_RING_CIRCUMFERENCE,
-                  strokeDashoffset: STREAK_RING_CIRCUMFERENCE * (1 - streakProgress),
-                }}
-              />
-            </svg>
-            <div className="bz-streak-face">
-              <span className={`bz-streak-flame${streak > 0 ? ' bz-flame-active' : ''}`}>
-                <IconFlame size={16} />
-              </span>
-              <span
-                key={streak}
-                className={`bz-streak-value${streakAnim === 'up' ? ' bz-streak-pop' : streakAnim === 'break' ? ' bz-streak-break' : ''}`}
-              >
-                {streak}
-              </span>
-              {bestStreak > 0 && <span className="bz-streak-best">Best {bestStreak}</span>}
-            </div>
+        {/* Session streak -- tracked by useBlitzRound.js the whole time but
+            previously never surfaced in the UI. Always mounted (not gated
+            on streak > 0) so its position never jumps mid-session; the
+            flame icon itself communicates "no streak yet" via its own
+            gray-vs-lit color transition. */}
+        <div
+          className={`bz-streak-card${streak > 0 ? ' bz-streak-lit' : ''}`}
+          aria-live="polite"
+        >
+          <svg className="bz-streak-ring" width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
+            <circle cx="39" cy="39" r="36" className="bz-streak-ring-outer" />
+            <circle cx="39" cy="39" r={STREAK_RING_R} className="bz-streak-ring-track" />
+            {/* Fills in over each run of 5 correct guesses, full right at
+                the milestone itself (in step with the edge-glow flash),
+                then resets for the next 5 -- see streakProgress's
+                comment above for the exact math. stroke-dashoffset is a
+                paint-only property (no reflow), same performance
+                footprint as the color transitions already on the ring
+                above it. */}
+            <circle
+              cx="39" cy="39" r={STREAK_RING_R}
+              className="bz-streak-ring-progress"
+              style={{
+                strokeDasharray: STREAK_RING_CIRCUMFERENCE,
+                strokeDashoffset: STREAK_RING_CIRCUMFERENCE * (1 - streakProgress),
+              }}
+            />
+          </svg>
+          <div className="bz-streak-face">
+            <span className={`bz-streak-flame${streak > 0 ? ' bz-flame-active' : ''}`}>
+              <IconFlame size={16} />
+            </span>
+            <span
+              key={streak}
+              className={`bz-streak-value${streakAnim === 'up' ? ' bz-streak-pop' : streakAnim === 'break' ? ' bz-streak-break' : ''}`}
+            >
+              {streak}
+            </span>
+            {bestStreak > 0 && <span className="bz-streak-best">Best {bestStreak}</span>}
           </div>
-          {/* Streak-restore badge -- its own element now, pinned to
-              bz-streak-row's bottom-right (the row spans the same width as
-              .bz-layer-panel below it, so this lands in the open space to
-              the right of the centered medallion, right above the layer
-              panel). Always mounted, same reasoning as the medallion
-              itself: a fixed spot that just toggles lit/gray beats one
-              that pops in and shifts things around. Greyed out (no count
-              badge) at 0; count badge only renders once earned. */}
+          {/* Streak-restore badge -- a standard notification-style badge
+              overlapping the medallion's top-right corner, so the whole
+              cluster's footprint is just the medallion's own 78px (plus a
+              few px of badge overhang) instead of an artificially widened
+              row reserved to keep the two apart. That footprint is what
+              .bz-layer-panel below gets centered against. Always mounted,
+              same reasoning as the medallion itself: a fixed spot that
+              just toggles lit/gray beats one that pops in and shifts
+              things around. Greyed out (no count badge) at 0; count badge
+              only renders once earned. */}
           <div
             key={streakRestores}
             className={`bz-restore-badge${streakRestores > 0 ? ' bz-restore-active' : ''}${restoreAnim === 'gained' ? ' bz-restore-gained' : restoreAnim === 'used' ? ' bz-restore-used' : ''}`}
@@ -525,7 +519,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
               onChange={() => setPoliticalNames(!politicalNames)}
             />
             <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            State Names
+            States
           </label>
         </div>
       </div>

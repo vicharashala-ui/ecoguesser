@@ -219,6 +219,7 @@ export default function SideDrawer({
           <button
             type="button"
             className="sd-banner-menu"
+            style={showSettings ? { background: 'var(--eg-brand, #227743)', color: '#fff' } : undefined}
             onClick={() => setShowSettings((v) => !v)}
             aria-label="Settings"
             aria-expanded={showSettings}
@@ -239,7 +240,10 @@ export default function SideDrawer({
           </button>
         </div>
 
-        {showSettings && (
+        <div
+          className={`sd-settings-collapse${showSettings ? ' sd-settings-open' : ''}`}
+          {...(!showSettings && { inert: true })}
+        >
           <div className="sd-settings-row">
             <button
               type="button"
@@ -283,14 +287,12 @@ export default function SideDrawer({
               </svg>
             </button>
           </div>
-        )}
+        </div>
 
         <hr className="sd-divider" />
 
         {showFilters && (
           <div className={filtersDisabled ? 'sd-filters-disabled' : undefined}>
-            <hr className="sd-divider" />
-
             <div className="sd-section">
               <div className="sd-heading-row">
                 <p className="sd-heading">Category</p>

@@ -19,7 +19,7 @@
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  border: none;
+  border: 1.5px solid var(--eg-brand, #227743);
   background: rgba(255, 255, 255, 0.9);
   color: var(--eg-ink, #111827);
   display: flex;

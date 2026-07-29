@@ -83,10 +83,6 @@
   --eg-ink-secondary: #6b7280;
   --eg-border: #e5e7eb;
   --eg-cream: #f8f6f1;
-  /* Nav bar + guess card (BottomCard/Blitz share the same shell) only --
-     deliberately separate from --eg-cream above, which StatsView/
-     Leaderboard/SideDrawer/modals/DailySummary/ErrorBoundary still use. */
-  --eg-champagne: #f7e7ce;
   --eg-danger: #dc2626;
 
   /* -- Type scale -- reference scale for new/touched text. The 23 one-off

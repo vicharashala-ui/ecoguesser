@@ -76,7 +76,7 @@
   position: relative; /* anchors .eg-nav-indicator */
   height: var(--eg-nav-height, 64px);
   display: flex;
-  background: var(--eg-champagne, #f7e7ce);
+  background: var(--eg-cream, #f8f6f1);
   border-top: 1px solid rgba(17, 24, 39, 0.08);
 }
 

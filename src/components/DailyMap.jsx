@@ -417,7 +417,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
             disabled={!mapReady}
             onClick={() => { if (mapReady) handleStart(); }}
           >
-            <span className="dm-start-icon"><IconFire size={30} /></span>
+            <span className="dm-start-icon"><IconFire size={34} /></span>
             <span>Start Daily Challenge</span>
           </button>
         </div>
