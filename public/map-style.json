@@ -633,7 +633,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 3,
+      "minzoom": 3.5,
       "filter": [
         "==",
         [
@@ -709,7 +709,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 5,
+      "minzoom": 4,
       "filter": [
         "==",
         [
@@ -785,7 +785,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 7,
+      "minzoom": 6,
       "filter": [
         "==",
         [
@@ -840,7 +840,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 8,
+      "minzoom": 7,
       "filter": [
         "==",
         [

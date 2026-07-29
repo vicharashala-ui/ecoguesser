@@ -90,7 +90,7 @@
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);
   z-index: var(--eg-z-card, 30);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
-  background: rgba(248, 246, 241, 0.82);
+  background: color-mix(in srgb, var(--eg-champagne, #f7e7ce) 82%, transparent);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   isolation: isolate;
@@ -236,7 +236,7 @@
 .bc-site-name {
   font-weight: 700;
   font-size: 20px; /* matches .bc-card-name -- same name, same size pre/post-guess */
-  overflow-wrap: break-word;
+  word-break: break-all;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -572,6 +572,17 @@
   font-size: 20px;
   font-weight: 800;
   color: var(--eg-ink, #111827);
+  /* Long names (e.g. "Kaziranga Wildlife Sanctuary") would otherwise wrap
+     only at word boundaries -- if the second word doesn't fit, it jumps
+     to line 2 whole, leaving line 1 short with just the first word.
+     overflow-wrap/hyphens don't help here: both only break a word as a
+     last resort (when it wouldn't fit even alone on its own line), and
+     "Wildlife"/"Sanctuary" fit fine alone on line 2, so neither ever
+     fires. word-break: break-all changes the line-breaking algorithm
+     itself to treat every character boundary as a valid break point, so
+     each line fills to the max width before wrapping, splitting a word
+     mid-way when that's what it takes. */
+  word-break: break-all;
 }
 
 .bc-meta-row,

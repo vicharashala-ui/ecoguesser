@@ -469,6 +469,10 @@
 /* Feedback -- inline box at the bottom of the drawer, replacing the old
    FeedbackButton + FeedbackModal pair. Same textarea/counter/send shape as
    that modal used, just without any of the dialog scaffolding. */
+.sd-feedback-section {
+  margin-bottom: 32px;
+}
+
 .sd-feedback-textarea {
   width: 100%;
   box-sizing: border-box;

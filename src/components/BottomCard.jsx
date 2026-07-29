@@ -170,6 +170,18 @@ function IconSkip({ size = 18 }) {
 // BottomCard
 // ---------------------------------------------------------------------------
 
+// word-break: break-all (in BottomCard.css) fills each line to the max
+// width, splitting a word mid-way when needed -- but it does that silently,
+// with no visible mark at the cut. Soft hyphens (U+00AD) are invisible
+// everywhere *except* at a spot the browser actually breaks the line, where
+// they render as a real "-", with no reliance on the language-dictionary
+// hyphenation that `hyphens: auto` needs (and which doesn't know proper
+// nouns/place names anyway). Inserted between every non-space character
+// pair so the browser can choose whichever spot lands at the line's edge.
+function softHyphenate(text) {
+  return text.replace(/(\S)(?=\S)/g, '$1\u00AD');
+}
+
 /**
  * @param {Object} props
  * @param {'READING'|'PLACING'|'REVEALING'} props.roundState
@@ -322,7 +334,7 @@ const BottomCard = forwardRef(function BottomCard({
         <div className="bc-pill-top">
           <span className="bc-icon" aria-hidden="true"><IconMark size={30} /></span>
           <span className="bc-pill-text">
-            <span id={ghost ? undefined : titleId} className="bc-site-name">{pillSite.name}</span>
+            <span id={ghost ? undefined : titleId} className="bc-site-name">{softHyphenate(pillSite.name)}</span>
             {pillHintLevel >= 1 && (
               <span className="bc-hint-state">{pillSite.state.join(', ')}</span>
             )}
@@ -392,7 +404,7 @@ const BottomCard = forwardRef(function BottomCard({
           </div>
         )}
 
-        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{cardSite.name}</h2>
+        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{softHyphenate(cardSite.name)}</h2>
 
         <div className="bc-meta-row">
           <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {cardSite.state.join(', ')}</span>

@@ -421,7 +421,7 @@ export default function SideDrawer({
 
         <hr className="sd-divider" />
 
-        <div className="sd-section">
+        <div className="sd-section sd-feedback-section">
           <p className="sd-heading">Feedback</p>
           {feedbackPhase === 'sent' ? (
             <p className="sd-feedback-sent">Thanks! We read every message.</p>

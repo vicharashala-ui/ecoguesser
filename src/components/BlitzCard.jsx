@@ -144,6 +144,19 @@ function IconNearMiss({ size = 20 }) {
   );
 }
 
+// word-break: break-all (in BottomCard.css, shared with this component)
+// fills each line to the max width, splitting a word mid-way when needed --
+// but silently, with no visible mark at the cut. Soft hyphens (U+00AD) are
+// invisible everywhere *except* at a spot the browser actually breaks the
+// line, where they render as a real "-", with no reliance on the
+// language-dictionary hyphenation that `hyphens: auto` needs (and which
+// doesn't know proper nouns/place names anyway). Inserted between every
+// non-space character pair so the browser can choose whichever spot lands
+// at the line's edge.
+function softHyphenate(text) {
+  return text.replace(/(\S)(?=\S)/g, '$1\u00AD');
+}
+
 /**
  * @param {'LOADING'|'READING'|'SELECTING'|'REVEALING'} roundState
  * @param {import('../config').Site} site
@@ -230,7 +243,7 @@ const BlitzCard = forwardRef(function BlitzCard({
         <div className="bc-pill-top">
           <span className="bc-icon" aria-hidden="true"><IconMark size={30} /></span>
           <span className="bc-pill-text">
-            <span id={ghost ? undefined : titleId} className="bc-site-name">{pillSite.name}</span>
+            <span id={ghost ? undefined : titleId} className="bc-site-name">{softHyphenate(pillSite.name)}</span>
           </span>
         </div>
 
@@ -294,7 +307,7 @@ const BlitzCard = forwardRef(function BlitzCard({
           </div>
         )}
 
-        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{cardSite.name}</h2>
+        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{softHyphenate(cardSite.name)}</h2>
 
         {!cardCollapsed && cardSite.area_km2 != null && (
           <div className="bc-meta-row">
