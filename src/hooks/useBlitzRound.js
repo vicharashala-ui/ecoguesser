@@ -154,10 +154,24 @@ export function useBlitzRound(sitePool) {
     setRoundState('LOADING');
   }, []);
 
-  // Mirrors useClassicRound.js's handleSkip -- same guard, same "re-enter
-  // LOADING" mechanism the effect above already resolves into a fresh site.
+  // Mirrors useClassicRound.js's handleSkip for the guard/re-enter-LOADING
+  // mechanism, but Blitz additionally carries a streak: skipping is treated
+  // exactly like a wrong guess for streak/restore purposes (same branch as
+  // finalizeRound's isCorrect=false case) so a skip can't be used to dodge
+  // a hard site without cost. A restore in reserve saves the streak and is
+  // spent (1 per skip); otherwise the streak breaks to 0. Both setters go
+  // through the same state the streak-card/restore-badge animations in
+  // BlitzMap.jsx already watch, so 'break'/'used' fire automatically.
   const handleSkip = useCallback(() => {
     if (roundState !== 'READING' && roundState !== 'SELECTING') return; // nothing to skip once revealed
+
+    const prevStreak = streakRef.current;
+    const prevRestores = streakRestoresRef.current;
+    const streakSaved = prevStreak > 0 && prevRestores > 0;
+
+    setStreak(streakSaved ? prevStreak : 0);
+    if (streakSaved) setStreakRestores(prevRestores - 1);
+
     setRoundState('LOADING');
   }, [roundState]);
 
