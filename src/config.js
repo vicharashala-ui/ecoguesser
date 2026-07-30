@@ -257,16 +257,13 @@ export const LAYER_IDS = {
   BLITZ_HINT_OUTLINE:  'blitz-hint-outline',
 };
 
-// DECAY_KM=92, not 100 -- distance is now measured to the site's boundary
-// rather than its centroid, which acts as a per-site score bonus of
-// roughly exp(effectiveRadius/DECAY_KM) for guesses that miss outside the
-// site. Averaged over all 825 sites' real area_km2 (effectiveRadius =
-// sqrt(area/pi)), that bonus was ~x1.08 at the old DECAY_KM=100 -- 92
-// (100/1.081) cancels it back out for the typical "missed by more than the
-// site's own radius" round, while still letting near-misses on the
-// largest reserves (Great Rann of Kutch etc.) score noticeably better than
-// before, which is the intended effect of the boundary-distance change.
-export const SCORING = { MAX_SCORE: 5000, DECAY_KM: 92, HINT_PENALTY: 500 };
+// DECAY_KM=130 -- bumped up from 92 for a more forgiving curve (e.g. a
+// 25km boundary miss now scores ~4126 instead of ~3809, 50km ~3406 instead
+// of ~2904). Distance is measured to the site's boundary, not its centroid
+// (see distanceToBoundary in scoring.js), so near-misses on large reserves
+// (Great Rann of Kutch etc.) already score better than a naive centroid
+// distance would give; this bump layers a general leniency on top of that.
+export const SCORING = { MAX_SCORE: 5000, DECAY_KM: 130, HINT_PENALTY: 500 };
 
 // BottomCard.jsx's round-to-round push transition (new site's pill slides
 // in from the left while the previous round's card slides out to the
