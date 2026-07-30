@@ -349,6 +349,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
           onSkip={handleSkip}
           mode="classic"
           result={result}
+          cardHeight={cardHeight}
         />
       )}
     </div>

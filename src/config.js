@@ -23,7 +23,7 @@ export const MAP_CONFIG = {
   // zoomed in this far, with no manual toggle in either mode. Blitz is
   // unaffected (its own "State Names" toggle shows/hides immediately,
   // independent of zoom).
-  STATE_LABEL_MIN_ZOOM: 4,
+  STATE_LABEL_MIN_ZOOM: 3.3,
   // Portrait viewports are much taller than INDIA_BOUNDS' aspect ratio, so
   // fitBounds always has vertical slack left over after the width fits.
   // Uneven top/bottom padding biases where that slack goes -- less above

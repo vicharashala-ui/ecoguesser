@@ -413,7 +413,7 @@
         "text-halo-color": "rgba(255,255,255,0.85)",
         "text-halo-width": 2
       },
-      "minzoom": 3.5
+      "minzoom": 3.7
     },
     {
       "id": "water_name_point_label",
@@ -468,7 +468,7 @@
         "text-halo-color": "rgba(255,255,255,0.7)",
         "text-halo-width": 1.5
       },
-      "minzoom": 3.5
+      "minzoom": 3.7
     },
     {
       "id": "water_name_line_label",
@@ -513,13 +513,13 @@
         "text-halo-color": "rgba(255,255,255,0.7)",
         "text-halo-width": 1.5
       },
-      "minzoom": 3.5
+      "minzoom": 3.7
     },
     {
       "id": "physical_feature_label",
       "type": "symbol",
       "source": "physical-features",
-      "minzoom": 3.5,
+      "minzoom": 3.7,
       "layout": {
         "text-field": [
           "get",
@@ -605,7 +605,7 @@
         "text-halo-color": "rgba(255,255,255,0.8)",
         "text-halo-width": 1.2
       },
-      "minzoom": 3.5
+      "minzoom": 3.7
     },
     {
       "id": "place_city_marker",
@@ -633,7 +633,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 3.5,
+      "minzoom": 3.7,
       "filter": [
         "==",
         [
@@ -785,7 +785,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 6,
+      "minzoom": 5,
       "filter": [
         "==",
         [
@@ -840,7 +840,7 @@
       "type": "symbol",
       "source": "openmaptiles",
       "source-layer": "place",
-      "minzoom": 7,
+      "minzoom": 6,
       "filter": [
         "==",
         [

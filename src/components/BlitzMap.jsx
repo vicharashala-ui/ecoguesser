@@ -10,7 +10,7 @@
 // correctStates can wrap onto an extra line), so RecenterButton and the
 // boundary zoom don't end up under the expanded card.
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BlitzCard from './BlitzCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
@@ -172,10 +172,8 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   // Lifted out of BlitzCard (rather than local state) for the same reason
   // as ClassicMap.jsx's collapsed -- BlitzCard.jsx's collapse toggle and
   // this component's cardHeight re-measure need to agree on the same
-  // value; unlike Classic/Daily's useLayoutEffect, cardHeight here is kept
-  // in sync by the transitionend listener below, which already re-measures
-  // on any max-height transition (collapsing/expanding included) without
-  // needing collapsed as an explicit dependency.
+  // value; kept in sync by the useLayoutEffect below, same pattern (and
+  // same reason) as ClassicMap.jsx/DailyMap.jsx.
   const [collapsed, setCollapsed] = useState(false);
 
   // Drives the streak card's feedback animation: 'up' on a correct guess
@@ -420,28 +418,19 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     }
   }, [mapRef, roundState, setPoliticalNames]);
 
-  // Measures BlitzCard's height the instant roundState flips to REVEALING,
-  // before BottomCard.css's 0.3s max-height transition finishes -- so this
-  // initially reads a height close to the pill's 64px. Corrected by the
-  // transitionend effect below once the animation completes (same
-  // race/fix as ClassicMap.jsx's cardRef).
-  useEffect(() => {
-    if (roundState !== 'REVEALING') return;
-    const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 0;
-    setCardHeight(measuredHeight);
-  }, [roundState, result]);
-
-  useEffect(() => {
+  // Keeps cardHeight (and so RecenterButton's `bottom`) in sync with
+  // BlitzCard's target height -- same fix as ClassicMap.jsx/DailyMap.jsx's
+  // cardHeight effect. Uses scrollHeight, not getBoundingClientRect(), so
+  // this reads the content's natural (target) height even while the
+  // max-height transition is still clipping the box, and runs in
+  // useLayoutEffect so the new height commits in the same paint as the
+  // roundState/collapsed class change -- both this card's max-height and
+  // RecenterButton's bottom transition then start on the same frame.
+  useLayoutEffect(() => {
     const card = cardRef.current;
     if (!card || roundState !== 'REVEALING') return;
-
-    function onTransitionEnd(e) {
-      if (e.target !== card || e.propertyName !== 'max-height') return;
-      setCardHeight(card.getBoundingClientRect().height);
-    }
-    card.addEventListener('transitionend', onTransitionEnd);
-    return () => card.removeEventListener('transitionend', onTransitionEnd);
-  }, [roundState]);
+    setCardHeight(card.scrollHeight);
+  }, [roundState, result, collapsed]);
 
   return (
     <div style={style} className="eg-blitz-map">
@@ -577,6 +566,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
           onShowBoundary={handleShowBoundary}
           collapsed={collapsed}
           onToggleCollapsed={setCollapsed}
+          cardHeight={cardHeight}
         />
       )}
     </div>

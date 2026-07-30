@@ -438,6 +438,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
           onNextSite={handleNext}
           onShowBoundary={handleShowBoundary}
           nextLabel={isLastRound ? 'Results' : 'Next Site'}
+          cardHeight={cardHeight}
         />
       )}
     </div>

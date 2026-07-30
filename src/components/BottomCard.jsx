@@ -203,6 +203,13 @@ function softHyphenate(text) {
  *   so it can drive RecenterButton's position in the same layout pass; see
  *   ClassicMap.jsx/DailyMap.jsx's cardHeight useLayoutEffect.
  * @param {(collapsed: boolean) => void} props.onToggleCollapsed
+ * @param {number|null} [props.cardHeight] - same measured value driving
+ *   RecenterButton's `bottom`, applied here as an inline `max-height` cap
+ *   during REVEALING. Without this, the CSS class-based caps (80vh/120px)
+ *   are transitioned toward instead of the real content height, so the
+ *   card visually finishes growing/shrinking well before its 0.3s
+ *   transition elapses -- desyncing it from the button's `bottom`
+ *   transition, which always runs the full 0.3s toward its real target.
  * @param {React.Ref<HTMLDivElement>} ref - forwarded to `.bottom-card` so
  *   ClassicMap.jsx can measure its real rendered height for fitBounds padding.
  */
@@ -221,6 +228,7 @@ const BottomCard = forwardRef(function BottomCard({
   result,
   collapsed,
   onToggleCollapsed,
+  cardHeight,
 }, ref) {
   const titleId = useId();
   const isRevealing = roundState === 'REVEALING';
@@ -528,7 +536,11 @@ const BottomCard = forwardRef(function BottomCard({
         ref={ref}
         key={site.id}
         className={`bottom-card ${isRevealing ? `is-expanded ${collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
-        style={{ '--eg-accent': meta.color, '--eg-accent-text': meta.textColor ?? meta.color }}
+        style={{
+          '--eg-accent': meta.color,
+          '--eg-accent-text': meta.textColor ?? meta.color,
+          ...(isRevealing && cardHeight ? { maxHeight: `${cardHeight}px` } : null),
+        }}
         role="region"
         aria-labelledby={titleId}
       >

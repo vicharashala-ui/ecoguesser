@@ -175,6 +175,11 @@ function softHyphenate(text) {
  *   can drive RecenterButton's position in the same layout pass -- same
  *   contract as BottomCard.jsx's collapsed prop; see its doc comment.
  * @param {(collapsed: boolean) => void} onToggleCollapsed
+ * @param {number|null} [cardHeight] - same measured value driving
+ *   RecenterButton's `bottom`, applied here as an inline `max-height` cap
+ *   during REVEALING so the card's height transition targets the same real
+ *   pixel value the button transitions toward. See BottomCard.jsx's
+ *   cardHeight doc for the full rationale.
  * @param {React.Ref<HTMLDivElement>} ref - forwarded to the outer `.bottom-card` div so
  *   BlitzMap.jsx can measure its real rendered height -- the expanded card's
  *   height varies with content (correctStates can list more than one state
@@ -194,6 +199,7 @@ const BlitzCard = forwardRef(function BlitzCard({
   onShowBoundary,
   collapsed,
   onToggleCollapsed,
+  cardHeight,
 }, ref) {
   const titleId = useId();
   const isRevealing = roundState === 'REVEALING';
@@ -395,7 +401,11 @@ const BlitzCard = forwardRef(function BlitzCard({
         ref={ref}
         key={site.id}
         className={`bottom-card ${isRevealing ? `is-expanded ${collapsed ? 'is-collapsed' : ''}` : 'is-pill'}`}
-        style={{ '--eg-accent': meta.color, '--eg-accent-text': meta.textColor ?? meta.color }}
+        style={{
+          '--eg-accent': meta.color,
+          '--eg-accent-text': meta.textColor ?? meta.color,
+          ...(isRevealing && cardHeight ? { maxHeight: `${cardHeight}px` } : null),
+        }}
         role="region"
         aria-labelledby={titleId}
       >
