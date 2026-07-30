@@ -359,20 +359,22 @@
 .dm-start-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
+  /* icon pinned left (flex-shrink: 0 below) + label filling the rest,
+     centered in that remaining space -- not the pill's true center, which
+     would need a second 52px+16px spacer column to balance the icon out.
+     That was tried and reclaimed here instead: on narrow phones it was
+     exactly the width "Start Daily Challenge" needed to stay one line. */
   gap: 16px;
   width: 100%;
   height: 64px;
+  /* 6px -- matches the icon's own vertical clearance ((64px height - 52px
+     icon) / 2), so its curve sits the same distance from the pill's left
+     edge as from the top/bottom: nested into the corner, not floating in
+     the middle of open space. */
+  padding: 0 6px;
   border: none;
   border-radius: 999px;
-  /* Same brand hue throughout, just lightened/darkened via color-mix for
-     depth -- no new color introduced. */
-  background: linear-gradient(
-    155deg,
-    color-mix(in srgb, var(--eg-brand, #227743) 88%, white) 0%,
-    var(--eg-brand, #227743) 55%,
-    color-mix(in srgb, var(--eg-brand, #227743) 85%, black) 100%
-  );
+  background: var(--eg-brand, #227743);
   color: #fff;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 18px;
@@ -389,15 +391,24 @@
 }
 
 .dm-start-icon {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  flex-shrink: 0;
   color: #fff;
   background: rgba(255, 255, 255, 0.2);
+}
+
+.dm-start-btn > span:last-child {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* safety net only -- the space reclaimed above should keep this from ever actually triggering */
 }
 
 .dm-start-btn:hover:not(:disabled) {

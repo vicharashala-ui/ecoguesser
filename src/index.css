@@ -81,9 +81,22 @@
   --eg-brand: #227743;
   --eg-ink: #111827;
   --eg-ink-secondary: #6b7280;
+  --eg-ink-tertiary: #9ca3af;
   --eg-border: #e5e7eb;
+  --eg-border-strong: #d1d5db;
   --eg-cream: #f8f6f1;
+  /* Card/panel surface, as distinct from --eg-cream's page background --
+     both are #fff-adjacent in light mode (hence no visible change here),
+     but dark mode needs them to diverge (page bg near-black, card surface
+     one step lighter) for panels to read as raised above the page. */
+  --eg-surface: #fff;
+  --eg-surface-hover: #f9fafb;
   --eg-danger: #dc2626;
+  /* Shared "shadow-as-border" ring (design-audit-fixes.md, StatsView's
+     card/badge/histogram surfaces) -- a dark-on-light ring reads as a
+     border in light mode but needs to flip to a light-on-dark one below,
+     or it just vanishes against a near-black --eg-surface. */
+  --eg-card-ring: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 
   /* -- Type scale -- reference scale for new/touched text. The 23 one-off
      sizes already in the app (10px-40px, including half-pixel tuned values
@@ -139,6 +152,64 @@
   --eg-z-modal: 60;             /* name prompt modal */
   --eg-z-modal-info: 65;        /* info modal (How to Play / About / Privacy) */
   --eg-z-drawer: 80;            /* side drawer -- topmost */
+}
+
+/* Dark mode -- toggled via SideDrawer's settings row (src/utils/theme.js),
+   defaulting to prefers-color-scheme until the player picks explicitly.
+   Scoped to non-map screens only (Header/BottomNav/SideDrawer/StatsView/
+   Leaderboard/modals): floating map chrome (BottomCard, the map's own
+   layer-toggle panel, RecenterButton) intentionally keeps its light glass
+   styling from the :root block above, since it overlays the map regardless
+   of app theme. Map terrain/style colors (map-style.json) are untouched by
+   either block -- CSS can't reach a WebGL canvas's paint anyway.
+   --eg-brand is brightened here (not reused as-is): the light-mode value
+   only clears 3.24:1 against this block's --eg-cream, under the 4.5:1 AA
+   text threshold it was tuned for on light backgrounds (see :root's
+   comment) -- #34a35a restores 5.6:1. */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --eg-brand: #34a35a;
+  --eg-ink: #e8eaed;
+  --eg-ink-secondary: #9aa1ac;
+  --eg-ink-tertiary: #6b7280;
+  --eg-border: #2c3238;
+  --eg-border-strong: #3a4148;
+  --eg-cream: #14171a;
+  --eg-surface: #1e2226;
+  --eg-surface-hover: #262b30;
+  --eg-danger: #f87171;
+  --eg-card-ring: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+/* Re-pins map-overlay chrome to light-mode values inside dark mode --
+   BottomCard/BlitzCard, RecenterButton, MilestoneToast, ScoreRemark,
+   AchievementToast, MapContainer, MapLoadingOverlay, and each mode's own
+   layer-toggle panel, all of which render nested inside one of these three
+   roots (see ClassicMap/DailyMap/BlitzMap.jsx). These were deliberately
+   scoped OUT of dark mode -- they float over the map regardless of app
+   theme -- but that exclusion doesn't happen automatically just by never
+   editing those files: custom properties cascade into every descendant
+   regardless of which stylesheet declares var(--eg-ink) etc, and
+   color-scheme changes the *inherited default* text color for elements
+   with no color set at all (e.g. DailyMap's timer digits), which no token
+   override can reach. Both had to be reset explicitly, here, scoped to
+   just these subtrees. */
+html[data-theme='dark'] .eg-classic-map,
+html[data-theme='dark'] .eg-daily-map,
+html[data-theme='dark'] .eg-blitz-map {
+  color-scheme: light;
+  color: #111827;
+  --eg-brand: #227743;
+  --eg-ink: #111827;
+  --eg-ink-secondary: #6b7280;
+  --eg-ink-tertiary: #9ca3af;
+  --eg-border: #e5e7eb;
+  --eg-border-strong: #d1d5db;
+  --eg-cream: #f8f6f1;
+  --eg-surface: #fff;
+  --eg-surface-hover: #f9fafb;
+  --eg-danger: #dc2626;
+  --eg-card-ring: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 }
 
 /* Fixed-viewport app shell height. `100vh` alone locks to the mobile
@@ -200,7 +271,7 @@ body {
   inset: 0;
   margin: 0;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
-  background: #f8f6f1;
+  background: var(--eg-cream);
 }
 
 /* Drop the browser's default blue tap-highlight rectangle on tap/click,
@@ -330,8 +401,8 @@ body {
 }
 
 .eg-toggle-input:checked ~ .eg-toggle-track {
-  background: linear-gradient(135deg, rgba(89, 207, 135, 0.65), rgba(34, 119, 67, 0.3));
-  border-color: rgba(34, 119, 67, 0.65);
+  background: var(--eg-brand, #227743);
+  border-color: var(--eg-brand, #227743);
 }
 
 .eg-toggle-input:checked ~ .eg-toggle-track .eg-toggle-thumb {

@@ -4,8 +4,11 @@ import { registerSW } from 'virtual:pwa-register';
 import App from './App.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { LS_KEYS } from './config.js';
+import { watchSystemTheme } from './utils/theme.js';
 import './utils/installPromptCapture.js';
 import './index.css';
+
+watchSystemTheme();
 
 // vite-plugin-pwa's virtual module -- only emits a real service worker at
 // build time (`npm run build`); a no-op in `npm run dev` so local dev never

@@ -87,7 +87,7 @@
   padding: 4px;
   margin-bottom: 20px;
   border-radius: var(--eg-radius-md, 14px);
-  background: #fff;
+  background: var(--eg-surface, #fff);
   border: 1px solid var(--eg-border, #e5e7eb);
 }
 
@@ -127,6 +127,13 @@
 .sv-body {
   width: 100%;
   max-width: 420px;
+  --sv-accent: var(--sv-accent-light);
+  --sv-tint: var(--sv-tint-light);
+}
+
+html[data-theme='dark'] .sv-body {
+  --sv-accent: var(--sv-accent-dark);
+  --sv-tint: var(--sv-tint-dark);
 }
 
 .sv-empty {
@@ -143,8 +150,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--sv-tint, #f3f4f6);
-  color: var(--sv-accent, #9ca3af);
+  background: var(--sv-tint, var(--eg-surface-hover, #f3f4f6));
+  color: var(--sv-accent, var(--eg-ink-tertiary, #9ca3af));
 }
 
 .sv-empty p {
@@ -175,13 +182,13 @@
   gap: 2px;
   padding: 12px 8px;
   border-radius: var(--eg-radius-md, 14px);
-  background: #fff;
+  background: var(--eg-surface, #fff);
   /* Shadow-as-border (design-audit-fixes.md, "Also flagged" section) -- was
      a separate `border: 1px solid #e5e7eb` stacked on top of this same
      box-shadow; folded into one ring layer here instead (rgba(17,24,39,
      0.06) reads at essentially the same visual weight as the old solid
      border color). */
-  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  box-shadow: var(--eg-card-ring);
   text-align: center;
 }
 
@@ -215,6 +222,10 @@
   color: var(--eg-brand, #227743);
 }
 
+html[data-theme='dark'] .sv-stat-icon {
+  background: rgba(52, 163, 90, 0.18);
+}
+
 /* Small tinted pill instead of plain gray caps text -- color comes from
    --sv-accent/--sv-tint set on .sv-body per active tab (StatsView.jsx), so
    headings pick up that section's accent without four near-duplicate
@@ -241,7 +252,7 @@
   margin: -6px 0 10px;
   font-size: 11.5px;
   line-height: 1.35;
-  color: #9ca3af;
+  color: var(--eg-ink-tertiary, #9ca3af);
 }
 
 /* Vertical histogram (Daily's score distribution) -- a bordered card like
@@ -258,9 +269,9 @@
   padding: 16px 8px 0;
   margin-bottom: 18px;
   border-radius: var(--eg-radius-md, 14px);
-  background: #fff;
+  background: var(--eg-surface, #fff);
   /* Shadow-as-border, same as .sv-stat above. */
-  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  box-shadow: var(--eg-card-ring);
 }
 
 .sv-hist-col {
@@ -285,7 +296,7 @@
    the non-zero counts at a glance rather than making every label the same
    weight/color. */
 .sv-hist-count-zero {
-  color: #d1d5db;
+  color: var(--eg-border-strong, #d1d5db);
 }
 
 .sv-hist-bar-track {
@@ -354,9 +365,9 @@
   gap: 8px;
   padding: 8px 10px;
   border-radius: var(--eg-radius-md, 14px);
-  background: #fff;
+  background: var(--eg-surface, #fff);
   /* Shadow-as-border, same as .sv-stat above. */
-  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  box-shadow: var(--eg-card-ring);
 }
 
 .sv-cat-dot {
@@ -371,7 +382,7 @@
   min-width: 0; /* same overflow fix as .sv-stat above */
   font-size: 13px;
   font-weight: 700;
-  color: #374151;
+  color: var(--eg-ink, #374151);
 }
 
 .sv-cat-score {
@@ -405,9 +416,9 @@
   padding: 14px 14px 16px;
   margin-bottom: 20px;
   border-radius: var(--eg-radius-md, 14px);
-  background: #fff;
+  background: var(--eg-surface, #fff);
   /* Shadow-as-border, same as .sv-stat above. */
-  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  box-shadow: var(--eg-card-ring);
 }
 
 .sv-ach-summary-top {
@@ -434,7 +445,7 @@
 .sv-ach-summary-track {
   height: 8px;
   border-radius: 999px;
-  background: #f3f4f6;
+  background: var(--eg-surface-hover, #f3f4f6);
   overflow: hidden;
 }
 
@@ -460,9 +471,9 @@
   gap: 12px;
   padding: 12px;
   border-radius: var(--eg-radius-md, 14px);
-  background: #fff;
+  background: var(--eg-surface, #fff);
   /* Shadow-as-border, same as .sv-stat above. */
-  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  box-shadow: var(--eg-card-ring);
   opacity: 0.6;
 }
 
@@ -475,6 +486,11 @@
   background: #f1fbf5;
   box-shadow: 0 0 0 1px #c8efd7, 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
   animation: sv-ach-unlock-pop 0.45s ease;
+}
+
+html[data-theme='dark'] .sv-ach-badge-unlocked {
+  background: rgba(52, 163, 90, 0.14);
+  box-shadow: 0 0 0 1px rgba(52, 163, 90, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 @keyframes sv-ach-unlock-pop {
@@ -491,13 +507,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f3f4f6;
-  color: #9ca3af;
+  background: var(--eg-surface-hover, #f3f4f6);
+  color: var(--eg-ink-tertiary, #9ca3af);
 }
 
 .sv-ach-badge-unlocked .sv-ach-icon {
   background: #daf6e5;
   color: var(--eg-brand, #227743);
+}
+
+html[data-theme='dark'] .sv-ach-badge-unlocked .sv-ach-icon {
+  background: rgba(52, 163, 90, 0.28);
 }
 
 .sv-ach-body {
@@ -536,7 +556,7 @@
   margin-top: 6px;
   height: 5px;
   border-radius: 999px;
-  background: #f3f4f6;
+  background: var(--eg-surface-hover, #f3f4f6);
   overflow: hidden;
 }
 
@@ -551,5 +571,5 @@
   margin-top: 3px;
   font-size: 10.5px;
   font-weight: 700;
-  color: #9ca3af;
+  color: var(--eg-ink-tertiary, #9ca3af);
 }

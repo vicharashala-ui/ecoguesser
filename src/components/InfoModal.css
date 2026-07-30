@@ -26,7 +26,7 @@
      dvh override through production minification -- see BottomCard.css's
      .is-expanded comment for why a plain second declaration doesn't. */
   max-height: 82vh;
-  background: #fff;
+  background: var(--eg-surface, #fff);
   border-radius: 20px;
   box-shadow: 0 20px 50px rgba(17, 24, 39, 0.25);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
@@ -85,7 +85,7 @@
   height: 30px;
   border-radius: 50%;
   border: none;
-  background: #f3f4f6;
+  background: var(--eg-surface-hover, #f3f4f6);
   color: var(--eg-ink-secondary, #6b7280);
   font-size: 14px;
   cursor: pointer;
@@ -120,7 +120,7 @@
 .im-body {
   padding: 16px 20px 22px;
   overflow-y: auto;
-  color: #374151;
+  color: var(--eg-ink, #374151);
   font-size: 14px;
   line-height: 1.55;
 }
@@ -162,7 +162,7 @@
 }
 
 .im-muted {
-  color: #9ca3af;
+  color: var(--eg-ink-tertiary, #9ca3af);
   font-size: 12.5px;
 }
 
@@ -174,4 +174,10 @@
   color: #92400e;
   font-size: 12.5px;
   font-weight: 600;
+}
+
+html[data-theme='dark'] .im-draft-note {
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.35);
+  color: #fbbf24;
 }

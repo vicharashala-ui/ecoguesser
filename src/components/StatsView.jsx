@@ -29,11 +29,20 @@ const BUCKET_LABELS = ['0-5k', '5-10k', '10-15k', '15-20k', '20-25k'];
 // 8) -- one map so the indicator and every chip/icon in a section always
 // agree on its color instead of four hardcoded CSS class variants drifting
 // out of sync with each other.
+//
+// dark* pair: only for --sv-accent/--sv-tint (StatsView.css picks between
+// them via html[data-theme='dark'], see .sv-body there) -- the indicator
+// pill below keeps using the plain `accent` value regardless of theme,
+// since it's a filled swatch with white text on top (readable against
+// either), not flat text on the page background the way --sv-accent is.
+// classic/awards get a brighter darkAccent because their light-mode hex
+// only clears ~3:1 against a dark page (fails 4.5:1 text contrast);
+// daily/blitz already clear 5:1+ so their dark values just repeat as-is.
 const TABS = [
-  { id: 'daily', label: 'Daily', accent: '#65a30d', tint: '#f7fee7' },
-  { id: 'classic', label: 'Classic', accent: '#2563eb', tint: '#eff6ff' },
-  { id: 'blitz', label: 'Blitz', accent: '#f59e0b', tint: '#fffbeb' },
-  { id: 'awards', label: 'Awards', accent: '#9333ea', tint: '#faf5ff' },
+  { id: 'daily', label: 'Daily', accent: '#65a30d', tint: '#f7fee7', darkAccent: '#65a30d', darkTint: 'rgba(101, 163, 13, 0.16)' },
+  { id: 'classic', label: 'Classic', accent: '#2563eb', tint: '#eff6ff', darkAccent: '#60a5fa', darkTint: 'rgba(96, 165, 250, 0.16)' },
+  { id: 'blitz', label: 'Blitz', accent: '#f59e0b', tint: '#fffbeb', darkAccent: '#f59e0b', darkTint: 'rgba(245, 158, 11, 0.16)' },
+  { id: 'awards', label: 'Awards', accent: '#9333ea', tint: '#faf5ff', darkAccent: '#c084fc', darkTint: 'rgba(192, 132, 252, 0.16)' },
 ];
 
 // Vertical bar chart shared by Daily's score distribution and by Classic's
@@ -407,8 +416,18 @@ export default function StatsView({ sites = [] }) {
         className="sv-body"
         // Exposes this section's accent/tint to .sv-heading and
         // .sv-empty-icon via CSS custom props, instead of four
-        // near-duplicate per-tab class variants in the CSS.
-        style={{ '--sv-accent': active.accent, '--sv-tint': active.tint }}
+        // near-duplicate per-tab class variants in the CSS. Light/dark
+        // exposed separately (not as a single --sv-accent/--sv-tint) so
+        // StatsView.css's html[data-theme='dark'] rule can pick the dark
+        // pair via the cascade -- it can't override an inline style's own
+        // custom property directly, since inline always wins a same-name
+        // conflict regardless of external selector specificity.
+        style={{
+          '--sv-accent-light': active.accent,
+          '--sv-accent-dark': active.darkAccent,
+          '--sv-tint-light': active.tint,
+          '--sv-tint-dark': active.darkTint,
+        }}
       >
         {tab === 'daily' ? <DailySection />
           : tab === 'classic' ? <ClassicSection />

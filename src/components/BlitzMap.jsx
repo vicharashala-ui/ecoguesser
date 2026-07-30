@@ -444,7 +444,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   }, [roundState]);
 
   return (
-    <div style={style}>
+    <div style={style} className="eg-blitz-map">
       <div className="bz-top-right-stack">
         {/* Session streak -- tracked by useBlitzRound.js the whole time but
             previously never surfaced in the UI. Always mounted (not gated

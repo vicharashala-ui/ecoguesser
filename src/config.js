@@ -331,4 +331,9 @@ export const LS_KEYS = {
   SITES_SEEN:  'ecoguesser_sites_seen',
   SOUND:       'ecoguesser_sound',
   HAPTICS:     'ecoguesser_haptics',
+  // Explicit user choice only -- 'light' | 'dark'. Absent means "follow
+  // prefers-color-scheme", both here and in index.html's inline anti-flash
+  // script, which must stay in sync with this key's literal string since it
+  // runs before any JS module (including this file) has loaded.
+  THEME:       'ecoguesser_theme',
 };

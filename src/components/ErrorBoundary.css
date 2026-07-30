@@ -57,6 +57,10 @@
   background: #1a5f35; /* one step darker than --eg-brand */
 }
 
+html[data-theme='dark'] .eg-error-refresh-btn:hover {
+  background: #2b8a4a; /* one step darker than dark mode's brighter --eg-brand (#34a35a) */
+}
+
 .eg-error-refresh-btn:active {
   transform: scale(0.96);
 }

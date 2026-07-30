@@ -26,6 +26,7 @@ import { REGION_STATES } from '../utils/filters.js';
 import { submitFeedback } from '../game/api.js';
 import { isSoundEnabled, setSoundEnabled } from '../utils/sound.js';
 import { isHapticsEnabled, setHapticsEnabled } from '../utils/haptics.js';
+import { getTheme, setTheme } from '../utils/theme.js';
 import './SideDrawer.css';
 
 const REGIONS = Object.keys(REGION_STATES);
@@ -58,6 +59,7 @@ export default function SideDrawer({
   const [showSettings, setShowSettings] = useState(false);
   const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
   const [hapticsOn, setHapticsOn] = useState(() => isHapticsEnabled());
+  const [theme, setThemeState] = useState(() => getTheme());
   const [expandedRegion, setExpandedRegion] = useState(null);
   // Each region's state list is measured (not guessed) because some state
   // names wrap to two lines at this drawer width -- a fixed per-row height
@@ -149,6 +151,12 @@ export default function SideDrawer({
   function handleHapticsToggle(enabled) {
     setHapticsOn(enabled);
     setHapticsEnabled(enabled);
+  }
+
+  function handleThemeToggle() {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setThemeState(next);
+    setTheme(next);
   }
 
   function handleNavigate(dest) {
@@ -285,6 +293,33 @@ export default function SideDrawer({
                   <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                 )}
               </svg>
+            </button>
+            <button
+              type="button"
+              className="sd-banner-menu"
+              style={theme === 'dark' ? { background: 'var(--eg-brand, #227743)', color: '#fff' } : undefined}
+              onClick={handleThemeToggle}
+              aria-pressed={theme === 'dark'}
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="1.8" />
+                  <g stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                    <path d="M12 2.5v2.3M12 19.2v2.3M21.5 12h-2.3M4.8 12H2.5" />
+                    <path d="M18.36 5.64l-1.63 1.63M7.27 16.73l-1.63 1.63M18.36 18.36l-1.63-1.63M7.27 7.27L5.64 5.64" />
+                  </g>
+                </svg>
+              )}
             </button>
           </div>
         </div>

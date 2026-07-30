@@ -154,7 +154,7 @@
   gap: 10px;
   padding: 10px 14px;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--eg-surface, #fff);
   border: 1px solid var(--eg-border, #e5e7eb);
 }
 

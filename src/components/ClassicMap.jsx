@@ -241,7 +241,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     : terrain ? 'Switch to basemap' : 'Switch to terrain map';
 
   return (
-    <div style={style}>
+    <div style={style} className="eg-classic-map">
       <MapContainer
         mapRef={mapRef}
         onMapClick={handleMapClick}
