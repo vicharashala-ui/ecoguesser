@@ -23,6 +23,14 @@ const LOADING_MESSAGES = [
   'Loading labels…',
   'Syncing data…',
   'Almost ready…',
+  'Mapping reserves…',
+  'Charting parks…',
+  'Aligning coastlines…',
+  'Fetching sanctuaries…',
+  'Tuning projection…',
+  'Loading wildlife zones…',
+  'Building the canvas…',
+  'Warming up the map…',
 ];
 const SLOW_MESSAGE = 'Still loading — check your connection';
 

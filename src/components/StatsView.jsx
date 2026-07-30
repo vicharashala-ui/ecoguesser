@@ -292,42 +292,79 @@ function AchievementBadge({ achievement, grown }) {
   );
 }
 
+// Circular progress ring for one Site Collection tile (Total or a single
+// category). SVG stroke-dashoffset animation, gated on `grown` the same
+// way every other fill in this file reveals on mount instead of snapping in.
+// size/stroke are tuned for a 3-column, 6-tile grid at StatsView's 420px
+// max content width -- change together if the grid's column count changes.
+function CollectionRing({ label, color, seen, total, grown, variant }) {
+  const isTotal = variant === 'total';
+  const size = isTotal ? 64 : 56;
+  const stroke = isTotal ? 6 : 5;
+  const r = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * r;
+  const pct = total > 0 ? Math.round((seen / total) * 100) : 0;
+  const offset = circumference - (grown ? pct / 100 : 0) * circumference;
+
+  return (
+    <div className={`sv-ring-item${isTotal ? ' sv-ring-item-total' : ''}`}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <circle cx={size / 2} cy={size / 2} r={r} className="sv-ring-track" />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          className="sv-ring-fill"
+          style={{ stroke: color, strokeDasharray: circumference, strokeDashoffset: offset }}
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+        <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" className="sv-ring-pct">
+          {pct}%
+        </text>
+      </svg>
+      <span className="sv-ring-label">{label}</span>
+      <span className="sv-ring-score">{seen}/{total}</span>
+    </div>
+  );
+}
+
 // "N / 837 explored" completionist counter -- see stats.js's
 // computeCollectionStats. Rendered at the top of the Awards tab, above the
 // achievement badges, since it's the headline "collection" stat the rest
 // of the tab builds on. Shares AchievementsSection's rAF-delayed `grown`
-// flip (passed in as a prop) so its progress bar animates in alongside the
-// achievements-unlocked one instead of on its own separate timer.
+// flip (passed in as a prop) so every ring animates in together instead of
+// on its own separate timer. Total tile uses the app's brand green (not a
+// category color) since it aggregates across all five.
 function CollectionSection({ sites, grown }) {
   const stats = useMemo(() => computeCollectionStats(sites), [sites]);
 
   // `sites` is [] until App.jsx's /protected-areas.json fetch resolves --
-  // rendering "0 / 0 explored" in that brief window would read as broken,
-  // so this section just doesn't render until real site data has arrived.
+  // rendering a "0%" ring in that brief window would read as broken, so
+  // this section just doesn't render until real site data has arrived.
   if (stats.total === 0) return null;
-
-  const pct = Math.round((stats.seen / stats.total) * 100);
 
   return (
     <>
       <p className="sv-heading">Site Collection</p>
       <p className="sv-subheading">Distinct protected areas you've encountered in Classic or Blitz</p>
-      <div className="sv-ach-summary">
-        <div className="sv-ach-summary-top">
-          <span className="sv-ach-summary-count">{stats.seen} / {stats.total}</span>
-          <span className="sv-ach-summary-label">explored</span>
-        </div>
-        <div className="sv-ach-summary-track">
-          <div className="sv-ach-summary-fill" style={{ width: grown ? `${pct}%` : '0%' }} />
-        </div>
-      </div>
-      <div className="sv-cat-grid">
+      <div className="sv-ring-grid">
+        <CollectionRing
+          label="Total"
+          color="var(--eg-brand, #227743)"
+          seen={stats.seen}
+          total={stats.total}
+          grown={grown}
+          variant="total"
+        />
         {DAILY.CATEGORIES.map((cat) => (
-          <div className="sv-cat-item" key={cat}>
-            <span className="sv-cat-dot" style={{ background: CATEGORY_META[cat].color }} />
-            <span className="sv-cat-label">{CATEGORY_META[cat].label}</span>
-            <span className="sv-cat-score">{stats.byCategory[cat].seen} / {stats.byCategory[cat].total}</span>
-          </div>
+          <CollectionRing
+            key={cat}
+            label={CATEGORY_META[cat].label}
+            color={CATEGORY_META[cat].color}
+            seen={stats.byCategory[cat].seen}
+            total={stats.byCategory[cat].total}
+            grown={grown}
+          />
         ))}
       </div>
     </>

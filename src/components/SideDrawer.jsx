@@ -72,6 +72,15 @@ export default function SideDrawer({
   const [mounted, setMounted] = useState(open);
   const [entered, setEntered] = useState(false);
 
+  // Re-sync from localStorage on every open -- the drawer stays mounted for
+  // the whole session, so the `name` useState initializer above only ever
+  // runs once. Without this, a name saved elsewhere (e.g. DailySummary's
+  // post-game NamePromptModal, which writes LS_KEYS.NAME directly) wouldn't
+  // show up here until a full page reload.
+  useEffect(() => {
+    if (open) setName(localStorage.getItem(LS_KEYS.NAME) ?? '');
+  }, [open]);
+
   useEffect(() => {
     if (open) {
       setMounted(true);
