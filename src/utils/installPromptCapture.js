@@ -13,7 +13,6 @@ let installed = false;
 let onChange = null; // single subscriber -- exactly one InstallPrompt ever mounts
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('[installPromptCapture] beforeinstallprompt fired'); // TEMP -- remove after debugging
   e.preventDefault();
   deferredPrompt = e;
   onChange?.();

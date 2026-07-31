@@ -48,7 +48,11 @@
 }
 
 @keyframes eg-achievement-shine {
-  to { left: 130%; }
+  /* was `left: 130%` -- animating left forces layout+paint every frame.
+     Element is 40% of parent width, so translateX(475%) = 4.75 * 40% = 190%
+     of parent width, matching the original -60% -> 130% travel distance,
+     but fully compositor-driven (transform only). */
+  to { transform: translateX(475%); }
 }
 
 .eg-achievement-icon {
