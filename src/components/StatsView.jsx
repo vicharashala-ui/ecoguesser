@@ -252,6 +252,7 @@ const ACHIEVEMENT_GROUPS = [
   { mode: 'daily', label: 'Daily' },
   { mode: 'classic', label: 'Classic' },
   { mode: 'blitz', label: 'Blitz' },
+  { mode: 'collection', label: 'Collection' },
   { mode: 'meta', label: 'Overall' },
 ];
 
@@ -260,8 +261,25 @@ const ACHIEVEMENT_GROUPS = [
 // 0%->real% flip -- same mount-grow trick as ScoreHistogram above, just
 // hoisted since a badge grid can have a dozen bars animating at once.
 function AchievementBadge({ achievement, grown }) {
-  const { title, description, icon, unlocked, progress } = achievement;
-  const pct = progress ? Math.min(100, (progress.current / progress.target) * 100) : null;
+  const { title, description, icon, unlocked, maxed, tierIndex, tierCount, current, lowerIsBetter, nextTier } = achievement;
+  const isTiered = tierCount > 1;
+  // Numeric "climb toward a bigger number" bar only -- a lowerIsBetter
+  // metric (get *under* some distance) has no natural 0% starting point, so
+  // showing one would be more confusing than showing none (same reason the
+  // pre-tiers version of these achievements never had a bar either).
+  const showBar = !maxed && !lowerIsBetter && current != null && nextTier;
+  const displayCurrent = showBar ? Math.max(0, current) : null;
+  const pct = showBar ? Math.min(100, (displayCurrent / nextTier.target) * 100) : null;
+  // Once a family has at least one tier under its belt, lead with what's
+  // next rather than restating the tier just earned -- the pips already
+  // show progress at a glance.
+  const bodyDescription = !isTiered
+    ? description
+    : maxed
+      ? `${description} Max level.`
+      : tierIndex === 0
+        ? description
+        : `Next: ${nextTier.title} — ${nextTier.description.charAt(0).toLowerCase()}${nextTier.description.slice(1)}`;
 
   return (
     <div className={`sv-ach-badge${unlocked ? ' sv-ach-badge-unlocked' : ''}`}>
@@ -271,10 +289,20 @@ function AchievementBadge({ achievement, grown }) {
       <div className="sv-ach-body">
         <div className="sv-ach-title-row">
           <span className="sv-ach-title">{title}</span>
+          {isTiered && (
+            <span className="sv-ach-pips" aria-hidden="true">
+              {achievement.tiers.map((t, i) => (
+                <span
+                  key={i}
+                  className={`sv-ach-pip${i < tierIndex ? ' sv-ach-pip-done' : i === tierIndex && !maxed ? ' sv-ach-pip-next' : ''}`}
+                />
+              ))}
+            </span>
+          )}
           {unlocked && <span className="sv-ach-check" aria-hidden="true">✓</span>}
         </div>
-        <span className="sv-ach-desc">{description}</span>
-        {!unlocked && progress && (
+        <span className="sv-ach-desc">{bodyDescription}</span>
+        {showBar && (
           <>
             <div className="sv-ach-progress-track">
               <div
@@ -283,7 +311,7 @@ function AchievementBadge({ achievement, grown }) {
               />
             </div>
             <span className="sv-ach-progress-label">
-              {Math.min(progress.current, progress.target).toLocaleString()} / {progress.target.toLocaleString()}
+              {Math.min(displayCurrent, nextTier.target).toLocaleString()} / {nextTier.target.toLocaleString()}
             </span>
           </>
         )}
@@ -297,7 +325,7 @@ function AchievementBadge({ achievement, grown }) {
 // way every other fill in this file reveals on mount instead of snapping in.
 // size/stroke are tuned for a 3-column, 6-tile grid at StatsView's 420px
 // max content width -- change together if the grid's column count changes.
-function CollectionRing({ label, color, seen, total, grown, variant }) {
+function CollectionRing({ label, color, seen, total, grown, variant, index = 0 }) {
   const isTotal = variant === 'total';
   const size = isTotal ? 64 : 56;
   const stroke = isTotal ? 6 : 5;
@@ -305,23 +333,30 @@ function CollectionRing({ label, color, seen, total, grown, variant }) {
   const circumference = 2 * Math.PI * r;
   const pct = total > 0 ? Math.round((seen / total) * 100) : 0;
   const offset = circumference - (grown ? pct / 100 : 0) * circumference;
+  // Staggered reveal (cascading left-to-right/top-to-bottom instead of all
+  // 6 rings filling in lockstep) -- same idea as .bc-card's staggered
+  // reveal, just driven by transition-delay since these fills already run
+  // on a CSS transition rather than a JS stagger loop.
+  const delay = grown ? `${index * 55}ms` : '0ms';
 
   return (
-    <div className={`sv-ring-item${isTotal ? ' sv-ring-item-total' : ''}`}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size / 2} cy={size / 2} r={r} className="sv-ring-track" />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          className="sv-ring-fill"
-          style={{ stroke: color, strokeDasharray: circumference, strokeDashoffset: offset }}
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        />
-        <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" className="sv-ring-pct">
-          {pct}%
-        </text>
-      </svg>
+    <div className={`sv-ring-item${isTotal ? ' sv-ring-item-total' : ''}`} style={{ '--ring-color': color }}>
+      <div className="sv-ring-visual">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <circle cx={size / 2} cy={size / 2} r={r} className="sv-ring-track" />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            className="sv-ring-fill"
+            style={{ stroke: color, strokeDasharray: circumference, strokeDashoffset: offset, transitionDelay: delay }}
+            transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          />
+          <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" className="sv-ring-pct">
+            {pct}%
+          </text>
+        </svg>
+      </div>
       <span className="sv-ring-label">{label}</span>
       <span className="sv-ring-score">{seen}/{total}</span>
     </div>
@@ -355,8 +390,9 @@ function CollectionSection({ sites, grown }) {
           total={stats.total}
           grown={grown}
           variant="total"
+          index={0}
         />
-        {DAILY.CATEGORIES.map((cat) => (
+        {DAILY.CATEGORIES.map((cat, i) => (
           <CollectionRing
             key={cat}
             label={CATEGORY_META[cat].label}
@@ -364,6 +400,7 @@ function CollectionSection({ sites, grown }) {
             seen={stats.byCategory[cat].seen}
             total={stats.byCategory[cat].total}
             grown={grown}
+            index={i + 1}
           />
         ))}
       </div>
@@ -375,7 +412,10 @@ function CollectionSection({ sites, grown }) {
 // persisted stats (see achievements.js) -- no separate "achievements"
 // localStorage entry, so nothing here needs to be written back on unlock.
 function AchievementsSection({ sites }) {
-  const achievements = useMemo(() => computeAchievements(), []);
+  // Recomputes once `sites` arrives (it's [] on first render -- see
+  // computeAchievements's jsdoc) so the Collection family's per-category
+  // progress fills in without needing a page reload.
+  const achievements = useMemo(() => computeAchievements(sites), [sites]);
   const [grown, setGrown] = useState(false);
 
   useEffect(() => {
@@ -383,8 +423,12 @@ function AchievementsSection({ sites }) {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  const unlockedCount = achievements.filter((a) => a.unlocked).length;
-  const summaryPct = achievements.length ? Math.round((unlockedCount / achievements.length) * 100) : 0;
+  // Counts tiers reached, not just families unlocked -- so leveling up an
+  // already-unlocked achievement (e.g. Bronze -> Silver) moves this number
+  // too, instead of only the very first tier of each family counting.
+  const totalTiers = achievements.reduce((n, a) => n + a.tierCount, 0);
+  const unlockedTiers = achievements.reduce((n, a) => n + a.tierIndex, 0);
+  const summaryPct = totalTiers ? Math.round((unlockedTiers / totalTiers) * 100) : 0;
 
   return (
     <>
@@ -393,7 +437,7 @@ function AchievementsSection({ sites }) {
       <p className="sv-heading">Achievements</p>
       <div className="sv-ach-summary">
         <div className="sv-ach-summary-top">
-          <span className="sv-ach-summary-count">{unlockedCount} / {achievements.length}</span>
+          <span className="sv-ach-summary-count">{unlockedTiers} / {totalTiers}</span>
           <span className="sv-ach-summary-label">unlocked</span>
         </div>
         <div className="sv-ach-summary-track">

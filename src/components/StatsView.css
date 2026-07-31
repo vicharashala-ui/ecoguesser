@@ -420,6 +420,31 @@ html[data-theme='dark'] .sv-stat-icon {
   stroke-width: 5;
 }
 
+/* Soft halo behind each ring, tinted to that ring's own color -- kept very
+   faint (14% via opacity, not a saturated fill) so it reads as depth/glow
+   rather than turning the tile itself colorful.
+   Fixed height (matching the larger 64px Total ring) so the 56px category
+   rings vertically center within the same slot -- otherwise the smaller
+   rings sit higher and their label/score end up on a different line than
+   Total's, since .sv-ring-item just stacks children from the top. */
+.sv-ring-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+}
+
+.sv-ring-visual::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ring-color) 0%, transparent 70%);
+  opacity: 0.16;
+  pointer-events: none;
+}
+
 .sv-ring-fill {
   fill: none;
   stroke-width: 5;
@@ -432,6 +457,7 @@ html[data-theme='dark'] .sv-stat-icon {
   font-size: 12px;
   font-weight: 800;
   fill: var(--eg-ink, #111827);
+  font-variant-numeric: tabular-nums;
 }
 
 .sv-ring-label {
@@ -443,23 +469,29 @@ html[data-theme='dark'] .sv-stat-icon {
 }
 
 .sv-ring-score {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--eg-ink-secondary, #6b7280);
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--eg-ink, #111827);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Total tile stands apart from the 5 category tiles -- same brand-tint
-   treatment as .sv-ach-badge-unlocked below, so "special/brand" reads
-   consistently across this tab rather than inventing a second highlight
-   style. */
+   family as .sv-ach-badge-unlocked below, so "special/brand" reads
+   consistently across this tab. Light mode needed a solid border (not just
+   a lighter shadow ring) to actually read as distinct next to white cards;
+   1.5px is the same weight Header.css already uses for brand-accent
+   borders elsewhere. */
 .sv-ring-item-total {
-  background: #f1fbf5;
-  box-shadow: 0 0 0 1px #c8efd7, 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
+  background: #e6f7ec;
+  border: 1.5px solid var(--eg-brand, #227743);
+  /* Depth layers only, no ring layer -- the border above is the edge now. */
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 }
 
 html[data-theme='dark'] .sv-ring-item-total {
-  background: rgba(52, 163, 90, 0.14);
-  box-shadow: 0 0 0 1px rgba(52, 163, 90, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.24);
+  background: rgba(52, 163, 90, 0.16);
+  border: 1.5px solid rgba(52, 163, 90, 0.5);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 .sv-ring-item-total .sv-ring-pct {
@@ -473,7 +505,7 @@ html[data-theme='dark'] .sv-ring-item-total {
 }
 
 .sv-ring-item-total .sv-ring-score {
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .sv-footer-row {
@@ -629,6 +661,28 @@ html[data-theme='dark'] .sv-ach-badge-unlocked .sv-ach-icon {
   font-size: 12px;
   font-weight: 800;
   color: var(--eg-brand, #227743);
+}
+
+.sv-ach-pips {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.sv-ach-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--eg-border, #e5e7eb);
+}
+
+.sv-ach-pip-done {
+  background: var(--eg-brand, #227743);
+}
+
+.sv-ach-pip-next {
+  background: transparent;
+  border: 1.5px solid #f59e0b;
 }
 
 .sv-ach-desc {

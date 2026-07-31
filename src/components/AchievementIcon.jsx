@@ -8,7 +8,7 @@
 //
 // Extracted into its own file (rather than this codebase's usual
 // no-shared-icon-module convention, where each component owns its own tiny
-// inline SVGs) because this is a ~10-case icon registry keyed by name, used
+// inline SVGs) because this is a ~12-case icon registry keyed by name, used
 // by two call sites now (StatsView.jsx's Awards tab, AchievementToast.jsx's
 // live unlock toast) -- duplicating the whole switch into a second file
 // would be the actual bloat here, not sharing it.
@@ -82,6 +82,20 @@ export default function AchievementIcon({ name, size = 24 }) {
       return (
         <svg {...common}>
           <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'pin':
+      return (
+        <svg {...common}>
+          <path d="M12 21s7-7.5 7-12.5A7 7 0 0 0 5 8.5C5 13.5 12 21 12 21Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+          <circle cx="12" cy="8.5" r="2.3" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      );
+    case 'eye':
+      return (
+        <svg {...common}>
+          <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
         </svg>
       );
     default:

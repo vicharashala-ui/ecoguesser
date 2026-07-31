@@ -28,6 +28,13 @@ export function useAchievementUnlocks() {
   const [queue, setQueue] = useState([]);
 
   const recordAndDetect = useCallback((writeFn) => {
+    // computeAchievements() with no `sites` arg -- the Collection family
+    // (see achievements.js) always reads as 0 progress here, so a
+    // Collection milestone won't fire a live toast through this path. It
+    // still shows and updates correctly in the Awards tab, which already
+    // has `sites` loaded; threading it through here too would mean also
+    // updating every recordAndDetect call site (BlitzMap/ClassicMap/App.jsx)
+    // just for a toast on a family that's easy enough to notice next visit.
     const before = computeAchievements();
     const result = writeFn();
     const after = computeAchievements();
