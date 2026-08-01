@@ -229,12 +229,20 @@ html[data-theme='dark'] .eg-blitz-map {
    build-time CSS minifier (Lightning CSS) collapses duplicate
    same-property declarations within one rule down to just the last one,
    silently dropping the 100vh fallback if written that way. Separate
-   rule blocks like these survive that pass intact. */
+   rule blocks like these survive that pass intact.
+
+   Skipped for standalone/installed-PWA launches ([data-standalone], set by
+   theme-init.js before this stylesheet paints): 100dvh has its own
+   cold-start bug there, reporting a stale/wrong value that doesn't
+   self-correct until a rotation event fires -- this is what caused
+   BottomNav to render off-screen until the app was closed and reopened.
+   Standalone has no address bar to retract in the first place, so plain
+   100vh (the fallback above) is already correct for it. */
 .eg-app-shell-height {
   height: 100vh;
 }
 @supports (height: 100dvh) {
-  .eg-app-shell-height {
+  html:not([data-standalone]) .eg-app-shell-height {
     height: 100dvh;
   }
 }

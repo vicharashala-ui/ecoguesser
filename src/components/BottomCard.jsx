@@ -446,18 +446,6 @@ const BottomCard = forwardRef(function BottomCard({
                   ? <AnimatedScore key={cardSite.id} value={cardResult.finalScore} />
                   : cardResult.finalScore.toLocaleString()} pts
               </span>
-
-              {cardSite.hasBoundary && onShowBoundary && (
-                <button
-                  type="button"
-                  className="bc-boundary-btn-sm"
-                  onClick={onShowBoundary}
-                  aria-label="Show site boundary"
-                  title="Show site boundary"
-                >
-                  <IconFrame size={14} /> Boundary
-                </button>
-              )}
             </div>
 
             {isDaily && cardResult.hintPenalty > 0 && (
@@ -472,15 +460,11 @@ const BottomCard = forwardRef(function BottomCard({
             )}
 
             <div className="bc-actions">
-              <button
-                type="button"
-                className="bc-trivia-btn"
-                disabled
-                aria-label="Play Trivia - coming soon"
-                title="Coming soon"
-              >
-                Play Trivia
-              </button>
+              {cardSite.hasBoundary && onShowBoundary && (
+                <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
+                  <IconFrame /> Site Boundary
+                </button>
+              )}
               <button type="button" className="bc-next-btn" onClick={handleNextSiteClick}>
                 {nextLabel}
               </button>

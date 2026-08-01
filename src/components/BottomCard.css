@@ -681,48 +681,12 @@
   color: var(--eg-danger, #dc2626);
 }
 
-/* "Site Boundary" chip -- sits at the right edge of BottomCard.jsx's
-   result row (distance + pts), right-aligned via margin-left:auto, just
-   above the Next Site actions. Distinct from .bc-boundary-btn below
-   (Blitz's larger half-width action-row button) -- Classic/Daily's
-   placement is an in-line chip, sized larger than a typical small tag per
-   direct request but still lighter than a full action button. */
-.bc-boundary-btn-sm {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 14px;
-  margin-left: auto; /* pushes the chip to the row's right edge */
-  flex-shrink: 0;
-  border-radius: 999px;
-  border: 1.5px solid var(--eg-accent, #227743);
-  background: rgba(255, 255, 255, 0.6);
-  color: var(--eg-accent-text, var(--eg-accent, #227743));
-  font-weight: 700;
-  font-size: 13.5px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.bc-boundary-btn-sm:hover {
-  background: rgba(17, 24, 39, 0.05);
-}
-
-.bc-boundary-btn-sm:active {
-  transform: scale(0.96);
-}
-
-/* Show Boundary -- Blitz's flex-paired half of .bc-actions in
-   BlitzCard.jsx (Classic/Daily uses the smaller .bc-boundary-btn-sm chip
-   above instead). Was previously borrowing .bc-trivia-btn's disabled grey/
-   not-allowed look (visually indistinguishable from a disabled button even
-   though it's fully clickable). Styled here as an accent-outlined pill --
-   tinted with the round's per-category --eg-accent color, same variable
-   .bc-icon/.bc-category-label already use -- so it reads as a real, enabled
-   action distinct from both the disabled Play Trivia button and the
-   solid-green Next button. */
+/* Site Boundary -- flex-paired half of .bc-actions, shared by
+   BlitzCard.jsx and BottomCard.jsx (Classic/Daily) alike. Styled as an
+   accent-outlined pill -- tinted with the round's per-category --eg-accent
+   color, same variable .bc-icon/.bc-category-label already use -- so it
+   reads as a real, enabled action distinct from the solid-green Next
+   button. */
 .bc-boundary-btn {
   flex: 1;
   height: 44px;
@@ -755,7 +719,6 @@
   margin-top: 8px;
 }
 
-.bc-trivia-btn,
 .bc-next-btn {
   flex: 1;
   height: 44px;
@@ -764,12 +727,6 @@
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
-}
-
-.bc-trivia-btn {
-  background: #f3f4f6;
-  color: #9ca3af;
-  cursor: not-allowed;
 }
 
 .bc-next-btn {
@@ -788,7 +745,6 @@
   .bc-hint-btn,
   .bc-confirm-btn,
   .bc-boundary-btn,
-  .bc-boundary-btn-sm,
   .bc-next-btn {
     transition: none;
   }
