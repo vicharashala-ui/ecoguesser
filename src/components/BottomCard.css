@@ -90,9 +90,14 @@
   bottom: calc(var(--eg-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 12px);
   z-index: var(--eg-z-card, 30);
   font-family: 'Nunito', 'Segoe UI', sans-serif;
-  background: color-mix(in srgb, var(--eg-cream, #f8f6f1) 82%, transparent);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  /* 18% tint -- matches .cm-layer-panel (Classic's Borders toggle), the
+     max-transparency point picked after 10% proved unreadable over dark
+     map areas (ocean, forest hillshade). Icon/text legibility is handled
+     separately by .bc-pill-top's own scrim chip below, not by pushing this
+     shell's opacity up -- keeps the card itself genuinely see-through. */
+  background: color-mix(in srgb, var(--eg-cream, #f8f6f1) 18%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
   isolation: isolate;
   transform: translateZ(0);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -217,6 +222,22 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
+  /* Scrim chip, independent of .bottom-card's 18% shell tint above: that
+     tint alone can't guarantee contrast for dark ink text over a dark
+     backdrop (near-black ocean, dense forest hillshade) without becoming
+     opaque itself, which would defeat the "max transparency" pick. This
+     inner chip is deliberately more opaque (55%) so the tiger icon + site
+     name always sit on a readable base, while the rest of the card
+     (padding, action-button row) stays fully see-through. Own blur so the
+     chip smooths its own backdrop rather than just inheriting the outer
+     layer's blur radius. var(--eg-radius-md), not -lg -- concentric with
+     .bottom-card.is-pill's 24px per this app's nesting convention. */
+  background: color-mix(in srgb, var(--eg-cream, #f8f6f1) 55%, transparent);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border-radius: var(--eg-radius-md, 14px);
+  padding: 8px 10px;
+  margin: -4px -4px 0;
 }
 
 .bc-icon {
@@ -281,7 +302,15 @@
   height: 38px;
   border-radius: 999px;
   border: none;
-  background: rgba(17, 24, 39, 0.06);
+  /* Was rgba(17,24,39,0.06) -- fine on the old ~82%-opaque card, but
+     effectively invisible now that .bottom-card itself is only 18% tinted:
+     6% black over an already-faint backdrop reads as nothing. Same 55%
+     cream chip as .bc-pill-top/.bc-info-scrim, own blur, so it stays a
+     visible circle over any map color the way .bc-hint-btn's solid yellow
+     and .bc-confirm-btn's solid green already do. */
+  background: color-mix(in srgb, var(--eg-cream, #f8f6f1) 55%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--eg-ink-secondary, #6b7280);
   cursor: pointer;
   flex-shrink: 0;
@@ -398,6 +427,30 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* Scrim chip around the expanded card's plain-text info block (icon,
+   category label, name, meta row, desc, species, result row, daily-line)
+   -- same purpose as .bc-pill-top's chip above: .bottom-card's 18% shell
+   tint can't guarantee dark-ink-on-dark-map contrast without becoming
+   opaque itself, so this nested chip carries that job, leaving .bc-card's
+   own padding and .bc-actions' button row genuinely see-through. flex
+   column + 4px gap mirrors .bc-card's own layout above, so every child's
+   existing margin-top (bc-desc's 6px, bc-divider's 2px, etc.) stacks the
+   same way it did as a direct .bc-card child -- moving them into this
+   wrapper doesn't change their spacing. One chip for the whole block
+   rather than one per line -- less visual clutter, and every field here
+   lacks a background of its own. */
+.bc-info-scrim {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: color-mix(in srgb, var(--eg-cream, #f8f6f1) 55%, transparent);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border-radius: var(--eg-radius-md, 14px);
+  padding: 8px 10px;
+  margin: -4px -4px 0;
 }
 
 /* Content stagger -- header/name+meta, then desc+species, then the

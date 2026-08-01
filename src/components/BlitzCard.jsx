@@ -317,61 +317,70 @@ const BlitzCard = forwardRef(function BlitzCard({
           <IconChevronDown />
         </button>
 
-        {!cardCollapsed && (
-          <div className="bc-card-header">
-            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
-            <span className="bc-category-label">{cardMeta.label.toUpperCase()}</span>
-          </div>
-        )}
+        {/* Scrim chip, same reasoning as BottomCard.jsx's renderCardBody --
+            .bottom-card's 18% shell tint alone can't guarantee legible
+            text over a dark map backdrop. Wraps the wrong-guess badge too:
+            its own background is a light tint (BlitzCard.css), which
+            reads far better layered on this chip than directly on raw map
+            colors. bc-actions stays outside -- its buttons already carry
+            solid/tinted backgrounds. */}
+        <div className="bc-info-scrim">
+          {!cardCollapsed && (
+            <div className="bc-card-header">
+              <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
+              <span className="bc-category-label">{cardMeta.label.toUpperCase()}</span>
+            </div>
+          )}
 
-        <h2
-          id={ghost ? undefined : titleId}
-          className={`bc-card-name ${cardCollapsed ? 'is-collapsed' : ''}`}
-        >
-          {softHyphenate(cardSite.name)}
-        </h2>
-
-        {!cardCollapsed && cardSite.area_km2 != null && (
-          <div className="bc-meta-row">
-            <span className="bc-meta-item">{cardSite.area_km2.toLocaleString()} km²</span>
-          </div>
-        )}
-
-        {/* Correct: just the state name, same accent-colored/pin-icon
-            treatment Classic/Daily's own .bc-state-name uses -- no colored
-            box, since there's no "right vs wrong" to signal here beyond
-            what the pill's outcome already conveyed a moment ago. Wrong:
-            unchanged -- .bz-badge's colored box, keyed on site.id so a new
-            round always remounts it (see prior comment history for why:
-            same fresh-play-on-every-round convention as ConfettiBurst.jsx
-            and ScoreRemark.jsx). Both stay visible while collapsed (unlike
-            the header/meta-row/actions above/below) -- this is the one
-            line that answers "where", collapsed or not. */}
-        {cardResult.isCorrect ? (
-          <span className="bc-meta-item bc-state-name">
-            <IconPin size={15} /> {cardResult.correctStates.join(', ')}
-          </span>
-        ) : (
-          <div
-            key={cardSite.id}
-            className={`bz-badge bz-badge-wrong${cardCloseCall ? ' bz-badge-close' : ''}`}
+          <h2
+            id={ghost ? undefined : titleId}
+            className={`bc-card-name ${cardCollapsed ? 'is-collapsed' : ''}`}
           >
-            {cardCloseCall ? (
-              <>
-                <span className="bz-badge-icon"><IconNearMiss /></span>
-                <span className="bz-badge-text">
-                  <span className="bz-badge-headline">One State Away</span>
-                  <span className="bz-badge-sub">It's in {cardResult.correctStates.join(', ')}</span>
-                </span>
-              </>
-            ) : (
-              <>
-                <IconCross />
-                <span>Wrong — it's in {cardResult.correctStates.join(', ')}</span>
-              </>
-            )}
-          </div>
-        )}
+            {softHyphenate(cardSite.name)}
+          </h2>
+
+          {!cardCollapsed && cardSite.area_km2 != null && (
+            <div className="bc-meta-row">
+              <span className="bc-meta-item">{cardSite.area_km2.toLocaleString()} km²</span>
+            </div>
+          )}
+
+          {/* Correct: just the state name, same accent-colored/pin-icon
+              treatment Classic/Daily's own .bc-state-name uses -- no colored
+              box, since there's no "right vs wrong" to signal here beyond
+              what the pill's outcome already conveyed a moment ago. Wrong:
+              unchanged -- .bz-badge's colored box, keyed on site.id so a new
+              round always remounts it (see prior comment history for why:
+              same fresh-play-on-every-round convention as ConfettiBurst.jsx
+              and ScoreRemark.jsx). Both stay visible while collapsed (unlike
+              the header/meta-row/actions above/below) -- this is the one
+              line that answers "where", collapsed or not. */}
+          {cardResult.isCorrect ? (
+            <span className="bc-meta-item bc-state-name">
+              <IconPin size={15} /> {cardResult.correctStates.join(', ')}
+            </span>
+          ) : (
+            <div
+              key={cardSite.id}
+              className={`bz-badge bz-badge-wrong${cardCloseCall ? ' bz-badge-close' : ''}`}
+            >
+              {cardCloseCall ? (
+                <>
+                  <span className="bz-badge-icon"><IconNearMiss /></span>
+                  <span className="bz-badge-text">
+                    <span className="bz-badge-headline">One State Away</span>
+                    <span className="bz-badge-sub">It's in {cardResult.correctStates.join(', ')}</span>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <IconCross />
+                  <span>Wrong — it's in {cardResult.correctStates.join(', ')}</span>
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
         {!cardCollapsed && (
           <div className="bc-actions">

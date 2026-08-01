@@ -417,79 +417,92 @@ const BottomCard = forwardRef(function BottomCard({
           <IconChevronDown />
         </button>
 
-        {!cardCollapsed && (
-          <div className="bc-card-header">
-            <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
-            <span className="bc-category-label">{cardMeta.label.toUpperCase()}</span>
+        {/* Single scrim chip around every plain-text field below -- same
+            reasoning as .bc-pill-top's chip: .bottom-card's 18% shell tint
+            can't guarantee dark-ink-on-dark-map contrast without going
+            opaque, so this nested chip carries that job instead, leaving
+            .bc-card's own padding/gaps genuinely see-through. One chip for
+            the whole block rather than one per line -- less visual
+            clutter, and every one of these fields lacks a background of
+            its own (unlike .bc-actions' buttons below, which keep their
+            existing solid/tinted backgrounds and don't need it). */}
+        <div className="bc-info-scrim">
+          {!cardCollapsed && (
+            <div className="bc-card-header">
+              <span className="bc-icon bc-icon-lg" aria-hidden="true"><IconMark size={30} /></span>
+              <span className="bc-category-label">{cardMeta.label.toUpperCase()}</span>
+            </div>
+          )}
+
+          <h2
+            id={ghost ? undefined : titleId}
+            className={`bc-card-name ${cardCollapsed ? 'is-collapsed' : ''}`}
+          >
+            {softHyphenate(cardSite.name)}
+          </h2>
+
+          <div className="bc-meta-row">
+            <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {cardSite.state.join(', ')}</span>
+            {!cardCollapsed && cardSite.year && (
+              <span className="bc-meta-item"><IconCalendar size={15} /> Est. {cardSite.year}</span>
+            )}
           </div>
-        )}
 
-        <h2
-          id={ghost ? undefined : titleId}
-          className={`bc-card-name ${cardCollapsed ? 'is-collapsed' : ''}`}
-        >
-          {softHyphenate(cardSite.name)}
-        </h2>
+          {!cardCollapsed && (
+            <>
+              {cardSite.desc && <p className="bc-desc">{cardSite.desc}</p>}
 
-        <div className="bc-meta-row">
-          <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {cardSite.state.join(', ')}</span>
-          {!cardCollapsed && cardSite.year && (
-            <span className="bc-meta-item"><IconCalendar size={15} /> Est. {cardSite.year}</span>
+              {cardSite.species && (
+                <div className="bc-species">
+                  <IconPaw size={15} /> Key species: {cardSite.species}
+                </div>
+              )}
+
+              <hr className="bc-divider" />
+
+              <div className="bc-result-row">
+                {cardSite.area_km2 != null && (
+                  <span className="bc-meta-item bc-area-item">{cardSite.area_km2.toLocaleString()} km²</span>
+                )}
+                <span className="bc-meta-item bc-distance-item">
+                  <IconPin size={15} />
+                  {cardResult.skipped || cardResult.distanceKm == null
+                    ? 'Skipped'
+                    : `${Math.round(cardResult.distanceKm).toLocaleString()} km away`}
+                </span>
+                <span className={`bc-meta-item bc-score ${cardIsPerfect ? 'bc-score-perfect' : ''}`}>
+                  <IconStar size={15} />{' '}
+                  {!ghost && cardIsScored
+                    ? <AnimatedScore key={cardSite.id} value={cardResult.finalScore} />
+                    : cardResult.finalScore.toLocaleString()} pts
+                </span>
+              </div>
+
+              {isDaily && cardResult.hintPenalty > 0 && (
+                <div className="bc-daily-line bc-penalty">
+                  Hint penalty: -{cardResult.hintPenalty.toLocaleString()}
+                </div>
+              )}
+              {isDaily && (
+                <div className="bc-daily-line">
+                  Round score: {cardResult.finalScore.toLocaleString()} / {SCORING.MAX_SCORE.toLocaleString()} pts
+                </div>
+              )}
+            </>
           )}
         </div>
 
         {!cardCollapsed && (
-          <>
-            {cardSite.desc && <p className="bc-desc">{cardSite.desc}</p>}
-
-            {cardSite.species && (
-              <div className="bc-species">
-                <IconPaw size={15} /> Key species: {cardSite.species}
-              </div>
-            )}
-
-            <hr className="bc-divider" />
-
-            <div className="bc-result-row">
-              {cardSite.area_km2 != null && (
-                <span className="bc-meta-item bc-area-item">{cardSite.area_km2.toLocaleString()} km²</span>
-              )}
-              <span className="bc-meta-item bc-distance-item">
-                <IconPin size={15} />
-                {cardResult.skipped || cardResult.distanceKm == null
-                  ? 'Skipped'
-                  : `${Math.round(cardResult.distanceKm).toLocaleString()} km away`}
-              </span>
-              <span className={`bc-meta-item bc-score ${cardIsPerfect ? 'bc-score-perfect' : ''}`}>
-                <IconStar size={15} />{' '}
-                {!ghost && cardIsScored
-                  ? <AnimatedScore key={cardSite.id} value={cardResult.finalScore} />
-                  : cardResult.finalScore.toLocaleString()} pts
-              </span>
-            </div>
-
-            {isDaily && cardResult.hintPenalty > 0 && (
-              <div className="bc-daily-line bc-penalty">
-                Hint penalty: -{cardResult.hintPenalty.toLocaleString()}
-              </div>
-            )}
-            {isDaily && (
-              <div className="bc-daily-line">
-                Round score: {cardResult.finalScore.toLocaleString()} / {SCORING.MAX_SCORE.toLocaleString()} pts
-              </div>
-            )}
-
-            <div className="bc-actions">
-              {cardSite.hasBoundary && onShowBoundary && (
-                <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
-                  <IconFrame /> Site Boundary
-                </button>
-              )}
-              <button type="button" className="bc-next-btn" onClick={handleNextSiteClick}>
-                {nextLabel}
+          <div className="bc-actions">
+            {cardSite.hasBoundary && onShowBoundary && (
+              <button type="button" className="bc-boundary-btn" onClick={onShowBoundary}>
+                <IconFrame /> Site Boundary
               </button>
-            </div>
-          </>
+            )}
+            <button type="button" className="bc-next-btn" onClick={handleNextSiteClick}>
+              {nextLabel}
+            </button>
+          </div>
         )}
       </div>
     );
