@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import BottomNav from './components/BottomNav.jsx';
 import Header from './components/Header.jsx';
 import InstallPrompt from './components/InstallPrompt.jsx';
@@ -125,13 +125,13 @@ export default function App() {
   // DailyMap's round 5 hands off here. Stats are written once, right at
   // the real completion -- not inside DailySummary itself, which can
   // remount and must not re-trigger the streak math on a second mount.
-  function handleDailyComplete(results) {
+  const handleDailyComplete = useCallback((results) => {
     const totalPts = results.reduce((sum, r) => sum + r.finalScore, 0);
     const totalDist = results.reduce((sum, r) => sum + (r.distanceKm ?? 0), 0);
     recordAndDetect(() => recordDailyResult(results, totalPts, totalDist));
     setDailySummaryData({ totalPts, totalDist, results });
     setDailyPhase('summary');
-  }
+  }, [recordAndDetect]);
 
   function handleSummaryDone(leaderboardPayload) {
     setDailyLeaderboardData(leaderboardPayload);
@@ -225,12 +225,7 @@ export default function App() {
             mapRef={classicMapRef}
             sites={allSites}
             filters={classicFilters}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: activeTab === 'classic' ? 'block' : 'none',
-              animation: activeTab === 'classic' ? 'eg-tab-fade-in 220ms ease' : 'none',
-            }}
+            visible={activeTab === 'classic'}
           />
         </Suspense>
       )}
@@ -240,12 +235,7 @@ export default function App() {
             mapRef={blitzMapRef}
             sites={allSites}
             filters={classicFilters}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: activeTab === 'blitz' ? 'block' : 'none',
-              animation: activeTab === 'blitz' ? 'eg-tab-fade-in 220ms ease' : 'none',
-            }}
+            visible={activeTab === 'blitz'}
           />
         </Suspense>
       )}
@@ -255,12 +245,7 @@ export default function App() {
           sites={allSites}
           onComplete={handleDailyComplete}
           active={activeTab === 'daily'}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: activeTab === 'daily' && dailyPhase === 'round' ? 'block' : 'none',
-            animation: activeTab === 'daily' && dailyPhase === 'round' ? 'eg-tab-fade-in 220ms ease' : 'none',
-          }}
+          visible={activeTab === 'daily' && dailyPhase === 'round'}
         />
       </Suspense>
       {activeTab === 'daily' && dailyPhase === 'summary' && dailySummaryData && (

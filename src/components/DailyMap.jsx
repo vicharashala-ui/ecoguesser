@@ -14,7 +14,7 @@
 // times via useMapState instead), and panning stays enabled during the
 // reveal -- only the pause overlay disables map interaction (Effect 3 below).
 
-import { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect, useCallback, memo } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
@@ -124,7 +124,7 @@ function timerColor(remaining) {
   return 'var(--eg-ink, #111827)';
 }
 
-export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
+export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, onComplete, active = true }) {
   const cardRef = useRef(null);
   // Tracks BottomCard's real height during REVEALING, so RecenterButton can
   // be positioned above the expanded card instead of being hidden by it.
@@ -259,12 +259,12 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
 
   // "Show Site Boundary" button -- zooms in on the revealed site's polygon.
   // Recomputes fitPadding live since cardRef's height can only be read live.
-  function handleShowBoundary() {
+  const handleShowBoundary = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
     const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 200;
     zoomToSiteBoundary(map, { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 });
-  }
+  }, [mapRef]);
 
   const dailyTotal = results.reduce((sum, r) => sum + r.finalScore, 0);
 
@@ -275,7 +275,7 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
     : terrain ? 'Switch to basemap' : 'Switch to terrain map';
 
   return (
-    <div style={style} className="eg-daily-map">
+    <div className={visible ? 'eg-daily-map is-active' : 'eg-daily-map'}>
       {/* Top-right stack: round timer, then the Terrain/Satellite squares
           directly below it, stretch-aligned to the same width/right edge
           (Daily forces state borders on at all times via useMapState, so
@@ -443,4 +443,4 @@ export function DailyMap({ mapRef, style, sites, onComplete, active = true }) {
       )}
     </div>
   );
-}
+});

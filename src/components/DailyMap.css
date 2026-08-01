@@ -6,10 +6,22 @@
   .cm-mode-btn, which this mirrors, for the shared visual language.
 */
 
+/* Root panel positioning + tab-switch visibility. Was an inline `style`
+   object passed down from App.jsx on every render, which broke DailyMap's
+   memo() (new object each render, memo does a shallow prop compare). Moved
+   here as a className toggle instead, same fix as ClassicMap.css/BlitzMap.css.
+   (absolute/inset:0 replaces the old relative/100%+100% -- App.jsx's inline
+   style always forced absolute positioning anyway, so this just makes that
+   explicit instead of relying on inline-style override.) */
 .eg-daily-map {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+.eg-daily-map.is-active {
+  display: block;
+  animation: eg-tab-fade-in 220ms ease;
 }
 
 /* ---- Top-right stack: timer pill, then the Terrain/Satellite squares --- */

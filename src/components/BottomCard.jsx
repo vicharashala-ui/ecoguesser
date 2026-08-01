@@ -33,7 +33,7 @@
 // Show Site Boundary renders as a small chip at the right edge of the
 // result row (distance + pts) rather than its own row, to save vertical space.
 
-import { useId, useState, useEffect, useRef, forwardRef, lazy, Suspense } from 'react';
+import { useId, useState, useEffect, useRef, forwardRef, memo, lazy, Suspense } from 'react';
 import { CATEGORY_META, SCORING, CARD_SLIDE_MS } from '../config';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_ASPECT, TIGER_MARK_PATH } from './tigerMarkPath';
 import ScoreRemark from './ScoreRemark.jsx';
@@ -551,4 +551,4 @@ const BottomCard = forwardRef(function BottomCard({
   );
 });
 
-export default BottomCard;
+export default memo(BottomCard);

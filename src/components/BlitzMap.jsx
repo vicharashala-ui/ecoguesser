@@ -10,7 +10,7 @@
 // correctStates can wrap onto an extra line), so RecenterButton and the
 // boundary zoom don't end up under the expanded card.
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, memo } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BlitzCard from './BlitzCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
@@ -135,12 +135,12 @@ const REVEAL_CARD_GAP = 20; // gap above the card's top edge
 
 /**
  * @param {{current: import('maplibre-gl').Map|null}} mapRef
- * @param {React.CSSProperties} style
+ * @param {boolean} visible - controls display:block/none + fade-in for tab switching (see BlitzMap.css)
  * @param {import('../config').Site[]} sites - full unfiltered list from App.jsx
  * @param {{categories: string[], states: string[]}} [filters] - same lifted
  *   filter state as ClassicMap.jsx (Category + Region/State), shared with Blitz.
  */
-export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTERS }) {
+function BlitzMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS }) {
   const sitePool = useMemo(
     () => sites.filter((s) => siteMatchesFilter(s, filters)),
     [sites, filters]
@@ -433,7 +433,7 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
   }, [roundState, result, collapsed]);
 
   return (
-    <div style={style} className="eg-blitz-map">
+    <div className={visible ? 'eg-blitz-map is-active' : 'eg-blitz-map'}>
       <div className="bz-top-right-stack">
         {/* Session streak -- tracked by useBlitzRound.js the whole time but
             previously never surfaced in the UI. Always mounted (not gated
@@ -572,3 +572,5 @@ export default function BlitzMap({ mapRef, style, sites, filters = DEFAULT_FILTE
     </div>
   );
 }
+
+export default memo(BlitzMap);

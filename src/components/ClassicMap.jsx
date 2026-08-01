@@ -1,6 +1,6 @@
 // src/components/ClassicMap.jsx
 // Wires MapContainer + BottomCard + useClassicRound into the playable
-// Classic mode screen. mapRef/style pass through from App.jsx's tab
+// Classic mode screen. mapRef/visible pass through from App.jsx's tab
 // switching; `sites` also comes from App.jsx (already loaded once there)
 // rather than being re-imported here.
 //
@@ -15,7 +15,7 @@
 // updating `guess` on any tap after Confirm, so using it directly could
 // show a reveal line for a guess that was never scored.
 
-import { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef, memo } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BottomCard from './BottomCard.jsx';
 import RecenterButton from './RecenterButton.jsx';
@@ -81,12 +81,12 @@ function IconSatellite({ size = 24 }) {
 
 /**
  * @param {{current: import('maplibre-gl').Map|null}} mapRef
- * @param {React.CSSProperties} style - controls display:block/none for tab switching
+ * @param {boolean} visible - controls display:block/none + fade-in for tab switching (see ClassicMap.css)
  * @param {import('../config').Site[]} sites - full loaded site list (from App.jsx)
  * @param {{categories: string[], states: string[]}} [filters] - lifted to App.jsx via SideDrawer
  * @param {'easy'|'normal'|'hard'} [difficulty] - lifted to App.jsx via SideDrawer
  */
-export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FILTERS, difficulty }) {
+function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficulty }) {
   const sitePool = useMemo(
     () => sites.filter((s) => siteMatchesFilter(s, filters)),
     [sites, filters]
@@ -225,12 +225,12 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
 
   // "Show Site Boundary" button -- zooms in on the revealed site's polygon.
   // Recomputes fitPadding live since cardRef's height can only be read live.
-  function handleShowBoundary() {
+  const handleShowBoundary = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
     const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 0;
     zoomToSiteBoundary(map, { ...REVEAL_FIT_SIDES, bottom: measuredHeight + REVEAL_CARD_GAP });
-  }
+  }, [mapRef]);
 
   // What clicking the Terrain/Basemap square actually does, for its
   // aria-label/title -- satellite-on is its own case since that click no
@@ -241,7 +241,7 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     : terrain ? 'Switch to basemap' : 'Switch to terrain map';
 
   return (
-    <div style={style} className="eg-classic-map">
+    <div className={visible ? 'eg-classic-map is-active' : 'eg-classic-map'}>
       <MapContainer
         mapRef={mapRef}
         onMapClick={handleMapClick}
@@ -355,3 +355,5 @@ export default function ClassicMap({ mapRef, style, sites, filters = DEFAULT_FIL
     </div>
   );
 }
+
+export default memo(ClassicMap);

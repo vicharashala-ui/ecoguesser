@@ -1,5 +1,21 @@
 /* src/components/ClassicMap.css */
 
+/* Root panel positioning + tab-switch visibility. Was an inline `style`
+   object passed down from App.jsx on every render, which broke ClassicMap's
+   memo() (new object each render, memo does a shallow prop compare). Moved
+   here as a className toggle instead, since a plain string prop compares by
+   value and doesn't need memoizing on the App.jsx side at all. */
+.eg-classic-map {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+.eg-classic-map.is-active {
+  display: block;
+  animation: eg-tab-fade-in 220ms ease;
+}
+
 /* Positions the whole stack. align-items: stretch (not flex-end) so
    .cm-mode-row is forced to the same width as .cm-layer-panel above it --
    .cm-mode-item below is flex: 1, so the two squares grow to evenly fill

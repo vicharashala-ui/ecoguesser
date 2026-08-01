@@ -3,6 +3,21 @@
    ClassicMap.css's .cm-layer-panel -- one row here since Blitz forces
    borders on and has no satellite mode. */
 
+/* Root panel positioning + tab-switch visibility. Was an inline `style`
+   object passed down from App.jsx on every render, which broke BlitzMap's
+   memo() (new object each render, memo does a shallow prop compare). Moved
+   here as a className toggle instead, same fix as ClassicMap.css. */
+.eg-blitz-map {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+.eg-blitz-map.is-active {
+  display: block;
+  animation: eg-tab-fade-in 220ms ease;
+}
+
 /* Top-right stack: streak card + layer panel below it -- same positioning
    role as DailyMap.css's .dm-top-right-stack, moved here from
    .bz-layer-panel now that there are two items to stack instead of one. */
