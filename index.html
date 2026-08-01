@@ -90,28 +90,19 @@
          stable unhashed public/ URL, so nothing to rewrite at build time. -->
     <link rel="preload" href="/protected-areas.json" as="fetch" crossorigin="anonymous" fetchpriority="low" />
 
-    <!-- Nunito 400/700/800 (src/index.css's @fontsource imports) -- all
-         three weights actually visible on first paint, not just 400: the
+    <!-- Nunito variable (src/index.css's @fontsource-variable import) --
+         one file covers the whole 200-1000 weight axis, so this single
+         preload covers every weight visible on first paint (400/700/800:
          Header wordmark is 800, its tagline and BottomNav labels are 700,
-         and Daily's Start button/timer (the first interactive thing under
-         the splash) are 700/800 too. 400 is preloaded on its own for the
-         reason below (nothing names it, so it's undiscoverable without
-         help); 700/800 are ALSO preloaded despite being named in explicit
-         CSS selectors -- "discoverable eventually via CSSOM match" isn't
-         the same as "loads at preload priority", and those two weights are
-         exactly what's on screen the instant the splash fades. Skipping
-         them was the gap: the moment this preload block is trying to
-         protect (splash -> reveal) is the same moment the bold brand text
-         would otherwise flash in a fallback font. No fetchpriority on any
-         of the three -- deliberately below map-style.json/OFM-planet's
-         explicit "high" above, so they don't dilute those two off the
-         critical map-render path. Paths are the source npm-package files,
-         not the hashed dist filenames -- Vite's asset pipeline rewrites
-         these hrefs to the real hashed output paths at build time, same
-         mechanism as any other asset reference in this file. -->
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="/node_modules/@fontsource/nunito/files/nunito-latin-400-normal.woff2" />
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="/node_modules/@fontsource/nunito/files/nunito-latin-700-normal.woff2" />
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="/node_modules/@fontsource/nunito/files/nunito-latin-800-normal.woff2" />
+         Daily's Start button/timer are 700/800) without needing a preload
+         per weight the way the old static-font setup did. No fetchpriority
+         -- deliberately below map-style.json/OFM-planet's explicit "high"
+         above, so it doesn't dilute those off the critical map-render
+         path. Path is the source npm-package file, not the hashed dist
+         filename -- Vite's asset pipeline rewrites this href to the real
+         hashed output path at build time, same mechanism as any other
+         asset reference in this file. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/node_modules/@fontsource-variable/nunito/files/nunito-latin-wght-normal.woff2" />
 
     <!-- Favicon: multi-res .ico covers old browsers; PNG/SVG variants below
          are what modern Chrome/Firefox tab bars and bookmarks actually

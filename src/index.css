@@ -1,42 +1,28 @@
-/* Latin-only subsets, not the general 400/700/800.css files: those pull in
-   @font-face declarations (and their own woff2 files) for cyrillic,
-   cyrillic-ext, and vietnamese unicode ranges too. Every park/site name and
-   all UI copy in this app is English/Latin script, so those extra ranges
-   are dead weight -- ~144KB across the three weights that the service
-   worker's precache glob for woff2 files was fetching unconditionally on
-   every first visit. Revisit if the app ever adds a non-Latin locale.
+/* Latin-only subset, not the general wght.css: that pulls in @font-face
+   declarations (and their own woff2 files) for cyrillic, cyrillic-ext, and
+   vietnamese unicode ranges too. Every park/site name and all UI copy in
+   this app is English/Latin script, so those extra ranges are dead weight.
+   Revisit if the app ever adds a non-Latin locale.
 
-   Hand-rolled @font-face blocks rather than @import
-   '@fontsource/nunito/latin-{weight}.css': the package CSS declares a
-   legacy .woff fallback alongside each .woff2, so Vite was emitting (and
-   every deploy was shipping) three ~20KB .woff files no browser ever
-   downloads -- woff2 support is universal in anything capable of running
-   this app's ES modules. Declarations below are copied from the package
-   CSS verbatim (same family/style/display/weight; the latin subset files
-   carry no unicode-range) minus the woff source. The url()s resolve to the
-   exact same files index.html's font preload references, so both emit one
-   shared hashed asset. If @fontsource/nunito is ever major-bumped, re-diff
-   these against the package's latin-*.css. */
+   Variable font (@fontsource-variable/nunito) instead of three static
+   weight files: one woff2-variations file covers the whole 200-1000 axis,
+   so the 400/700/800 weights this app actually uses collapse from three
+   HTTP requests to one -- fewer round trips than the old static setup,
+   which matters more than raw bytes on high-latency mobile, and the single
+   file is smaller than the old three combined. font-family is kept as
+   'Nunito' (not the package's 'Nunito Variable') so every component's
+   existing font-family reference below needs no change. Hand-rolled block
+   rather than @import so no legacy .woff fallback ships (mirrors the
+   static-font rationale this replaced). The url() resolves to the same
+   file index.html's font preload references, so both emit one shared
+   hashed asset. If @fontsource-variable/nunito is ever major-bumped,
+   re-diff this against the package's wght.css latin block. */
 @font-face {
   font-family: 'Nunito';
   font-style: normal;
   font-display: swap;
-  font-weight: 400;
-  src: url('../node_modules/@fontsource/nunito/files/nunito-latin-400-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 700;
-  src: url('../node_modules/@fontsource/nunito/files/nunito-latin-700-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 800;
-  src: url('../node_modules/@fontsource/nunito/files/nunito-latin-800-normal.woff2') format('woff2');
+  font-weight: 200 1000;
+  src: url('../node_modules/@fontsource-variable/nunito/files/nunito-latin-wght-normal.woff2') format('woff2-variations');
 }
 
 :root {
