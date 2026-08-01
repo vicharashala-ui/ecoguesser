@@ -170,16 +170,28 @@ function IconSkip({ size = 18 }) {
 // BottomCard
 // ---------------------------------------------------------------------------
 
-// word-break: break-all (in BottomCard.css) fills each line to the max
-// width, splitting a word mid-way when needed -- but it does that silently,
-// with no visible mark at the cut. Soft hyphens (U+00AD) are invisible
-// everywhere *except* at a spot the browser actually breaks the line, where
-// they render as a real "-", with no reliance on the language-dictionary
-// hyphenation that `hyphens: auto` needs (and which doesn't know proper
-// nouns/place names anyway). Inserted between every non-space character
-// pair so the browser can choose whichever spot lands at the line's edge.
+// Inserts soft hyphens (U+00AD) so long names wrap to fill each line
+// instead of jumping whole words to line 2 -- BottomCard.css's .bc-card-name/
+// .bc-site-name deliberately have no word-break override, since
+// word-break: break-all has a hard spec rule suppressing ALL hyphen
+// rendering (even at a \u00AD), which is what erased the mark at the
+// break entirely. Plain word-break (normal) treats each \u00AD here as a
+// first-class break opportunity -- same priority as a space -- so the
+// browser still fills the line to the nearest one and renders a visible
+// "-" there by default (hyphens: manual), no `hyphens: auto` dictionary
+// lookup needed (which wouldn't know proper nouns/place names anyway).
+//
+// Only inserted inside runs of 5+ letters, at 2-letter intervals, and only
+// where 2+ letters remain ahead -- e.g. "Annamalai" gets break points after
+// "An" and "namal" but not after "annamala", so a break can never strand
+// a single orphan letter next to a bracket/paren (was producing
+// "(Annamala\u00AD" / "i)" for "Indira Gandhi (Annamalai) National Park").
+// Punctuation (brackets, spaces) is excluded automatically since \p{L}
+// only matches letters, so a run never crosses into it.
 function softHyphenate(text) {
-  return text.replace(/(\S)(?=\S)/g, '$1\u00AD');
+  return text.replace(/\p{L}{5,}/gu, (word) =>
+    word.replace(/(\p{L}{2})(?=\p{L}{2,})/gu, '$1\u00AD')
+  );
 }
 
 /**
@@ -434,7 +446,10 @@ const BottomCard = forwardRef(function BottomCard({
             <hr className="bc-divider" />
 
             <div className="bc-result-row">
-              <span className="bc-meta-item">
+              {cardSite.area_km2 != null && (
+                <span className="bc-meta-item bc-area-item">{cardSite.area_km2.toLocaleString()} km²</span>
+              )}
+              <span className="bc-meta-item bc-distance-item">
                 <IconPin size={15} />
                 {cardResult.skipped || cardResult.distanceKm == null
                   ? 'Skipped'

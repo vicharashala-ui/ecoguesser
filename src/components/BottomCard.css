@@ -236,7 +236,6 @@
 .bc-site-name {
   font-weight: 700;
   font-size: 20px; /* matches .bc-card-name -- same name, same size pre/post-guess */
-  word-break: break-all;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -575,14 +574,17 @@
   /* Long names (e.g. "Kaziranga Wildlife Sanctuary") would otherwise wrap
      only at word boundaries -- if the second word doesn't fit, it jumps
      to line 2 whole, leaving line 1 short with just the first word.
-     overflow-wrap/hyphens don't help here: both only break a word as a
-     last resort (when it wouldn't fit even alone on its own line), and
-     "Wildlife"/"Sanctuary" fit fine alone on line 2, so neither ever
-     fires. word-break: break-all changes the line-breaking algorithm
-     itself to treat every character boundary as a valid break point, so
-     each line fills to the max width before wrapping, splitting a word
-     mid-way when that's what it takes. */
-  word-break: break-all;
+     word-break: break-all used to handle this by treating every character
+     boundary as a valid break, but it has a hard spec rule that suppresses
+     ALL hyphen rendering when it's on -- softHyphenate()'s inserted
+     \u00AD soft hyphens went completely invisible even at the break,
+     leaving a bare "Reserve" -> "Res" / "erve" split with no mark at all.
+     Dropping break-all removes that suppression: default word-break
+     (normal) treats each \u00AD from softHyphenate() as a first-class
+     break opportunity -- same priority as a space, not a last-resort
+     fallback -- so the line still fills to the softHyphenate()-inserted
+     break nearest the edge, now WITH the visible "-" browsers render at
+     soft hyphens by default (hyphens: manual). */
 }
 
 .bc-meta-row,
@@ -679,6 +681,12 @@
 
 .bc-penalty {
   color: var(--eg-danger, #dc2626);
+}
+
+/* Pushes distance+pts together to the result row's right edge, leaving
+   area on the left. */
+.bc-distance-item {
+  margin-left: auto;
 }
 
 /* Site Boundary -- flex-paired half of .bc-actions, shared by
