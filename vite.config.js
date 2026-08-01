@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // Brand mark: white tiger-head cutout on the app's dark-green boundary
@@ -15,7 +15,7 @@ const THEME_GREEN = '#1c3b28';
 // chunk blocks anything -- see App.jsx), so Vite has no static reference to
 // preload them from: the browser doesn't even know they exist until JS
 // execution reaches that import() call, itself gated behind index.js +
-// vendor-react + config + daily downloading AND running first. The service
+// vendor-preact + config + daily downloading AND running first. The service
 // worker eagerly precaches vendor-maplibre, but that's a repeat-visit-only
 // win -- SW registration is deliberately deferred to window.load (see
 // main.jsx) so it never helps a first visit, which is most new players.
@@ -62,20 +62,21 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // maplibre-gl and react/react-dom change far less often than
-            // app code and are the bulk of the 1.4MB main chunk (see the
+            // maplibre-gl and preact (aliased from react/react-dom -- see
+            // @preact/preset-vite below) change far less often than app
+            // code and are the bulk of the 1.4MB main chunk (see the
             // chunk-size warning at build time) -- isolating them means a
             // routine app deploy only invalidates the small app chunk;
             // returning players keep the vendor chunk cached.
             if (id.includes('maplibre-gl')) return 'vendor-maplibre';
-            if (id.includes('react-dom') || id.includes('/react/')) return 'vendor-react';
+            if (id.includes('/preact/')) return 'vendor-preact';
           }
         },
       },
     },
   },
   plugins: [
-    react(),
+    preact(),
     VitePWA({
       registerType: 'autoUpdate',
       // Registers a real (if minimal) service worker under `npm run dev`
@@ -163,7 +164,7 @@ export default defineConfig({
           // Leaderboard/DailyRecap/InstallPrompt), so Rollup auto-splits it
           // into its own chunk instead of inlining it into index-*. That
           // makes it eager, not lazy -- confirmed modulepreloaded in a real
-          // build's dist/index.html alongside vendor-react/vendor-maplibre
+          // build's dist/index.html alongside vendor-preact/vendor-maplibre
           // -- so it belongs in this eager allowlist, not left for the lazy
           // runtimeCaching rule below. Was missing (confirmed absent from a
           // real build's dist/sw.js precache manifest), the one gap in this
