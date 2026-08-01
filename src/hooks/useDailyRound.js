@@ -30,7 +30,7 @@ import { soundConfirm, soundPerfect, soundWrong } from '../utils/sound.js';
 
 const TOTAL_ROUNDS = DAILY.CATEGORIES.length; // 5
 
-export function useDailyRound(allSites, active = true) {
+export function useDailyRound(allSites, dailySites, active = true) {
   const [sites, setSites] = useState(null); // Site[5], null until allSites is ready
   const [roundIndex, setRoundIndex] = useState(0);
   const [roundState, setRoundState] = useState('LOADING');
@@ -52,12 +52,18 @@ export function useDailyRound(allSites, active = true) {
   hintLevelRef.current = hintLevel;
   pausedRef.current = paused;
 
-  // Today's 5 sites are computed once, as soon as the site pool is available.
+  // Today's 5 sites: prefer /api/daily-manifest's precomputed result (it
+  // usually arrives well before the full catalog does), falling back to
+  // computing from allSites once that arrives. Same getDailySites()
+  // algorithm either way -- the manifest just runs it server-side against
+  // the same data, so the two paths always agree. `if (sites) return`
+  // guards against dailySites arriving late and resetting an
+  // already-computed/in-progress round.
   useEffect(() => {
-    if (allSites && allSites.length && !sites) {
-      setSites(getDailySites(getTodayString(), allSites));
-    }
-  }, [allSites, sites]);
+    if (sites) return;
+    if (dailySites) { setSites(dailySites); return; }
+    if (allSites && allSites.length) setSites(getDailySites(getTodayString(), allSites));
+  }, [allSites, dailySites, sites]);
 
   const site = sites ? sites[roundIndex] : null;
   siteRef.current = site;

@@ -65,19 +65,30 @@
          same-priority-class requests it'd otherwise queue behind. -->
     <link rel="preload" href="/map-style.json" as="fetch" crossorigin="anonymous" fetchpriority="high" />
 
-    <!-- protected-areas.json: App.jsx's loadSites() fetch()es this in a
-         mount effect, so without a preload the request only starts after
-         ~360KB gzip of JS has downloaded, parsed, and React has committed
-         -- often 0.5-2s after HTML arrival on mid-range mobile. It gates
-         today's site selection (the "Loading today's challenge..." pill),
-         so starting it here, in parallel with the JS itself, directly
-         shortens that wait. Same crossorigin="anonymous" credentials-mode
+    <!-- /api/daily-manifest: today's 5 Daily sites, precomputed server-side
+         (see functions/_shared/handlers.js) instead of derived client-side
+         from the full 837-site catalog below. Daily is the default tab, so
+         this -- not protected-areas.json -- is what actually gates the
+         "Loading today's challenge..." pill on first visit. Same
+         crossorigin="anonymous" requirement as map-style.json above (see
+         that comment): App.jsx's fetch() call defaults to "same-origin"
+         credentials, so this preload needs crossorigin present (any value)
+         to avoid a mode-mismatch double-fetch, even though the request
+         itself is same-origin. -->
+    <link rel="preload" href="/api/daily-manifest" as="fetch" crossorigin="anonymous" fetchpriority="high" />
+
+    <!-- protected-areas.json: still needed for Classic/Blitz (any-site
+         random pool) and StatsView, but no longer gates Daily's first round
+         now that /api/daily-manifest above exists -- demoted from
+         fetchpriority="high" so it doesn't compete with that request for
+         bandwidth on exactly the slow connections this split is meant to
+         help. Still worth preloading rather than dropping: App.jsx's
+         loadSites() fetch()es it in a mount effect, so without any preload
+         the request wouldn't start until ~360KB gzip of JS has downloaded,
+         parsed, and React has committed. Same crossorigin="anonymous"
          requirement as map-style.json above (see that comment); same
-         stable unhashed public/ URL, so nothing to rewrite at build time.
-         fetchpriority="high" to match map-style.json/OFM-planet above --
-         this gates first-render UI exactly like those two do, so it
-         shouldn't sit at a lower default priority than them. -->
-    <link rel="preload" href="/protected-areas.json" as="fetch" crossorigin="anonymous" fetchpriority="high" />
+         stable unhashed public/ URL, so nothing to rewrite at build time. -->
+    <link rel="preload" href="/protected-areas.json" as="fetch" crossorigin="anonymous" fetchpriority="low" />
 
     <!-- Nunito 400/700/800 (src/index.css's @fontsource imports) -- all
          three weights actually visible on first paint, not just 400: the

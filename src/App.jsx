@@ -64,6 +64,7 @@ const buttonStyle = {
 export default function App() {
   const [allSites, setAllSites] = useState([]);
   const [sitesError, setSitesError] = useState(false);
+  const [dailySites, setDailySites] = useState(null); // today's 5 sites, from /api/daily-manifest
 
   // Tab-switching machinery. classicEverActivated is a ref (not state)
   // deliberately, so flipping it doesn't cost a second render -- by the
@@ -156,6 +157,20 @@ export default function App() {
 
   useEffect(() => { loadSites(); }, []);
 
+  // /api/daily-manifest: today's 5 Daily sites, precomputed server-side so
+  // Daily (the default tab) doesn't have to wait on the full protected-
+  // areas.json catalog above. Deliberately no sitesError-style handling on
+  // failure -- this is a pure speed-up with an identical fallback already
+  // built into useDailyRound (it derives the same 5 sites from allSites
+  // once that arrives), so a failed/errored fetch here just means Daily
+  // starts at its old speed, never a broken state.
+  useEffect(() => {
+    fetch('/api/daily-manifest')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (data?.sites) setDailySites(data.sites); })
+      .catch(() => {});
+  }, []);
+
   // Idle-prefetch Classic/Blitz's lazy chunks. Daily is the default tab and
   // already owns the network/CPU budget for its own first paint (MapLibre +
   // sites JSON), so this waits for a genuinely idle moment before spending
@@ -243,6 +258,7 @@ export default function App() {
         <DailyMap
           mapRef={dailyMapRef}
           sites={allSites}
+          dailySites={dailySites}
           onComplete={handleDailyComplete}
           active={activeTab === 'daily'}
           visible={activeTab === 'daily' && dailyPhase === 'round'}

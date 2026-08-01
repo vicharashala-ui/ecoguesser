@@ -1,5 +1,5 @@
-export const FEEDBACK_FORM_URL = import.meta.env.VITE_FEEDBACK_FORM_URL;
-export const FEEDBACK_ENTRY_ID = import.meta.env.VITE_FEEDBACK_ENTRY_ID;
+export const FEEDBACK_FORM_URL = import.meta.env?.VITE_FEEDBACK_FORM_URL;
+export const FEEDBACK_ENTRY_ID = import.meta.env?.VITE_FEEDBACK_ENTRY_ID;
 export const APP_URL   = 'https://ecoguesser.pages.dev';
 export const MAP_STYLE = '/map-style.json';
 // Blitz used to load a second, hand-maintained static style file

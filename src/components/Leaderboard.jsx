@@ -250,8 +250,8 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
         filename: `ecoguesser-daily-${today}.png`,
         shareTitle: 'EcoGuesser',
         shareText: todayEntry
-          ? `My EcoGuesser Daily Recap: ${todayEntry.total.toLocaleString()} today ${APP_URL}`
-          : `My EcoGuesser Daily Recap ${APP_URL}`,
+          ? `My EcoGuesser Daily Recap: ${todayEntry.total.toLocaleString()} today`
+          : 'My EcoGuesser Daily Recap',
         shareUrl: APP_URL,
       });
     } finally {

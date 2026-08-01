@@ -124,7 +124,7 @@ function timerColor(remaining) {
   return 'var(--eg-ink, #111827)';
 }
 
-export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, onComplete, active = true }) {
+export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySites, onComplete, active = true }) {
   const cardRef = useRef(null);
   // Tracks BottomCard's real height during REVEALING, so RecenterButton can
   // be positioned above the expanded card instead of being hidden by it.
@@ -161,7 +161,7 @@ export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, onCompl
     handleNextSite,
     handleStart,
     handlePauseToggle,
-  } = useDailyRound(sites, active);
+  } = useDailyRound(sites, dailySites, active);
 
   // Effect 1 (mirrors ClassicMap.jsx): draws/clears the reveal off
   // [mapReady, roundState, result]. fitPadding is measured from the real

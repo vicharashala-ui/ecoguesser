@@ -6,11 +6,17 @@
 // caller gets its own independent budget.
 
 import { createRateLimiter } from './rateLimit.js';
+import { getDailySites, getMsUntilNextDaily } from '../../src/game/daily.js';
 
 // 10 requests/60s per IP -- unchanged from before this was factored out.
 // Generous for genuine play (one score submission a day, occasional
 // leaderboard re-checks) while bounding a script hammering either endpoint.
 const isRateLimited = createRateLimiter({ windowMs: 60_000, max: 10 });
+
+// Own budget, separate from the score/leaderboard one above -- this fires
+// on every page load (not just once/day), so it needs a higher ceiling,
+// and a burst of it shouldn't eat into score/leaderboard's budget either.
+const isDailyManifestRateLimited = createRateLimiter({ windowMs: 60_000, max: 30 });
 
 // public/_headers' security-header block doesn't reach Pages Functions (see
 // that file's header comment) -- these are the same headers, scoped to what
@@ -209,5 +215,49 @@ export async function handleLeaderboard(request, env, waitUntil) {
     if (waitUntil) waitUntil(caches.default.put(edgeKey, toCache));
     else await caches.default.put(edgeKey, toCache);
   }
+  return response;
+}
+
+/**
+ * GET /api/daily-manifest
+ * Returns { date, sites } -- today's 5 Daily sites, pre-selected with the
+ * exact same getDailySites() algorithm src/game/daily.js runs client-side
+ * (imported, not reimplemented, so the two can never disagree). Exists so
+ * the Daily tab (the default one) doesn't have to wait on the full
+ * 837-site/~25KB-gzip protected-areas.json catalog just to pick 5 of them --
+ * useDailyRound.js uses this when available and falls back to computing
+ * from the full catalog otherwise, so a miss here is never wrong, just slower.
+ *
+ * Edge-cached like handleLeaderboard's past-date branch above: one compute
+ * per IST day per colo, everyone else on that edge node for that day gets
+ * the cached response. protected-areas.json itself is fetched via the
+ * ASSETS binding (Cloudflare Pages' direct static-asset lookup) rather than
+ * a same-origin network fetch -- no extra round trip.
+ */
+export async function handleDailyManifest(request, env, waitUntil) {
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  if (isDailyManifestRateLimited(ip)) return jsonResp({ error: 'rate_limited' }, 429);
+
+  const date = todayIST();
+  const edgeKey = new Request(`https://ecoguesser-daily-manifest.internal/${date}`);
+  const edgeHit = await caches.default.match(edgeKey);
+  if (edgeHit) return edgeHit;
+
+  const allSitesResp = await env.ASSETS.fetch(new URL('/protected-areas.json', request.url));
+  const allSites = await allSitesResp.json();
+  const sites = getDailySites(date, allSites);
+
+  const body = JSON.stringify({ date, sites });
+  // Expires at the next IST midnight, same rollover instant getMsUntilNextDaily()
+  // already governs Leaderboard's "next challenge in" countdown with.
+  const maxAge = Math.ceil(getMsUntilNextDaily() / 1000);
+  const response = new Response(body, {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${maxAge}`, ...API_SECURITY_HEADERS },
+  });
+
+  const toCache = response.clone();
+  if (waitUntil) waitUntil(caches.default.put(edgeKey, toCache));
+  else await caches.default.put(edgeKey, toCache);
   return response;
 }
