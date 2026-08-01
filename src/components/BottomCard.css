@@ -567,7 +567,6 @@
 
 .bc-card-name {
   margin: 0;
-  padding-right: 40px; /* clears .bc-collapse-toggle, floated top-right */
   font-size: 20px;
   font-weight: 800;
   color: var(--eg-ink, #111827);
@@ -585,6 +584,18 @@
      fallback -- so the line still fills to the softHyphenate()-inserted
      break nearest the edge, now WITH the visible "-" browsers render at
      soft hyphens by default (hyphens: manual). */
+}
+
+/* Chevron clearance -- only needed while collapsed. .bc-card-header (icon +
+   category label) is hidden then, so this h2 becomes .bc-card's first flex
+   child and lands directly under .bc-collapse-toggle's 32px-tall footprint
+   (top:10 to top:42). Expanded, that header row already pushes this below
+   the toggle, clear of it -- reserving the same 40px there too was stealing
+   width from EVERY wrapped line (not just one overlapping the toggle),
+   so softHyphenate's break landed early with dead space right of the
+   hyphen on line 1, worst on the last (shortest) line. */
+.bc-card-name.is-collapsed {
+  padding-right: 40px;
 }
 
 .bc-meta-row,

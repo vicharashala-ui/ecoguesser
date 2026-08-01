@@ -424,7 +424,12 @@ const BottomCard = forwardRef(function BottomCard({
           </div>
         )}
 
-        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{softHyphenate(cardSite.name)}</h2>
+        <h2
+          id={ghost ? undefined : titleId}
+          className={`bc-card-name ${cardCollapsed ? 'is-collapsed' : ''}`}
+        >
+          {softHyphenate(cardSite.name)}
+        </h2>
 
         <div className="bc-meta-row">
           <span className="bc-meta-item bc-state-name"><IconPin size={15} /> {cardSite.state.join(', ')}</span>

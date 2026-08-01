@@ -324,7 +324,12 @@ const BlitzCard = forwardRef(function BlitzCard({
           </div>
         )}
 
-        <h2 id={ghost ? undefined : titleId} className="bc-card-name">{softHyphenate(cardSite.name)}</h2>
+        <h2
+          id={ghost ? undefined : titleId}
+          className={`bc-card-name ${cardCollapsed ? 'is-collapsed' : ''}`}
+        >
+          {softHyphenate(cardSite.name)}
+        </h2>
 
         {!cardCollapsed && cardSite.area_km2 != null && (
           <div className="bc-meta-row">
