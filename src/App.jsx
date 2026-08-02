@@ -5,7 +5,7 @@ import InstallPrompt from './components/InstallPrompt.jsx';
 import AchievementToast from './components/AchievementToast.jsx';
 import MapLoadingOverlay from './components/MapLoadingOverlay.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
-import { warmSharedMapData } from './hooks/useMapState.js';
+import { warmSharedMapData } from './hooks/sharedMapData.js';
 import { useAchievementUnlocks } from './hooks/useAchievementUnlocks.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
 

@@ -4,6 +4,7 @@ import {
   MAP_CONFIG, LAYER_IDS, SATELLITE_TILES, SATELLITE_ATTRIBUTION,
   SATELLITE_VISUAL, BASE_VISUAL, BARE_VISUAL, TERRAIN_TILES, TERRAIN_ENCODING,
 } from '../config.js';
+import { loadSharedGeoJsonOnce } from './sharedMapData.js';
 
 // The 4 place-label layers that switch paint (not visibility) between
 // BASE_VISUAL's white-text/dark-halo and BARE_VISUAL's dark-text/light-halo
@@ -178,29 +179,6 @@ function applyTerrainVisual(map, on, originalPaint, hideTimerRef, revealRafRef) 
 
 const EMPTY_FEATURE_COLLECTION = { type: 'FeatureCollection', features: [] };
 
-// Classic/Daily/Blitz are three separate MapLibre instances (kept mounted
-// via display:none, never torn down -- see App.jsx), and each one's onLoad
-// independently needs india-states.topojson, india-boundary.geojson, and
-// india-state-labels.geojson. Without this cache, opening all three tabs in
-// one session re-fetches AND re-parses (JSON.parse + topoFeature's arc
-// expansion for the states file) all ~345KB gzip of shared static data up
-// to 3 times over -- real main-thread work on every tab switch, not just
-// wasted bytes (HTTP cache already dedupes the network fetch itself, but
-// does nothing for the JS-side parse). Keyed by URL, caches the resolved
-// (already-parsed) value so every map instance after the first gets it
-// synchronously-ish, with no repeat fetch or parse. A rejected fetch is
-// evicted rather than cached, so a later mount can retry instead of being
-// stuck with a permanent failure from, say, one flaky first load.
-const sharedGeoJsonCache = new Map();
-function loadSharedGeoJsonOnce(url, parse) {
-  if (!sharedGeoJsonCache.has(url)) {
-    const promise = fetch(url).then((r) => r.json()).then(parse);
-    promise.catch(() => sharedGeoJsonCache.delete(url));
-    sharedGeoJsonCache.set(url, promise);
-  }
-  return sharedGeoJsonCache.get(url);
-}
-
 // india-states.geojson (340KB gzip -- every shared border between two
 // adjacent states was stored twice, once per state) is generated into
 // india-states.topojson by scripts/convertStatesTopo.js (209KB gzip, shared
@@ -217,30 +195,6 @@ function loadIndiaStatesTopology(map) {
   )
     .then((geojson) => map.getSource('india-states')?.setData(geojson))
     .catch(() => {}); // Borders/labels just don't appear; nothing else depends on this.
-}
-
-// Optional early warm-up for the three shared static files onLoad consumes
-// (~345KB gzip total). Without this, none of them starts downloading until
-// MapLibre's 'load' fires -- i.e. after every first-render tile/glyph has
-// finished -- so on slow networks the map appears and then state/country
-// borders visibly pop in a beat later. Called from App.jsx's existing
-// idle-prefetch effect (requestIdleCallback / 2s fallback -- the same
-// deliberately-deferred slot the Classic/Blitz chunk prefetch already uses)
-// rather than eagerly at mount, so it never competes with the map's own
-// first-paint budget; and it goes through the same promise cache the onLoad
-// path reads, so this is a pure head start with zero duplicate fetch or
-// duplicate parse -- whichever caller runs second gets the first caller's
-// promise. The topoFeature arc expansion for the states file (real
-// main-thread work) also happens here during idle instead of inside the
-// post-'load' window. Parse callbacks MUST stay identical to the onLoad
-// call sites' -- the cache is keyed by URL and whichever registers first
-// wins.
-export function warmSharedMapData() {
-  loadSharedGeoJsonOnce('/india-states.topojson', (topology) =>
-    topoFeature(topology, topology.objects['india-states'])
-  ).catch(() => {});
-  loadSharedGeoJsonOnce('/india-boundary.geojson', (geojson) => geojson).catch(() => {});
-  loadSharedGeoJsonOnce('/india-state-labels.geojson', (geojson) => geojson).catch(() => {});
 }
 
 // Scope querySelector to map container -- supports two simultaneous map instances.
