@@ -211,7 +211,7 @@ export const BASE_VISUAL = {
 // how Blitz applies this same object before the map is even constructed.
 export const BARE_VISUAL = {
   BACKGROUND: '#ffffff',
-  WATER_COLOR: '#008E97',
+  WATER_COLOR: '#1da1f2',
   // Flat fill with no bathymetry gradient underneath (see WATER_FILTER note
   // below), so full opacity renders the requested color true instead of
   // blending it toward BACKGROUND like the previous pastel value did.
@@ -250,6 +250,7 @@ export const LAYER_IDS = {
   GUESS_PIN_HALO:      'guess-pin-halo',
   GUESS_PIN:           'guess-pin',
   INDIA_BOUNDARY_LINE: 'india-boundary-line',
+  BOUNDARY_2_CASING:      'boundary-2-casing',
   BOUNDARY_DISPUTED_CASING: 'boundary-disputed-casing',
   INDIA_BOUNDARY_CASING:  'india-boundary-line-casing',
   BLITZ_FILL:          'blitz-fill',

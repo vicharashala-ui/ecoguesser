@@ -3,4 +3,4 @@ dist/
 dev-dist/ 
 .wrangler/ 
 .env.local 
-
+data/raw/ 
