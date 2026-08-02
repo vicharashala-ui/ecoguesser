@@ -13,12 +13,12 @@ export const TERRAIN_PLACE_LABEL_PROPS = ['text-color', 'text-halo-color', 'text
 
 // One-time capture of the live style's own baked-in paint for the layers
 // applyTerrainVisual doesn't have a BASE_VISUAL equivalent for (water's
-// fill-color/opacity/filter and the 4 place-label layers -- boundary_2/
-// boundary_disputed/waterway_river/waterway_other/background all already
-// have an active BASE_VISUAL restore path via restyleBordersAndRivers, so
-// don't need capturing here). Reading it straight from the loaded style
-// instead of hand-transcribing into config.js means this can never drift
-// out of sync with public/map-style.json.
+// fill-color/opacity/filter and the 4 place-label layers -- boundary_disputed/
+// waterway_river/waterway_other/background all already have an active
+// BASE_VISUAL restore path via restyleBordersAndRivers, and boundary_2 is
+// permanently hidden, so neither needs capturing here). Reading it straight
+// from the loaded style instead of hand-transcribing into config.js means
+// this can never drift out of sync with public/map-style.json.
 function captureOriginalPaint(map) {
   const out = {};
   if (map.getLayer('water')) {
@@ -55,7 +55,7 @@ const HILLSHADE_TRANSPARENT = {
 
 // Swaps hypsometric-tint/base-hillshade visibility plus the handful of
 // shared-layer paint properties that define "the Blitz look" (background,
-// water, boundary_2/disputed, waterway rivers, place labels) between their
+// water, boundary_disputed, waterway rivers, place labels) between their
 // terrain-on and BARE_VISUAL terrain-off values. Boundary/waterway/
 // background terrain-on values reuse BASE_VISUAL -- the same constants
 // restyleBordersAndRivers already restores them to on satellite-off, so
@@ -145,14 +145,9 @@ function applyTerrainVisual(map, on, originalPaint, hideTimerRef, revealRafRef) 
     map.setFilter('water', on ? orig.water?.filter : BARE_VISUAL.WATER_FILTER);
   }
 
-  for (const id of ['boundary_2', 'boundary_disputed']) {
-    if (!map.getLayer(id)) continue;
-    map.setPaintProperty(id, 'line-color', on ? BASE_VISUAL.BOUNDARY_COLOR : BARE_VISUAL.BOUNDARY_COLOR);
-    map.setPaintProperty(id, 'line-width', on ? BASE_VISUAL.BOUNDARY_WIDTH_EXPR : BARE_VISUAL.BOUNDARY_WIDTH_EXPR);
-  }
-  // Only boundary_2 defines line-opacity -- boundary_disputed uses dasharray instead.
-  if (map.getLayer('boundary_2')) {
-    map.setPaintProperty('boundary_2', 'line-opacity', on ? BASE_VISUAL.BOUNDARY_OPACITY_EXPR : BARE_VISUAL.BOUNDARY_OPACITY_EXPR);
+  if (map.getLayer('boundary_disputed')) {
+    map.setPaintProperty('boundary_disputed', 'line-color', on ? BASE_VISUAL.BOUNDARY_COLOR : BARE_VISUAL.BOUNDARY_COLOR);
+    map.setPaintProperty('boundary_disputed', 'line-width', on ? BASE_VISUAL.BOUNDARY_WIDTH_EXPR : BARE_VISUAL.BOUNDARY_WIDTH_EXPR);
   }
 
   for (const id of ['waterway_river', 'waterway_other']) {
@@ -348,31 +343,30 @@ export function useMapState(mapRef, mode) {
     const BV = BASE_VISUAL;
 
     function restyleBordersAndRivers(toSatellite) {
-      // boundary_2 / boundary_disputed live in map-style.json; INDIA_BOUNDARY_LINE
+      // boundary_disputed lives in map-style.json; INDIA_BOUNDARY_LINE
       // is added by this hook's init effect. Both follow the satellite palette so
-      // the international border doesn't clash with it.
-      const lineIds = ['boundary_2', 'boundary_disputed', LAYER_IDS.INDIA_BOUNDARY_LINE];
+      // the international border doesn't clash with it. boundary_2 is excluded --
+      // permanently hidden in map-style.json, superseded by INDIA_BOUNDARY_LINE.
+      const lineIds = ['boundary_disputed', LAYER_IDS.INDIA_BOUNDARY_LINE];
       for (const id of lineIds) {
         if (!map.getLayer(id)) continue;
         map.setPaintProperty(id, 'line-color', toSatellite ? SV.BOUNDARY_COLOR : BV.BOUNDARY_COLOR);
       }
-      // Opacity/width only apply to boundary_2/boundary_disputed -- INDIA_BOUNDARY_LINE
+      // Opacity/width only apply to boundary_disputed -- INDIA_BOUNDARY_LINE
       // doesn't define these in its base paint, leave it alone.
-      for (const id of ['boundary_2', 'boundary_disputed']) {
-        if (!map.getLayer(id)) continue;
-        map.setPaintProperty(id, 'line-opacity', toSatellite ? SV.BOUNDARY_OPACITY : BV.BOUNDARY_OPACITY_EXPR);
-        map.setPaintProperty(id, 'line-width', toSatellite ? SV.BOUNDARY_WIDTH : BV.BOUNDARY_WIDTH_EXPR);
+      if (map.getLayer('boundary_disputed')) {
+        map.setPaintProperty('boundary_disputed', 'line-opacity', toSatellite ? SV.BOUNDARY_OPACITY : BV.BOUNDARY_OPACITY_EXPR);
+        map.setPaintProperty('boundary_disputed', 'line-width', toSatellite ? SV.BOUNDARY_WIDTH : BV.BOUNDARY_WIDTH_EXPR);
       }
       // Casing layers stay visible in both modes now -- only the color/width
       // swaps. Satellite uses a dark casing behind its light border line;
       // base mode uses a light casing (BASE_VISUAL.BOUNDARY_CASING_*) behind
       // its dark one, so the border doesn't vanish over dark high-elevation
       // terrain either (see config.js's BOUNDARY_CASING_* comment).
-      for (const id of [LAYER_IDS.BOUNDARY_2_CASING, LAYER_IDS.BOUNDARY_DISPUTED_CASING]) {
-        if (!map.getLayer(id)) continue;
-        map.setPaintProperty(id, 'line-color', toSatellite ? SV.BOUNDARY_CASING_COLOR : BV.BOUNDARY_CASING_COLOR);
-        map.setPaintProperty(id, 'line-opacity', toSatellite ? SV.BOUNDARY_CASING_OPACITY : BV.BOUNDARY_CASING_OPACITY);
-        map.setPaintProperty(id, 'line-width', toSatellite ? SV.BOUNDARY_CASING_WIDTH : BV.BOUNDARY_CASING_WIDTH_EXPR);
+      if (map.getLayer(LAYER_IDS.BOUNDARY_DISPUTED_CASING)) {
+        map.setPaintProperty(LAYER_IDS.BOUNDARY_DISPUTED_CASING, 'line-color', toSatellite ? SV.BOUNDARY_CASING_COLOR : BV.BOUNDARY_CASING_COLOR);
+        map.setPaintProperty(LAYER_IDS.BOUNDARY_DISPUTED_CASING, 'line-opacity', toSatellite ? SV.BOUNDARY_CASING_OPACITY : BV.BOUNDARY_CASING_OPACITY);
+        map.setPaintProperty(LAYER_IDS.BOUNDARY_DISPUTED_CASING, 'line-width', toSatellite ? SV.BOUNDARY_CASING_WIDTH : BV.BOUNDARY_CASING_WIDTH_EXPR);
       }
       if (map.getLayer(LAYER_IDS.INDIA_BOUNDARY_CASING)) {
         map.setPaintProperty(LAYER_IDS.INDIA_BOUNDARY_CASING, 'line-color', toSatellite ? SV.BOUNDARY_CASING_COLOR : BV.BOUNDARY_CASING_COLOR);
@@ -817,24 +811,15 @@ export function useMapState(mapRef, mode) {
         });
       }
 
-      // Casing for boundary_2/boundary_disputed (both already present in
-      // map-style.json by the time 'load' fires), inserted directly beneath
-      // each via the `before` id so it renders as an outline, not a
-      // duplicate line. Visible by default with BASE_VISUAL's light casing
-      // paint -- restyleBordersAndRivers swaps it to SATELLITE_VISUAL's dark
-      // casing on satellite toggle (see config.js's BOUNDARY_CASING_* comment).
-      if (map.getLayer('boundary_2')) {
-        map.addLayer({
-          id: LAYER_IDS.BOUNDARY_2_CASING, type: 'line', source: 'openmaptiles', 'source-layer': 'boundary',
-          filter: ['all', ['==', ['get', 'admin_level'], 2], ['!=', ['get', 'maritime'], 1], ['!=', ['get', 'disputed'], 1], ['!', ['has', 'claimed_by']]],
-          layout: { 'line-cap': 'round', 'line-join': 'round' },
-          paint: {
-            'line-color':   BASE_VISUAL.BOUNDARY_CASING_COLOR,
-            'line-opacity': BASE_VISUAL.BOUNDARY_CASING_OPACITY,
-            'line-width':   BASE_VISUAL.BOUNDARY_CASING_WIDTH_EXPR,
-          },
-        }, 'boundary_2');
-      }
+      // Casing for boundary_disputed (already present in map-style.json by
+      // the time 'load' fires), inserted directly beneath it via the
+      // `before` id so it renders as an outline, not a duplicate line.
+      // boundary_2 (the plain international-border line) no longer gets one:
+      // it's permanently hidden in map-style.json now, fully superseded by
+      // INDIA_BOUNDARY_LINE below (a separate, higher-fidelity full-country
+      // outline) -- drawing both was two independently-simplified traces of
+      // the same coastline, which is what caused the visible boundary
+      // deviation at high zoom, worst on Andaman & Nicobar's small islands.
       if (map.getLayer('boundary_disputed')) {
         map.addLayer({
           id: LAYER_IDS.BOUNDARY_DISPUTED_CASING, type: 'line', source: 'openmaptiles', 'source-layer': 'boundary',

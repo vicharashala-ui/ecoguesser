@@ -250,7 +250,6 @@ export const LAYER_IDS = {
   GUESS_PIN_HALO:      'guess-pin-halo',
   GUESS_PIN:           'guess-pin',
   INDIA_BOUNDARY_LINE: 'india-boundary-line',
-  BOUNDARY_2_CASING:      'boundary-2-casing',
   BOUNDARY_DISPUTED_CASING: 'boundary-disputed-casing',
   INDIA_BOUNDARY_CASING:  'india-boundary-line-casing',
   BLITZ_FILL:          'blitz-fill',

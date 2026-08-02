@@ -194,6 +194,16 @@
      dvh override through to production. */
   max-height: 80vh;
   overflow-y: auto;
+  /* Mobile's overlay scrollbars auto-hide already, but desktop browsers
+     draw a persistent track/thumb here that breaks the glass card's look.
+     Content still scrolls (wheel/touch/keyboard) -- only the visible
+     scrollbar chrome is removed. */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+
+.bottom-card.is-expanded::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/desktop Edge */
 }
 @supports (height: 100dvh) {
   .bottom-card.is-expanded {

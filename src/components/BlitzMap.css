@@ -90,6 +90,29 @@
   transition: stroke-dashoffset 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Applied for exactly one frame right after a lap completes (see the
+   ringOffset effect in BlitzMap.jsx) so the ring can be snapped empty
+   instantly instead of transitioning there -- letting the very next
+   correct guess fill it back up as a normal forward transition, rather
+   than the default transition unwinding backward from full to 1/5. */
+.bz-streak-ring-progress.bz-ring-no-transition {
+  transition: none;
+}
+
+/* Streak break -- flashes the arc's stroke to red in step with the streak
+   number's own bz-streak-break shake (same 0.4s ease-out timing) so the
+   ring visually agrees that the run just ended, instead of staying
+   flame-orange while the number alone reacts. */
+.bz-streak-ring-progress.bz-ring-break {
+  animation: bz-ring-break-flash 0.4s ease-out;
+}
+
+@keyframes bz-ring-break-flash {
+  0%   { stroke: #f97316; }
+  30%  { stroke: #dc2626; }
+  100% { stroke: #f97316; }
+}
+
 /* Gray/unlit edge until the first correct guess of the session, then
    switches to the warm flame color -- always mounted (not gated on
    streak > 0) so the medallion's position never jumps mid-session. The
@@ -293,6 +316,29 @@
   100% { box-shadow: inset 0 0 0 0 rgba(var(--bz-milestone-rgb), 0); }
 }
 
+/* Medallion's own reaction to completing a lap -- a quick scale pulse
+   peaking at the same 25%-of-duration mark as bz-milestone-edge-glow
+   above (same duration + easing per tier keeps the two peaks locked
+   together), so the ring that just filled up visibly celebrates instead
+   of just being the backdrop for the edge-glow/label. */
+.bz-streak-card.bz-medallion-pulse {
+  animation: bz-medallion-pulse 900ms ease-out;
+}
+
+.bz-streak-card.bz-medallion-pulse.bz-medallion-pulse-tier2 {
+  animation-duration: 1100ms;
+}
+
+.bz-streak-card.bz-medallion-pulse.bz-medallion-pulse-tier3 {
+  animation-duration: 1500ms;
+}
+
+@keyframes bz-medallion-pulse {
+  0%   { transform: scale(1); }
+  25%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
 .bz-milestone-label {
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 26px;
@@ -334,11 +380,13 @@
   .bz-streak-flame,
   .bz-streak-ring-outer,
   .bz-streak-ring-progress,
+  .bz-streak-ring-progress.bz-ring-break,
   .bz-streak-value.bz-streak-pop,
   .bz-streak-value.bz-streak-break,
   .bz-restore-badge.bz-restore-gained,
   .bz-restore-badge.bz-restore-used,
-  .bz-milestone-glow {
+  .bz-milestone-glow,
+  .bz-streak-card.bz-medallion-pulse {
     animation: none;
     transition: none;
   }

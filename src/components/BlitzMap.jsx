@@ -165,6 +165,45 @@ function BlitzMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS }) {
   // -- this component never calls setPolitical itself. politicalNames (the
   // "States" toggle below) stays player-controlled.
 
+  // Ring's own displayed dash-offset, decoupled from streakProgress so a
+  // lap rollover (progress 1 -> 1/5, the moment a new lap starts right
+  // after completing one) can be handled specially: letting the normal
+  // 0.4s transition run straight from "full" to "1/5" animates the ring
+  // visibly unwinding backward, which reads as losing progress instead of
+  // starting a new lap. Instead, on that specific transition the ring is
+  // snapped empty with no transition, then (one frame later, transition
+  // re-enabled) animated forward to the real target -- same "fill up"
+  // motion as every other correct guess.
+  const [ringOffset, setRingOffset] = useState(
+    STREAK_RING_CIRCUMFERENCE * (1 - streakProgress)
+  );
+  const [ringTransitionEnabled, setRingTransitionEnabled] = useState(true);
+  const prevRingProgressRef = useRef(streakProgress);
+  useEffect(() => {
+    const prevProgress = prevRingProgressRef.current;
+    prevRingProgressRef.current = streakProgress;
+    const targetOffset = STREAK_RING_CIRCUMFERENCE * (1 - streakProgress);
+
+    if (prevProgress === 1 && streakProgress > 0 && streakProgress < 1) {
+      setRingTransitionEnabled(false);
+      setRingOffset(STREAK_RING_CIRCUMFERENCE); // snap to empty
+      // Double rAF: the first guarantees the "empty, no transition" state
+      // has actually painted before the second re-enables the transition
+      // and sets the real target -- a single rAF can still land before
+      // that paint on some browsers and skip straight to the animated
+      // value, silently undoing the snap.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setRingTransitionEnabled(true);
+          setRingOffset(targetOffset);
+        });
+      });
+    } else {
+      setRingOffset(targetOffset);
+    }
+  }, [streakProgress]);
+
+
   const cardRef = useRef(null); // measures BlitzCard's height, same role as ClassicMap.jsx's cardRef
   // Tracked during REVEALING so RecenterButton can sit above the expanded
   // card instead of being hidden by it.
@@ -407,6 +446,24 @@ function BlitzMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS }) {
     return () => clearTimeout(t);
   }, [streakMilestone]);
 
+  // Every-5th-streak flourish for the ring itself, synced to the edge-glow
+  // flash's own 25%-keyframe peak (see bz-milestone-edge-glow in
+  // BlitzMap.css) -- same duration and easing per tier so the medallion's
+  // pulse and the screen-edge glow peak at the same instant instead of the
+  // ring being a bystander to its own milestone. null when idle, 1/2/3
+  // while a pulse is playing.
+  const [medallionPulseTier, setMedallionPulseTier] = useState(null);
+  useEffect(() => {
+    if (!streakMilestone) return;
+    setMedallionPulseTier(streakMilestone.tier);
+    // Matches each tier's animation-duration in BlitzMap.css exactly (no
+    // buffer needed -- unlike the glow/label, nothing here needs to stay
+    // mounted a beat past its animation to avoid a visible unmount snap).
+    const duration = streakMilestone.tier === 3 ? 1500 : streakMilestone.tier === 2 ? 1100 : 900;
+    const t = setTimeout(() => setMedallionPulseTier(null), duration);
+    return () => clearTimeout(t);
+  }, [streakMilestone]);
+
   // State names are fully player-controlled via the toggle below; this only
   // resets them to hidden on each new round (LOADING) so nothing carries
   // over from the last one. Also clears any "Show Boundary" polygon from
@@ -441,7 +498,7 @@ function BlitzMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS }) {
             flame icon itself communicates "no streak yet" via its own
             gray-vs-lit color transition. */}
         <div
-          className={`bz-streak-card${streak > 0 ? ' bz-streak-lit' : ''}`}
+          className={`bz-streak-card${streak > 0 ? ' bz-streak-lit' : ''}${medallionPulseTier ? ` bz-medallion-pulse bz-medallion-pulse-tier${medallionPulseTier}` : ''}`}
           aria-live="polite"
         >
           <svg className="bz-streak-ring" width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
@@ -453,13 +510,18 @@ function BlitzMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS }) {
                 comment above for the exact math. stroke-dashoffset is a
                 paint-only property (no reflow), same performance
                 footprint as the color transitions already on the ring
-                above it. */}
+                above it. Uses the JS-managed ringOffset (not
+                streakProgress directly) so the lap-rollover snap-back
+                above can drive it through an untransitioned frame;
+                bz-ring-no-transition is that snap's frame, bz-ring-break
+                flashes the stroke red in step with the streak number's
+                own break shake. */}
             <circle
               cx="39" cy="39" r={STREAK_RING_R}
-              className="bz-streak-ring-progress"
+              className={`bz-streak-ring-progress${ringTransitionEnabled ? '' : ' bz-ring-no-transition'}${streakAnim === 'break' ? ' bz-ring-break' : ''}`}
               style={{
                 strokeDasharray: STREAK_RING_CIRCUMFERENCE,
-                strokeDashoffset: STREAK_RING_CIRCUMFERENCE * (1 - streakProgress),
+                strokeDashoffset: ringOffset,
               }}
             />
           </svg>
