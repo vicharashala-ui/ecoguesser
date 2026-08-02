@@ -20,8 +20,8 @@ import { fetchBoundary } from './boundaryCache.js';
 import { RESULT_FIT_EASING } from './resultLayer.js';
 
 const STATE_SOURCE_ID = 'india-states';
-// Boundary polygon color -- CATEGORY_META[site.category].color, same as
-// Classic/Daily's resultLayer.js. Safe alongside the state-polygon
+// Boundary polygon color -- CATEGORY_META[site.category].boundaryColor ??
+// .color, same as Classic/Daily's resultLayer.js. Safe alongside the state-polygon
 // correct(green)/wrong(red) feature-state palette: no CATEGORY_META color
 // overlaps those, and by REVEALING (when this boundary draws) 'selected'
 // blue is no longer in play either.
@@ -86,14 +86,18 @@ export async function showReveal(map, correctStates, guessedState, isCorrect, si
   if (token !== revealToken || !geo || !map.getSource(STATE_SOURCE_ID)) return;
 
   const color = CATEGORY_META[site.category]?.color ?? FALLBACK_COLOR;
+  // Same boundaryColor override as resultLayer.js -- tr's boundary polygon
+  // keeps the original yellow even though `color` is now brown everywhere
+  // else (see the CATEGORY_META comment in config.js).
+  const boundaryColor = CATEGORY_META[site.category]?.boundaryColor ?? color;
   map.addSource(LAYER_IDS.BLITZ_BOUNDARY, { type: 'geojson', data: geo });
   map.addLayer({
     id: `${LAYER_IDS.BLITZ_BOUNDARY}-fill`, type: 'fill', source: LAYER_IDS.BLITZ_BOUNDARY,
-    paint: { 'fill-color': color, 'fill-opacity': 0.2 },
+    paint: { 'fill-color': boundaryColor, 'fill-opacity': 0.2 },
   });
   map.addLayer({
     id: `${LAYER_IDS.BLITZ_BOUNDARY}-outline`, type: 'line', source: LAYER_IDS.BLITZ_BOUNDARY,
-    paint: { 'line-color': color, 'line-opacity': 0.7, 'line-width': 2 },
+    paint: { 'line-color': boundaryColor, 'line-opacity': 0.7, 'line-width': 2 },
   });
 }
 

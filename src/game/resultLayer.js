@@ -210,6 +210,10 @@ export async function showResult(map, guess, site, opts = {}) {
   // the boundary hadn't resolved yet when Confirm fired).
   const lineTo = (nearestLng != null && nearestLat != null) ? [nearestLng, nearestLat] : pinTo;
   const color = CATEGORY_META[site.category]?.color ?? FALLBACK_COLOR;
+  // Boundary polygon uses its own color: same as `color` for every category
+  // except tr, which keeps its original yellow here even though `color`
+  // itself is now brown (see the CATEGORY_META comment in config.js).
+  const boundaryColor = CATEGORY_META[site.category]?.boundaryColor ?? color;
   const data = buildResultData(guess, site, distanceKm, lineTo);
 
   // Zoom to the guess<->site pair right away, in parallel with the line/pin
@@ -333,13 +337,13 @@ export async function showResult(map, guess, site, opts = {}) {
     id: `${LAYER_IDS.RESULT_BOUNDARY}-fill`,
     type: 'fill',
     source: LAYER_IDS.RESULT_BOUNDARY,
-    paint: { 'fill-color': color, 'fill-opacity': 0.2 },
+    paint: { 'fill-color': boundaryColor, 'fill-opacity': 0.2 },
   });
   map.addLayer({
     id: `${LAYER_IDS.RESULT_BOUNDARY}-outline`,
     type: 'line',
     source: LAYER_IDS.RESULT_BOUNDARY,
-    paint: { 'line-color': color, 'line-opacity': 0.7, 'line-width': 2 },
+    paint: { 'line-color': boundaryColor, 'line-opacity': 0.7, 'line-width': 2 },
   });
 
   // Deliberately NOT auto-fitting to the boundary's own (usually much

@@ -281,18 +281,29 @@ export const DAILY = {
 // `color` is used both as literal text color (category label, state name,
 // boundary-guess button) AND as a background/border/icon tint. `.color`
 // alone is fine for the latter (only needs 3:1, already passes for all
-// five), but four of these fail WCAG AA (4.5:1) as small text on white/
-// cream (measured: np 3.56/3.30, ramsar 4.10/3.79, tr (#facc15) ~1.6:1 --
-// see design-audit-fixes.md #3). `textColor` is the same hue, darkened until
+// five), but three of these fail WCAG AA (4.5:1) as small text on white/
+// cream (measured: np 3.56/3.30, ramsar 4.10/3.79 -- see
+// design-audit-fixes.md #3). `textColor` is the same hue, darkened until
 // it clears 4.5:1 on both, with a bit of margin. wls already passes as-is
 // (5.70 on white) so it doesn't need a separate value -- callers should
 // fall back to `.color` when `.textColor` is undefined (e.g.
 // `meta.textColor ?? meta.color`).
+//
+// tr used to be the fourth low-contrast case (#facc15 yellow, ~1.6:1) with
+// its own textColor override, but that made every non-text use of tr's
+// color (icon tint, map pins, StatsView/SideDrawer swatches, etc.) yellow
+// too. Per request, tr's `color` is now that same brown directly -- it
+// already passed 4.5:1 as textColor, so there's nothing left needing an
+// override, same as wls. The one place that still wants the original
+// yellow is the site-boundary polygon on the map (resultLayer.js,
+// blitzHighlight.js), so `boundaryColor` carries that one exception --
+// every other category has no `boundaryColor` and those call sites fall
+// back to `.color`.
 export const CATEGORY_META = {
   np:     { label:'National Park',      color:'#ea580c', textColor:'#b9460a' },
   br:     { label:'Biosphere Reserve',  color:'#db2777', textColor:'#cc226d' },
   wls:    { label:'Wildlife Sanctuary', color:'#7c3aed' },
-  tr:     { label:'Tiger Reserve',      color:'#facc15', textColor:'#854d0e' },
+  tr:     { label:'Tiger Reserve',      color:'#854d0e', boundaryColor:'#facc15' },
   ramsar: { label:'Ramsar Site',        color:'#0284c7', textColor:'#0270a9' },
 };
 
