@@ -211,7 +211,7 @@ export const BASE_VISUAL = {
 // how Blitz applies this same object before the map is even constructed.
 export const BARE_VISUAL = {
   BACKGROUND: '#ffffff',
-  WATER_COLOR: '#1da1f2',
+  WATER_COLOR: '#7FFFD4',
   // Flat fill with no bathymetry gradient underneath (see WATER_FILTER note
   // below), so full opacity renders the requested color true instead of
   // blending it toward BACKGROUND like the previous pastel value did.
