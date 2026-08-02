@@ -25,7 +25,12 @@ function captureOriginalPaint(map) {
     out.water = {
       'fill-color':   map.getPaintProperty('water', 'fill-color'),
       'fill-opacity': map.getPaintProperty('water', 'fill-opacity'),
-      filter: map.getFilter('water'),
+    };
+  }
+  if (map.getLayer('water_ocean')) {
+    out.water_ocean = {
+      'fill-color':   map.getPaintProperty('water_ocean', 'fill-color'),
+      'fill-opacity': map.getPaintProperty('water_ocean', 'fill-opacity'),
     };
   }
   for (const id of TERRAIN_PLACE_LABEL_IDS) {
@@ -142,7 +147,10 @@ function applyTerrainVisual(map, on, originalPaint, hideTimerRef, revealRafRef) 
   if (map.getLayer('water')) {
     map.setPaintProperty('water', 'fill-color', on ? orig.water?.['fill-color'] : BARE_VISUAL.WATER_COLOR);
     map.setPaintProperty('water', 'fill-opacity', on ? orig.water?.['fill-opacity'] : BARE_VISUAL.WATER_OPACITY);
-    map.setFilter('water', on ? orig.water?.filter : BARE_VISUAL.WATER_FILTER);
+  }
+  if (map.getLayer('water_ocean')) {
+    map.setPaintProperty('water_ocean', 'fill-color', on ? orig.water_ocean?.['fill-color'] : BARE_VISUAL.OCEAN_COLOR);
+    map.setPaintProperty('water_ocean', 'fill-opacity', on ? orig.water_ocean?.['fill-opacity'] : BARE_VISUAL.WATER_OPACITY);
   }
 
   for (const id of ['boundary_2', 'boundary_disputed']) {
@@ -401,7 +409,7 @@ export function useMapState(mapRef, mode) {
       // so raw satellite shows through on land." Roads/POIs/landcover are already
       // gone from map-style.json entirely -- only water + labels remain to
       // actually hide here.
-      const ids = ['water', 'waterway_line_label', 'water_name_point_label', 'water_name_line_label',
+      const ids = ['water', 'water_ocean', 'waterway_line_label', 'water_name_point_label', 'water_name_line_label',
                    'country_label', 'hypsometric-tint', 'base-hillshade'];
       for (const id of ids) {
         if (!map.getLayer(id)) continue;

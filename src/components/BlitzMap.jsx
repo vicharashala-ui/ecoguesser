@@ -108,6 +108,7 @@ function blitzStyleTransform(styleJson) {
   const paintOverrides = {
     background: { 'background-color': BARE_VISUAL.BACKGROUND },
     water: { 'fill-color': BARE_VISUAL.WATER_COLOR, 'fill-opacity': BARE_VISUAL.WATER_OPACITY },
+    water_ocean: { 'fill-color': BARE_VISUAL.OCEAN_COLOR, 'fill-opacity': BARE_VISUAL.WATER_OPACITY },
     boundary_2: {
       'line-color': BARE_VISUAL.BOUNDARY_COLOR,
       'line-opacity': BARE_VISUAL.BOUNDARY_OPACITY_EXPR,
@@ -121,7 +122,6 @@ function blitzStyleTransform(styleJson) {
 
   for (const layer of style.layers) {
     if (paintOverrides[layer.id]) layer.paint = { ...layer.paint, ...paintOverrides[layer.id] };
-    if (layer.id === 'water') layer.filter = BARE_VISUAL.WATER_FILTER;
   }
 
   return style;

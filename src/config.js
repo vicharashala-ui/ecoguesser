@@ -164,11 +164,12 @@ export const SATELLITE_VISUAL = {
 export const BASE_VISUAL = {
   RIVER_COLOR:   '#7996ac',
   RIVER_OPACITY: 1,
-  // Lowered so hypsometric-tint's ocean-depth gradient (same terrain-dem
-  // source, negative-elevation stops) shows through as a bathymetry effect
-  // instead of being hidden under a flat tint.
-  WATER_COLOR:   '#8fadc7',
-  WATER_OPACITY: 0.4,
+  // Not read directly by code (terrain-on restores from the live style's
+  // own captured paint, see useMapState.js captureOriginalPaint) -- kept
+  // here only as documentation, so must match map-style.json's 'water'
+  // layer paint exactly per this block's own header comment.
+  WATER_COLOR:   '#1da1f2',
+  WATER_OPACITY: 1,
   BACKGROUND:    '#f8f4f0',
   BOUNDARY_COLOR:    '#1c3b28',
   BOUNDARY_OPACITY_EXPR: ['interpolate', ['linear'], ['zoom'], 0, 0.8, 3, 1],
@@ -212,14 +213,15 @@ export const BASE_VISUAL = {
 export const BARE_VISUAL = {
   BACKGROUND: '#ffffff',
   WATER_COLOR: '#1da1f2',
-  // Flat fill with no bathymetry gradient underneath (see WATER_FILTER note
-  // below), so full opacity renders the requested color true instead of
-  // blending it toward BACKGROUND like the previous pastel value did.
+  // Flat fill with no bathymetry gradient underneath, so full opacity
+  // renders the requested color true instead of blending it toward
+  // BACKGROUND like the previous pastel value did.
   WATER_OPACITY: 1,
-  // The bare/Blitz look has no ocean exclusion -- with hypsometric-tint
-  // hidden there's no bathymetry gradient to show through underneath, so
-  // the ocean needs to render as flat water like every other body of water.
-  WATER_FILTER: ['!=', ['get', 'brunnel'], 'tunnel'],
+  // Oceans/seas render via the separate water_ocean layer (map-style.json),
+  // not the 'water' layer above -- lets the bare/Blitz look use a distinct
+  // color for open sea vs. inland lakes/rivers. water_ocean shares
+  // WATER_OPACITY (flat fill, no bathymetry gradient underneath here either).
+  OCEAN_COLOR: '#81D8D0',
   BOUNDARY_COLOR: 'hsl(248,1%,41%)',
   BOUNDARY_OPACITY_EXPR: ['interpolate', ['linear'], ['zoom'], 0, 0.4, 4, 1],
   BOUNDARY_WIDTH_EXPR:   ['interpolate', ['linear'], ['zoom'], 3, 1, 5, 1.2, 12, 3],

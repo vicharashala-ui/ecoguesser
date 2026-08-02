@@ -231,8 +231,37 @@
         ]
       ],
       "paint": {
+        "fill-color": "#1da1f2",
+        "fill-opacity": 1
+      }
+    },
+    {
+      "id": "water_ocean",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "class"
+          ],
+          "ocean"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "brunnel"
+          ],
+          "tunnel"
+        ]
+      ],
+      "paint": {
         "fill-color": "#a3c4d6",
-        "fill-opacity": 0.55
+        "fill-opacity": 0
       }
     },
     {
