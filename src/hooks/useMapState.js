@@ -767,7 +767,7 @@ export function useMapState(mapRef, mode) {
         // explicit '==' comparison handles the unset (null) state correctly.
         const BLITZ_COLOR = [
           'case',
-          ['==', ['feature-state', 'blitzStatus'], 'selected'], '#3b82f6',
+          ['==', ['feature-state', 'blitzStatus'], 'selected'], '#227743',
           ['==', ['feature-state', 'blitzStatus'], 'correct'], '#22c55e',
           ['==', ['feature-state', 'blitzStatus'], 'wrong'], '#dc2626',
           'transparent',

@@ -211,8 +211,11 @@ export const BASE_VISUAL = {
 // how Blitz applies this same object before the map is even constructed.
 export const BARE_VISUAL = {
   BACKGROUND: '#ffffff',
-  WATER_COLOR: 'rgb(158,189,255)',
-  WATER_OPACITY: 0.6,
+  WATER_COLOR: '#1da1f2',
+  // Flat fill with no bathymetry gradient underneath (see WATER_FILTER note
+  // below), so full opacity renders the requested color true instead of
+  // blending it toward BACKGROUND like the previous pastel value did.
+  WATER_OPACITY: 1,
   // The bare/Blitz look has no ocean exclusion -- with hypsometric-tint
   // hidden there's no bathymetry gradient to show through underneath, so
   // the ocean needs to render as flat water like every other body of water.
