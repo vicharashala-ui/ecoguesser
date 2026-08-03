@@ -198,38 +198,40 @@ html[data-theme='dark'] .eg-blitz-map {
   --eg-card-ring: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 }
 
-/* Fixed-viewport app shell height. `100vh` alone locks to the mobile
-   browser's *largest* possible viewport (address bar fully collapsed) --
-   Chrome DevTools' mobile emulation has no dynamic toolbar at all, so it
-   never shows this, but a real phone's address bar eats into the actually
-   visible area while it's showing. Combined with this shell's
-   position:fixed/overflow:hidden body (below) -- which never lets the page
-   scroll, so the browser never gets the scroll gesture it uses to
-   auto-collapse that toolbar -- every `bottom:0`-anchored child (BottomNav,
-   the two splash screens) resolves against a box taller than what's
-   actually on screen, and ends up rendered below the real fold, entirely
-   out of view. `100dvh` (the *dynamic* viewport height, which tracks the
-   real visible area as browser chrome shows/hides) fixes it.
-   `@supports` (not a plain second `height` declaration in the same rule)
-   is what actually carries the fallback through to production -- Vite's
-   build-time CSS minifier (Lightning CSS) collapses duplicate
-   same-property declarations within one rule down to just the last one,
-   silently dropping the 100vh fallback if written that way. Separate
-   rule blocks like these survive that pass intact.
-
-   Skipped for standalone/installed-PWA launches ([data-standalone], set by
-   theme-init.js before this stylesheet paints): 100dvh has its own
-   cold-start bug there, reporting a stale/wrong value that doesn't
-   self-correct until a rotation event fires -- this is what caused
-   BottomNav to render off-screen until the app was closed and reopened.
-   Standalone has no address bar to retract in the first place, so plain
-   100vh (the fallback above) is already correct for it. */
+/* Fixed-viewport app shell height. `100svh` (the *small* viewport height --
+   assumes the browser's max possible chrome is showing) is used instead of
+   `100vh`/`100dvh`: both of those are the actual failure mode for this
+   shell, not just `dvh`. `100dvh` tracks the browser's chrome live and has
+   a known cold-start bug (stale value until a rotation event fires -- see
+   below). Plain `100vh` doesn't dynamically track anything, but at a PWA's
+   cold start (mainly Android) the WebView hasn't always finished settling
+   its own window chrome/safe-area insets on the very first layout pass
+   either, so `window.innerHeight` -- what `vh` resolves against -- can
+   itself briefly be wrong before anything corrects it. Same race, one
+   level down: skipping `dvh` for standalone launches avoided the dynamic
+   API but not the cold-start problem, so BottomNav (position:absolute,
+   bottom-anchored against this shell) still intermittently rendered its
+   tab row below the true fold, with only its 3px top indicator strip
+   still inside the real viewport -- `overflow:hidden` on html/body
+   (below) means there's no scroll to reveal the rest.
+   `100svh` sidesteps this instead of chasing the next instance of it: it's
+   the *smallest* possible viewport, computed once assuming max chrome is
+   shown, not dynamically tracked -- so it can never be taller than the
+   true visible area, cold start or warm, standalone or a regular tab.
+   Tradeoff: in a regular mobile browser tab, the shell stays sized to the
+   address-bar-visible height even after the bar retracts, leaving a small
+   unused strip at the bottom -- an intentional, honest tradeoff (content
+   never below the fold, vs. a small idle gap sometimes) rather than
+   another vh-family chase. Separate `@supports` rule block (not a second
+   `height` in the same rule) for the same Lightning CSS same-property-
+   collapse reason as before -- see git history if reintroducing a
+   per-engine fallback ever becomes necessary. */
 .eg-app-shell-height {
   height: 100vh;
 }
-@supports (height: 100dvh) {
-  html:not([data-standalone]) .eg-app-shell-height {
-    height: 100dvh;
+@supports (height: 100svh) {
+  .eg-app-shell-height {
+    height: 100svh;
   }
 }
 

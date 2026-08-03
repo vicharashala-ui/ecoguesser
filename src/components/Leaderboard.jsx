@@ -24,6 +24,12 @@
 // missing (shouldn't happen; Leaderboard is only reachable after playing
 // today).
 //
+// onRecapSettled(): fires once, telling App.jsx it's safe to arm
+// InstallPrompt -- either immediately (no card exists this visit, or one
+// already showed+closed on an earlier visit today) or once the close
+// animation actually finishes (see closeRecap's phase 3). Never fires
+// while the card is still going to open or is currently open/closing.
+//
 // The same handleShare is also wired to a persistent Share button in the
 // bottom action row (lb-actions), left of Play Classic, so sharing doesn't
 // require opening the recap modal first. It's disabled rather than hidden
@@ -112,7 +118,7 @@ function hasAutoShownRecap(date) {
   return localStorage.getItem(LS_KEYS.RECAP_SHOWN) === date;
 }
 
-export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites }) {
+export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites, onRecapSettled }) {
   const today = getTodayString();
   const [fetched, setFetched] = useState(data ?? null);
   const [fetchError, setFetchError] = useState(false);
@@ -173,14 +179,21 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   const fadeTimerRef = useRef(null);
   const openTimerRef = useRef(null);
   useEffect(() => {
-    if (loading || !hasTodayEntry || !hasSites) return undefined;
-    if (hasAutoShownRecap(today)) return undefined;
+    if (loading) return undefined;
+    if (!hasTodayEntry || !hasSites) {
+      onRecapSettled?.(); // no card ever exists this visit -- nothing to wait behind
+      return undefined;
+    }
+    if (hasAutoShownRecap(today)) {
+      onRecapSettled?.(); // already shown+dismissed on an earlier visit today -- won't reopen
+      return undefined;
+    }
     openTimerRef.current = setTimeout(() => {
       localStorage.setItem(LS_KEYS.RECAP_SHOWN, today);
       setRecapOpen(true);
     }, 2000);
     return () => clearTimeout(openTimerRef.current);
-  }, [loading, hasTodayEntry, hasSites, today]);
+  }, [loading, hasTodayEntry, hasSites, today, onRecapSettled]);
 
   useEffect(() => () => {
     clearTimeout(closeTimerRef.current);
@@ -217,6 +230,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
           fadeTimerRef.current = setTimeout(() => {
             setRecapClosing(false);
             setBackdropFading(false);
+            onRecapSettled?.(); // close animation fully finished -- card is gone for good this visit
           }, 220); // matches the backdrop's own fade-out transition duration
         });
         closeRafRef.current.push(raf2);
@@ -344,6 +358,28 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
                 </div>
               );
             })}
+            {/* Player's own row when they exist today but didn't place in
+                top10 -- handleScore.js only returns a rank for a top10
+                finish (null otherwise), so rank == null here specifically
+                means "played, didn't place" once hasTodayEntry is true.
+                total > 0 excludes 0-score submissions, matching the
+                backend's own exclude-from-ranking treatment of those.
+                Pulled from local stats_daily (todayEntry), not the server
+                response, since getLeaderboard()/top10 never includes a
+                player outside the top10 rows. '-' stands in for tableRank
+                -- RankBadge already falls through to a plain <span> for
+                any rank with no MEDAL_COLORS entry, '-' included. */}
+            {hasTodayEntry && rank == null && todayEntry.total > 0 && (
+              <div
+                className="lb-row lb-row-you"
+                style={{ animationDelay: `${Math.min(ranked.length, 10) * 40}ms` }}
+              >
+                <RankBadge rank="-" />
+                <span className="lb-name">{localStorage.getItem(LS_KEYS.NAME) || 'You'}</span>
+                <span>{todayEntry.total.toLocaleString()}</span>
+                <span>{Math.round(todayEntry.dist).toLocaleString()} km</span>
+              </div>
+            )}
             {ranked.length === 0 && <p className="lb-empty">No scores yet today.</p>}
           </div>
 

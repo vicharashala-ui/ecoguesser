@@ -29,13 +29,15 @@ const BlitzMap = lazy(() => import('./components/BlitzMap.jsx'));
 // only appear after a Daily round completes, StatsView only on the Stats
 // tab, InfoModal only once opened from SideDrawer, SideDrawer only once the
 // hamburger is tapped, AchievementToast only once an achievement actually
-// unlocks, and InstallPrompt only after its own MIN_DELAY_MS. Leaderboard
-// also drags in html-to-image (the recap share-card export) -- deferring it
-// keeps that out of the initial bundle too. InstallPrompt's event-capture
-// half (the one-shot, un-refireable beforeinstallprompt listener) already
-// lives in utils/installPromptCapture.js, imported eagerly from main.jsx --
-// this is only the banner JSX/CSS, which has no browser API of its own and
-// is safe to defer (see that file's own header comment).
+// unlocks, and InstallPrompt only once installPromptReady flips true
+// (Daily complete + share card settled -- see that state's own comment)
+// and its own MIN_DELAY_MS has then passed. Leaderboard also drags in
+// html-to-image (the recap share-card export) -- deferring it keeps that
+// out of the initial bundle too. InstallPrompt's event-capture half (the
+// one-shot, un-refireable beforeinstallprompt listener) already lives in
+// utils/installPromptCapture.js, imported eagerly from main.jsx -- this is
+// only the banner JSX/CSS, which has no browser API of its own and is safe
+// to defer (see that file's own header comment).
 const DailySummary = lazy(() => import('./components/DailySummary.jsx'));
 const Leaderboard = lazy(() => import('./components/Leaderboard.jsx'));
 const StatsView = lazy(() => import('./components/StatsView.jsx'));
@@ -99,6 +101,14 @@ export default function App() {
   const [dailyPhase, setDailyPhase] = useState(() => (hasPlayedToday() ? 'leaderboard' : 'round'));
   const [dailySummaryData, setDailySummaryData] = useState(null); // { totalPts, totalDist }
   const [dailyLeaderboardData, setDailyLeaderboardData] = useState(null); // { top10, rank, banner } | null
+  // Gates InstallPrompt: stays false until Daily is complete AND the
+  // leaderboard's share-card (DailyRecap modal) has settled -- either it
+  // won't auto-open this visit, or it opened and the close animation fully
+  // finished. Leaderboard.jsx is the only thing that ever flips this (via
+  // onRecapSettled); it never flips back, since once true, showing the
+  // install nudge on a later tab switch is fine -- only the FIRST time
+  // needs to wait behind the recap.
+  const [installPromptReady, setInstallPromptReady] = useState(false);
   const { current: newAchievement, recordAndDetect, dismissCurrent: dismissAchievement } = useAchievementUnlocks();
 
   // drawerOpen is global (both tabs); classicFilters affects ClassicMap's
@@ -288,6 +298,7 @@ export default function App() {
             onPlayClassic={() => switchTab('classic')}
             onPlayBlitz={() => switchTab('blitz')}
             allSites={allSites}
+            onRecapSettled={() => setInstallPromptReady(true)}
           />
         </Suspense>
       )}
@@ -307,7 +318,7 @@ export default function App() {
         titleIsH1={!(activeTab === 'stats' || (activeTab === 'daily' && dailyPhase === 'leaderboard'))}
       />
       <Suspense fallback={null}>
-        <InstallPrompt />
+        <InstallPrompt readyToShow={installPromptReady} />
       </Suspense>
       {infoModalVariant && (
         <Suspense fallback={null}>

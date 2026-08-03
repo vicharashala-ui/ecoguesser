@@ -24,12 +24,15 @@
 //     exists behind the manual Share-sheet action, so that variant just
 //     shows instructions instead of a button that would do nothing.
 //
-// Timing: waits MIN_DELAY_MS after mount before showing at all, so it never
-// competes with the map's first paint or Daily's opening round -- then only
-// once per calendar day (LS_KEYS.INSTALL_PROMPT_SHOWN, IST date string,
-// same pattern as Leaderboard.jsx's RECAP_SHOWN). Skipped entirely once the
-// app is already running standalone (installed) -- no point nagging someone
-// who already added it.
+// Timing: only arms at all once `readyToShow` is true (App.jsx flips this
+// once Daily is complete and the leaderboard's share card has settled --
+// see installPromptReady's comment there), then waits MIN_DELAY_MS after
+// that before showing, so it never competes with the Daily recap/share
+// flow it was gated behind -- then only once per calendar day
+// (LS_KEYS.INSTALL_PROMPT_SHOWN, IST date string, same pattern as
+// Leaderboard.jsx's RECAP_SHOWN). Skipped entirely once the app is already
+// running standalone (installed) -- no point nagging someone who already
+// added it.
 
 import { useEffect, useRef, useState } from 'react';
 import { LS_KEYS } from '../config.js';
@@ -55,7 +58,7 @@ function isIOSDevice() {
   return /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
-export default function InstallPrompt() {
+export default function InstallPrompt({ readyToShow }) {
   const [visible, setVisible] = useState(false);
   const [mode, setMode] = useState(null); // 'native' | 'ios'
   // Guards against the timer and an install-prompt-capture notification
@@ -63,6 +66,7 @@ export default function InstallPrompt() {
   const shownRef = useRef(false);
 
   useEffect(() => {
+    if (!readyToShow) return undefined;
     if (isStandaloneDisplay()) return undefined;
 
     function tryShow() {
@@ -97,7 +101,7 @@ export default function InstallPrompt() {
       unsubscribe();
       clearTimeout(timer);
     };
-  }, []);
+  }, [readyToShow]);
 
   function handleAdd() {
     const promptEvent = getDeferredPrompt();

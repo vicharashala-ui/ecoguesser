@@ -11,6 +11,14 @@ import { loadSharedGeoJsonOnce } from './sharedMapData.js';
 export const TERRAIN_PLACE_LABEL_IDS = ['place_city_label', 'place_town_label', 'place_village_label', 'place_hamlet_label'];
 export const TERRAIN_PLACE_LABEL_PROPS = ['text-color', 'text-halo-color', 'text-halo-width', 'text-halo-blur'];
 
+// A raster source's 'error' event fires per-tile -- a single viewport can
+// request dozens at once, so one flaky/rate-limited/edge-case tile is normal
+// and shouldn't kill the whole layer. Only a burst that clears this many
+// errors before ERROR_RESET_MS of quiet passes counts as a real outage
+// (proxy down, rate limit actually tripped) worth tearing down for.
+const SATELLITE_ERROR_BURST_THRESHOLD = 5;
+const SATELLITE_ERROR_RESET_MS = 4000;
+
 // One-time capture of the live style's own baked-in paint for the layers
 // applyTerrainVisual doesn't have a BASE_VISUAL equivalent for (water's
 // fill-color/opacity/filter and the 4 place-label layers -- boundary_2/
@@ -296,6 +304,10 @@ export function useMapState(mapRef, mode) {
   const satelliteFadeInRafRef    = useRef(null);
   const satelliteHideBaseTimerRef = useRef(null);
   const satelliteCleanupTimerRef  = useRef(null);
+  // Tracks the current error burst for onSatelliteErrorRef -- see
+  // SATELLITE_ERROR_BURST_THRESHOLD above.
+  const satelliteErrorCountRef   = useRef(0);
+  const satelliteErrorResetTimerRef = useRef(null);
 
   // Applies/reverts the full satellite visual spec: ArcGIS raster color
   // grading, navy water tint, and a recolored border/river set shared with
@@ -493,8 +505,20 @@ export function useMapState(mapRef, mode) {
 
         onSatelliteErrorRef.current = (e) => {
           if (e.sourceId !== 'satellite-raster') return;
+          // One or a few dropped tiles is normal -- only bail once errors
+          // actually come in a burst (see SATELLITE_ERROR_BURST_THRESHOLD).
+          satelliteErrorCountRef.current += 1;
+          if (satelliteErrorResetTimerRef.current) clearTimeout(satelliteErrorResetTimerRef.current);
+          satelliteErrorResetTimerRef.current = setTimeout(() => {
+            satelliteErrorResetTimerRef.current = null;
+            satelliteErrorCountRef.current = 0;
+          }, SATELLITE_ERROR_RESET_MS);
+          if (satelliteErrorCountRef.current < SATELLITE_ERROR_BURST_THRESHOLD) return;
+
           map.off('error', onSatelliteErrorRef.current);
           onSatelliteErrorRef.current = null;
+          if (satelliteErrorResetTimerRef.current) { clearTimeout(satelliteErrorResetTimerRef.current); satelliteErrorResetTimerRef.current = null; }
+          satelliteErrorCountRef.current = 0;
           if (satelliteFadeInRafRef.current) { cancelAnimationFrame(satelliteFadeInRafRef.current); satelliteFadeInRafRef.current = null; }
           if (satelliteHideBaseTimerRef.current) { clearTimeout(satelliteHideBaseTimerRef.current); satelliteHideBaseTimerRef.current = null; }
           if (satelliteCleanupTimerRef.current) { clearTimeout(satelliteCleanupTimerRef.current); satelliteCleanupTimerRef.current = null; }
@@ -512,9 +536,12 @@ export function useMapState(mapRef, mode) {
           setState(prev => ({ ...prev, satellite: false, satelliteUnavailable: true }));
         };
         map.on('error', onSatelliteErrorRef.current);
+        satelliteErrorCountRef.current = 0;
 
         satelliteRef.current = true;
-        setState(prev => ({ ...prev, satellite: true }));
+        // Clears any stale "Satellite unavailable" banner from a prior
+        // burst-triggered teardown -- this is a fresh attempt.
+        setState(prev => ({ ...prev, satellite: true, satelliteUnavailable: false }));
       } catch {
         satelliteRef.current = false;
         setState(prev => ({ ...prev, satellite: false, satelliteUnavailable: true }));
@@ -524,6 +551,8 @@ export function useMapState(mapRef, mode) {
         map.off('error', onSatelliteErrorRef.current);
         onSatelliteErrorRef.current = null;
       }
+      if (satelliteErrorResetTimerRef.current) { clearTimeout(satelliteErrorResetTimerRef.current); satelliteErrorResetTimerRef.current = null; }
+      satelliteErrorCountRef.current = 0;
       if (satelliteFadeInRafRef.current) { cancelAnimationFrame(satelliteFadeInRafRef.current); satelliteFadeInRafRef.current = null; }
       if (satelliteHideBaseTimerRef.current) { clearTimeout(satelliteHideBaseTimerRef.current); satelliteHideBaseTimerRef.current = null; }
 
