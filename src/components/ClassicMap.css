@@ -48,18 +48,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  /* Panel itself is back to its natural compact size (no min-height) --
-     the 20px this panel is now shorter than .dm-timer-card is made up as
-     margin-top instead, so cm-mode-row's position is unaffected: 20px
-     (this margin) + 40px (panel) + 10px (this stack's own gap) still adds
-     up to the same 70px .dm-timer-card (60px) + its own 10px gap reaches
-     in DailyMap.css. margin-top (not margin-bottom, and not the stack's
-     shared gap) so the extra space pulls the panel down away from the
-     stack's own top edge, rather than pushing .cm-mode-row further from
-     the panel -- the gap below the panel stays the same 10px .dm-timer-card
-     has below it, and .cm-sat-warning's own distance from .cm-mode-row
-     below is untouched either way. */
-  margin-top: 20px;
+  /* No margin-top hack needed anymore -- that spacing existed to align this
+     panel with DailyMap's timer card while it was the stack's first child.
+     Borders is now last (after the gauge + mode row), so the stack's own
+     10px gap is all the spacing it needs. */
 }
 
 .cm-mode-row {

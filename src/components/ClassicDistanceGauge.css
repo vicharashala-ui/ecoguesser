@@ -1,0 +1,57 @@
+/* src/components/ClassicDistanceGauge.css */
+
+/* Same glass treatment as .cm-layer-panel (ClassicMap.css) for visual
+   consistency across the top-right stack, incl. the isolation/transform
+   compositing-bug fix shared with RecenterButton.css. */
+.cm-gauge-panel {
+  background: rgba(248, 246, 241, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
+  isolation: isolate;
+  transform: translateZ(0);
+  padding: 8px 12px 6px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cm-gauge-needle {
+  transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cm-gauge-readout {
+  text-align: center;
+  margin-top: -4px;
+}
+
+.cm-gauge-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--eg-ink, #111827);
+  letter-spacing: -0.3px;
+}
+
+.cm-gauge-unit {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--eg-ink-secondary, #6b7280);
+  margin-left: 2px;
+}
+
+.cm-gauge-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-gauge-needle {
+    transition: none;
+  }
+}

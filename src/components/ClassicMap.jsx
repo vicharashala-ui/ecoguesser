@@ -29,7 +29,8 @@ import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
 import { MAP_CONFIG } from '../config.js';
 import { showResult, clearResult, zoomToSiteBoundary, RESULT_FIT_EASING, ROUND_RESET_DURATION_MS } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
-import { recordClassicResult, recordSiteEncounter } from '../game/stats.js';
+import { recordClassicResult, recordSiteEncounter, loadNormalStats, computeRollingAvgDist } from '../game/stats.js';
+import ClassicDistanceGauge from './ClassicDistanceGauge.jsx';
 import './ClassicMap.css';
 
 // fitBounds padding for the post-Confirm reveal; `bottom` is computed per
@@ -212,12 +213,17 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
   // new round's `result` always compares unequal.
   const recordedResultRef = useRef(null);
   const [milestone, setMilestone] = useState(null);
+  // Rolling (last-10-round) Classic average distance, for ClassicDistanceGauge.
+  // Initialized from existing storage so a returning player sees their real
+  // recent average immediately, not a post-first-round pop-in.
+  const [avgDist, setAvgDist] = useState(() => computeRollingAvgDist(loadNormalStats()));
   useEffect(() => {
     if (roundState !== 'REVEALING' || !result) return;
     if (recordedResultRef.current === result) return;
     recordedResultRef.current = result;
     const seenCount = recordAndDetect(() => {
-      recordClassicResult(result);
+      const updatedStats = recordClassicResult(result);
+      setAvgDist(computeRollingAvgDist(updatedStats));
       return recordSiteEncounter(result.site.id);
     });
     if (seenCount !== null && seenCount % 10 === 0) setMilestone(seenCount);
@@ -266,19 +272,14 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
         <AchievementToast key={newAchievement.id} achievement={newAchievement} onDone={dismissAchievement} />
       )}
 
-      {/* Top-right stack -- Borders keeps its own glass panel (as it had
-          before Terrain/Satellite were briefly merged into it); Terrain and
-          Satellite are their own standalone boxes below it, not wrapped in
-          any panel background. Mirrors DailyMap.jsx/BlitzMap.jsx's
+      {/* Top-right stack -- gauge sits above the layer controls; Borders
+          keeps its own glass panel (as it had before Terrain/Satellite were
+          briefly merged into it), now below Terrain/Satellite instead of
+          above. Terrain and Satellite are their own standalone boxes, not
+          wrapped in any panel background. Mirrors DailyMap.jsx/BlitzMap.jsx's
           top-right-stack pattern for stacking independent HUD pieces. */}
       <div className="cm-top-right-stack">
-        <div className="cm-layer-panel">
-          <label className="eg-toggle">
-            <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
-            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            Borders
-          </label>
-        </div>
+        <ClassicDistanceGauge avgDist={avgDist} visible={visible} />
         <div className="cm-mode-row">
           {/* Terrain/Basemap is one control, not two -- icon and caption show
               the CURRENT mode ("Terrain" + mountain while terrain is on,
@@ -327,6 +328,13 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
           </div>
         </div>
         {satelliteUnavailable && <div className="cm-sat-warning">Satellite unavailable</div>}
+        <div className="cm-layer-panel">
+          <label className="eg-toggle">
+            <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
+            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
+            Borders
+          </label>
+        </div>
       </div>
 
       {sitePool.length === 0 && (

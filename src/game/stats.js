@@ -298,6 +298,22 @@ export function computeClassicStats(stats) {
 }
 
 /**
+ * Average distance over the most recent `windowSize` Classic rounds (default
+ * 10), not all-time. Used by ClassicDistanceGauge instead of avgDist above --
+ * an all-time average barely moves once history is large (one round out of
+ * 200 can't swing it much), so the gauge needs a smaller, more responsive
+ * window to stay visibly reactive round to round.
+ * @param {ReturnType<typeof loadNormalStats>} stats
+ * @param {number} windowSize
+ * @returns {number|null}
+ */
+export function computeRollingAvgDist(stats, windowSize = 10) {
+  if (stats.history.length === 0) return null;
+  const recent = stats.history.slice(-windowSize);
+  return Math.round(recent.reduce((sum, h) => sum + h.dist, 0) / recent.length);
+}
+
+/**
  * @param {ReturnType<typeof loadBlitzStats>} stats
  * @returns {{
  *   rounds: number, accuracy: number|null, bestStreak: number,
