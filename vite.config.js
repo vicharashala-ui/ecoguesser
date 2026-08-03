@@ -159,21 +159,17 @@ export default defineConfig({
           'assets/vendor-*.js',
           'assets/config-*.js',
           'assets/rolldown-runtime-*.js',
-          // game/daily.js is imported by both eager code (useDailyRound.js --
-          // Daily is the default tab) and lazy code (DailySummary/
-          // Leaderboard/DailyRecap/InstallPrompt), so Rollup auto-splits it
-          // into its own chunk instead of inlining it into index-*. That
-          // makes it eager, not lazy -- confirmed modulepreloaded in a real
-          // build's dist/index.html alongside vendor-preact/vendor-maplibre
-          // -- so it belongs in this eager allowlist, not left for the lazy
-          // runtimeCaching rule below. Was missing (confirmed absent from a
-          // real build's dist/sw.js precache manifest), the one gap in this
-          // list actually breaking its own "eager set = exactly what render
-          // needs before interactive" rule. Any other module that later
-          // ends up shared across the eager/lazy boundary the same way will
-          // need the same manual addition here -- Rollup's auto-splitting
-          // isn't visible to this allowlist by construction.
-          'assets/daily-*.js',
+          // game/daily.js (getTodayString/getDailySites/etc, used by both
+          // eager stats.js and lazy DailySummary/Leaderboard/DailyMap) no
+          // longer gets its own shared chunk -- it's small enough that
+          // Rollup now inlines it directly into index-* instead, which
+          // index-*.{js,css} above already covers. Confirmed via a real
+          // build: no assets/daily-*.js exists to precache (the PWA plugin
+          // errors loudly -- "glob pattern doesn't match any files" -- if
+          // this list ever points at a chunk that stops existing, so a
+          // stale entry here doesn't fail silently). If a future change
+          // reintroduces a genuinely shared eager/lazy chunk under a new
+          // name, add it here the same way, following the reasoning above.
           'assets/*.woff2',
         ],
         // Never precache/cache the leaderboard API or the ArcGIS tile proxy:

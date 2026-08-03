@@ -72,6 +72,16 @@
 /favicon.ico
   Cache-Control: public, max-age=86400
 
+# Render-blocking theme/standalone-mode init script (see its own header
+# comment for why it can't be inlined or deferred) -- same
+# rarely-changes-outside-a-deliberate-pass profile as the icons above, but
+# uncovered by any rule here until now. Unlike icons, this one sits
+# directly in front of first paint on every load, so the default
+# `max-age=0, must-revalidate` round-trip it was paying was strictly worse
+# here than for a non-blocking asset.
+/theme-init.js
+  Cache-Control: public, max-age=86400
+
 # Social-preview share card -- same regenerate-only-on-a-deliberate-pass
 # profile as /icons/*, so it gets the same tier. Previously uncovered by
 # any rule here, so it was silently falling through to Cloudflare Pages'

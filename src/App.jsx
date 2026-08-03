@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import BottomNav from './components/BottomNav.jsx';
 import Header from './components/Header.jsx';
-import InstallPrompt from './components/InstallPrompt.jsx';
-import AchievementToast from './components/AchievementToast.jsx';
 import MapLoadingOverlay from './components/MapLoadingOverlay.jsx';
 import { recordDailyResult, hasPlayedToday } from './game/stats.js';
 import { warmSharedMapData } from './hooks/sharedMapData.js';
-import { useAchievementUnlocks } from './hooks/useAchievementUnlocks.js';
+import { useAchievementUnlocks, preloadAchievements } from './hooks/useAchievementUnlocks.js';
 import { DEFAULT_FILTERS } from './utils/filters.js';
 
 // All three map components are now code-split, including DailyMap (the
@@ -29,17 +27,22 @@ const BlitzMap = lazy(() => import('./components/BlitzMap.jsx'));
 
 // None of these render on first paint either -- DailySummary/Leaderboard
 // only appear after a Daily round completes, StatsView only on the Stats
-// tab, InfoModal only once opened from SideDrawer, and SideDrawer only once
-// the hamburger is tapped. Leaderboard also drags in html-to-image (the
-// recap share-card export) -- deferring it keeps that out of the initial
-// bundle too. InstallPrompt stays eager (imported above): it needs to
-// attach the beforeinstallprompt listener immediately on load to catch and
-// stash the event, so it can't wait on a lazy chunk fetch.
+// tab, InfoModal only once opened from SideDrawer, SideDrawer only once the
+// hamburger is tapped, AchievementToast only once an achievement actually
+// unlocks, and InstallPrompt only after its own MIN_DELAY_MS. Leaderboard
+// also drags in html-to-image (the recap share-card export) -- deferring it
+// keeps that out of the initial bundle too. InstallPrompt's event-capture
+// half (the one-shot, un-refireable beforeinstallprompt listener) already
+// lives in utils/installPromptCapture.js, imported eagerly from main.jsx --
+// this is only the banner JSX/CSS, which has no browser API of its own and
+// is safe to defer (see that file's own header comment).
 const DailySummary = lazy(() => import('./components/DailySummary.jsx'));
 const Leaderboard = lazy(() => import('./components/Leaderboard.jsx'));
 const StatsView = lazy(() => import('./components/StatsView.jsx'));
 const InfoModal = lazy(() => import('./components/InfoModal.jsx'));
 const SideDrawer = lazy(() => import('./components/SideDrawer.jsx'));
+const InstallPrompt = lazy(() => import('./components/InstallPrompt.jsx'));
+const AchievementToast = lazy(() => import('./components/AchievementToast.jsx'));
 
 const screenStyle = {
   display: 'flex',
@@ -191,6 +194,10 @@ export default function App() {
       // a pure head start, never a duplicate fetch -- see
       // warmSharedMapData's comment in useMapState.js.
       warmSharedMapData();
+      // Same reasoning as the two chunk prefetches above -- see
+      // useAchievementUnlocks.js's preloadAchievements() comment for why
+      // this is a cache warm rather than a static import.
+      preloadAchievements();
     };
     if (typeof requestIdleCallback === 'function') {
       const id = requestIdleCallback(prefetch, { timeout: 5000 });
@@ -290,14 +297,18 @@ export default function App() {
         </Suspense>
       )}
       {newAchievement && (
-        <AchievementToast key={newAchievement.id} achievement={newAchievement} onDone={dismissAchievement} />
+        <Suspense fallback={null}>
+          <AchievementToast key={newAchievement.id} achievement={newAchievement} onDone={dismissAchievement} />
+        </Suspense>
       )}
       <BottomNav activeTab={activeTab} onTabChange={switchTab} />
       <Header
         onMenuClick={() => { drawerEverOpened.current = true; setDrawerOpen(true); }}
         titleIsH1={!(activeTab === 'stats' || (activeTab === 'daily' && dailyPhase === 'leaderboard'))}
       />
-      <InstallPrompt />
+      <Suspense fallback={null}>
+        <InstallPrompt />
+      </Suspense>
       {infoModalVariant && (
         <Suspense fallback={null}>
           <InfoModal variant={infoModalVariant} onClose={() => setInfoModalVariant(null)} />
