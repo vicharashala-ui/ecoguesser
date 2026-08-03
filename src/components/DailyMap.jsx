@@ -21,10 +21,31 @@ import RecenterButton from './RecenterButton.jsx';
 import MapLoadingOverlay from './MapLoadingOverlay.jsx';
 import { useDailyRound } from '../hooks/useDailyRound.js';
 import { useMapState } from '../hooks/useMapState.js';
-import { showResult, clearResult, zoomToSiteBoundary, RESULT_FIT_EASING, ROUND_RESET_DURATION_MS } from '../game/resultLayer.js';
-import { showHint2, hideHint2 } from '../game/stateHighlight.js';
 import { MAP_CONFIG, DAILY, CATEGORY_META } from '../config.js';
 import './DailyMap.css';
+
+// Module-scope cache, same pattern as useAchievementUnlocks.js's
+// preloadAchievements() -- resultLayer.js + stateHighlight.js together are
+// ~10KB gzip and, as static imports, sat on this component's own
+// module-eval path: since DailyMap.jsx is modulepreloaded up front (Daily
+// is the default tab), the browser had to fetch+parse+eval both before
+// this component's Suspense boundary could even resolve, despite neither
+// running until a round reaches REVEALING or a hint is requested -- both
+// well after mapReady, and (round 1 specifically) after a mandatory tap on
+// the Start button below, which is what actually starts the 120s timer.
+let resultLayerMod = null;
+let stateHighlightMod = null;
+let roundEffectsPromise = null;
+
+function preloadRoundEffects() {
+  if (!roundEffectsPromise) {
+    roundEffectsPromise = Promise.all([
+      import('../game/resultLayer.js').then((m) => { resultLayerMod = m; }),
+      import('../game/stateHighlight.js').then((m) => { stateHighlightMod = m; }),
+    ]);
+  }
+  return roundEffectsPromise;
+}
 
 // Icons -- same inline-SVG, currentColor convention as BottomCard.jsx's IconSkip etc.
 // IconPause and IconPlay both stay mounted permanently (rather than being
@@ -144,6 +165,21 @@ export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySi
     setTerrain,
   } = useMapState(mapRef, 'daily');
 
+  // Starts loading resultLayer.js/stateHighlight.js the moment the map
+  // itself is ready (real seconds ahead of the earliest possible
+  // REVEALING -- see preloadRoundEffects' comment above), and flips true
+  // once loaded so Effect 1/Effect 2 below correctly re-run and pick up
+  // the real functions rather than only ever checking once on mount.
+  // Initialized from the module-scope cache (not just false) so a second
+  // DailyMap mount within the same session -- this component is memo'd,
+  // but a fresh mount can still happen -- doesn't wait on a fetch that
+  // already completed.
+  const [effectsReady, setEffectsReady] = useState(!!resultLayerMod);
+  useEffect(() => {
+    if (!mapReady || effectsReady) return;
+    preloadRoundEffects().then(() => setEffectsReady(true));
+  }, [mapReady, effectsReady]);
+
   const {
     roundState,
     isLastRound,
@@ -169,7 +205,7 @@ export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySi
   // score / running total) change the card's height.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady) return;
+    if (!map || !mapReady || !effectsReady) return;
 
     if (roundState === 'REVEALING' && result) {
       setCollapsed(false); // a collapse from the last round shouldn't carry into this one
@@ -177,25 +213,25 @@ export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySi
       // this one-off read is only for the map's own fitBounds padding.
       const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 200;
       const fitPadding = { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 };
-      showResult(map, guess, site, {
+      resultLayerMod.showResult(map, guess, site, {
         distanceKmOverride: result.distanceKm,
         nearestLng: result.nearestLng,
         nearestLat: result.nearestLat,
         fitPadding,
       });
     } else if (roundState === 'LOADING') {
-      clearResult(map);
+      resultLayerMod.clearResult(map);
       // Next Site (and Skip's auto-advance) lands here -- reset to the
       // default India-wide framing, same eased curve resultLayer.js's own
       // reveal fitBounds uses so the camera doesn't snap between a
       // smoothed reveal and an untouched default reset.
       map.fitBounds(MAP_CONFIG.INDIA_BOUNDS, {
         padding: MAP_CONFIG.FIT_PADDING,
-        duration: ROUND_RESET_DURATION_MS,
-        easing: RESULT_FIT_EASING,
+        duration: resultLayerMod.ROUND_RESET_DURATION_MS,
+        easing: resultLayerMod.RESULT_FIT_EASING,
       });
     }
-  }, [mapReady, roundState, result, guess, site, mapRef]);
+  }, [mapReady, effectsReady, roundState, result, guess, site, mapRef]);
 
   // Effect 2 (mirrors ClassicMap.jsx): Hint-2 highlight off
   // [mapReady, hintLevel, site, roundState]. Gated on roundState since
@@ -204,12 +240,12 @@ export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySi
   // instead of handing off to it the moment Confirm fires.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady || !site) return;
+    if (!map || !mapReady || !effectsReady || !site) return;
 
     const shouldShow = hintLevel >= 2 && (roundState === 'READING' || roundState === 'PLACING');
-    if (shouldShow) showHint2(map, site);
-    else hideHint2(map);
-  }, [mapReady, hintLevel, site, roundState, mapRef]);
+    if (shouldShow) stateHighlightMod.showHint2(map, site);
+    else stateHighlightMod.hideHint2(map);
+  }, [mapReady, effectsReady, hintLevel, site, roundState, mapRef]);
 
   // Same fix as ClassicMap.jsx: keeps cardHeight (and so RecenterButton's
   // `bottom`) in sync with the card's target height on every render that
@@ -261,9 +297,14 @@ export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySi
   // Recomputes fitPadding live since cardRef's height can only be read live.
   const handleShowBoundary = useCallback(() => {
     const map = mapRef.current;
-    if (!map) return;
+    // resultLayerMod is defensive only -- this button (BottomCard) only
+    // renders during REVEALING, and Effect 1 above already requires
+    // effectsReady before it lets a round reach REVEALING with a real
+    // result, so resultLayerMod is guaranteed loaded by the time this is
+    // ever clickable in practice.
+    if (!map || !resultLayerMod) return;
     const measuredHeight = cardRef.current?.getBoundingClientRect().height ?? 200;
-    zoomToSiteBoundary(map, { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 });
+    resultLayerMod.zoomToSiteBoundary(map, { top: 60, bottom: measuredHeight + 20, left: 40, right: 40 });
   }, [mapRef]);
 
   const dailyTotal = results.reduce((sum, r) => sum + r.finalScore, 0);

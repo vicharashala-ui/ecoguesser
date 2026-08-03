@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { feature as topoFeature } from 'topojson-client';
 import {
   MAP_CONFIG, LAYER_IDS, SATELLITE_TILES, SATELLITE_ATTRIBUTION,
   SATELLITE_VISUAL, BASE_VISUAL, BARE_VISUAL, TERRAIN_TILES, TERRAIN_ENCODING,
@@ -191,7 +190,7 @@ const EMPTY_FEATURE_COLLECTION = { type: 'FeatureCollection', features: [] };
 // down in onLoad.
 function loadIndiaStatesTopology(map) {
   loadSharedGeoJsonOnce('/india-states.topojson', (topology) =>
-    topoFeature(topology, topology.objects['india-states'])
+    import('topojson-client').then(({ feature }) => feature(topology, topology.objects['india-states']))
   )
     .then((geojson) => map.getSource('india-states')?.setData(geojson))
     .catch(() => {}); // Borders/labels just don't appear; nothing else depends on this.
