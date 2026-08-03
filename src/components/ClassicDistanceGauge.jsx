@@ -35,7 +35,7 @@ const NEEDLE_RESTING_SHAPE = '80,84.8 38,87.4 38,88.6 80,91.2';
 // Every round update overshoots by at least this many degrees past the
 // target before settling -- keeps the needle visibly reactive even when the
 // rolling average shifts by a fraction of a degree round to round.
-const MIN_SWING_DEG = 6;
+const MIN_SWING_DEG = 26;
 const SWING_MS = 280;
 const SETTLE_MS = 240;
 const NUMBER_ROLL_MS = 500;
