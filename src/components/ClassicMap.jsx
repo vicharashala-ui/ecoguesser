@@ -29,7 +29,7 @@ import { siteMatchesFilter, DEFAULT_FILTERS } from '../utils/filters.js';
 import { MAP_CONFIG } from '../config.js';
 import { showResult, clearResult, zoomToSiteBoundary, RESULT_FIT_EASING, ROUND_RESET_DURATION_MS } from '../game/resultLayer.js';
 import { showHint2, hideHint2 } from '../game/stateHighlight.js';
-import { recordClassicResult, recordSiteEncounter, loadNormalStats, computeRollingAvgDist } from '../game/stats.js';
+import { recordClassicResult, recordSiteEncounter, loadNormalStats, computeEmaAvgDist } from '../game/stats.js';
 import ClassicDistanceGauge from './ClassicDistanceGauge.jsx';
 import './ClassicMap.css';
 
@@ -213,17 +213,17 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
   // new round's `result` always compares unequal.
   const recordedResultRef = useRef(null);
   const [milestone, setMilestone] = useState(null);
-  // Rolling (last-10-round) Classic average distance, for ClassicDistanceGauge.
-  // Initialized from existing storage so a returning player sees their real
-  // recent average immediately, not a post-first-round pop-in.
-  const [avgDist, setAvgDist] = useState(() => computeRollingAvgDist(loadNormalStats()));
+  // EMA of Classic round distances, for ClassicDistanceGauge. Initialized
+  // from existing storage so a returning player sees their real recent
+  // average immediately, not a post-first-round pop-in.
+  const [avgDist, setAvgDist] = useState(() => computeEmaAvgDist(loadNormalStats()));
   useEffect(() => {
     if (roundState !== 'REVEALING' || !result) return;
     if (recordedResultRef.current === result) return;
     recordedResultRef.current = result;
     const seenCount = recordAndDetect(() => {
       const updatedStats = recordClassicResult(result);
-      setAvgDist(computeRollingAvgDist(updatedStats));
+      setAvgDist(computeEmaAvgDist(updatedStats));
       return recordSiteEncounter(result.site.id);
     });
     if (seenCount !== null && seenCount % 10 === 0) setMilestone(seenCount);
@@ -272,11 +272,23 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
         <AchievementToast key={newAchievement.id} achievement={newAchievement} onDone={dismissAchievement} />
       )}
 
-      {/* Top-right stack -- gauge sits above the layer controls; Borders
-          keeps its own glass panel (as it had before Terrain/Satellite were
-          briefly merged into it), now below Terrain/Satellite instead of
-          above. Terrain and Satellite are their own standalone boxes, not
-          wrapped in any panel background. Mirrors DailyMap.jsx/BlitzMap.jsx's
+      {/* Top-left stack -- sits directly under the hamburger (Header.jsx),
+          mirroring cm-top-right-stack's offset formula but anchored left
+          instead of right. Borders lived in cm-top-right-stack before; moved
+          here to free up the right stack for gauge/mode controls only. */}
+      <div className="cm-top-left-stack">
+        <div className="cm-layer-panel">
+          <label className="eg-toggle">
+            <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
+            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
+            Borders
+          </label>
+        </div>
+      </div>
+
+      {/* Top-right stack -- gauge sits above the mode row (Terrain/Basemap +
+          Satellite), which are their own standalone boxes, not wrapped in
+          any panel background. Mirrors DailyMap.jsx/BlitzMap.jsx's
           top-right-stack pattern for stacking independent HUD pieces. */}
       <div className="cm-top-right-stack">
         <ClassicDistanceGauge avgDist={avgDist} visible={visible} />
@@ -328,13 +340,6 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
           </div>
         </div>
         {satelliteUnavailable && <div className="cm-sat-warning">Satellite unavailable</div>}
-        <div className="cm-layer-panel">
-          <label className="eg-toggle">
-            <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
-            <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            Borders
-          </label>
-        </div>
       </div>
 
       {sitePool.length === 0 && (

@@ -22,6 +22,13 @@
    that stretched width instead of staying a fixed size. This makes the row
    line up under the panel exactly, whatever the panel's content-driven
    width happens to be, rather than hand-tuning pixel sizes to match it. */
+.cm-top-left-stack {
+  position: absolute;
+  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
+  left: 10px;
+  z-index: var(--eg-z-map-controls, 10);
+}
+
 .cm-top-right-stack {
   position: absolute;
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);

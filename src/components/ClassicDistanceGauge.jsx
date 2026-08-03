@@ -1,7 +1,7 @@
 // src/components/ClassicDistanceGauge.jsx
 // Passive HUD widget in ClassicMap's top-right stack -- shows the player's
-// rolling average distance (last 10 Classic rounds) as a needle on a
-// 5-segment dial. Purely informational: no click handler, no tooltip.
+// EMA of recent distance (see computeEmaAvgDist in game/stats.js) as a
+// needle on a 5-segment dial. Purely informational: no click handler, no tooltip.
 import { useState, useEffect, useRef } from 'react';
 import './ClassicDistanceGauge.css';
 
@@ -35,7 +35,7 @@ const NEEDLE_RESTING_SHAPE = '80,84.8 38,87.4 38,88.6 80,91.2';
 // Every round update overshoots by at least this many degrees past the
 // target before settling -- keeps the needle visibly reactive even when the
 // rolling average shifts by a fraction of a degree round to round.
-const MIN_SWING_DEG = 26;
+const MIN_SWING_DEG = 16;
 const SWING_MS = 280;
 const SETTLE_MS = 240;
 const NUMBER_ROLL_MS = 500;
@@ -185,7 +185,7 @@ export default function ClassicDistanceGauge({ avgDist, visible }) {
       <div className="cm-gauge-readout">
         <span className="cm-gauge-value">{displayedValue}</span>
         <span className="cm-gauge-unit">km</span>
-        <div className="cm-gauge-label">last 10 avg</div>
+        <div className="cm-gauge-label">recent avg</div>
       </div>
     </div>
   );

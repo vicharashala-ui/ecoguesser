@@ -298,19 +298,23 @@ export function computeClassicStats(stats) {
 }
 
 /**
- * Average distance over the most recent `windowSize` Classic rounds (default
- * 10), not all-time. Used by ClassicDistanceGauge instead of avgDist above --
- * an all-time average barely moves once history is large (one round out of
- * 200 can't swing it much), so the gauge needs a smaller, more responsive
- * window to stay visibly reactive round to round.
+ * Exponential moving average of Classic round distances -- used by
+ * ClassicDistanceGauge instead of avgDist above, since an all-time average
+ * barely moves once history is large. Unlike a fixed-window average, there's
+ * no cliff-edge jump when an old round ages out; every past round just fades
+ * geometrically by (1 - alpha) each round. `alpha` controls reactivity: 0.3
+ * means the latest round always contributes 30% of the new average.
  * @param {ReturnType<typeof loadNormalStats>} stats
- * @param {number} windowSize
+ * @param {number} alpha
  * @returns {number|null}
  */
-export function computeRollingAvgDist(stats, windowSize = 10) {
+export function computeEmaAvgDist(stats, alpha = 0.3) {
   if (stats.history.length === 0) return null;
-  const recent = stats.history.slice(-windowSize);
-  return Math.round(recent.reduce((sum, h) => sum + h.dist, 0) / recent.length);
+  let ema = stats.history[0].dist;
+  for (let i = 1; i < stats.history.length; i++) {
+    ema = alpha * stats.history[i].dist + (1 - alpha) * ema;
+  }
+  return Math.round(ema);
 }
 
 /**
