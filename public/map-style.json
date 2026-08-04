@@ -4,7 +4,7 @@
     "openmaptiles": {
       "type": "vector",
       "url": "https://tiles.openfreemap.org/planet",
-      "maxzoom": 10
+      "maxzoom": 9
     },
     "physical-features": {
       "type": "geojson",
@@ -231,7 +231,7 @@
         ]
       ],
       "paint": {
-        "fill-color": "#1da1f2",
+        "fill-color": "#4a9fd4",
         "fill-opacity": 1
       }
     },

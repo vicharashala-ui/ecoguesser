@@ -792,7 +792,7 @@
   height: 44px;
   border-radius: var(--eg-radius-md, 14px);
   border: 1.5px solid var(--eg-accent, #227743);
-  background: rgba(255, 255, 255, 0.6);
+  background: color-mix(in srgb, var(--eg-cream, #f8f6f1) 92%, transparent);
   color: var(--eg-accent-text, var(--eg-accent, #227743));
   font-weight: 700;
   font-size: 14px;

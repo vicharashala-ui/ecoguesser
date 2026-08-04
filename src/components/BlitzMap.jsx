@@ -87,7 +87,7 @@ function blitzStyleTransform(styleJson) {
 
   // openmaptiles.maxzoom is now set directly in map-style.json (shared by
   // all three modes -- Classic/Daily's camera reaches z12 with no detail
-  // gain past the same z10 cap Blitz already relied on), so no per-mode
+  // gain past the same z9 cap Blitz already relied on), so no per-mode
   // override is needed here anymore.
 
   // Dropped entirely, not just hidden -- MapLibre fetches a geojson

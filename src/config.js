@@ -18,7 +18,7 @@ export const MAP_CONFIG = {
   // fitBounds(INDIA_BOUNDS, FIT_PADDING), same as every other framing
   // call site, so nothing consumed them (verified repo-wide).
   MIN_ZOOM: 3, MAX_ZOOM: 12,
-  SATELLITE_MAX_ZOOM: 11,
+  SATELLITE_MAX_ZOOM: 10,
   // Daily AND Classic both use this now -- state names stay hidden until
   // zoomed in this far, with no manual toggle in either mode. Blitz is
   // unaffected (its own "State Names" toggle shows/hides immediately,
