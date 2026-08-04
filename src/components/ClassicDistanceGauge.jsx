@@ -11,22 +11,20 @@ import './ClassicDistanceGauge.css';
 // this pin the needle at the red end rather than overshooting the arc.
 const MAX_KM = 500;
 
-// Six segment colors, green -> yellow -> red, anchored on the app's
-// existing --eg-brand (#227743) and --eg-danger (#dc2626) at the two ends
-// with a true yellow stop in the middle (was missing before -- the old
-// 5-stop scale went green -> olive -> amber -> rust -> red with nothing
-// read as "yellow").
-const SEGMENT_COLORS = ['#227743', '#65a30d', '#eab308', '#f59e0b', '#ea580c', '#dc2626'];
+// Five segment colors, HSL-interpolated between --eg-brand (#227743) and
+// --eg-danger (#dc2626) so the scale reuses the app's existing palette
+// instead of introducing new ones. Interpolating through hue (not RGB)
+// gives a natural green -> olive -> amber -> rust -> red progression.
+const SEGMENT_COLORS = ['#227743', '#368f24', '#8caa24', '#c68724', '#dc2626'];
 
-// Precomputed arc path for each of the 6 segments (27.5 degrees each, 3
+// Precomputed arc path for each of the 5 segments (33 degrees each, ~3.75
 // degree gaps between) on the fixed r=55 semicircle centered at (80,88).
 const SEGMENT_PATHS = [
-  'M25.00,88.00 A55,55 0 0 1 31.21,62.60',
-  'M32.61,60.09 A55,55 0 0 1 50.85,41.36',
-  'M53.34,39.90 A55,55 0 0 1 78.56,33.02',
-  'M81.44,33.02 A55,55 0 0 1 106.66,39.90',
-  'M109.15,41.36 A55,55 0 0 1 127.39,60.09',
-  'M128.79,62.60 A55,55 0 0 1 135.00,88.00',
+  'M25,88 A55,55 0 0 1 33.87,58.05',
+  'M35.94,55.07 A55,55 0 0 1 61.04,36.37',
+  'M64.47,35.24 A55,55 0 0 1 95.53,35.24',
+  'M98.96,36.37 A55,55 0 0 1 124.06,55.07',
+  'M126.13,58.05 A55,55 0 0 1 135,88',
 ];
 
 // Needle at its resting orientation: pointing due left, i.e. the 0km end of
@@ -161,18 +159,13 @@ export default function ClassicDistanceGauge({ avgDist, visible }) {
     return () => cancelAnimationFrame(raf);
   }, [avgDist]);
 
-  // Renders even before the first round (avgDist === null) instead of
-  // returning null -- the panel's height is what pushes ClassicMap.jsx's
-  // mode-row down to line up with DailyMap.jsx's, so unmounting it here
-  // would leave the terrain/satellite buttons sitting right under the
-  // header for a brand-new player, then jump down after their first guess.
-  // Needle just rests at its 0km position (rotationFor(null) === 0) with a
-  // "--" readout instead of a misleading "0 km".
+  if (avgDist === null) return null;
+
   return (
     <div className="cm-gauge-panel">
       <svg viewBox="0 0 160 100" width="88" height="55" aria-hidden="true">
         {SEGMENT_PATHS.map((d, i) => (
-          <path key={i} d={d} fill="none" stroke={SEGMENT_COLORS[i]} strokeWidth="13" strokeLinecap="round" />
+          <path key={i} d={d} fill="none" stroke={SEGMENT_COLORS[i]} strokeWidth="9" strokeLinecap="round" />
         ))}
         <g
           className="cm-gauge-needle"
@@ -190,7 +183,7 @@ export default function ClassicDistanceGauge({ avgDist, visible }) {
         <circle cx="78.7" cy="86.7" r="0.9" fill="#fff" opacity="0.8" />
       </svg>
       <div className="cm-gauge-readout">
-        <span className="cm-gauge-value">{avgDist === null ? '--' : displayedValue}</span>
+        <span className="cm-gauge-value">{displayedValue}</span>
         <span className="cm-gauge-unit">km</span>
         <div className="cm-gauge-label">recent avg</div>
       </div>

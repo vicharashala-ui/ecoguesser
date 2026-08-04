@@ -37,7 +37,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 10px;
 }
 
 .cm-layer-panel {
@@ -68,6 +68,7 @@
 
 .cm-mode-item {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
   gap: 4px;
@@ -93,18 +94,14 @@
    .is-inert (terrain button while satellite is on) is a plain opacity dim,
    not :disabled -- it stays clickable so the preference is ready the
    instant satellite turns back off, same as the old checkbox behavior.
-   Fixed 52x52 (was width:100% + aspect-ratio, sized off whatever sibling
-   the stretch-aligned stack happened to be widest that render) -- that made
-   the buttons visibly smaller here than in DailyMap.jsx whenever the gauge
-   panel above wasn't yet showing (avgDist null pre-first-round). Fixed px
-   matches DailyMap.css's .dm-mode-btn exactly so size is identical in both
-   tabs regardless of what's rendered above. */
+   width: 100% (not a fixed px) + aspect-ratio keeps it a square while
+   filling .cm-mode-item's flex-grown share of the row. */
 .cm-mode-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 12px;
   border: 1.5px solid rgba(17, 24, 39, 0.14);
   background: #fff;
