@@ -1,7 +1,7 @@
 // src/components/ClassicDistanceGauge.jsx
 // Passive HUD widget in ClassicMap's top-right stack -- shows the player's
 // EMA of recent distance (see computeEmaAvgDist in game/stats.js) as a
-// needle on a 5-segment dial. Purely informational: no click handler, no tooltip.
+// needle on a 6-segment dial. Purely informational: no click handler, no tooltip.
 import { useState, useEffect, useRef } from 'react';
 import './ClassicDistanceGauge.css';
 
@@ -11,20 +11,22 @@ import './ClassicDistanceGauge.css';
 // this pin the needle at the red end rather than overshooting the arc.
 const MAX_KM = 500;
 
-// Five segment colors, HSL-interpolated between --eg-brand (#227743) and
+// Six segment colors, HSL-interpolated between --eg-brand (#227743) and
 // --eg-danger (#dc2626) so the scale reuses the app's existing palette
 // instead of introducing new ones. Interpolating through hue (not RGB)
-// gives a natural green -> olive -> amber -> rust -> red progression.
-const SEGMENT_COLORS = ['#227743', '#368f24', '#8caa24', '#c68724', '#dc2626'];
+// gives a natural green -> olive -> yellow -> amber -> rust -> red
+// progression -- the 4th stop lands on true yellow.
+const SEGMENT_COLORS = ['#227743', '#2d8a24', '#6a9e25', '#b3ac25', '#c87325', '#dc2626'];
 
-// Precomputed arc path for each of the 5 segments (33 degrees each, ~3.75
+// Precomputed arc path for each of the 6 segments (27.5 degrees each, 3
 // degree gaps between) on the fixed r=55 semicircle centered at (80,88).
 const SEGMENT_PATHS = [
-  'M25,88 A55,55 0 0 1 33.87,58.05',
-  'M35.94,55.07 A55,55 0 0 1 61.04,36.37',
-  'M64.47,35.24 A55,55 0 0 1 95.53,35.24',
-  'M98.96,36.37 A55,55 0 0 1 124.06,55.07',
-  'M126.13,58.05 A55,55 0 0 1 135,88',
+  'M25,88 A55,55 0 0 1 31.21,62.6',
+  'M32.61,60.09 A55,55 0 0 1 50.85,41.36',
+  'M53.34,39.9 A55,55 0 0 1 78.56,33.02',
+  'M81.44,33.02 A55,55 0 0 1 106.66,39.9',
+  'M109.15,41.36 A55,55 0 0 1 127.39,60.09',
+  'M128.79,62.6 A55,55 0 0 1 135,88',
 ];
 
 // Needle at its resting orientation: pointing due left, i.e. the 0km end of

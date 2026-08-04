@@ -16,15 +16,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Fixed height/width (not content-driven) so the needle's full swing
+     range always has enough clearance below the dial -- a pinned/overshot
+     needle sitting right above the readout was overlapping the digits at
+     the old content-driven height. */
+  height: 98px;
+  width: 112px;
+  box-sizing: border-box;
 }
 
 .cm-gauge-needle {
   transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* -3px, not more -- the needle's own polygon occupies roughly the bottom
+   9% of the SVG's height even at full swing (it's centered on the pivot,
+   not the pivot-to-tip line), so pulling the readout up much further than
+   this lets the needle cross straight through the digits at full-right
+   deflection (e.g. a >500km average, which pins the needle at its max
+   swing). Confirmed by rendering at that pinned value, not just eyeballed. */
 .cm-gauge-readout {
   text-align: center;
-  margin-top: -4px;
+  margin-top: -3px;
+  line-height: 1;
 }
 
 .cm-gauge-value {
@@ -47,7 +61,7 @@
   color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
