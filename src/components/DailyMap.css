@@ -46,7 +46,7 @@
      the row up under the timer card exactly, same technique as
      ClassicMap.css's .cm-top-right-stack. */
   align-items: stretch;
-  gap: 10px;
+  gap: 8px;
 }
 
 .dm-timer-card {
@@ -244,7 +244,6 @@
 
 .dm-mode-item {
   display: flex;
-  flex: 1;
   flex-direction: column;
   align-items: center;
   gap: 4px;
@@ -268,13 +267,15 @@
    Identical treatment to ClassicMap.css's .cm-mode-btn (brand-green
    .is-active / .is-inert rationale); duplicated rather than shared since
    this mirrors .cm-mode-btn the same way the rest of this file mirrors
-   ClassicMap.css. */
+   ClassicMap.css. Fixed 52x52 (was width:100% + aspect-ratio) -- see
+   .cm-mode-btn's comment for why; keeping both at the same fixed px is
+   what makes the two tabs' buttons match exactly. */
 .dm-mode-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  width: 52px;
+  height: 52px;
   border-radius: 12px;
   border: 1.5px solid rgba(17, 24, 39, 0.14);
   background: #fff;

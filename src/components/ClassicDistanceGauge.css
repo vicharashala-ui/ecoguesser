@@ -11,7 +11,7 @@
   box-shadow: 0 8px 28px rgba(17, 24, 39, 0.16);
   isolation: isolate;
   transform: translateZ(0);
-  padding: 8px 12px 6px;
+  padding: 6px 12px 4px;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -22,14 +22,20 @@
   transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* -6px (was -4px) -- tucks the readout closer under the dial now that the
+   panel's own padding is tighter, closing part of the gap that used to push
+   ClassicMap.jsx's mode-row well below DailyMap.jsx's (see cm-top-right-stack
+   in ClassicMap.css for the other half of that fix). Still clear of the
+   needle pivot circle (r=6.5 on an r=55 dial), just less wasted space. */
 .cm-gauge-readout {
   text-align: center;
-  margin-top: -4px;
+  margin-top: -6px;
 }
 
 .cm-gauge-value {
   font-size: 18px;
   font-weight: 700;
+  line-height: 1;
   color: var(--eg-ink, #111827);
   letter-spacing: -0.3px;
 }
@@ -44,10 +50,11 @@
 .cm-gauge-label {
   font-size: 8px;
   font-weight: 600;
+  line-height: 1;
   color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
