@@ -33,7 +33,7 @@
      specifically so it fits within this now-tighter 10px clearance
      instead of needing its own extra 8/10px of headroom the way it
      used to. */
-  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 10px);
+  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 4px);
   right: 10px;
   z-index: var(--eg-z-map-controls, 10);
   display: flex;

@@ -165,7 +165,7 @@ export default function ClassicDistanceGauge({ avgDist, visible }) {
 
   return (
     <div className="cm-gauge-panel">
-      <svg viewBox="0 0 160 100" width="88" height="55" aria-hidden="true">
+      <svg className="cm-gauge-svg" viewBox="0 0 160 100" width="88" height="55" aria-hidden="true">
         {SEGMENT_PATHS.map((d, i) => (
           <path key={i} d={d} fill="none" stroke={SEGMENT_COLORS[i]} strokeWidth="9" strokeLinecap="round" />
         ))}
