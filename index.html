@@ -8,12 +8,18 @@
 
     <!-- Sets [data-theme] before index.css's first paint, so dark-mode
          players never see a light flash while React/main.jsx are still
-         loading. External file, not inlined: CSP is `script-src 'self'`
-         with no 'unsafe-inline', so an inline script here would be
-         silently blocked in production (see theme-init.js). Blocking
-         (no defer/async) is intentional -- same reason #eg-splash below
-         is inlined, it can't wait on a paint to already have happened. -->
-    <script src="/theme-init.js"></script>
+         loading. Inlined (not an external file) and allowlisted in
+         public/_headers' CSP via a sha256 hash on script-src, specific to
+         this exact script -- avoids the network round-trip an external
+         file would cost on the parser-blocking path, without widening CSP
+         to 'unsafe-inline'. Blocking (no defer/async/type=module) is
+         intentional -- same reason #eg-splash below is inlined, it can't
+         wait on a paint to already have happened. Must stay byte-for-byte
+         identical to the hash in public/_headers, or CSP silently drops
+         it in production (dev has no CSP, so this fails silent there).
+         Theme key must match LS_KEYS.THEME in src/config.js, which
+         doesn't exist yet at this point in the load. -->
+    <script>(function(){var t=localStorage.getItem('ecoguesser_theme'),d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.setAttribute('data-theme',d?'dark':'light');})();</script>
 
     <!-- Preconnect to the one remaining third-party origin MapLibre fetches
          from on first paint: tiles.openfreemap.org (vector tiles, glyphs --
@@ -168,7 +174,7 @@
          starts at the same priority as the document itself, instead of
          waiting to be discovered when the browser parses the <img> tag
          further down in <body>. -->
-    <link rel="preload" as="image" href="/icons/icon-192.png" />
+    <link rel="preload" as="image" href="/icons/icon-192.png" fetchpriority="high" />
 
     <!-- Inlined, not in index.css: this has to paint before any stylesheet
          (even a small one) has had a chance to load, since its entire job

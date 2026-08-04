@@ -56,6 +56,44 @@ function preloadMapChunks() {
   };
 }
 
+// index-*.css (the entry stylesheet Vite auto-injects for src/index.css) is
+// render-blocking by default -- the browser won't paint ANYTHING, including
+// #eg-splash's own inline-<style>'d markup in index.html, until this file
+// has downloaded. That silently defeats the whole point of #eg-splash being
+// inlined specifically so it "paints the instant the HTML parser reaches
+// that point" (see index.html's comment) -- on a slow connection the splash
+// was paying this same network round-trip anyway, just invisibly.
+//
+// Fix: mark the link media="print" so it's still fetched at full priority
+// but doesn't block rendering, then main.jsx flips it to media="all" and
+// gates #eg-splash's fade-out on its 'load' event (alongside the existing
+// MIN_SPLASH_MS floor) -- so the original guarantee (app is never visible
+// unstyled underneath the splash) is preserved exactly, just decoupled from
+// *painting the splash itself*. data-eg-app-css is main.jsx's hook to find
+// this exact link without hardcoding its hashed filename.
+//
+// Same generateBundle/enforce:'post' string-patch approach as
+// preloadMapChunks() below, for the same reason: the hashed filename
+// doesn't exist until this build produces it.
+function deferAppCss() {
+  return {
+    name: 'defer-app-css',
+    enforce: 'post',
+    generateBundle(_, bundle) {
+      const html = bundle['index.html'];
+      if (!html || html.type !== 'asset') return;
+
+      const before = String(html.source);
+      const after = before.replace(
+        /<link rel="stylesheet" crossorigin href="(\/assets\/index-[^"]+\.css)">/,
+        '<link rel="stylesheet" crossorigin href="$1" media="print" data-eg-app-css>'
+      );
+      if (after === before) return; // entry CSS chunk renamed/removed -- nothing to patch, not an error
+      html.source = after;
+    },
+  };
+}
+
 export default defineConfig({
   build: {
     rollupOptions: {
@@ -283,6 +321,7 @@ export default defineConfig({
       },
     }),
     preloadMapChunks(),
+    deferAppCss(),
   ],
   server: {
     proxy: {

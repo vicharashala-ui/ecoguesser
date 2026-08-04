@@ -10,6 +10,21 @@ import './index.css';
 
 watchSystemTheme();
 
+// index.css's <link> is patched to media="print" at build time (see
+// deferAppCss() in vite.config.js) so it doesn't block #eg-splash's first
+// paint. Flipping it back to "all" here lets it actually apply as soon as
+// it finishes downloading -- this doesn't trigger a second fetch, the
+// browser already started downloading it the moment the tag was parsed,
+// media only ever gated whether it blocked rendering / applied. appCssReady
+// is awaited below (alongside the existing MIN_SPLASH_MS floor) before the
+// splash is allowed to fade, so the app is still never shown unstyled
+// underneath it -- just decoupled from painting the splash itself.
+const appCssLink = document.querySelector('link[data-eg-app-css]');
+const appCssReady = !appCssLink || appCssLink.sheet
+  ? Promise.resolve()
+  : new Promise((resolve) => appCssLink.addEventListener('load', resolve, { once: true }));
+if (appCssLink) appCssLink.media = 'all';
+
 // vite-plugin-pwa's virtual module -- only emits a real service worker at
 // build time (`npm run build`); a no-op in `npm run dev` so local dev never
 // fights a stale cached bundle. registerType: 'autoUpdate' (vite.config.js)
@@ -47,10 +62,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // fades it back out once the real app has had its first paint underneath
 // it, with a floor (MIN_SPLASH_MS) so the brand moment doesn't just flash
 // by on a fast machine/cached load. That floor is the only "delay" this
-// adds, and it's free: App/DailyMap/MapContainer above have already
-// mounted and kicked off their own fetches (map style, sites JSON, tiles)
-// by this point, so the game keeps loading at full speed behind the
-// splash the entire time -- nothing here gates or slows that down.
+// adds on a normal load, and it's free: App/DailyMap/MapContainer above
+// have already mounted and kicked off their own fetches (map style, sites
+// JSON, tiles) by this point, so the game keeps loading at full speed
+// behind the splash the entire time -- nothing here gates or slows that
+// down. appCssReady (above) is awaited alongside the floor purely as a
+// FOUC guard for slow connections -- see deferAppCss()'s comment in
+// vite.config.js -- and resolves immediately on any connection fast enough
+// for index.css to have already beaten the floor.
 //
 // Kept short rather than long on purpose: DailyMap's own MapLoadingOverlay
 // throbber now covers "map still loading" once the splash fades (it was
@@ -63,7 +82,8 @@ requestAnimationFrame(() => {
   const splash = document.getElementById('eg-splash');
   if (!splash) return;
   const remaining = MIN_SPLASH_MS - (performance.now() - splashShownAt);
-  setTimeout(() => {
+  const timeGate = new Promise((resolve) => setTimeout(resolve, Math.max(0, remaining)));
+  Promise.all([timeGate, appCssReady]).then(() => {
     splash.classList.add('eg-splash-hide');
     // Belt-and-suspenders: transitionend can fail to fire (e.g. the tab
     // was backgrounded mid-fade), which would leave a display:none-free but
@@ -71,5 +91,5 @@ requestAnimationFrame(() => {
     // fine visually, but this removes it outright so it can't linger.
     splash.addEventListener('transitionend', () => splash.remove(), { once: true });
     setTimeout(() => splash.remove(), 500);
-  }, Math.max(0, remaining));
+  });
 });

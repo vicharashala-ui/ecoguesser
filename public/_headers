@@ -38,7 +38,7 @@
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Cross-Origin-Opener-Policy: same-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openfreemap.org; connect-src 'self' https://tiles.openfreemap.org https://docs.google.com; worker-src 'self' blob:; font-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-rCX7JYGzB59mQYNSxutx8zH/9EPcBLpfV0qbAg9GITU='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openfreemap.org; connect-src 'self' https://tiles.openfreemap.org https://docs.google.com; worker-src 'self' blob:; font-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'
 
 # Cloudflare Pages' default for every static asset is
 # `Cache-Control: public, max-age=0, must-revalidate` -- the browser caches
@@ -70,16 +70,6 @@
   Cache-Control: public, max-age=86400
 
 /favicon.ico
-  Cache-Control: public, max-age=86400
-
-# Render-blocking theme/standalone-mode init script (see its own header
-# comment for why it can't be inlined or deferred) -- same
-# rarely-changes-outside-a-deliberate-pass profile as the icons above, but
-# uncovered by any rule here until now. Unlike icons, this one sits
-# directly in front of first paint on every load, so the default
-# `max-age=0, must-revalidate` round-trip it was paying was strictly worse
-# here than for a non-blocking asset.
-/theme-init.js
   Cache-Control: public, max-age=86400
 
 # Social-preview share card -- same regenerate-only-on-a-deliberate-pass
