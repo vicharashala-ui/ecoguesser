@@ -12,8 +12,8 @@
 // to "do their arc-index sets intersect", computed once here from
 // public/india-states.topojson and written out as a plain lookup object --
 // same approach scripts/convertStatesTopo.js already uses (plain Node +
-// fs, no extra packages) beyond require('topojson-client') isn't even
-// needed for this, just raw JSON.
+// fs, no extra packages). Not even require('topojson-client') is needed
+// here, just raw JSON.
 //
 // Run manually after india-states.topojson changes: `node scripts/buildStateAdjacency.js`
 

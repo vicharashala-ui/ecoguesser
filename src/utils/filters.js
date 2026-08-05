@@ -68,12 +68,6 @@ export function siteMatchesFilter(site, filters) {
 }
 
 /**
- * excludeIds = [previousSiteId] -- prevents picking the same site twice in
- * a row. Ignored when pool has exactly 1 site (otherwise nothing could ever
- * be picked again). Caller is responsible for guarding pool.length === 0
- * via siteMatchesFilter before calling this.
- */
-/**
  * Blitz "Hint" button support -- given the correct site.state array, finds
  * every REGION_STATES region that contains at least one of those states and
  * returns the union of ALL member states across those regions (deduped).
@@ -89,6 +83,12 @@ export function getRegionHintStates(correctStates) {
   return [...new Set(regions.flatMap((region) => REGION_STATES[region]))];
 }
 
+/**
+ * excludeIds = [previousSiteId] -- prevents picking the same site twice in
+ * a row. Ignored when pool has exactly 1 site (otherwise nothing could ever
+ * be picked again). Caller is responsible for guarding pool.length === 0
+ * via siteMatchesFilter before calling this.
+ */
 export function pickRandom(pool, excludeIds = []) {
   if (pool.length === 0) {
     throw new Error('pickRandom: empty pool');

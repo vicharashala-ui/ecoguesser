@@ -1,3 +1,8 @@
+// src/game/scoring.js
+// Distance/score math shared by all three modes: haversine + boundary
+// distance for scoring a guess, plus the point-in-polygon test used to
+// detect a perfect (inside-boundary) guess.
+
 import { SCORING } from '../config.js';
 
 const EARTH_RADIUS_KM = 6371;

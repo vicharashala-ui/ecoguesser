@@ -1,6 +1,6 @@
 // src/components/BottomNav.jsx
 //
-// Bottom tab bar: [fire] Daily | [mountain] Classic | [chart] Stats.
+// Bottom tab bar: [fire] Daily | [mountain] Classic | [bolt] Blitz | [chart] Stats.
 // Active-tab amber (#f59e0b) + scaled icon.
 //
 // Icons match BottomCard.jsx's inline-SVG convention (currentColor,

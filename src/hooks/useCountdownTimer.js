@@ -90,7 +90,6 @@ export function useCountdownTimer(seconds, onExpire) {
     setRemaining(seconds);
   }, [seconds, clearTimer]);
 
-  // Cleanup on unmount.
   useEffect(() => clearTimer, [clearTimer]);
 
   return { remaining, isRunning, start, pause, resume, reset };

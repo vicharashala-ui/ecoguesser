@@ -77,10 +77,6 @@ function IconPlay({ size = 16, visible }) {
   );
 }
 
-// Layer-mode icons for the Terrain/Normal + Satellite square buttons --
-// identical to ClassicMap.jsx's set, duplicated rather than shared per
-// this codebase's no-shared-icon-module rule. Paths match the
-// mountain/map-2/satellite glyphs from the approved mockup.
 // Same glyph as BottomNav's Daily tab icon -- duplicated locally per this
 // codebase's icon convention (no shared icon module).
 function IconFire({ size = 20 }) {
@@ -97,6 +93,10 @@ function IconFire({ size = 20 }) {
   );
 }
 
+// Layer-mode icons for the Terrain/Normal + Satellite square buttons --
+// identical to ClassicMap.jsx's set, duplicated rather than shared per
+// this codebase's no-shared-icon-module rule. Paths match the
+// mountain/map-2/satellite glyphs from the approved mockup.
 function IconMountain({ size = 24 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

@@ -3,9 +3,9 @@
 // layers and irrelevant text labels, keeps only the boundary layers EcoGuesser
 // needs, and writes the result to public/map-style.json.
 //
-// Run BEFORE simplifyBoundaries.js is irrelevant here -- this writes a style
-// file, not a boundary geometry file. Safe to run any time; re-run if OFM
-// changes their upstream Liberty style.
+// Run order relative to simplifyBoundaries.js doesn't matter -- this writes
+// a style file, not a boundary geometry file. Safe to run any time; re-run
+// if OFM changes their upstream Liberty style.
 
 const fs  = require('fs');
 const path = require('path');

@@ -169,9 +169,9 @@ function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP_STYLE, styleTr
       .catch((err) => {
         // Style JSON fetch itself failed (offline, bad deploy, etc.) --
         // there's no map instance to hand back. useMapState's mapLoadSlow
-        // path (an 8s timer from mount) already covers "map never becomes
-        // ready" in the UI, so nothing else to do here beyond not leaving
-        // an unhandled rejection.
+        // path (MAP_CONFIG.LOAD_SLOW_TIMEOUT_MS from mount) already covers
+        // "map never becomes ready" in the UI, so nothing else to do here
+        // beyond not leaving an unhandled rejection.
         console.error('Failed to fetch map style:', mapStyle, err);
       });
 

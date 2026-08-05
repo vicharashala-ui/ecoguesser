@@ -1,0 +1,186 @@
+diff --git a/scripts/buildMapStyle.js b/scripts/buildMapStyle.js
+index 8011691..49c8e47 100644
+--- a/scripts/buildMapStyle.js
++++ b/scripts/buildMapStyle.js
+@@ -3,9 +3,9 @@
+ // layers and irrelevant text labels, keeps only the boundary layers EcoGuesser
+ // needs, and writes the result to public/map-style.json.
+ //
+-// Run BEFORE simplifyBoundaries.js is irrelevant here -- this writes a style
+-// file, not a boundary geometry file. Safe to run any time; re-run if OFM
+-// changes their upstream Liberty style.
++// Run order relative to simplifyBoundaries.js doesn't matter -- this writes
++// a style file, not a boundary geometry file. Safe to run any time; re-run
++// if OFM changes their upstream Liberty style.
+ 
+ const fs  = require('fs');
+ const path = require('path');
+diff --git a/scripts/buildStateAdjacency.js b/scripts/buildStateAdjacency.js
+index 737163c..9fb7100 100644
+--- a/scripts/buildStateAdjacency.js
++++ b/scripts/buildStateAdjacency.js
+@@ -12,8 +12,8 @@
+ // to "do their arc-index sets intersect", computed once here from
+ // public/india-states.topojson and written out as a plain lookup object --
+ // same approach scripts/convertStatesTopo.js already uses (plain Node +
+-// fs, no extra packages) beyond require('topojson-client') isn't even
+-// needed for this, just raw JSON.
++// fs, no extra packages). Not even require('topojson-client') is needed
++// here, just raw JSON.
+ //
+ // Run manually after india-states.topojson changes: `node scripts/buildStateAdjacency.js`
+ 
+diff --git a/scripts/simplifyBoundaries.js b/scripts/simplifyBoundaries.js
+index cd9a805..652c4a6 100644
+--- a/scripts/simplifyBoundaries.js
++++ b/scripts/simplifyBoundaries.js
+@@ -49,12 +49,10 @@ async function simplifyFile(filePath) {
+ // Main
+ // ---------------------------------------------------------------------------
+ (async () => {
+-  // Collect boundary files
+   const boundaryFiles = fs.readdirSync(BOUNDS)
+     .filter(f => f.endsWith('.geojson'))
+     .map(f => path.join(BOUNDS, f));
+ 
+-  // Collect extra files that exist
+   const extraFiles = EXTRA.filter(f => fs.existsSync(f));
+ 
+   const allFiles = [...boundaryFiles, ...extraFiles];
+@@ -92,7 +90,6 @@ async function simplifyFile(filePath) {
+     console.log(`  ${name.padEnd(32)} ${String(before).padStart(7)} KB → ${String(after).padStart(7)} KB`);
+   }
+ 
+-  // Summary
+   const saved   = totalBefore - totalAfter;
+   const pct     = totalBefore > 0 ? Math.round((saved / totalBefore) * 100) : 0;
+   const div     = '─'.repeat(60);
+diff --git a/src/components/ClassicMap.jsx b/src/components/ClassicMap.jsx
+index acbe788..28b77b7 100644
+--- a/src/components/ClassicMap.jsx
++++ b/src/components/ClassicMap.jsx
+@@ -43,9 +43,8 @@ const REVEAL_CARD_GAP = 20; // gap above the card's top edge
+ // currentColor stroke) -- duplicated rather than shared per this codebase's
+ // no-shared-icon-module rule (see BlitzMap.jsx's IconFlame comment). Paths
+ // match the mountain/map-2/satellite glyphs from the approved mockup.
+-// IconMountain/IconMapFlat are shown on the same square, alternating with
+-// terrain on/off since the icon always shows the mode a click will switch
+-// *to* -- see the square's usage below.
++// IconMountain/IconMapFlat alternate on the same square with terrain on/off
++// -- see the square's usage below for which mode each shows.
+ function IconMountain({ size = 24 }) {
+   return (
+     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+diff --git a/src/components/DailyMap.jsx b/src/components/DailyMap.jsx
+index 6fc9d7f..801cbad 100644
+--- a/src/components/DailyMap.jsx
++++ b/src/components/DailyMap.jsx
+@@ -77,10 +77,6 @@ function IconPlay({ size = 16, visible }) {
+   );
+ }
+ 
+-// Layer-mode icons for the Terrain/Normal + Satellite square buttons --
+-// identical to ClassicMap.jsx's set, duplicated rather than shared per
+-// this codebase's no-shared-icon-module rule. Paths match the
+-// mountain/map-2/satellite glyphs from the approved mockup.
+ // Same glyph as BottomNav's Daily tab icon -- duplicated locally per this
+ // codebase's icon convention (no shared icon module).
+ function IconFire({ size = 20 }) {
+@@ -97,6 +93,10 @@ function IconFire({ size = 20 }) {
+   );
+ }
+ 
++// Layer-mode icons for the Terrain/Normal + Satellite square buttons --
++// identical to ClassicMap.jsx's set, duplicated rather than shared per
++// this codebase's no-shared-icon-module rule. Paths match the
++// mountain/map-2/satellite glyphs from the approved mockup.
+ function IconMountain({ size = 24 }) {
+   return (
+     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+diff --git a/src/components/MapContainer.jsx b/src/components/MapContainer.jsx
+index 45aa713..27c285e 100644
+--- a/src/components/MapContainer.jsx
++++ b/src/components/MapContainer.jsx
+@@ -169,9 +169,9 @@ function MapContainer({ mapRef, onMapClick, guess, mapStyle = MAP_STYLE, styleTr
+       .catch((err) => {
+         // Style JSON fetch itself failed (offline, bad deploy, etc.) --
+         // there's no map instance to hand back. useMapState's mapLoadSlow
+-        // path (an 8s timer from mount) already covers "map never becomes
+-        // ready" in the UI, so nothing else to do here beyond not leaving
+-        // an unhandled rejection.
++        // path (MAP_CONFIG.LOAD_SLOW_TIMEOUT_MS from mount) already covers
++        // "map never becomes ready" in the UI, so nothing else to do here
++        // beyond not leaving an unhandled rejection.
+         console.error('Failed to fetch map style:', mapStyle, err);
+       });
+ 
+diff --git a/src/hooks/useCountdownTimer.js b/src/hooks/useCountdownTimer.js
+index 36562df..e8546d8 100644
+--- a/src/hooks/useCountdownTimer.js
++++ b/src/hooks/useCountdownTimer.js
+@@ -90,7 +90,6 @@ export function useCountdownTimer(seconds, onExpire) {
+     setRemaining(seconds);
+   }, [seconds, clearTimer]);
+ 
+-  // Cleanup on unmount.
+   useEffect(() => clearTimer, [clearTimer]);
+ 
+   return { remaining, isRunning, start, pause, resume, reset };
+diff --git a/src/hooks/useMapState.js b/src/hooks/useMapState.js
+index 402ded9..1d4fc32 100644
+--- a/src/hooks/useMapState.js
++++ b/src/hooks/useMapState.js
+@@ -725,17 +725,12 @@ export function useMapState(mapRef, mode) {
+           'text-letter-spacing': 0.02,
+           visibility: 'none',
+         },
+-        // Opaque near-black text + a thick, fully-opaque white halo (not the
+-        // previous thin translucent one) so the name holds up over BOTH the
+-        // light base map AND satellite imagery -- same "always contrasts
+-        // regardless of background" casing technique used for the
+-        // international boundary lines above.
+-        // Solid white fill with a dark halo outline (inverse of the previous
+-        // dark-fill/white-halo combo) -- reads clearly over both satellite
+-        // imagery and the tan base map without looking washed out.
+-        // text-opacity slightly under 1 (paired with the smaller text-size
+-        // above) so names sit further into the background -- still fully
+-        // legible, just visibly less prominent than before.
++        // Solid white fill with a dark halo outline (thick, fully-opaque)
++        // reads clearly over both satellite imagery and the tan base map --
++        // same "always contrasts regardless of background" casing technique
++        // used for the international boundary lines above. text-opacity
++        // slightly under 1 (paired with the smaller text-size above) so
++        // names sit further into the background, still fully legible.
+         paint: {
+           'text-color': '#ffffff',
+           'text-halo-color': '#1f2937',
+diff --git a/src/utils/filters.js b/src/utils/filters.js
+index c7b2474..76de75c 100644
+--- a/src/utils/filters.js
++++ b/src/utils/filters.js
+@@ -67,12 +67,6 @@ export function siteMatchesFilter(site, filters) {
+   return categoryMatch && stateMatch;
+ }
+ 
+-/**
+- * excludeIds = [previousSiteId] -- prevents picking the same site twice in
+- * a row. Ignored when pool has exactly 1 site (otherwise nothing could ever
+- * be picked again). Caller is responsible for guarding pool.length === 0
+- * via siteMatchesFilter before calling this.
+- */
+ /**
+  * Blitz "Hint" button support -- given the correct site.state array, finds
+  * every REGION_STATES region that contains at least one of those states and
+@@ -89,6 +83,12 @@ export function getRegionHintStates(correctStates) {
+   return [...new Set(regions.flatMap((region) => REGION_STATES[region]))];
+ }
+ 
++/**
++ * excludeIds = [previousSiteId] -- prevents picking the same site twice in
++ * a row. Ignored when pool has exactly 1 site (otherwise nothing could ever
++ * be picked again). Caller is responsible for guarding pool.length === 0
++ * via siteMatchesFilter before calling this.
++ */
+ export function pickRandom(pool, excludeIds = []) {
+   if (pool.length === 0) {
+     throw new Error('pickRandom: empty pool');

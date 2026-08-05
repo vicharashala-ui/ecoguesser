@@ -43,9 +43,8 @@ const REVEAL_CARD_GAP = 20; // gap above the card's top edge
 // currentColor stroke) -- duplicated rather than shared per this codebase's
 // no-shared-icon-module rule (see BlitzMap.jsx's IconFlame comment). Paths
 // match the mountain/map-2/satellite glyphs from the approved mockup.
-// IconMountain/IconMapFlat are shown on the same square, alternating with
-// terrain on/off since the icon always shows the mode a click will switch
-// *to* -- see the square's usage below.
+// IconMountain/IconMapFlat alternate on the same square with terrain on/off
+// -- see the square's usage below for which mode each shows.
 function IconMountain({ size = 24 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

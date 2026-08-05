@@ -5,7 +5,7 @@
 // everywhere else rather than throwing or being called conditionally at
 // every call site.
 //
-// Two named patterns, not a generic vibrate(pattern) export: keeps the
+// Named patterns, not a generic vibrate(pattern) export: keeps the
 // call sites (useClassicRound/useDailyRound/useBlitzRound) declarative
 // about *what happened*, not which raw millisecond pattern that maps to,
 // so the feel can be retuned here without touching three files.
@@ -13,6 +13,7 @@
 //   perfect(): a boundary-hit guess (Classic/Daily only) -- a distinct
 //     multi-pulse pattern, reserved for the same isPerfect condition
 //     BottomCard.jsx's own celebration already gates on.
+//   wrong(): incorrect guess (Blitz) or Daily timeout -- a longer single buzz.
 //
 // Mute preference mirrors sound.js: stored here, read by the settings
 // toggle in SideDrawer, checked before every vibrate() call.

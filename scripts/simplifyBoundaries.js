@@ -49,12 +49,10 @@ async function simplifyFile(filePath) {
 // Main
 // ---------------------------------------------------------------------------
 (async () => {
-  // Collect boundary files
   const boundaryFiles = fs.readdirSync(BOUNDS)
     .filter(f => f.endsWith('.geojson'))
     .map(f => path.join(BOUNDS, f));
 
-  // Collect extra files that exist
   const extraFiles = EXTRA.filter(f => fs.existsSync(f));
 
   const allFiles = [...boundaryFiles, ...extraFiles];
@@ -92,7 +90,6 @@ async function simplifyFile(filePath) {
     console.log(`  ${name.padEnd(32)} ${String(before).padStart(7)} KB → ${String(after).padStart(7)} KB`);
   }
 
-  // Summary
   const saved   = totalBefore - totalAfter;
   const pct     = totalBefore > 0 ? Math.round((saved / totalBefore) * 100) : 0;
   const div     = '─'.repeat(60);

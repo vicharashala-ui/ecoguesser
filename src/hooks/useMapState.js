@@ -725,17 +725,12 @@ export function useMapState(mapRef, mode) {
           'text-letter-spacing': 0.02,
           visibility: 'none',
         },
-        // Opaque near-black text + a thick, fully-opaque white halo (not the
-        // previous thin translucent one) so the name holds up over BOTH the
-        // light base map AND satellite imagery -- same "always contrasts
-        // regardless of background" casing technique used for the
-        // international boundary lines above.
-        // Solid white fill with a dark halo outline (inverse of the previous
-        // dark-fill/white-halo combo) -- reads clearly over both satellite
-        // imagery and the tan base map without looking washed out.
-        // text-opacity slightly under 1 (paired with the smaller text-size
-        // above) so names sit further into the background -- still fully
-        // legible, just visibly less prominent than before.
+        // Solid white fill with a dark halo outline (thick, fully-opaque)
+        // reads clearly over both satellite imagery and the tan base map --
+        // same "always contrasts regardless of background" casing technique
+        // used for the international boundary lines above. text-opacity
+        // slightly under 1 (paired with the smaller text-size above) so
+        // names sit further into the background, still fully legible.
         paint: {
           'text-color': '#ffffff',
           'text-halo-color': '#1f2937',
