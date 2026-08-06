@@ -9,25 +9,44 @@ import { VitePWA } from 'vite-plugin-pwa';
 // from src/components/tigerMarkPath.js), not regenerated at build time.
 const THEME_GREEN = '#1c3b28';
 
-// vendor-maplibre (273KB gzip -- bigger than every other file on Daily's
-// critical path combined) and DailyMap are only ever reached via a dynamic
-// import() (DailyMap is lazy() so Header/BottomNav can paint before the map
-// chunk blocks anything -- see App.jsx), so Vite has no static reference to
-// preload them from: the browser doesn't even know they exist until JS
-// execution reaches that import() call, itself gated behind index.js +
-// vendor-preact + config + daily downloading AND running first. The service
-// worker eagerly precaches vendor-maplibre, but that's a repeat-visit-only
-// win -- SW registration is deliberately deferred to window.load (see
-// main.jsx) so it never helps a first visit, which is most new players.
+// DailyMap is only ever reached via a dynamic import() (it's lazy() so
+// Header/BottomNav can paint before the map chunk blocks anything -- see
+// App.jsx), so Vite has no static <script>-level reference to preload its
+// graph from: the browser doesn't discover any of it until JS execution
+// reaches that import() call, itself gated behind index.js + vendor-preact
+// + config downloading AND running first.
 //
-// Fix: inject <link rel="modulepreload"> for both chunks so the browser
-// starts fetching them in parallel with index.js instead of one waterfall
-// step behind it. Can't be a static tag in index.html -- the hashed
-// filenames don't exist until this build produces them -- so this reads the
-// finished bundle in generateBundle and patches the already-emitted
-// dist/index.html directly. enforce: 'post' + generateBundle (not
-// transformIndexHtml) so it runs after Vite's own html plugin and VitePWA
-// have both finished writing/emitting index.html.
+// This used to hardcode two filename prefixes (vendor-maplibre-,
+// DailyMap-) and call it done, but DailyMap.jsx's real static import graph
+// is bigger than that -- useDailyRound.js alone pulls in boundaryCache.js,
+// scoring.js, haptics.js, and sound.js, and MapContainer.jsx pulls in
+// maplibre-gl.css. Every one of those still-missing chunks was only ever
+// discovered via Vite's runtime __vitePreload dependency map (injected the
+// moment the import() call actually fires), which is strictly later than a
+// static <link> the HTML parser finds immediately. Walking bundle metadata
+// instead of guessing names means this stays correct if that graph shifts
+// (a new hook import, a renamed shared chunk) without needing to be
+// manually re-diffed against the build output again.
+//
+// bundle[chunk].imports / .dynamicImports are Rollup's own resolved
+// fileName lists -- authoritative, unlike re-deriving them by regexing
+// source text. dynamicImports is deliberately NOT walked: resultLayer.js/
+// stateHighlight.js are dynamic on purpose (DailyMap.jsx's own
+// preloadRoundEffects() comment explains why -- they're real seconds
+// ahead-of-need already, no reason to undo that split here.
+//
+// Fix: inject <link rel="modulepreload"> (JS) / <link rel="preload"
+// as="style"> (CSS, not rel="stylesheet" -- that would apply-and-block
+// same as the entry CSS deferAppCss() below exists to avoid, even though
+// these rules have nothing to match yet) for the full static graph,
+// skipping anything the html already references (Vite's own entry-graph
+// modulepreload output, or an earlier run of this same replace). Can't be
+// static tags in index.html -- the hashed filenames don't exist until this
+// build produces them -- so this reads the finished bundle in
+// generateBundle and patches the already-emitted dist/index.html directly.
+// enforce: 'post' + generateBundle (not transformIndexHtml) so it runs
+// after Vite's own html plugin and VitePWA have both finished
+// writing/emitting index.html.
 //
 // No fetchpriority set: OFM planet/map-style.json/protected-areas.json
 // already hold fetchpriority="high" in index.html for the map-render path;
@@ -41,17 +60,33 @@ function preloadMapChunks() {
       const html = bundle['index.html'];
       if (!html || html.type !== 'asset') return;
 
-      const chunkFiles = Object.values(bundle)
-        .filter(
-          (f) =>
-            f.type === 'chunk' &&
-            (f.fileName.startsWith('assets/vendor-maplibre-') || f.fileName.startsWith('assets/DailyMap-'))
-        )
-        .map((f) => f.fileName);
-      if (chunkFiles.length === 0) return; // manualChunks/lazy split renamed or removed -- nothing to inject, not an error
+      const dailyMapChunk = Object.values(bundle).find(
+        (f) => f.type === 'chunk' && f.fileName.startsWith('assets/DailyMap-')
+      );
+      if (!dailyMapChunk) return; // lazy split renamed/removed -- nothing to inject, not an error
 
-      const links = chunkFiles.map((f) => `    <link rel="modulepreload" crossorigin href="/${f}">`).join('\n');
-      html.source = `${String(html.source)}`.replace('</head>', `\n${links}\n  </head>`);
+      const jsFiles = new Set();
+      const cssFiles = new Set();
+      const seen = new Set();
+      function walk(fileName) {
+        if (seen.has(fileName)) return;
+        seen.add(fileName);
+        const chunk = bundle[fileName];
+        if (!chunk || chunk.type !== 'chunk') return;
+        jsFiles.add(fileName);
+        for (const css of chunk.viteMetadata?.importedCss ?? []) cssFiles.add(css);
+        for (const imp of chunk.imports) walk(imp);
+      }
+      walk(dailyMapChunk.fileName);
+
+      const htmlSource = String(html.source);
+      const isNew = (f) => !htmlSource.includes(`/${f}`); // skip whatever Vite's own entry-graph modulepreload already covers
+      const links = [
+        ...[...jsFiles].filter(isNew).map((f) => `    <link rel="modulepreload" crossorigin href="/${f}">`),
+        ...[...cssFiles].filter(isNew).map((f) => `    <link rel="preload" as="style" href="/${f}">`),
+      ];
+      if (links.length === 0) return;
+      html.source = htmlSource.replace('</head>', `\n${links.join('\n')}\n  </head>`);
     },
   };
 }
@@ -90,6 +125,32 @@ function deferAppCss() {
       );
       if (after === before) return; // entry CSS chunk renamed/removed -- nothing to patch, not an error
       html.source = after;
+    },
+  };
+}
+
+// index.html's dev comments (documenting *why* each preload/meta tag
+// exists) are 65% of the file's bytes -- 8.7KB of 13.4KB -- and Vite's
+// build only minifies JS/CSS, never HTML, so they ship to every player
+// verbatim. That's not just dead weight: the browser's preload scanner
+// discovers <link rel=preload>/the module <script> tag in byte order as
+// the response streams, so those comments sit in front of every
+// fetchpriority="high" hint on the wire. Measured with this stripped:
+// 5.2KB gzip -> 1.5KB gzip. Comments stay untouched in the source
+// index.html for the next person reading this file -- only the built
+// artifact is affected. Regex is safe here specifically because nothing
+// in this file's inline <script>/<style> blocks contains the literal
+// substring "-->" (the theme-detector IIFE and JSON-LD are both
+// comment-free); if that ever changes, this would need to stop being a
+// blind strip.
+function stripHtmlComments() {
+  return {
+    name: 'strip-html-comments',
+    enforce: 'post',
+    generateBundle(_, bundle) {
+      const html = bundle['index.html'];
+      if (!html || html.type !== 'asset') return;
+      html.source = String(html.source).replace(/<!--[\s\S]*?-->/g, '');
     },
   };
 }
@@ -322,6 +383,7 @@ export default defineConfig({
     }),
     preloadMapChunks(),
     deferAppCss(),
+    stripHtmlComments(),
   ],
   server: {
     proxy: {
