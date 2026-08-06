@@ -10,7 +10,11 @@
    measured cardHeight, which the RecenterButton offset and boundary-zoom
    padding both read, so the crosshair sits closer to the shorter card too. */
 .bz-compact.bc-card {
-  padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+  /* No env(safe-area-inset-bottom) here -- same double-count bug as
+     BottomCard.css's .bc-card (see its comment): .bottom-card's own
+     `bottom` offset already clears the full safe area, so this card's
+     internal padding doesn't need to add the inset a second time. */
+  padding: 14px 18px 14px;
   gap: 4px;
 }
 

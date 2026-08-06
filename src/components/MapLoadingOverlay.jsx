@@ -7,7 +7,6 @@
 
 import { useEffect, useState } from 'react';
 import BrandSpinner from './BrandSpinner.jsx';
-import { isFirstVisit } from '../utils/firstVisit.js';
 import './MapLoadingOverlay.css';
 
 const ROTATION_MS = 3000;
@@ -57,9 +56,6 @@ export default function MapLoadingOverlay({ active, slow }) {
       <p className="eg-map-loading-text" role="status" aria-live="polite">
         {slow ? SLOW_MESSAGE : LOADING_MESSAGES[index]}
       </p>
-      {isFirstVisit && !slow && (
-        <p className="eg-map-loading-hint">First visit — this can take up to 30s</p>
-      )}
     </div>
   );
 }

@@ -445,7 +445,12 @@
 
 .bc-card {
   position: relative; /* anchors .bc-collapse-toggle, which is absolute so it never reserves header row height when collapsed */
-  padding: 14px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+  /* No env(safe-area-inset-bottom) here -- .bottom-card's own `bottom`
+     offset already clears the full safe area (see its comment), so adding
+     it again here double-counted the inset. Invisible on phones with a
+     small/zero inset, but visible as extra space below the card's content
+     on phones (e.g. Nothing OS gesture nav) that report a larger one. */
+  padding: 14px 18px 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
