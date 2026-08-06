@@ -35,9 +35,10 @@ export function loadSharedGeoJsonOnce(url, parse) {
 // (~345KB gzip total). Without this, none of them starts downloading until
 // MapLibre's 'load' fires -- i.e. after every first-render tile/glyph has
 // finished -- so on slow networks the map appears and then state/country
-// borders visibly pop in a beat later. Called from App.jsx's existing
-// idle-prefetch effect (requestIdleCallback / 2s fallback -- the same
-// deliberately-deferred slot the Classic/Blitz chunk prefetch already uses)
+// borders visibly pop in a beat later. Called from App.jsx's own
+// window.load-gated effect (not the Classic/Blitz chunk prefetch's idle
+// slot -- this payload is too big to risk starting while the map's own
+// tile/glyph requests might still be in flight; see that effect's comment)
 // rather than eagerly at mount, so it never competes with the map's own
 // first-paint budget; and it goes through the same promise cache
 // useMapState.js's loadIndiaStatesTopology reads, so this is a pure head
@@ -46,13 +47,14 @@ export function loadSharedGeoJsonOnce(url, parse) {
 //
 // topojson-client is dynamically imported here rather than statically, so
 // its bytes stay out of this module (and therefore out of App.jsx's eager
-// bundle) too -- this function only ever runs from an idle callback, well
-// after first paint, so there's no reason to pay its parse cost any
-// earlier. If useMapState.js's loadIndiaStatesTopology (static import,
-// already loaded once a map chunk mounts) registers this URL first, that
-// import() below never fires at all -- the cache hit makes it a no-op.
-// Parse callbacks MUST resolve to the same shape as loadIndiaStatesTopology's
-// -- the cache is keyed by URL and whichever registers first wins.
+// bundle) too -- this function only ever runs after `load` plus an idle/
+// timeout gate, well after first paint, so there's no reason to pay its
+// parse cost any earlier. If useMapState.js's loadIndiaStatesTopology
+// (static import, already loaded once a map chunk mounts) registers this
+// URL first, that import() below never fires at all -- the cache hit makes
+// it a no-op. Parse callbacks MUST resolve to the same shape as
+// loadIndiaStatesTopology's -- the cache is keyed by URL and whichever
+// registers first wins.
 export function warmSharedMapData() {
   loadSharedGeoJsonOnce('/india-states.topojson', (topology) =>
     import('topojson-client').then(({ feature }) => feature(topology, topology.objects['india-states']))

@@ -197,13 +197,6 @@ export default function App() {
     const prefetch = () => {
       import('./components/ClassicMap.jsx');
       import('./components/BlitzMap.jsx');
-      // Also warm the shared border/state/label data useMapState's onLoad
-      // needs (~345KB gzip) -- otherwise none of it starts downloading
-      // until MapLibre's 'load' fires, so borders pop in visibly after the
-      // map on slow connections. Same promise cache as onLoad, so this is
-      // a pure head start, never a duplicate fetch -- see
-      // warmSharedMapData's comment in useMapState.js.
-      warmSharedMapData();
       // Same reasoning as the two chunk prefetches above -- see
       // useAchievementUnlocks.js's preloadAchievements() comment for why
       // this is a cache warm rather than a static import.
@@ -215,6 +208,51 @@ export default function App() {
     }
     const id = setTimeout(prefetch, 2000);
     return () => clearTimeout(id);
+  }, []);
+
+  // warmSharedMapData() alone is ~345KB gzip (india-boundary.geojson +
+  // india-states.topojson + india-state-labels.geojson) -- big enough to
+  // fight the map's own still-loading OFM tiles/glyphs for bandwidth on a
+  // slow connection if it starts too early. It used to share the idle slot
+  // above, but requestIdleCallback only tracks main-thread idleness, not
+  // network idleness -- the thread can go idle mid-download while those
+  // tile requests are still in flight, the exact "two big fetch batches
+  // competing for one mobile pipe" problem SW registration (main.jsx) is
+  // already deferred past `load` to avoid. Same fix here: wait for `load`
+  // (the page's own declared resources have settled, which in practice
+  // takes measurably longer than "thread has a spare frame") before even
+  // starting the idle/timeout countdown below.
+  //
+  // navigator.connection is Chromium-only (undefined in Safari/Firefox) --
+  // where available, saveData or a 2G effectiveType skips the warm-up
+  // outright, since competing for bandwidth costs more there than borders
+  // popping in a beat later is worth. Best-effort only; unsupported
+  // browsers just get the load-gating above with no skip.
+  useEffect(() => {
+    const conn = navigator.connection;
+    if (conn && (conn.saveData || /2g/.test(conn.effectiveType ?? ''))) return;
+
+    let idleId;
+    let timeoutId;
+    const scheduleWarm = () => {
+      if (typeof requestIdleCallback === 'function') {
+        idleId = requestIdleCallback(warmSharedMapData, { timeout: 5000 });
+      } else {
+        timeoutId = setTimeout(warmSharedMapData, 2000);
+      }
+    };
+
+    if (document.readyState === 'complete') {
+      scheduleWarm();
+    } else {
+      window.addEventListener('load', scheduleWarm, { once: true });
+    }
+
+    return () => {
+      window.removeEventListener('load', scheduleWarm);
+      if (idleId != null && typeof cancelIdleCallback === 'function') cancelIdleCallback(idleId);
+      if (timeoutId != null) clearTimeout(timeoutId);
+    };
   }, []);
 
   if (sitesError) {
