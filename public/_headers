@@ -81,6 +81,13 @@
 /og-image.png
   Cache-Control: public, max-age=86400
 
+# MapLibre's worker + shared chunk (see MapContainer.jsx's setWorkerUrl
+# comment) -- same profile as /icons/*: unhashed filename, only changes
+# when the maplibre-gl dependency is bumped and re-copied, a deliberate
+# redeploy either way.
+/maplibre/*
+  Cache-Control: public, max-age=86400
+
 # --- Tier 3: unhashed files that DO change on ordinary content passes ------
 # Site/state/boundary GeoJSON and the MapLibre style JSON are the two
 # things this repo actually regenerates during normal work (this session's

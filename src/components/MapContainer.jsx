@@ -1,6 +1,23 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import '../styles/maplibre-gl-trimmed.css';
+
+// MapLibre resolves its worker script as `new URL('./maplibre-gl-worker.mjs',
+// import.meta.url)` -- relative to wherever ITS OWN code is executing from.
+// That assumption holds in maplibre-gl's own npm dist folder (worker file
+// sits next to the main one), but breaks once Vite/Rollup bundles maplibre-gl
+// into vendor-maplibre-*.js: import.meta.url then points at that bundle, so
+// MapLibre requests /assets/maplibre-gl-worker.mjs -- a file the build never
+// emits (confirmed against a real `npm run build`; only vendor-maplibre-*.js
+// exists). Every map load hung forever waiting on that 404 worker fetch.
+// Fix: ship the two files MapLibre's own dist/ folder pairs together
+// (maplibre-gl-worker.mjs + the maplibre-gl-shared.mjs it imports) as
+// static public/ assets, and point setWorkerUrl at them explicitly instead
+// of relying on the broken self-relative guess. Must run before any
+// `new maplibregl.Map()` is constructed (module-scope call here guarantees
+// that) and must be re-copied from node_modules/maplibre-gl/dist/ any time
+// the maplibre-gl dependency version changes.
+maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
 import { MAP_STYLE, MAP_CONFIG } from '../config.js';
 import { fetchMapStyle } from '../utils/mapStyleCache.js';
 import { TIGER_MARK_VIEWBOX, TIGER_MARK_PATH } from './tigerMarkPath';

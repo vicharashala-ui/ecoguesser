@@ -258,6 +258,14 @@ export default defineConfig({
           'assets/vendor-*.js',
           'assets/config-*.js',
           'assets/rolldown-runtime-*.js',
+          // MapLibre's worker + the shared chunk it imports (see the
+          // setWorkerUrl comment in MapContainer.jsx for why these are
+          // shipped from public/ instead of relying on MapLibre's own
+          // broken self-relative worker-URL guess). Eager, not runtime-
+          // cached: every map load needs this pair, so a first visit that
+          // opens straight into Daily shouldn't pay a cold cache miss on
+          // the one thing that makes the map render at all.
+          'maplibre/*.mjs',
           // game/daily.js (getTodayString/getDailySites/etc, used by both
           // eager stats.js and lazy DailySummary/Leaderboard/DailyMap) no
           // longer gets its own shared chunk -- it's small enough that
