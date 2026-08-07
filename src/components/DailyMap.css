@@ -397,8 +397,10 @@
   border: none;
   border-radius: 999px;
   /* Amber, not --eg-brand green -- the green blended into the map/terrain
-     behind it (same amber as BottomNav's active-tab accent, #f59e0b). */
-  background: #f59e0b;
+     behind it. Darkened from BottomNav's active-tab accent (#f59e0b) to
+     amber-600 (#d97706) -- the lighter shade read as too bright/flashy at
+     this pill's size against the map. */
+  background: #d97706;
   color: #fff;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 20px;
@@ -409,7 +411,7 @@
      highlight (inset) for a subtle glassy sheen -- no extra DOM needed. */
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 2px 6px rgba(245, 158, 11, 0.35),
+    0 2px 6px rgba(217, 119, 6, 0.35),
     0 8px 20px rgba(17, 24, 39, 0.14);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -447,13 +449,13 @@
   transform: translateY(-2px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.32),
-    0 4px 10px rgba(245, 158, 11, 0.4),
+    0 4px 10px rgba(217, 119, 6, 0.4),
     0 12px 24px rgba(17, 24, 39, 0.18);
 }
 
 .dm-start-btn:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 3px rgba(245, 158, 11, 0.32);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 3px rgba(217, 119, 6, 0.32);
 }
 
 .dm-start-btn:disabled {
