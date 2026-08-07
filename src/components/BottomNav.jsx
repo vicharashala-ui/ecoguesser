@@ -85,7 +85,7 @@ export default function BottomNav({ activeTab, onTabChange }) {
               aria-current={active ? 'page' : undefined}
               onClick={() => onTabChange(id)}
             >
-              <Icon size={active ? 24 : 22} />
+              <Icon size={active ? 28 : 26} />
               <span>{label}</span>
             </button>
           );

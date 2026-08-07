@@ -102,11 +102,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
   border: none;
   background: none;
-  color: var(--eg-ink-secondary, #6b7280);
-  font-size: 11.5px;
+  /* Darker than the shared --eg-ink-secondary (#6b7280) -- at this bar's
+     larger icon/label size, the shared gray tests under 4.5:1 contrast
+     against the cream background. Kept local to this component rather
+     than changing the shared var, which many other components rely on. */
+  color: #4b5563;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: color 0.15s ease, transform 0.15s ease;
