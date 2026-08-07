@@ -380,6 +380,12 @@ body {
   border: 1px solid rgba(17, 24, 39, 0.18);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+  /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
+     nested inside .cm-layer-panel, which has its own isolation fix, but a
+     nested backdrop-filter element needs its own per that file's writeup.
+     Used directly on ClassicMap/BlitzMap over the live canvas. */
+  isolation: isolate;
+  transform: translateZ(0);
   box-shadow: inset 0 1px 3px rgba(17, 24, 39, 0.2);
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }

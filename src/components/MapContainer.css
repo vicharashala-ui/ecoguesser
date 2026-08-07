@@ -43,6 +43,10 @@
   background: rgba(248, 246, 241, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
+     the canvas is still a GPU compositing layer even with its context lost. */
+  isolation: isolate;
+  transform: translateZ(0);
 }
 
 .eg-context-lost p {

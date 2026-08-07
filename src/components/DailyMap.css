@@ -212,7 +212,7 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateZ(0);
   z-index: var(--eg-z-overlay, 20);
   pointer-events: none;
   padding: 8px 20px;
@@ -220,6 +220,10 @@
   background: rgba(17, 24, 39, 0.78);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  /* Fix: same backdrop-filter/WebGL compositing bug as RecenterButton.css --
+     see the comment there for the full writeup. Missing here previously,
+     unlike this file's other backdrop-filter pills. */
+  isolation: isolate;
   color: #ffffff;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 15px;
