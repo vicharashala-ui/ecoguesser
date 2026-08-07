@@ -145,10 +145,17 @@ export default function ClassicDistanceGauge({ avgDist, visible }) {
   // an exact number change.
   useEffect(() => {
     if (avgDist === null) return;
-    const from = prevAvgDistRef.current ?? avgDist;
+    const prev = prevAvgDistRef.current;
     const to = avgDist;
     prevAvgDistRef.current = avgDist;
-    if (from === to) return;
+    if (prev === to) return; // real no-op only -- see `from` below for the first-ever-round case
+
+    // On the player's first-ever round, prev is null (displayedValue is
+    // still its mount-time 0, since avgDist was null then too) -- coalescing
+    // to `to` here previously made from === to and skipped the update
+    // entirely, leaving the readout stuck at 0. Animate up from 0 instead,
+    // matching displayedValue's actual starting point.
+    const from = prev ?? 0;
 
     if (prefersReducedMotion()) {
       setDisplayedValue(to);
