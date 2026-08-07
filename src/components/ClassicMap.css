@@ -49,6 +49,12 @@
   flex-direction: column;
   align-items: stretch;
   gap: 10px;
+  /* Fixed to match .cm-gauge-panel's 112px (and DailyMap.css's
+     .dm-timer-card) now that the gauge lives in its own .cm-gauge-stack --
+     align-items:stretch has nothing left inside this stack to size against,
+     so without this the Terrain/Satellite squares fall back to shrinking
+     to their icon's content size instead of their original dimensions. */
+  width: 112px;
 }
 
 .cm-layer-panel {
