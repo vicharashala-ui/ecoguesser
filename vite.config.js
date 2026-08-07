@@ -178,17 +178,22 @@ export default defineConfig({
     preact(),
     VitePWA({
       registerType: 'autoUpdate',
-      // Registers a real (if minimal) service worker under `npm run dev`
-      // too, not just production builds -- without this, Chrome's
-      // beforeinstallprompt criteria (a registered SW is one of them) are
-      // never met in dev, so InstallPrompt.jsx's native/Android banner has
-      // nothing to hook into and silently never appears while testing
-      // locally. Trade-off: dev now has a SW in play, so if a later code
-      // change doesn't seem to show up, that's the SW serving a cached
-      // response rather than a real bug -- hard-refresh, or DevTools ->
-      // Application -> Service Workers -> Unregister, clears it.
+      // Off by default: vite-plugin-pwa's dev-mode SW (dev-sw.js, a
+      // different codepath from the real production Workbox SW) has been
+      // observed to break MapLibre's module worker fetch entirely --
+      // /maplibre/maplibre-gl-worker.mjs gets served back as a classic
+      // script ("Cannot use import statement outside a module"), hanging
+      // the map forever. Not reproducible via `npm run build` + Pages
+      // deploy, only under `npm run dev` with this SW active -- confirmed
+      // by unregistering it (DevTools -> Application -> Service Workers)
+      // and the map loading immediately after.
+      //
+      // Set PWA_DEV_SW=1 npm run dev on the rare occasion you need to test
+      // InstallPrompt.jsx's native/Android beforeinstallprompt banner
+      // locally (it needs a registered SW to fire at all) -- just don't
+      // expect the map to load in that same session.
       devOptions: {
-        enabled: true,
+        enabled: process.env.PWA_DEV_SW === '1',
         type: 'module',
       },
       includeAssets: ['icons/safari-pinned-tab.svg'],
