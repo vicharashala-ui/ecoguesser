@@ -71,6 +71,41 @@
          same-priority-class requests it'd otherwise queue behind. -->
     <link rel="preload" href="/map-style.json" as="fetch" crossorigin="anonymous" fetchpriority="high" />
 
+    <!-- MapContainer.jsx's setWorkerUrl points MapLibre at these two static
+         public/maplibre/ files (see that call's own comment for why they're
+         static assets rather than part of the Rollup chunk graph). Neither
+         is discoverable by the browser until vendor-maplibre-*.js has
+         downloaded AND run far enough to construct a Map -- and
+         maplibre-gl-worker.mjs statically imports maplibre-gl-shared.mjs, so
+         that second fetch doesn't even start until the first one lands.
+         Confirmed via a Lighthouse trace: vendor-maplibre finished at
+         ~3.4s, then worker.mjs (628ms) and shared.mjs (1.3s) loaded fully
+         serially after it, and only THEN did the first tile request fire at
+         ~5.5s -- ~2s of pure network idle time sitting on the map's
+         critical path, well after the JS that was supposedly the
+         bottleneck had already arrived. modulepreload starts both
+         downloading immediately, in parallel with vendor-maplibre itself
+         (and with each other, since shared.mjs is 133KB gzip vs.
+         vendor-maplibre's 244KB gzip, it should land first) -- so by the
+         time setWorkerUrl's consumer actually spawns the worker, both are
+         already sitting in HTTP cache instead of triggering fresh requests.
+         No fetchpriority set, matching how vendor-maplibre's own
+         Vite-injected modulepreload tag (see preloadMapChunks() in
+         vite.config.js) is left at modulepreload's native High default --
+         these three are the same critical-path tier, no reason to outrank
+         each other. crossorigin left bare (no ="anonymous"), matching that
+         same Vite-injected tag's convention, not the crossorigin="anonymous"
+         used on the as="fetch" preloads above -- module script fetches
+         default to "same-origin" credentials regardless, so there's no
+         mode-mismatch double-fetch risk here the way there was for those.
+         NOTE: unlike the as="fetch" preloads above, this hasn't been
+         verified against a live network trace yet -- Worker construction
+         requests these with destination "worker", not modulepreload's
+         "script", so confirm in DevTools (both should show a cache hit, not
+         a second network request) before treating this as settled. -->
+    <link rel="modulepreload" href="/maplibre/maplibre-gl-worker.mjs" crossorigin />
+    <link rel="modulepreload" href="/maplibre/maplibre-gl-shared.mjs" crossorigin />
+
     <!-- /api/daily-manifest: today's 5 Daily sites, precomputed server-side
          (see functions/_shared/handlers.js) instead of derived client-side
          from the full 837-site catalog below. Daily is the default tab, so
