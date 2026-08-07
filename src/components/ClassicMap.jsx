@@ -285,12 +285,23 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
         </div>
       </div>
 
-      {/* Top-right stack -- gauge sits above the mode row (Terrain/Basemap +
-          Satellite), which are their own standalone boxes, not wrapped in
-          any panel background. Mirrors DailyMap.jsx/BlitzMap.jsx's
-          top-right-stack pattern for stacking independent HUD pieces. */}
-      <div className="cm-top-right-stack">
+      {/* Rendered outside .cm-top-right-stack, above MapLoadingOverlay's
+          z-index -- the gauge reads localStorage, not live map state, so it
+          has no reason to wait on mapReady the way the mode row below it
+          does. Sharing the stack's z-index tier used to bury it under the
+          loading overlay until tiles finished loading (or forever, if load
+          stalled). Positioned to sit exactly above .cm-top-right-stack,
+          which is shifted down by this panel's height + gap to compensate. */}
+      <div className="cm-gauge-stack">
         <ClassicDistanceGauge avgDist={avgDist} visible={visible} />
+      </div>
+
+      {/* Top-right stack -- mode row (Terrain/Basemap + Satellite), own
+          standalone boxes, not wrapped in any panel background. Mirrors
+          DailyMap.jsx/BlitzMap.jsx's top-right-stack pattern. Correctly
+          stays under the loading overlay -- these are live map controls,
+          already `disabled={!mapReady}` too. */}
+      <div className="cm-top-right-stack">
         <div className="cm-mode-row">
           {/* Terrain/Basemap is one control, not two -- icon and caption show
               the CURRENT mode ("Terrain" + mountain while terrain is on,

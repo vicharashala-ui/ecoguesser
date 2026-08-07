@@ -128,6 +128,7 @@
   --eg-z-card-tip: 26;          /* pre-guess pin-placement tip, above the recenter button */
   --eg-z-card-ghost: 29;        /* departing bottom-card snapshot, just below the incoming live card */
   --eg-z-card: 30;              /* live bottom-card / loading pill */
+  --eg-z-map-hud: 31;           /* Classic distance gauge -- data-driven (localStorage), not map-state-driven, so it must clear the loading overlay (30) instead of being buried under it while tiles load */
   --eg-z-nav: 40;               /* bottom tab bar */
   --eg-z-effects: 45;           /* one-shot effects layered above the nav (DEM/satellite overlay swap, confetti burst) */
   --eg-z-toast-milestone: 46;   /* milestone toast */

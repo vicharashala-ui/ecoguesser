@@ -29,9 +29,20 @@
   z-index: var(--eg-z-map-controls, 10);
 }
 
-.cm-top-right-stack {
+/* Gauge's own stack, positioned to sit exactly where it used to sit as the
+   top-right-stack's first flex child (98px panel height + 10px gap = 108px,
+   added to .cm-top-right-stack's top below). z-index above the loading
+   overlay -- see the comment at its usage in ClassicMap.jsx. */
+.cm-gauge-stack {
   position: absolute;
   top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 1px);
+  right: 10px;
+  z-index: var(--eg-z-map-hud, 31);
+}
+
+.cm-top-right-stack {
+  position: absolute;
+  top: calc(var(--eg-header-height, 72px) + env(safe-area-inset-top, 0px) + 1px + 108px);
   right: 10px;
   z-index: var(--eg-z-map-controls, 10);
   display: flex;
