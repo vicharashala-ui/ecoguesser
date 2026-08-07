@@ -145,7 +145,7 @@ function timerColor(remaining) {
   return 'var(--eg-ink, #111827)';
 }
 
-export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySites, onComplete, active = true }) {
+export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySites, onComplete, onMapReady, active = true }) {
   const cardRef = useRef(null);
   // Tracks BottomCard's real height during REVEALING, so RecenterButton can
   // be positioned above the expanded card instead of being hidden by it.
@@ -179,6 +179,18 @@ export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySi
     if (!mapReady || effectsReady) return;
     preloadRoundEffects().then(() => setEffectsReady(true));
   }, [mapReady, effectsReady]);
+
+  // Surfaces mapReady up to App.jsx: it gates the ClassicMap/BlitzMap and
+  // warmSharedMapData prefetches there, both of which need to wait until
+  // this map's own critical path (MapLibre vendor chunk + style + first
+  // tiles/glyphs) is actually done, not just "main thread idle" -- see
+  // App.jsx's dailyMapReady comment. onMapReady is not in the dep array on
+  // purpose: it's an inline arrow from App.jsx (new identity every render),
+  // and this only needs to fire once, the instant mapReady itself flips.
+  useEffect(() => {
+    if (mapReady) onMapReady?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady]);
 
   const {
     roundState,

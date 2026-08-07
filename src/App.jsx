@@ -88,6 +88,18 @@ export default function App() {
   // regardless. This ref keeps that fetch deferred until the hamburger is
   // actually tapped once.
   const drawerEverOpened = useRef(false);
+  // Gates the two deferred-prefetch effects below (ClassicMap/BlitzMap warm
+  // and warmSharedMapData). Both used to fire on requestIdleCallback/window
+  // 'load', which measure main-thread and document-resource idleness --
+  // neither tracks whether DailyMap's own MapLibre critical path (vendor
+  // chunk + style + first tiles/glyphs) has actually finished. Lighthouse
+  // trace showed this idle callback firing at ~1.8s while vendor-maplibre
+  // (244KB) was still 3s from finishing its own download, so the prefetch
+  // was competing for bandwidth with the thing it was supposed to wait
+  // behind. mapReady (DailyMap's useMapState, surfaced via onMapReady
+  // below) is the actual signal: MapLibre's own 'load' event, which only
+  // fires once the map has nothing left in flight.
+  const [dailyMapReady, setDailyMapReady] = useState(false);
   const [activeTab, setActiveTab] = useState('daily');
   const classicMapRef = useRef(null);
   const dailyMapRef = useRef(null);
@@ -194,6 +206,7 @@ export default function App() {
   // signal). Effect fires once; browser dynamic-import caching means a
   // later lazy() call for the same chunk is a cache hit, not a re-fetch.
   useEffect(() => {
+    if (!dailyMapReady) return;
     const prefetch = () => {
       import('./components/ClassicMap.jsx');
       import('./components/BlitzMap.jsx');
@@ -208,52 +221,45 @@ export default function App() {
     }
     const id = setTimeout(prefetch, 2000);
     return () => clearTimeout(id);
-  }, []);
+  }, [dailyMapReady]);
 
   // warmSharedMapData() alone is ~345KB gzip (india-boundary.geojson +
   // india-states.topojson + india-state-labels.geojson) -- big enough to
   // fight the map's own still-loading OFM tiles/glyphs for bandwidth on a
-  // slow connection if it starts too early. It used to share the idle slot
-  // above, but requestIdleCallback only tracks main-thread idleness, not
-  // network idleness -- the thread can go idle mid-download while those
-  // tile requests are still in flight, the exact "two big fetch batches
-  // competing for one mobile pipe" problem SW registration (main.jsx) is
-  // already deferred past `load` to avoid. Same fix here: wait for `load`
-  // (the page's own declared resources have settled, which in practice
-  // takes measurably longer than "thread has a spare frame") before even
-  // starting the idle/timeout countdown below.
+  // slow connection if it starts too early. It used to gate on window
+  // 'load' before starting its own idle/timeout countdown, on the theory
+  // that 'load' means "the page's own declared resources have settled" --
+  // but 'load' also waits on <link rel=modulepreload>/preload tags, so it
+  // fires as soon as those (and everything else still in flight) finish,
+  // not specifically once the map's tiles are done. Lighthouse trace showed
+  // this firing at ~2.7s while vendor-maplibre.js was still 1.8s from
+  // finishing. dailyMapReady (MapLibre's own 'load' event, see
+  // onMapReady below) is the direct signal instead: by definition nothing
+  // from the map's own critical path is still in flight once it's true.
   //
   // navigator.connection is Chromium-only (undefined in Safari/Firefox) --
   // where available, saveData or a 2G effectiveType skips the warm-up
   // outright, since competing for bandwidth costs more there than borders
   // popping in a beat later is worth. Best-effort only; unsupported
-  // browsers just get the load-gating above with no skip.
+  // browsers just get the mapReady-gating above with no skip.
   useEffect(() => {
+    if (!dailyMapReady) return;
     const conn = navigator.connection;
     if (conn && (conn.saveData || /2g/.test(conn.effectiveType ?? ''))) return;
 
     let idleId;
     let timeoutId;
-    const scheduleWarm = () => {
-      if (typeof requestIdleCallback === 'function') {
-        idleId = requestIdleCallback(warmSharedMapData, { timeout: 5000 });
-      } else {
-        timeoutId = setTimeout(warmSharedMapData, 2000);
-      }
-    };
-
-    if (document.readyState === 'complete') {
-      scheduleWarm();
+    if (typeof requestIdleCallback === 'function') {
+      idleId = requestIdleCallback(warmSharedMapData, { timeout: 5000 });
     } else {
-      window.addEventListener('load', scheduleWarm, { once: true });
+      timeoutId = setTimeout(warmSharedMapData, 2000);
     }
 
     return () => {
-      window.removeEventListener('load', scheduleWarm);
       if (idleId != null && typeof cancelIdleCallback === 'function') cancelIdleCallback(idleId);
       if (timeoutId != null) clearTimeout(timeoutId);
     };
-  }, []);
+  }, [dailyMapReady]);
 
   if (sitesError) {
     return (
@@ -315,6 +321,7 @@ export default function App() {
           sites={allSites}
           dailySites={dailySites}
           onComplete={handleDailyComplete}
+          onMapReady={() => setDailyMapReady(true)}
           active={activeTab === 'daily'}
           visible={activeTab === 'daily' && dailyPhase === 'round'}
         />
