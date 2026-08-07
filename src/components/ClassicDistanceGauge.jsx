@@ -1,7 +1,12 @@
 // src/components/ClassicDistanceGauge.jsx
 // Passive HUD widget in ClassicMap's top-right stack -- shows the player's
 // EMA of recent distance (see computeEmaAvgDist in game/stats.js) as a
-// needle on a 6-segment dial. Purely informational: no click handler, no tooltip.
+// needle on a 6-segment dial. Purely informational: no click handler, no
+// tooltip. Renders from first paint (needle at rest, "-- / play a round"
+// readout) rather than only after the first round -- avgDist===null is a
+// legitimate render state, not a "nothing to show" signal, so it sits
+// alongside the Terrain/Satellite buttons from the start instead of
+// popping in later and shifting that row.
 import { useState, useEffect, useRef } from 'react';
 import './ClassicDistanceGauge.css';
 
@@ -161,8 +166,6 @@ export default function ClassicDistanceGauge({ avgDist, visible }) {
     return () => cancelAnimationFrame(raf);
   }, [avgDist]);
 
-  if (avgDist === null) return null;
-
   return (
     <div className="cm-gauge-panel">
       <svg className="cm-gauge-svg" viewBox="0 0 160 100" width="88" height="55" aria-hidden="true">
@@ -185,9 +188,18 @@ export default function ClassicDistanceGauge({ avgDist, visible }) {
         <circle cx="78.7" cy="86.7" r="0.9" fill="#fff" opacity="0.8" />
       </svg>
       <div className="cm-gauge-readout">
-        <span className="cm-gauge-value">{displayedValue}</span>
-        <span className="cm-gauge-unit">km</span>
-        <div className="cm-gauge-label">recent avg</div>
+        {avgDist === null ? (
+          <>
+            <span className="cm-gauge-value">&ndash;</span>
+            <div className="cm-gauge-label">play a round</div>
+          </>
+        ) : (
+          <>
+            <span className="cm-gauge-value">{displayedValue}</span>
+            <span className="cm-gauge-unit">km</span>
+            <div className="cm-gauge-label">recent avg</div>
+          </>
+        )}
       </div>
     </div>
   );

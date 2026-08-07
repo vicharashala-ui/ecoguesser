@@ -24,12 +24,6 @@
 // missing (shouldn't happen; Leaderboard is only reachable after playing
 // today).
 //
-// onRecapSettled(): fires once, telling App.jsx it's safe to arm
-// InstallPrompt -- either immediately (no card exists this visit, or one
-// already showed+closed on an earlier visit today) or once the close
-// animation actually finishes (see closeRecap's phase 3). Never fires
-// while the card is still going to open or is currently open/closing.
-//
 // The same handleShare is also wired to a persistent Share button in the
 // bottom action row (lb-actions), left of Play Classic, so sharing doesn't
 // require opening the recap modal first. It's disabled rather than hidden
@@ -118,7 +112,7 @@ function hasAutoShownRecap(date) {
   return localStorage.getItem(LS_KEYS.RECAP_SHOWN) === date;
 }
 
-export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites, onRecapSettled }) {
+export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites }) {
   const today = getTodayString();
   const [fetched, setFetched] = useState(data ?? null);
   const [fetchError, setFetchError] = useState(false);
@@ -180,20 +174,14 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   const openTimerRef = useRef(null);
   useEffect(() => {
     if (loading) return undefined;
-    if (!hasTodayEntry || !hasSites) {
-      onRecapSettled?.(); // no card ever exists this visit -- nothing to wait behind
-      return undefined;
-    }
-    if (hasAutoShownRecap(today)) {
-      onRecapSettled?.(); // already shown+dismissed on an earlier visit today -- won't reopen
-      return undefined;
-    }
+    if (!hasTodayEntry || !hasSites) return undefined;
+    if (hasAutoShownRecap(today)) return undefined;
     openTimerRef.current = setTimeout(() => {
       localStorage.setItem(LS_KEYS.RECAP_SHOWN, today);
       setRecapOpen(true);
     }, 2000);
     return () => clearTimeout(openTimerRef.current);
-  }, [loading, hasTodayEntry, hasSites, today, onRecapSettled]);
+  }, [loading, hasTodayEntry, hasSites, today]);
 
   useEffect(() => () => {
     clearTimeout(closeTimerRef.current);
@@ -230,7 +218,6 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
           fadeTimerRef.current = setTimeout(() => {
             setRecapClosing(false);
             setBackdropFading(false);
-            onRecapSettled?.(); // close animation fully finished -- card is gone for good this visit
           }, 220); // matches the backdrop's own fade-out transition duration
         });
         closeRafRef.current.push(raf2);

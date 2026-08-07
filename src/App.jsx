@@ -113,13 +113,14 @@ export default function App() {
   const [dailyPhase, setDailyPhase] = useState(() => (hasPlayedToday() ? 'leaderboard' : 'round'));
   const [dailySummaryData, setDailySummaryData] = useState(null); // { totalPts, totalDist }
   const [dailyLeaderboardData, setDailyLeaderboardData] = useState(null); // { top10, rank, banner } | null
-  // Gates InstallPrompt: stays false until Daily is complete AND the
-  // leaderboard's share-card (DailyRecap modal) has settled -- either it
-  // won't auto-open this visit, or it opened and the close animation fully
-  // finished. Leaderboard.jsx is the only thing that ever flips this (via
-  // onRecapSettled); it never flips back, since once true, showing the
-  // install nudge on a later tab switch is fine -- only the FIRST time
-  // needs to wait behind the recap.
+  // Gates InstallPrompt: stays false until Daily is complete (dailyPhase
+  // hits 'leaderboard' in handleSummaryDone). Set here rather than via a
+  // Leaderboard callback -- Leaderboard unmounts if the player taps to
+  // Classic/Blitz before its own recap-settle effect resolves, which used
+  // to drop this flag for the rest of the session. InstallPrompt's own
+  // MIN_DELAY_MS still covers not competing visually with the recap card.
+  // Never flips back once true -- showing the nudge on a later tab switch
+  // is fine, only the FIRST arming needs to wait behind Daily completion.
   const [installPromptReady, setInstallPromptReady] = useState(false);
   const { current: newAchievement, recordAndDetect, dismissCurrent: dismissAchievement } = useAchievementUnlocks();
 
@@ -162,6 +163,12 @@ export default function App() {
   function handleSummaryDone(leaderboardPayload) {
     setDailyLeaderboardData(leaderboardPayload);
     setDailyPhase('leaderboard');
+    // Arms InstallPrompt from here, not Leaderboard's onRecapSettled --
+    // Leaderboard unmounts if the player taps to Classic/Blitz before its
+    // internal recap-settle effect resolves, which silently dropped this
+    // flag for the rest of the session. Reaching 'leaderboard' phase is
+    // itself proof Daily is done, so nothing left to gate on.
+    setInstallPromptReady(true);
   }
 
   function loadSites() {
@@ -343,7 +350,6 @@ export default function App() {
             onPlayClassic={() => switchTab('classic')}
             onPlayBlitz={() => switchTab('blitz')}
             allSites={allSites}
-            onRecapSettled={() => setInstallPromptReady(true)}
           />
         </Suspense>
       )}
