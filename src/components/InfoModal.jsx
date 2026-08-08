@@ -38,31 +38,59 @@ function HowToPlayContent() {
       <h3>Modes</h3>
       <p>
         <strong>Classic</strong> is an untimed, infinite run through
-        whichever categories and states you've selected in the side drawer.
-        Play as many rounds as you like, back to back.
+        whichever categories and states you've selected in the side drawer
+        (Category and Region &amp; State filters). Play as many rounds as
+        you like, back to back.
       </p>
       <p>
         <strong>Daily Challenge</strong> picks five fixed sites for the day
-        -- one from each category (national park, wildlife sanctuary, tiger
-        reserve, biosphere reserve, Ramsar site) -- the same five for
-        everyone, one attempt each. Each site gives you 120 seconds to place
-        your pin, and your combined score across all five goes on that day's
-        leaderboard.
+        -- unaffected by your filters -- one from each category (national
+        park, wildlife sanctuary, tiger reserve, biosphere reserve, Ramsar
+        site) -- the same five for everyone, one attempt each. Each site
+        gives you 120 seconds to place your pin, and your combined score
+        across all five goes on that day's leaderboard.
       </p>
       <p>
         <strong>Blitz</strong> shows you a protected area and asks which
-        state it's in. Tap a state, then confirm -- get it right and the
+        state it's in -- pulling from the same Category and Region &amp;
+        State filters as Classic. Tap a state, then confirm -- get it right and the
         state turns green, get it wrong and you'll see your guess in red
-        next to the correct answer in green. No pins, no distance, just
-        geography. Correct answers build a streak, shown alongside your best
-        streak for the session. Each round gives you a few seconds to
-        answer -- play as many rounds as you like, back to back.
+        next to the correct answer in green. No pins, no distance, no
+        timer -- just geography, at your own pace. Correct answers build a
+        streak, shown alongside your best streak for the session; every 10th
+        streak milestone banks a restore that automatically saves your
+        streak the next time you're wrong (or skip), instead of resetting it
+        to zero.
+      </p>
+
+      <h3>Placing Your Guess</h3>
+      <p>
+        In Classic and Daily, zoom and pan the map to narrow things down,
+        then tap to drop your pin -- tap elsewhere to move it as many times
+        as you like before you're ready. Hit <strong>Confirm</strong> to
+        lock it in and reveal the answer.
+      </p>
+      <p>
+        Not feeling a site? Classic and Blitz both have a{' '}
+        <strong>Skip</strong> button that swaps in a new one at no cost.
+        Daily doesn't -- that day's five sites are fixed for everyone.
+      </p>
+
+      <h3>Map View</h3>
+      <p>
+        Classic and Daily both offer <strong>Terrain</strong> and{' '}
+        <strong>Satellite</strong> views alongside the default map, switchable
+        anytime from the buttons in the top-right. Classic also has a{' '}
+        <strong>Borders</strong> toggle (top-left) to show or hide state
+        outlines.
       </p>
 
       <h3>Scoring</h3>
       <p>
         In Classic and Daily, score starts at 5,000 and decays with distance
         from the real location -- the closer your pin, the higher the score.
+        Classic also shows a running average-distance dial next to the map
+        controls, so you can track your accuracy trend across a session.
         Blitz doesn't use points; it tracks a correct-answer streak instead.
       </p>
 
@@ -73,6 +101,14 @@ function HowToPlayContent() {
         that state on the map. In Classic, hints are free. In Daily
         Challenge, each hint used costs 500 points off that round's score,
         so using both costs 1,000.
+      </p>
+
+      <h3>Achievements</h3>
+      <p>
+        Playing any mode unlocks badges for milestones like rounds played,
+        guess accuracy, streaks, and perfect scores. Check your unlocked
+        badges, and your full play history, from the <strong>Stats</strong>{' '}
+        tab.
       </p>
     </>
   );

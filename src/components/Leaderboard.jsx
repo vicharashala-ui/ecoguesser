@@ -112,13 +112,29 @@ function hasAutoShownRecap(date) {
   return localStorage.getItem(LS_KEYS.RECAP_SHOWN) === date;
 }
 
-export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites }) {
+export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites, onRecapSettled }) {
   const today = getTodayString();
   const [fetched, setFetched] = useState(data ?? null);
   const [fetchError, setFetchError] = useState(false);
   const [loading, setLoading] = useState(data == null);
   const [sharing, setSharing] = useState(false);
   const dailyRecapRef = useRef(null);
+
+  // Fires onRecapSettled exactly once: either the recap card had nothing to
+  // wait for (already auto-shown earlier today), or it auto-opened and the
+  // user closed it, or this component unmounted (tab switched away) before
+  // either of those happened -- in every case the card is no longer
+  // covering the screen, so it's safe for InstallPrompt to arm. The
+  // unmount fallback is what guarantees this always fires even if the
+  // player leaves the Daily tab mid-recap, instead of silently dropping
+  // the signal for the rest of the session.
+  const settledRef = useRef(false);
+  const notifySettled = useCallback(() => {
+    if (settledRef.current) return;
+    settledRef.current = true;
+    onRecapSettled?.();
+  }, [onRecapSettled]);
+  useEffect(() => () => notifySettled(), [notifySettled]);
 
   const fetchLeaderboard = useCallback(() => {
     setLoading(true);
@@ -175,13 +191,16 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
   useEffect(() => {
     if (loading) return undefined;
     if (!hasTodayEntry || !hasSites) return undefined;
-    if (hasAutoShownRecap(today)) return undefined;
+    if (hasAutoShownRecap(today)) {
+      notifySettled(); // already shown (and by now closed) earlier today -- nothing to wait for
+      return undefined;
+    }
     openTimerRef.current = setTimeout(() => {
       localStorage.setItem(LS_KEYS.RECAP_SHOWN, today);
       setRecapOpen(true);
     }, 2000);
     return () => clearTimeout(openTimerRef.current);
-  }, [loading, hasTodayEntry, hasSites, today]);
+  }, [loading, hasTodayEntry, hasSites, today, notifySettled]);
 
   useEffect(() => () => {
     clearTimeout(closeTimerRef.current);
@@ -218,6 +237,7 @@ export default function Leaderboard({ data, onPlayClassic, onPlayBlitz, allSites
           fadeTimerRef.current = setTimeout(() => {
             setRecapClosing(false);
             setBackdropFading(false);
+            notifySettled(); // card is now fully off-screen -- InstallPrompt can arm
           }, 220); // matches the backdrop's own fade-out transition duration
         });
         closeRafRef.current.push(raf2);

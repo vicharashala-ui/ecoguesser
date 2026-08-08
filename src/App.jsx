@@ -30,8 +30,8 @@ const BlitzMap = lazy(() => import('./components/BlitzMap.jsx'));
 // tab, InfoModal only once opened from SideDrawer, SideDrawer only once the
 // hamburger is tapped, AchievementToast only once an achievement actually
 // unlocks, and InstallPrompt only once installPromptReady flips true
-// (Daily complete + share card settled -- see that state's own comment)
-// and its own MIN_DELAY_MS has then passed. Leaderboard also drags in
+// (share card settled -- see that state's own comment) and its own
+// MIN_DELAY_MS has then passed. Leaderboard also drags in
 // html-to-image (the recap share-card export) -- deferring it keeps that
 // out of the initial bundle too. InstallPrompt's event-capture half (the
 // one-shot, un-refireable beforeinstallprompt listener) already lives in
@@ -113,14 +113,13 @@ export default function App() {
   const [dailyPhase, setDailyPhase] = useState(() => (hasPlayedToday() ? 'leaderboard' : 'round'));
   const [dailySummaryData, setDailySummaryData] = useState(null); // { totalPts, totalDist }
   const [dailyLeaderboardData, setDailyLeaderboardData] = useState(null); // { top10, rank, banner } | null
-  // Gates InstallPrompt: stays false until Daily is complete (dailyPhase
-  // hits 'leaderboard' in handleSummaryDone). Set here rather than via a
-  // Leaderboard callback -- Leaderboard unmounts if the player taps to
-  // Classic/Blitz before its own recap-settle effect resolves, which used
-  // to drop this flag for the rest of the session. InstallPrompt's own
-  // MIN_DELAY_MS still covers not competing visually with the recap card.
-  // Never flips back once true -- showing the nudge on a later tab switch
-  // is fine, only the FIRST arming needs to wait behind Daily completion.
+  // Gates InstallPrompt: stays false until the Daily recap/share card is
+  // actually off-screen -- Leaderboard's onRecapSettled fires once that's
+  // true, whether because the card had nothing to wait for (already shown
+  // earlier today), the player closed it, or Leaderboard unmounted (tab
+  // switch) before either happened. This is what makes InstallPrompt show
+  // shortly *after* the share card closes instead of racing it. Never
+  // flips back once true -- showing the nudge on a later tab switch is fine.
   const [installPromptReady, setInstallPromptReady] = useState(false);
   const { current: newAchievement, recordAndDetect, dismissCurrent: dismissAchievement } = useAchievementUnlocks();
 
@@ -163,12 +162,6 @@ export default function App() {
   function handleSummaryDone(leaderboardPayload) {
     setDailyLeaderboardData(leaderboardPayload);
     setDailyPhase('leaderboard');
-    // Arms InstallPrompt from here, not Leaderboard's onRecapSettled --
-    // Leaderboard unmounts if the player taps to Classic/Blitz before its
-    // internal recap-settle effect resolves, which silently dropped this
-    // flag for the rest of the session. Reaching 'leaderboard' phase is
-    // itself proof Daily is done, so nothing left to gate on.
-    setInstallPromptReady(true);
   }
 
   function loadSites() {
@@ -350,6 +343,7 @@ export default function App() {
             onPlayClassic={() => switchTab('classic')}
             onPlayBlitz={() => switchTab('blitz')}
             allSites={allSites}
+            onRecapSettled={() => setInstallPromptReady(true)}
           />
         </Suspense>
       )}
