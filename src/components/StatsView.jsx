@@ -39,9 +39,9 @@ const BUCKET_LABELS = ['0-5k', '5-10k', '10-15k', '15-20k', '20-25k'];
 // only clears ~3:1 against a dark page (fails 4.5:1 text contrast);
 // daily/blitz already clear 5:1+ so their dark values just repeat as-is.
 const TABS = [
-  { id: 'daily', label: 'Daily', accent: '#65a30d', tint: '#f7fee7', darkAccent: '#65a30d', darkTint: 'rgba(101, 163, 13, 0.16)' },
+  { id: 'daily', label: 'Daily', accent: '#f59e0b', tint: '#fffbeb', darkAccent: '#f59e0b', darkTint: 'rgba(245, 158, 11, 0.16)' },
   { id: 'classic', label: 'Classic', accent: '#2563eb', tint: '#eff6ff', darkAccent: '#60a5fa', darkTint: 'rgba(96, 165, 250, 0.16)' },
-  { id: 'blitz', label: 'Blitz', accent: '#f59e0b', tint: '#fffbeb', darkAccent: '#f59e0b', darkTint: 'rgba(245, 158, 11, 0.16)' },
+  { id: 'blitz', label: 'Blitz', accent: '#65a30d', tint: '#f7fee7', darkAccent: '#65a30d', darkTint: 'rgba(101, 163, 13, 0.16)' },
   { id: 'awards', label: 'Awards', accent: '#9333ea', tint: '#faf5ff', darkAccent: '#c084fc', darkTint: 'rgba(192, 132, 252, 0.16)' },
 ];
 
