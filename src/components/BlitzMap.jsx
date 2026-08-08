@@ -570,7 +570,7 @@ function BlitzMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS }) {
               onChange={() => setPoliticalNames(!politicalNames)}
             />
             <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            States
+            <span className={!mapReady ? 'eg-toggle-disabled' : undefined}>States</span>
           </label>
         </div>
       </div>

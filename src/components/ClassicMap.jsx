@@ -280,7 +280,7 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
           <label className="eg-toggle">
             <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
             <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            Borders
+            <span className={!mapReady ? 'eg-toggle-disabled' : undefined}>Borders</span>
           </label>
         </div>
       </div>

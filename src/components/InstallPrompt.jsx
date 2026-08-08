@@ -68,8 +68,17 @@ export default function InstallPrompt({ readyToShow }) {
     if (!readyToShow) return undefined;
     if (isStandaloneDisplay()) return undefined;
 
+    // Set true only once the MIN_DELAY_MS timer below fires -- tryShow()
+    // enforces this regardless of which path calls it, so a
+    // beforeinstallprompt that's already captured by mount (common on
+    // Android/desktop) or isIOSDevice()'s static check (always true on iOS,
+    // no event involved at all) can't short-circuit the wait and pop the
+    // toast on top of the Daily recap modal opening a moment later.
+    let delayPassed = false;
+
     function tryShow() {
       if (shownRef.current) return;
+      if (!delayPassed) return;
       if (isStandaloneDisplay()) return;
       const today = getTodayString();
       if (localStorage.getItem(LS_KEYS.INSTALL_PROMPT_SHOWN) === today) return;
@@ -82,11 +91,10 @@ export default function InstallPrompt({ readyToShow }) {
       setVisible(true);
     }
 
-    // Covers the event having already fired before this chunk finished
-    // loading (installPromptCapture.js has been listening since main.jsx);
-    // the subscription below covers it firing after.
-    tryShow();
-
+    // Covers beforeinstallprompt firing after this chunk has loaded
+    // (installPromptCapture.js has been listening since main.jsx) -- still
+    // gated on delayPassed above, so an event that fires mid-wait doesn't
+    // jump the queue either.
     const unsubscribe = onInstallPromptChange(() => {
       if (wasJustInstalled()) {
         setVisible(false);
@@ -94,7 +102,10 @@ export default function InstallPrompt({ readyToShow }) {
       }
       tryShow();
     });
-    const timer = setTimeout(tryShow, MIN_DELAY_MS);
+    const timer = setTimeout(() => {
+      delayPassed = true;
+      tryShow();
+    }, MIN_DELAY_MS);
 
     return () => {
       unsubscribe();
