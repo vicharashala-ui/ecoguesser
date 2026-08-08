@@ -673,12 +673,12 @@ export function useMapState(mapRef, mode) {
         const NO_HINT2_FILTER = ['in', ['get', 'st_nm'], ['literal', []]];
         map.addLayer({
           id: LAYER_IDS.HINT_FILL, type: 'fill', source: 'india-states', filter: NO_HINT2_FILTER,
-          paint: { 'fill-color': '#8b5cf6', 'fill-opacity': 0.25 },
+          paint: { 'fill-color': '#dc2626', 'fill-opacity': 0.25 },
         });
         map.addLayer({
           id: LAYER_IDS.HINT_OUTLINE, type: 'line', source: 'india-states', filter: NO_HINT2_FILTER,
           paint: {
-            'line-color': '#8b5cf6', 'line-width': 1.5, 'line-opacity': 1,
+            'line-color': '#dc2626', 'line-width': 1.5, 'line-opacity': 1,
             'line-opacity-transition': { duration: 0, delay: 0 },
           },
         });

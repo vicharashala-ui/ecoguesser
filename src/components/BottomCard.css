@@ -283,7 +283,7 @@
 .bc-hint-state {
   font-size: 13px;
   font-weight: 600;
-  color: #6d28d9;
+  color: #dc2626;
   transform-origin: left top;
   animation: bc-hint-reveal 0.6s ease-out 1;
 }
@@ -294,8 +294,8 @@
    same "conditional mount = free one-shot" trick as bc-score-perfect
    below, no JS state needed. */
 @keyframes bc-hint-reveal {
-  0%   { color: #a855f7; transform: scale(1.35); }
-  100% { color: #6d28d9; transform: scale(1); }
+  0%   { color: #f87171; transform: scale(1.35); }
+  100% { color: #dc2626; transform: scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
