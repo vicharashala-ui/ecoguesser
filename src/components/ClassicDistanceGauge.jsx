@@ -204,7 +204,7 @@ export default function ClassicDistanceGauge({ avgDist, visible }) {
           <>
             <span className="cm-gauge-value">{displayedValue}</span>
             <span className="cm-gauge-unit">km</span>
-            <div className="cm-gauge-label">recent avg</div>
+            <div className="cm-gauge-label">current form</div>
           </>
         )}
       </div>
