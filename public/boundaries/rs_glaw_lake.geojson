@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[96.4494,27.6934],[96.4597,27.6918],[96.4608,27.6978],[96.4528,27.7016],[96.4521,27.6982],[96.4457,27.7022],[96.446,27.6929],[96.4494,27.6934]]]},"properties":{"id":"rs_glaw_lake"}}
+]}
