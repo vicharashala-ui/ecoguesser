@@ -386,7 +386,8 @@
   .bz-restore-badge.bz-restore-gained,
   .bz-restore-badge.bz-restore-used,
   .bz-milestone-glow,
-  .bz-streak-card.bz-medallion-pulse {
+  .bz-streak-card.bz-medallion-pulse,
+  .bz-complete {
     animation: none;
     transition: none;
   }
@@ -437,4 +438,71 @@
   font-size: 13.5px;
   font-weight: 700;
   color: var(--eg-ink-secondary, #6b7280);
+}
+
+/* Full-pool completion overlay -- same centered-card positioning as
+   .bz-empty-pool above, sized up for a celebration moment rather than a
+   status line. bz-complete-pop is transform/opacity only (GPU-accelerated,
+   matches this file's other entrance animations), disabled above under
+   prefers-reduced-motion. */
+.bz-complete {
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  right: 24px;
+  z-index: var(--eg-z-overlay, 20);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 24px 24px;
+  border-radius: var(--eg-radius-lg, 20px);
+  background: rgba(248, 246, 241, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  isolation: isolate;
+  transform: translateY(-50%) translateZ(0);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 12px 36px rgba(17, 24, 39, 0.2);
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  text-align: center;
+  animation: bz-complete-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes bz-complete-pop {
+  0% { opacity: 0; transform: translateY(-50%) scale(0.92) translateZ(0); }
+  100% { opacity: 1; transform: translateY(-50%) scale(1) translateZ(0); }
+}
+
+.bz-complete-icon {
+  color: #c8973a;
+  margin-bottom: 2px;
+}
+
+.bz-complete-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--eg-ink-primary, #1f2937);
+}
+
+.bz-complete-sub {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--eg-ink-secondary, #6b7280);
+}
+
+.bz-complete-btn {
+  margin-top: 10px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: var(--eg-radius-md, 14px);
+  background: var(--eg-ink-primary, #1f2937);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
 }

@@ -13,6 +13,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, memo } from 'react';
 import MapContainer from './MapContainer.jsx';
 import BlitzCard from './BlitzCard.jsx';
+import BlitzComplete from './BlitzComplete.jsx';
 import RecenterButton from './RecenterButton.jsx';
 import MilestoneToast from './MilestoneToast.jsx';
 import AchievementToast from './AchievementToast.jsx';
@@ -148,7 +149,7 @@ function BlitzMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS }) {
 
   const {
     roundState, site, selectedState, result, streak, bestStreak, streakRestores,
-    handleStateClick, handleConfirm, handleNextSite, handleSkip,
+    handleStateClick, handleConfirm, handleNextSite, handleSkip, handlePlayAgain,
   } = useBlitzRound(sitePool);
 
   const { mapReady, mapLoadSlow, politicalNames, setPoliticalNames } = useMapState(mapRef, 'blitz');
@@ -630,6 +631,17 @@ function BlitzMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS }) {
           onToggleCollapsed={setCollapsed}
           cardHeight={cardHeight}
         />
+      )}
+
+      {/* Every site in the current filtered pool has been correctly
+          identified this run (useBlitzRound.js's no-repeat tracking ran
+          out of both unseen and retry sites) -- nothing left to load, so
+          this replaces BlitzCard instead of another round starting. */}
+      {roundState === 'COMPLETE' && (
+        <>
+          <ConfettiBurst key="blitz-complete-confetti" />
+          <BlitzComplete total={sitePool.length} bestStreak={bestStreak} onPlayAgain={handlePlayAgain} />
+        </>
       )}
     </div>
   );

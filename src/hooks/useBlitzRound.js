@@ -16,13 +16,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { hapticConfirm, hapticWrong } from '../utils/haptics.js';
 import { soundConfirm, soundWrong } from '../utils/sound.js';
-import { pickNextSite } from '../utils/filters.js';
+import { pickNextSite, pickNextSiteNoRepeat } from '../utils/filters.js';
 
 /**
  * @param {import('../config').Site[]} sitePool - caller (BlitzMap.jsx) already
  *   applies the shared Category/Region+State filters before passing this in
  * @returns {{
- *   roundState: 'LOADING'|'READING'|'SELECTING'|'REVEALING',
+ *   roundState: 'LOADING'|'READING'|'SELECTING'|'REVEALING'|'COMPLETE',
  *   site: import('../config').Site|null,
  *   selectedState: string|null,
  *   result: {
@@ -38,6 +38,7 @@ import { pickNextSite } from '../utils/filters.js';
  *   handleConfirm: () => void,
  *   handleNextSite: () => void,
  *   handleSkip: () => void,
+ *   handlePlayAgain: () => void,
  * }}
  */
 export function useBlitzRound(sitePool) {
@@ -53,33 +54,75 @@ export function useBlitzRound(sitePool) {
   // as streak/bestStreak -- not yet persisted across app restarts.
   const [streakRestores, setStreakRestores] = useState(0);
 
+  // No-repeat tracking for the current streak run. `correctIds` are sites
+  // answered right this run -- done for good, never shown again. `wrongIds`
+  // are sites answered wrong but restore-saved -- held for a retry pass
+  // once every fresh site in the pool has been shown at least once. Both
+  // are cleared together only when the streak actually breaks to 0; a
+  // restore-saved miss keeps the run (and this tracking) alive, same as
+  // the streak itself. While streak === 0, neither is consulted -- site
+  // picking falls back to pickNextSite's plain previous-site exclusion.
+  const [correctIds, setCorrectIds] = useState(() => new Set());
+  const [wrongIds, setWrongIds] = useState(() => new Set());
+
   // Plain-value mirror finalizeRound reads to avoid a stale closure.
   const roundStateRef = useRef(roundState);
   const siteRef = useRef(site);
   const streakRef = useRef(streak);
   const bestStreakRef = useRef(bestStreak);
   const streakRestoresRef = useRef(streakRestores);
+  const correctIdsRef = useRef(correctIds);
+  const wrongIdsRef = useRef(wrongIds);
   roundStateRef.current = roundState;
   siteRef.current = site;
   streakRef.current = streak;
   bestStreakRef.current = bestStreak;
   streakRestoresRef.current = streakRestores;
+  correctIdsRef.current = correctIds;
+  wrongIdsRef.current = wrongIds;
 
   // LOADING -> pick a site -> READING. Stays in LOADING if the pool is
   // empty (filters left nothing to play) -- BlitzMap.jsx's own empty-pool
   // message covers the UI side, same guard shape useClassicRound.js needs.
+  //
+  // streak === 0: no active run to track -- plain pickNextSite, same as
+  // always. streak > 0: draw from whatever hasn't been shown yet this run
+  // (unseen pool), following the same category round-robin but skipping
+  // categories that have run out of unseen sites rather than abandoning
+  // the rotation. Once nothing is unseen, fall back to a retry pass over
+  // `wrongIds` (still no-repeat, still round-robin). Once that's empty too,
+  // every site in the pool has been correctly identified this run --
+  // there's nothing left to load, so this ends the run at COMPLETE instead
+  // of picking.
   useEffect(() => {
     if (roundState !== 'LOADING') return;
     if (!sitePool || sitePool.length === 0) return;
 
-    const next = pickNextSite(sitePool, site);
+    let next;
+    if (streak === 0) {
+      next = pickNextSite(sitePool, site);
+    } else {
+      const unseen = sitePool.filter((s) => !correctIds.has(s.id) && !wrongIds.has(s.id));
+      if (unseen.length > 0) {
+        next = pickNextSiteNoRepeat(unseen, site);
+      } else if (wrongIds.size > 0) {
+        const retryPool = sitePool.filter((s) => wrongIds.has(s.id));
+        next = pickNextSiteNoRepeat(retryPool, site);
+      } else {
+        setRoundState('COMPLETE');
+        return;
+      }
+    }
+
     setSite(next);
     setSelectedState(null);
     setResult(null);
     setRoundState('READING');
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `site` is read
-    // for pickNextSite's round-robin/exclusion, not as a retrigger: it's
-    // the previous round's value at the moment LOADING starts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `site`,
+    // `streak`, `correctIds`, `wrongIds` are read for this round's pick,
+    // not as retriggers: they're each the current run's state at the
+    // moment LOADING starts, already settled by the same render that got
+    // us here.
   }, [roundState, sitePool]);
 
   // Single scoring path used by Confirm. `guessedState` is only ever a
@@ -122,12 +165,28 @@ export function useBlitzRound(sitePool) {
     if (isCorrect) {
       nextStreak = prevStreak + 1;
       if (nextStreak % 10 === 0) nextRestores = prevRestores + 1;
+
+      // Done for good this run -- redeemed out of the retry pool if it was
+      // pending one.
+      setCorrectIds(new Set(correctIdsRef.current).add(currentSite.id));
+      if (wrongIdsRef.current.has(currentSite.id)) {
+        const redeemedWrongIds = new Set(wrongIdsRef.current);
+        redeemedWrongIds.delete(currentSite.id);
+        setWrongIds(redeemedWrongIds);
+      }
     } else {
       // A wrong guess with a live streak spends a restore automatically if
       // one's in reserve -- no prompt, silent like earning one is.
       const streakSaved = prevStreak > 0 && prevRestores > 0;
       nextStreak = streakSaved ? prevStreak : 0;
-      if (streakSaved) nextRestores = prevRestores - 1;
+      if (streakSaved) {
+        nextRestores = prevRestores - 1;
+        setWrongIds(new Set(wrongIdsRef.current).add(currentSite.id));
+      } else {
+        // Real break -- the whole run's no-repeat tracking starts over.
+        setCorrectIds(new Set());
+        setWrongIds(new Set());
+      }
     }
 
     setStreak(nextStreak);
@@ -168,12 +227,31 @@ export function useBlitzRound(sitePool) {
     const prevStreak = streakRef.current;
     const prevRestores = streakRestoresRef.current;
     const streakSaved = prevStreak > 0 && prevRestores > 0;
+    const currentSite = siteRef.current;
 
     setStreak(streakSaved ? prevStreak : 0);
-    if (streakSaved) setStreakRestores(prevRestores - 1);
+    if (streakSaved) {
+      setStreakRestores(prevRestores - 1);
+      // Same no-repeat bookkeeping as a wrong guess -- treated identically.
+      if (currentSite) setWrongIds(new Set(wrongIdsRef.current).add(currentSite.id));
+    } else {
+      setCorrectIds(new Set());
+      setWrongIds(new Set());
+    }
 
     setRoundState('LOADING');
   }, [roundState]);
+
+  // Only reachable from COMPLETE (BlitzMap.jsx's "Play Again" button) --
+  // starts a fresh run. bestStreak/streakRestores are left as-is, same as
+  // an ordinary streak break: bestStreak is a permanent high-water mark,
+  // and any leftover restores are an earned bonus carried into the new run.
+  const handlePlayAgain = useCallback(() => {
+    setStreak(0);
+    setCorrectIds(new Set());
+    setWrongIds(new Set());
+    setRoundState('LOADING');
+  }, []);
 
   return {
     roundState,
@@ -187,5 +265,6 @@ export function useBlitzRound(sitePool) {
     handleConfirm,
     handleNextSite,
     handleSkip,
+    handlePlayAgain,
   };
 }

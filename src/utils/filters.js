@@ -136,3 +136,40 @@ export function pickNextSite(pool, previousSite) {
   const excludeIds = previousSite ? [previousSite.id] : [];
   return pickRandom(byCategory[nextCategory], excludeIds);
 }
+
+/**
+ * Blitz-only variant used while an active streak's no-repeat tracking is
+ * live (useBlitzRound.js). `pool` is the caller's already-filtered set of
+ * eligible sites (whatever shouldn't repeat this run is excluded before
+ * this is called) -- unlike pickNextSite, the category rotation here
+ * advances over the FULL DAILY.CATEGORIES cycle rather than just the
+ * categories present in `pool`, so a category that's run out of eligible
+ * sites is skipped without collapsing the rest of the rotation into random
+ * picking. `br` has no dedicated cycling here -- the caller's own
+ * exclusion set already guarantees no repeats, so a plain random pick
+ * within the category is enough.
+ *
+ * @param {import('../config').Site[]} pool - non-empty is NOT guaranteed;
+ *   returns null if pool is empty, caller decides what that means
+ * @param {import('../config').Site|null} previousSite
+ */
+export function pickNextSiteNoRepeat(pool, previousSite) {
+  const byCategory = {};
+  for (const site of pool) {
+    (byCategory[site.category] ??= []).push(site);
+  }
+  const eligible = DAILY.CATEGORIES.filter((cat) => byCategory[cat]?.length);
+  if (eligible.length === 0) return null;
+
+  const prevIndex = previousSite ? DAILY.CATEGORIES.indexOf(previousSite.category) : -1;
+  let nextCategory = eligible[0];
+  for (let i = 1; i <= DAILY.CATEGORIES.length; i++) {
+    const candidate = DAILY.CATEGORIES[(prevIndex + i) % DAILY.CATEGORIES.length];
+    if (byCategory[candidate]?.length) {
+      nextCategory = candidate;
+      break;
+    }
+  }
+  const excludeIds = previousSite ? [previousSite.id] : [];
+  return pickRandom(byCategory[nextCategory], excludeIds);
+}
