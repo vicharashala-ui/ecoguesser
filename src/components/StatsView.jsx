@@ -291,7 +291,7 @@ function AchievementBadge({ achievement, grown }) {
           <span className="sv-ach-title">{title}</span>
           {isTiered && (
             <span className="sv-ach-pips" aria-hidden="true">
-              {achievement.tiers.map((t, i) => (
+              {achievement.tiers.map((_, i) => (
                 <span
                   key={i}
                   className={`sv-ach-pip${i < tierIndex ? ' sv-ach-pip-done' : i === tierIndex && !maxed ? ' sv-ach-pip-next' : ''}`}
