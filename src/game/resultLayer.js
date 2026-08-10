@@ -66,12 +66,12 @@ let animationFrameId = null;
 // its own token and bails post-await if a newer round has since started.
 let revealToken = 0;
 
-// `lineTo` is the line's own endpoint -- the nearest point on the site's
-// boundary (or the centroid fallback), computed by the caller. `pinTo`
-// (site centroid) is separate and always stays put: it's the stable
-// "here's the site" marker and shouldn't move just because the line now
-// terminates at the boundary edge instead.
-function buildResultData(guess, site, distanceKm, lineTo) {
+// The line's actual endpoint (nearest boundary point, or centroid fallback)
+// is grown in separately by animateLine() -- this only builds the initial
+// collapsed state. `pinTo` (site centroid) is separate and always stays put:
+// it's the stable "here's the site" marker and shouldn't move just because
+// the line now terminates at the boundary edge instead.
+function buildResultData(guess, site, distanceKm) {
   const from = [guess.lng, guess.lat];
   const pinTo = [site.centroid_lng, site.centroid_lat];
   const distanceLabel = `${Math.round(distanceKm).toLocaleString()} km away`;
@@ -214,7 +214,7 @@ export async function showResult(map, guess, site, opts = {}) {
   // except tr, which keeps its original yellow here even though `color`
   // itself is now brown (see the CATEGORY_META comment in config.js).
   const boundaryColor = CATEGORY_META[site.category]?.boundaryColor ?? color;
-  const data = buildResultData(guess, site, distanceKm, lineTo);
+  const data = buildResultData(guess, site, distanceKm);
 
   // Zoom to the guess<->site pair right away, in parallel with the line/pin
   // animation below. This framing is what stays on screen through the whole

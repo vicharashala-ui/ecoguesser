@@ -84,26 +84,6 @@
      or it just vanishes against a near-black --eg-surface. */
   --eg-card-ring: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.06), 0 1px 2px rgba(17, 24, 39, 0.04);
 
-  /* -- Type scale -- reference scale for new/touched text. The 23 one-off
-     sizes already in the app (10px-40px, including half-pixel tuned values
-     like 10.5/11.5/13.5/14.5px) aren't force-migrated by this pass -- see
-     design-audit-fixes.md #1. */
-  --eg-text-xs: 11px;
-  --eg-text-sm: 13px;
-  --eg-text-base: 14px;
-  --eg-text-md: 16px;
-  --eg-text-lg: 20px;
-  --eg-text-xl: 24px;
-
-  /* -- Spacing scale -- reference scale, same opportunistic-migration note
-     as the type scale above. */
-  --eg-space-1: 4px;
-  --eg-space-2: 8px;
-  --eg-space-3: 12px;
-  --eg-space-4: 16px;
-  --eg-space-5: 20px;
-  --eg-space-6: 24px;
-
   /* -- Radius -- consolidates 13 one-off values (4-24px) down to 4. */
   --eg-radius-sm: 8px;
   --eg-radius-md: 14px;
