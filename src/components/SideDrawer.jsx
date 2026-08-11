@@ -125,7 +125,7 @@ export default function SideDrawer({
     return () => clearTimeout(t);
   }, [feedbackPhase]);
 
-  // Both scan the full ~837-site list -- memoized so unrelated re-renders
+  // Both scan the full ~838-site list -- memoized so unrelated re-renders
   // (typing in the name/feedback fields, toggling sound/haptics, opening/
   // closing the drawer) don't repeat that work. categoryCounts is the
   // stable "how many exist in total" figure (see file header), so it only

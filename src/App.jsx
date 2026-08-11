@@ -167,7 +167,7 @@ export default function App() {
   function loadSites() {
     // Fetched, not import()'d -- this used to be bundled as a JS module
     // (`import('./data/protected-areas.json')`), which forces V8 to parse
-    // 837 sites' worth of object-literal syntax through the general JS
+    // 838 sites' worth of object-literal syntax through the general JS
     // parser. Native JSON.parse (what fetch().json() uses under the hood)
     // is a simpler, faster grammar for the same data -- real savings on a
     // payload this size, particularly on mid-range mobile CPUs. Moving the

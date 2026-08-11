@@ -5,7 +5,9 @@
 // just { roundState, site, guess, ... } + handlers. The screen-level Daily
 // component wires resultLayer.js/stateHighlight.js off this hook's state
 // (same two-useEffect pattern as ClassicMap.jsx) and routes to
-// DAILY_SUMMARY once `isComplete` flips true.
+// DAILY_SUMMARY once `isLastRound` is true and handleNextSite fires --
+// DailyMap.jsx's own effect calls onComplete(results) at that point instead
+// of advancing to a 6th round.
 //
 // One extra state: round 1's first LOADING->READING handoff detours
 // through NOT_STARTED instead -- the timer must not start and the guess
@@ -247,14 +249,10 @@ export function useDailyRound(allSites, dailySites, active = true) {
   }, [roundIndex]);
 
   const isLastRound = roundIndex === TOTAL_ROUNDS - 1;
-  const isComplete = isLastRound && roundState === 'REVEALING' && results.length === TOTAL_ROUNDS;
 
   return {
     roundState,
-    roundIndex,
-    totalRounds: TOTAL_ROUNDS,
     isLastRound,
-    isComplete,
     site,
     guess,
     markerPlaced: guess !== null,

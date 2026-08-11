@@ -234,9 +234,9 @@ const ACHIEVEMENTS = [
       { target: 25, title: 'First Sightings', description: 'Encounter 25 distinct protected areas.' },
       { target: 100, title: 'Field Naturalist', description: 'Encounter 100 distinct protected areas.' },
       { target: 300, title: 'Seasoned Ranger', description: 'Encounter 300 distinct protected areas.' },
-      // 837 mirrors the current site pool size (protected-areas.json) -- if
+      // 838 mirrors the current site pool size (protected-areas.json) -- if
       // the pool grows, update this alongside the per-category top tiers below.
-      { target: 837, title: 'Complete Collection', description: 'Encounter every protected area in EcoGuesser.' },
+      { target: 838, title: 'Complete Collection', description: 'Encounter every protected area in EcoGuesser.' },
     ],
   },
   {
@@ -272,7 +272,7 @@ const ACHIEVEMENTS = [
     tiers: [
       { target: 25, title: 'Wetland Wanderer', description: 'Encounter 25 Ramsar Sites.' },
       { target: 50, title: 'Wetland Watcher', description: 'Encounter 50 Ramsar Sites.' },
-      { target: 100, title: 'Wetland Guardian', description: 'Encounter every Ramsar Site (100).' },
+      { target: 101, title: 'Wetland Guardian', description: 'Encounter every Ramsar Site (101).' },
     ],
   },
   {

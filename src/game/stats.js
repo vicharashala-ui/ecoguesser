@@ -9,7 +9,7 @@
 //     trend array). Pulled into this file rather than left inline in
 //     StatsView.jsx so they're unit-testable independent of rendering.
 //   - Site collection (Classic/Blitz only): loadEncounteredSites/
-//     recordSiteEncounter/computeCollectionStats -- the "N / 837 explored"
+//     recordSiteEncounter/computeCollectionStats -- the "N / 838 explored"
 //     completionist counter. A separate concern from the three per-mode
 //     stat blocks above (it's keyed by site id, not by round), but lives in
 //     this file since it's the same localStorage-backed persistence layer.
@@ -350,7 +350,7 @@ export function computeBlitzStats(stats) {
 // ---------------------------------------------------------------------------
 // Site collection (Classic + Blitz only)
 // ---------------------------------------------------------------------------
-// A completionist counter over the full 837-site pool -- "N / 837 explored"
+// A completionist counter over the full 838-site pool -- "N / 838 explored"
 // -- separate from the per-mode round stats above. Stored as a flat array
 // of distinct site ids rather than nested under stats_normal/stats_blitz
 // since a site encountered in either mode counts toward the same shared
@@ -390,7 +390,7 @@ export function recordSiteEncounter(siteId) {
 }
 
 /**
- * @param {import('../config').Site[]} allSites - the full site pool (837),
+ * @param {import('../config').Site[]} allSites - the full site pool (838),
  *   as fetched by App.jsx from /protected-areas.json. Cross-referenced
  *   against the persisted id list (rather than trusting encountered.length
  *   directly) so a stale id from a since-removed/renamed site can never

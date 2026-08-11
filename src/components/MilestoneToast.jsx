@@ -1,6 +1,6 @@
 // src/components/MilestoneToast.jsx
 // Celebratory toast fired when the site-collection counter (recordSiteEncounter
-// in stats.js -- the "N / 837 explored" completionist tally) crosses a
+// in stats.js -- the "N / 838 explored" completionist tally) crosses a
 // multiple of 10. Mounted locally by ClassicMap.jsx/BlitzMap.jsx, the only
 // two modes that feed the collection (see LS_KEYS.SITES_SEEN's comment in
 // config.js for why Daily is excluded).

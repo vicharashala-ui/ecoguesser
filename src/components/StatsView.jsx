@@ -363,7 +363,7 @@ function CollectionRing({ label, color, seen, total, grown, variant, index = 0 }
   );
 }
 
-// "N / 837 explored" completionist counter -- see stats.js's
+// "N / 838 explored" completionist counter -- see stats.js's
 // computeCollectionStats. Rendered at the top of the Awards tab, above the
 // achievement badges, since it's the headline "collection" stat the rest
 // of the tab builds on. Shares AchievementsSection's rAF-delayed `grown`
