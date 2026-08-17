@@ -263,10 +263,16 @@
   flex: 1;
 }
 
-/* Label now lives inside .dm-mode-btn (on its opaque white background)
-   instead of floating below it over the map, so legibility no longer
-   depends on a text-shadow halo. */
+/* Label is absolutely positioned at the bottom edge of .dm-mode-btn
+   (instead of flowing in-line below the icon) so growing the icon doesn't
+   push the label around -- it just gives the icon more room to sit above
+   it. Box size/aspect-ratio is untouched. */
 .dm-mode-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  text-align: center;
   font-size: 9px;
   font-weight: 700;
   line-height: 1;
@@ -277,15 +283,18 @@
    Identical treatment to ClassicMap.css's .cm-mode-btn (brand-green
    .is-active / .is-inert rationale); duplicated rather than shared since
    this mirrors .cm-mode-btn the same way the rest of this file mirrors
-   ClassicMap.css. */
+   ClassicMap.css. position: relative + padding-bottom (instead of the old
+   flex-column + gap) reserves space for the absolutely-positioned label
+   below the icon, so the icon can render larger without the label pushing
+   the box's content taller than the fixed aspect-ratio square. */
 .dm-mode-btn {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
   width: 100%;
   aspect-ratio: 1 / 1;
+  padding-bottom: 15px;
   border-radius: 12px;
   border: 1.5px solid rgba(17, 24, 39, 0.14);
   background: #fff;
