@@ -280,7 +280,7 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
           <label className="eg-toggle">
             <input type="checkbox" className="eg-toggle-input" checked={political} disabled={!mapReady} onChange={(e) => setPolitical(e.target.checked)} />
             <span className="eg-toggle-track"><span className="eg-toggle-thumb" /></span>
-            <span className={!mapReady ? 'eg-toggle-disabled' : undefined}>Borders</span>
+            Borders
           </label>
         </div>
       </div>
@@ -330,9 +330,9 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
               aria-pressed={terrain}
               title={terrainBtnAction}
             >
-              {terrain ? <IconMountain size={18} /> : <IconMapFlat size={18} />}
-              <span className="cm-mode-label" aria-hidden="true">{terrain ? 'Terrain' : 'Basemap'}</span>
+              {terrain ? <IconMountain /> : <IconMapFlat />}
             </button>
+            <span className="cm-mode-label" aria-hidden="true">{terrain ? 'Terrain' : 'Basemap'}</span>
           </div>
           <div className="cm-mode-item">
             <button
@@ -344,9 +344,9 @@ function ClassicMap({ mapRef, visible, sites, filters = DEFAULT_FILTERS, difficu
               aria-pressed={satellite}
               title={satellite ? 'Turn off satellite view' : 'Turn on satellite view'}
             >
-              <IconSatellite size={18} />
-              <span className="cm-mode-label" aria-hidden="true">Satellite</span>
+              <IconSatellite />
             </button>
+            <span className="cm-mode-label" aria-hidden="true">Satellite</span>
           </div>
         </div>
         {satelliteUnavailable && <div className="cm-sat-warning">Satellite unavailable</div>}
