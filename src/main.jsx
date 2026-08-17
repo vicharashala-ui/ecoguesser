@@ -42,6 +42,20 @@ if (appCssLink) appCssLink.media = 'all';
 // requests get the bandwidth first and the SW installs quietly after.
 registerSW();
 
+// Dev-only cleanup: registerSW() above is a no-op in `npm run dev`, but a
+// real SW registered by an earlier `npm run build` + `vite preview` (or a
+// PWA_DEV_SW=1 run) on this same origin/port persists in the browser across
+// unrelated dev sessions. That leftover SW intercepts the dev server's
+// module requests and serves maplibre-gl-worker.mjs back as a classic
+// script, breaking MapLibre with "Cannot use import statement outside a
+// module". Auto-unregistering on every dev boot means this can't bite
+// without anyone touching DevTools.
+if (import.meta.env.DEV && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then((regs) => {
+    for (const reg of regs) reg.unregister();
+  });
+}
+
 // Must run before the first render. DailySummary.jsx's POST /api/score
 // reads LS_KEYS.UUID unconditionally; without this it stays null forever
 // and every submission fails validation server-side.

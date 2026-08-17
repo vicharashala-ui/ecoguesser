@@ -397,9 +397,9 @@ export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySi
               aria-pressed={terrain}
               title={terrainBtnAction}
             >
-              {terrain ? <IconMountain /> : <IconMapFlat />}
+              {terrain ? <IconMountain size={18} /> : <IconMapFlat size={18} />}
+              <span className="dm-mode-label" aria-hidden="true">{terrain ? 'Terrain' : 'Basemap'}</span>
             </button>
-            <span className="dm-mode-label" aria-hidden="true">{terrain ? 'Terrain' : 'Basemap'}</span>
           </div>
           <div className="dm-mode-item">
             <button
@@ -411,9 +411,9 @@ export const DailyMap = memo(function DailyMap({ mapRef, visible, sites, dailySi
               aria-pressed={satellite}
               title={satellite ? 'Turn off satellite view' : 'Turn on satellite view'}
             >
-              <IconSatellite />
+              <IconSatellite size={18} />
+              <span className="dm-mode-label" aria-hidden="true">Satellite</span>
             </button>
-            <span className="dm-mode-label" aria-hidden="true">Satellite</span>
           </div>
         </div>
         {satelliteUnavailable && (

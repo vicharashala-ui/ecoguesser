@@ -261,23 +261,16 @@
 .dm-mode-item {
   display: flex;
   flex: 1;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
 }
 
+/* Label now lives inside .dm-mode-btn (on its opaque white background)
+   instead of floating below it over the map, so legibility no longer
+   depends on a text-shadow halo. */
 .dm-mode-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  color: var(--eg-ink, #111827);
   line-height: 1;
-  /* Multi-direction halo for legibility -- these captions sit directly over
-     the map now, not inside a glass panel backdrop. */
-  text-shadow:
-    0 1px 2px rgba(248, 246, 241, 0.95),
-    0 -1px 2px rgba(248, 246, 241, 0.95),
-    1px 0 2px rgba(248, 246, 241, 0.95),
-    -1px 0 2px rgba(248, 246, 241, 0.95);
+  white-space: nowrap;
 }
 
 /* Square mode buttons -- replace the old Terrain/Satellite checkboxes.
@@ -287,8 +280,10 @@
    ClassicMap.css. */
 .dm-mode-btn {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 3px;
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 12px;
